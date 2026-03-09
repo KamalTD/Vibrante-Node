@@ -15,11 +15,12 @@ class FileLoaderNode(BaseNode):
         if not path or not os.path.exists(path):
             return {"file_data": ""}
         try:
-            with open(path, "r") as f:
+            # Use utf-8 with fallback to ignore/replace to handle various file types safely
+            with open(path, "r", encoding="utf-8", errors="replace") as f:
                 data = f.read()
             return {"file_data": data}
-        except:
-            return {"file_data": "Error reading file"}
+        except Exception as e:
+            return {"file_data": f"Error reading file: {str(e)}"}
 
 class DataProcessorNode(BaseNode):
     name = "Data Processor"

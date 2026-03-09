@@ -19,6 +19,19 @@ class BaseNode(ABC):
         self.outputs: Dict[str, Port] = {}
         self.parameters: Dict[str, Any] = {}
         self.parameter_types: Dict[str, Type] = {}
+        self._on_log = None # Hook for engine to capture logs
+
+    def log_info(self, msg: str):
+        if self._on_log: self._on_log(msg, "info")
+        else: print(f"INFO: {msg}")
+
+    def log_success(self, msg: str):
+        if self._on_log: self._on_log(msg, "success")
+        else: print(f"SUCCESS: {msg}")
+
+    def log_error(self, msg: str):
+        if self._on_log: self._on_log(msg, "error")
+        else: print(f"ERROR: {msg}")
 
     def add_input(self, name: str, data_type: str = "any", widget_type: str = None, options: List[str] = None):
         self.inputs[name] = Port(name, data_type, widget_type, options)
