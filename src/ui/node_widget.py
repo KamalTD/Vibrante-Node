@@ -186,6 +186,7 @@ class NodeWidget(QGraphicsItem):
                        edge.to_port in self.output_widgets:
                         edge.update_path()
         return super().itemChange(change, value)
+
     def paint(self, painter, option, widget):
         base_color = QColor(40, 40, 40)
         if self.status == "running":

@@ -11,7 +11,7 @@ class Edge(QGraphicsPathItem):
         
         self.setZValue(-1) # Draw edges behind nodes
         self.setFlag(QGraphicsPathItem.ItemIsSelectable)
-        self.setPen(QPen(Qt.black, 2))
+        self.setPen(QPen(Qt.white, 2))
         
         self.update_path()
 
