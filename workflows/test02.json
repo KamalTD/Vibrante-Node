@@ -1,0 +1,38 @@
+{
+    "nodes": [
+        {
+            "instance_id": "f4c51b4a-e800-4895-a85c-9efbbd57442f",
+            "node_id": "console_print",
+            "position": [
+                -29.0,
+                -71.0
+            ],
+            "parameters": {
+                "data": null
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "5fd03423-456d-49e9-a46d-a395f13190b4",
+            "node_id": "File Loader",
+            "position": [
+                -334.0,
+                -73.0
+            ],
+            "parameters": {
+                "file_path": "C:/Users/Mahmoud/Downloads/Untitled video.srt"
+            },
+            "state": "idle"
+        }
+    ],
+    "connections": [
+        {
+            "id": "b2d34be9-5cea-450b-9c5d-c429fae8ba6b",
+            "from_node": "5fd03423-456d-49e9-a46d-a395f13190b4",
+            "from_port": "file_data",
+            "to_node": "f4c51b4a-e800-4895-a85c-9efbbd57442f",
+            "to_port": "data"
+        }
+    ],
+    "metadata": {}
+}

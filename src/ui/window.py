@@ -227,6 +227,7 @@ class MainWindow(QMainWindow):
         self.current_executor.node_finished.connect(self._on_node_finished)
         self.current_executor.node_error.connect(self._on_node_error)
         self.current_executor.node_output.connect(self._on_node_output)
+        self.current_executor.node_log.connect(self._on_node_log)
         self.current_executor.execution_finished.connect(self._on_execution_finished)
         
         # Use threading to run asyncio loop
@@ -260,6 +261,11 @@ class MainWindow(QMainWindow):
         name = widget.node_definition.name if widget else "Unknown"
         res_str = ", ".join([f"{k}: {v}" for k, v in results.items()])
         self.log_panel.log(f"Node '{name}' output -> {res_str}", "success")
+
+    def _on_node_log(self, node_instance_id, message, level):
+        widget = self._find_node_widget(node_instance_id)
+        name = widget.node_definition.name if widget else "Unknown"
+        self.log_panel.log(f"[{name}] {message}", level)
 
     def _on_node_finished(self, node_instance_id, status):
         widget = self._find_node_widget(node_instance_id)

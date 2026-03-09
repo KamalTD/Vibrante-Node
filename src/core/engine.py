@@ -12,6 +12,7 @@ class NetworkExecutor(QObject):
     node_finished = pyqtSignal(UUID, str) # node_id, status ('success' or 'failed')
     node_error = pyqtSignal(UUID, str)    # node_id, error_message
     node_output = pyqtSignal(UUID, dict)  # node_id, output_data
+    node_log = pyqtSignal(UUID, str, str) # node_id, message, level
     execution_finished = pyqtSignal(bool) # success
 
     def __init__(self, graph_manager: GraphManager):
@@ -67,6 +68,11 @@ class NetworkExecutor(QObject):
         
         instance = self.node_instances[node_id]
         
+        # Setup logging hook
+        def node_logger(msg, level):
+            self.node_log.emit(node_id, msg, level)
+        instance._on_log = node_logger
+
         # Collect inputs: start with parameters (widget values)
         inputs = instance.parameters.copy()
         
