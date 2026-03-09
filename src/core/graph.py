@@ -1,0 +1,66 @@
+from typing import Dict, List, Set, Optional, Tuple
+from uuid import UUID, uuid4
+import toposort
+from src.core.models import WorkflowModel, NodeInstanceModel, ConnectionModel
+
+class GraphManager:
+    def __init__(self):
+        self.nodes: Dict[UUID, NodeInstanceModel] = {}
+        self.connections: List[ConnectionModel] = []
+
+    def add_node(self, node: NodeInstanceModel):
+        self.nodes[node.instance_id] = node
+
+    def remove_node(self, node_id: UUID):
+        if node_id in self.nodes:
+            del self.nodes[node_id]
+            # Remove associated connections
+            self.connections = [c for c in self.connections if c.from_node != node_id and c.to_node != node_id]
+
+    def add_connection(self, connection: ConnectionModel) -> bool:
+        """
+        Adds a connection and checks for cycles. Returns False if a cycle is created.
+        """
+        self.connections.append(connection)
+        if not self.is_dag():
+            self.connections.pop()
+            return False
+        return True
+
+    def remove_connection(self, connection_id: UUID):
+        self.connections = [c for c in self.connections if c.id != connection_id]
+
+    def is_dag(self) -> bool:
+        """
+        Checks if the current graph is a Directed Acyclic Graph (DAG).
+        """
+        try:
+            self.get_topological_sort()
+            return True
+        except toposort.CircularDependencyError:
+            return False
+
+    def get_topological_sort(self) -> List[Set[UUID]]:
+        """
+        Returns the nodes in topological order for execution.
+        """
+        data = {}
+        # Ensure all nodes are in the data dictionary
+        for node_id in self.nodes:
+            data[node_id] = set()
+
+        # Add dependencies from connections
+        for conn in self.connections:
+            data[conn.to_node].add(conn.from_node)
+        
+        return list(toposort.toposort(data))
+
+    def to_model(self) -> WorkflowModel:
+        return WorkflowModel(
+            nodes=list(self.nodes.values()),
+            connections=self.connections
+        )
+
+    def from_model(self, model: WorkflowModel):
+        self.nodes = {node.instance_id: node for node in model.nodes}
+        self.connections = model.connections
