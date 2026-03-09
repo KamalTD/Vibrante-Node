@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QLineEdit, QTextEdit, QTableWidget, QTableWidgetItem, QPlainTextEdit, QPushButton, QLabel, QSplitter, QWidget, QMessageBox
+from PyQt5.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QLineEdit, QTextEdit, QTableWidget, QTableWidgetItem, QPlainTextEdit, QPushButton, QLabel, QSplitter, QWidget, QMessageBox, QFileDialog
 from PyQt5.QtCore import Qt, QTimer
 import os
 import ast
@@ -6,6 +6,7 @@ from src.core.loader import ScriptLoader
 from src.utils.highlighter import PythonHighlighter
 from src.core.registry import NodeRegistry
 from src.core.models import NodeDefinitionJSON, PortModel
+from src.ui.code_editor import CodeEditor
 
 class NodeBuilderDialog(QDialog):
     def __init__(self, parent=None, editing_node_id=None):
@@ -48,6 +49,21 @@ class NodeBuilderDialog(QDialog):
         self.desc_edit = QTextEdit()
         self.desc_edit.setMaximumHeight(60)
         config_layout.addWidget(self.desc_edit)
+
+        config_layout.addWidget(QLabel("Category:"))
+        self.category_edit = QLineEdit()
+        self.category_edit.setPlaceholderText("e.g. Math, String, Logic")
+        config_layout.addWidget(self.category_edit)
+
+        config_layout.addWidget(QLabel("Icon Path:"))
+        icon_layout = QHBoxLayout()
+        self.icon_edit = QLineEdit()
+        self.icon_btn = QPushButton("...")
+        self.icon_btn.setFixedWidth(30)
+        self.icon_btn.clicked.connect(self._select_icon)
+        icon_layout.addWidget(self.icon_edit)
+        icon_layout.addWidget(self.icon_btn)
+        config_layout.addLayout(icon_layout)
         
         # Inputs Table
         config_layout.addWidget(QLabel("Inputs:"))
@@ -83,7 +99,7 @@ class NodeBuilderDialog(QDialog):
         editor_widget = QWidget()
         editor_layout = QVBoxLayout(editor_widget)
         editor_layout.addWidget(QLabel("Python Algorithm:"))
-        self.code_edit = QPlainTextEdit()
+        self.code_edit = CodeEditor()
         self.code_edit.setPlainText(self._get_template("MyNode"))
         editor_layout.addWidget(self.code_edit)
         
@@ -106,6 +122,11 @@ class NodeBuilderDialog(QDialog):
         button_layout.addWidget(self.cancel_btn)
         layout.addLayout(button_layout)
 
+    def _select_icon(self):
+        path, _ = QFileDialog.getOpenFileName(self, "Select Icon", "", "Images (*.png *.jpg *.svg)")
+        if path:
+            self.icon_edit.setText(path)
+
     def _get_template(self, name):
         return f"""from src.nodes.base import BaseNode
 
@@ -114,6 +135,7 @@ class {name}(BaseNode):
     
     def __init__(self):
         super().__init__()
+        self.icon_path = None
         # [AUTO-GENERATED-PORTS-START]
         # [AUTO-GENERATED-PORTS-END]
         
@@ -136,6 +158,16 @@ def register_node():
 
     def _on_metadata_changed(self):
         if not self._is_syncing:
+            # Sanitize name: remove any non-alphanumeric/underscore and replace spaces
+            raw_name = self.name_edit.text()
+            sanitized = "".join(c if c.isalnum() else "_" for c in raw_name)
+            
+            # Prevent recursive loop
+            if sanitized != raw_name:
+                pos = self.name_edit.cursorPosition()
+                self.name_edit.setText(sanitized)
+                self.name_edit.setCursorPosition(pos)
+                
             self._sync_ui_to_code()
 
     def _sync_code_to_ui(self):
@@ -230,6 +262,18 @@ def register_node():
             if re.search(pattern, code, re.DOTALL):
                 code = re.sub(pattern, injection, code, flags=re.DOTALL)
             
+            # ALSO UPDATE CLASS NAME AND NAME ATTRIBUTE
+            # Sanitize name for class
+            safe_name = "".join(x for x in name.title() if not x.isspace())
+            if not safe_name.endswith("Node"): safe_name += "Node"
+            
+            # Update class definition
+            code = re.sub(r"class \w+\(BaseNode\):", f"class {safe_name}(BaseNode):", code)
+            # Update name attribute
+            code = re.sub(r'name = "[^"]+"', f'name = "{name}"', code)
+            # Update register_node return
+            code = re.sub(r"return \w+", f"return {safe_name}", code)
+            
             self.code_edit.setPlainText(code)
         finally:
             self._is_syncing = False
@@ -283,6 +327,8 @@ def register_node():
             node_id=node_id,
             name=node_id,
             description=self.desc_edit.toPlainText(),
+            category=self.category_edit.text() or "General",
+            icon_path=self.icon_edit.text() or None,
             inputs=inputs,
             outputs=outputs,
             python_code=self.code_edit.toPlainText()
@@ -308,6 +354,8 @@ def register_node():
             if defn:
                 self.name_edit.setText(defn.node_id)
                 self.desc_edit.setPlainText(defn.description)
+                self.category_edit.setText(defn.category)
+                self.icon_edit.setText(defn.icon_path or "")
                 self._update_table(self.inputs_table, defn.inputs)
                 self._update_table(self.outputs_table, defn.outputs)
                 self.code_edit.setPlainText(defn.python_code)

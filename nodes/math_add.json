@@ -2,6 +2,8 @@
     "node_id": "math_add",
     "name": "Math Add",
     "description": "Adds two numbers together.",
+    "category": "Math",
+    "icon_path": "icons/math.svg",
     "inputs": [
         {"name": "a", "type": "number"},
         {"name": "b", "type": "number"}

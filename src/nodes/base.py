@@ -11,6 +11,8 @@ class Port:
 class BaseNode(ABC):
     name: str = "BaseNode"
     description: str = ""
+    category: str = "General"
+    icon_path: Optional[str] = None
 
     def __init__(self):
         self.inputs: Dict[str, Port] = {}

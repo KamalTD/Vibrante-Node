@@ -2,6 +2,8 @@
     "node_id": "async_delay",
     "name": "Async Delay",
     "description": "Delays execution for a specified number of seconds.",
+    "category": "Utility",
+    "icon_path": "icons/timer.svg",
     "inputs": [
         {"name": "input_data", "type": "any"},
         {"name": "seconds", "type": "number"}

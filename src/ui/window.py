@@ -2,7 +2,7 @@ import sys
 import os
 import asyncio
 import threading
-from PyQt5.QtWidgets import QMainWindow, QAction, QFileDialog, QVBoxLayout, QWidget, QGraphicsView, QGraphicsScene, QToolBar, QMessageBox, QDockWidget
+from PyQt5.QtWidgets import QMainWindow, QAction, QFileDialog, QVBoxLayout, QWidget, QGraphicsView, QGraphicsScene, QToolBar, QMessageBox, QDockWidget, QMenu, QStyle
 from PyQt5.QtCore import Qt
 from src.ui.canvas.scene import NodeScene
 from src.ui.canvas.view import NodeView
@@ -17,8 +17,10 @@ class MainWindow(QMainWindow):
     def __init__(self):
         print("MainWindow init started")
         super().__init__()
-        self.setWindowTitle("Python Node-Based Pipeline Editor")
+        self.setWindowTitle("Vibrante-Node Pipeline Editor")
         self.resize(1200, 800)
+        
+        self._apply_dark_theme()
 
         # Initialize Registry
         self.nodes_dir = os.path.abspath(os.path.join(os.getcwd(), 'nodes'))
@@ -71,20 +73,99 @@ class MainWindow(QMainWindow):
         new_node_action.triggered.connect(self.open_node_builder)
         node_menu.addAction(new_node_action)
 
-    def _init_toolbar(self):
-        toolbar = QToolBar("Main Toolbar")
-        self.addToolBar(toolbar)
+        # Window Menu
+        window_menu = menubar.addMenu('&Window')
         
-        new_node_btn = QAction("New Node", self)
-        new_node_btn.triggered.connect(self.open_node_builder)
-        toolbar.addAction(new_node_btn)
+        toggle_library = self.library_panel.toggleViewAction()
+        toggle_library.setText("Show/Hide Library")
+        window_menu.addAction(toggle_library)
+        
+        toggle_log = self.log_panel.toggleViewAction()
+        toggle_log.setText("Show/Hide Event Log")
+        window_menu.addAction(toggle_log)
+
+        # Themes Menu
+        theme_menu = menubar.addMenu('&Themes')
+        dark_act = QAction("Dark Theme", self)
+        dark_act.triggered.connect(self._apply_dark_theme)
+        theme_menu.addAction(dark_act)
+        
+        light_act = QAction("Light Theme", self)
+        light_act.triggered.connect(self._apply_light_theme)
+        theme_menu.addAction(light_act)
+
+    def _init_toolbar(self):
+        toolbar = self.addToolBar("Main")
+        toolbar.setMovable(False)
+        
+        # New Node Builder
+        new_node_act = QAction(self.style().standardIcon(QStyle.SP_FileIcon), "New Node Builder", self)
+        new_node_act.setToolTip("Open Node Builder Dialog (Ctrl+N)")
+        new_node_act.triggered.connect(self.open_node_builder)
+        toolbar.addAction(new_node_act)
         
         toolbar.addSeparator()
         
-        self.execute_btn = QAction("Run Workflow", self)
-        self.execute_btn.setShortcut('F5')
+        # Save Workflow
+        save_act = QAction(self.style().standardIcon(QStyle.SP_DialogSaveButton), "Save Workflow", self)
+        save_act.setToolTip("Save current workflow to JSON (Ctrl+S)")
+        save_act.triggered.connect(self.save_workflow)
+        toolbar.addAction(save_act)
+        
+        # Load Workflow
+        load_act = QAction(self.style().standardIcon(QStyle.SP_DialogOpenButton), "Load Workflow", self)
+        load_act.setToolTip("Load workflow from JSON (Ctrl+O)")
+        load_act.triggered.connect(self.load_workflow)
+        toolbar.addAction(load_act)
+        
+        toolbar.addSeparator()
+        
+        # Delete Selected
+        self.delete_btn = QAction(self.style().standardIcon(QStyle.SP_TrashIcon), "Delete Selected", self)
+        self.delete_btn.setToolTip("Delete selected nodes or wires (Del)")
+        self.delete_btn.triggered.connect(self._delete_selected)
+        toolbar.addAction(self.delete_btn)
+        
+        toolbar.addSeparator()
+        
+        # Run Workflow
+        self.execute_btn = QAction(self.style().standardIcon(QStyle.SP_MediaPlay), "Run Workflow", self)
+        self.execute_btn.setToolTip("Execute the pipeline (F5)")
         self.execute_btn.triggered.connect(self.execute_pipeline)
         toolbar.addAction(self.execute_btn)
+
+    def _delete_selected(self):
+        # Trigger same logic as Delete key
+        from PyQt5.QtGui import QKeyEvent
+        from PyQt5.QtCore import QEvent
+        event = QKeyEvent(QEvent.KeyPress, Qt.Key_Delete, Qt.NoModifier)
+        self.scene.keyPressEvent(event)
+
+    def _apply_dark_theme(self):
+        from PyQt5.QtWidgets import QApplication
+        app = QApplication.instance()
+        app.setStyleSheet("""
+            QMainWindow, QDialog { background-color: #2b2b2b; color: #ffffff; }
+            QDockWidget { color: #ffffff; }
+            QDockWidget::title { background: #3c3f41; padding-left: 5px; }
+            QMenuBar { background-color: #3c3f41; color: #ffffff; }
+            QMenuBar::item:selected { background-color: #4b4d4d; }
+            QMenu { background-color: #3c3f41; color: #ffffff; border: 1px solid #2b2b2b; }
+            QMenu::item:selected { background-color: #4b4d4d; }
+            QToolBar { background-color: #3c3f41; border: none; }
+            QToolTip { background-color: #4b4d4d; color: #ffffff; border: 1px solid #2b2b2b; }
+            QPushButton { background-color: #4b4d4d; color: white; border: 1px solid #3c3f41; padding: 5px; }
+            QPushButton:hover { background-color: #5c5e5e; }
+            QLineEdit, QTextEdit, QPlainTextEdit, QTableWidget, QHeaderView { background-color: #2b2b2b; color: #d4d4d4; border: 1px solid #3c3f41; }
+            QHeaderView::section { background-color: #3c3f41; color: white; }
+            QLabel { color: #ffffff; }
+            QComboBox, QSpinBox, QDoubleSpinBox { background-color: #3c3f41; color: white; border: 1px solid #2b2b2b; }
+        """)
+
+    def _apply_light_theme(self):
+        from PyQt5.QtWidgets import QApplication
+        app = QApplication.instance()
+        app.setStyleSheet("") # Reset to default
 
     def _on_node_selected(self, node_id):
         # Add node to scene at center or mouse pos

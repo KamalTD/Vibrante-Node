@@ -2,6 +2,8 @@
     "node_id": "add_integers",
     "name": "add_integers",
     "description": "Adds two integers provided via spinboxes.",
+    "category": "Math",
+    "icon_path": "icons/math.svg",
     "inputs": [
         {
             "name": "a",

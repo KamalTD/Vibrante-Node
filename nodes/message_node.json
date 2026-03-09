@@ -2,6 +2,8 @@
     "node_id": "message_node",
     "name": "Message Node",
     "description": "Displays a message and passes it through.",
+    "category": "String",
+    "icon_path": "icons/message.svg",
     "inputs": [
         {"name": "msg", "type": "string", "widget_type": "text"}
     ],

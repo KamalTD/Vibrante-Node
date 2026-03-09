@@ -2,6 +2,8 @@
     "node_id": "fruit_selector",
     "name": "Fruit Selector",
     "description": "Select a fruit from a dropdown.",
+    "category": "Selection",
+    "icon_path": "icons/list.svg",
     "inputs": [
         {"name": "choice", "type": "string", "widget_type": "dropdown", "options": ["Apple", "Banana", "Cherry", "Date"]}
     ],

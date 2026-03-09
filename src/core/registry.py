@@ -42,10 +42,13 @@ class NodeRegistry:
             node_id=node_class.name,
             name=node_class.name,
             description=node_class.description,
-            inputs=[PortModel(name=p.name, type=p.data_type, widget_type=p.widget_type) for p in instance.inputs.values()],
+            category=node_class.category,
+            icon_path=node_class.icon_path,
+            inputs=[PortModel(name=p.name, type=p.data_type, widget_type=p.widget_type, options=p.options) for p in instance.inputs.values()],
             outputs=[PortModel(name=p.name, type=p.data_type) for p in instance.outputs.values()],
             python_code="" # Not used for builtins
         )
+
         cls._definitions[definition.node_id] = definition
         cls._classes[definition.node_id] = node_class
 
@@ -73,7 +76,9 @@ class NodeRegistry:
                 node_class = namespace['register_node']()
                 if issubclass(node_class, BaseNode):
                     node_class.name = definition.name
-                    node_class.node_id = definition.node_id # Store node_id
+                    node_class.node_id = definition.node_id
+                    node_class.category = definition.category
+                    node_class.icon_path = definition.icon_path # Set icon_path
                     cls._classes[definition.node_id] = node_class
                     return True
             return False

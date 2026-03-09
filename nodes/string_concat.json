@@ -2,6 +2,8 @@
     "node_id": "string_concat",
     "name": "String Concat",
     "description": "Concatenates two strings with an optional separator.",
+    "category": "String",
+    "icon_path": "icons/string.svg",
     "inputs": [
         {"name": "str1", "type": "string"},
         {"name": "str2", "type": "string"},

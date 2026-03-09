@@ -1,55 +1,38 @@
-# Node-Based Pipeline Editor - Feature Documentation
+# Vibrante-Node - Technical Documentation
 
-This document summarizes the features and improvements implemented in the current version of the Python Node-Based Desktop Application.
+This document detail the advanced features and technical architecture of Vibrante-Node.
 
-## Core Features
+## 1. Professional Python Code Editor
+The Node Builder now features a fully-integrated, professional-grade source code editor.
+- **Intelligent Syntax Highlighting:** Dracula-inspired theme for keywords, builtins, decorators, and multi-line strings.
+- **Line Numbers & Gutter:** Clear visual tracking of code structure.
+- **Auto-Indentation:** Intelligent whitespace handling and automatic 4-space indent after colons (`:`).
+- **Bracket Matching:** Instant visual feedback for matching `()`, `[]`, and `{}`.
+- **Auto-Closing:** Automatically completes quotes and brackets.
+- **Real-time Linting:** Instant syntax error detection with red line highlighting in the gutter.
+- **IntelliSense:** Popup completion suggestions for Python keywords and common node methods (`execute`, `add_input`, etc.).
+- **Indentation Control:** Support for block indentation via **Tab** and de-indentation.
+- **Font Zooming:** **Ctrl + Mouse Wheel** to scale text size.
 
-### 1. Interactive Node Widgets
-Nodes now support embedded UI components that allow users to input data directly on the canvas.
-- **Text Box (`QLineEdit`):** For single-line string inputs.
-- **Multiline Text Area (`QTextEdit`):** For large text blocks.
-- **Spin Boxes (`QSpinBox`, `QDoubleSpinBox`):** For integer and floating-point numbers.
-- **Checkbox (`QCheckBox`):** For boolean toggles.
-- **Dropdown (`QComboBox`):** Supports a list of predefined options (configured via CSV in the Node Builder).
-- **Slider (`QSlider`):** For intuitive numerical range selection.
+## 2. Dynamic Node Library
+- **Categorized View:** Nodes are organized into logical groups (Math, IO, String, Logic, Utility) using an expandable tree structure.
+- **Search & Filter:** Real-time filtering of the library based on node names.
+- **Rich Metadata:** Displays high-quality **SVG icons** for every node.
+- **Context Actions:** Right-click to edit or delete nodes directly from the library.
 
-### 2. Advanced Connection System
-- **Bidirectional Initiation:** Start a wire from either an output or an input port.
-- **Single Connection Rule:** Input ports are restricted to exactly one incoming wire to ensure logical data flow.
-- **Redrag to Disconnect:** Pulling an existing wire away from an input port automatically disconnects it and allows it to be moved or deleted.
-- **Visual Feedback:** Wires are styled in black and become selectable for deletion.
+## 3. Advanced UI & Theming
+- **Global Theme System:** Seamless switching between **Dark** and **Light** themes via the "Themes" menu.
+- **Stylized Toolbar:** Functional icons with descriptive tooltips for workflow management.
+- **Window Management:** A "Window" menu to toggle the visibility of side panels (Library and Event Log).
+- **Port Labeling:** Nodes on the canvas now display clear text labels next to every input and output port.
 
-### 3. Fancy Event Log Panel
-A dedicated dockable window at the bottom of the application provides real-time feedback:
-- **Color-Coded Levels:**
-  - `[EXEC]` (Cyan): Execution start/stop events.
-  - `[OK]` (Green): Successful node completion and output data.
-  - `[ERROR]` (Red): Detailed error reports and stack traces.
-  - `[INFO]` (Purple): General application status.
-- **Auto-Scrolling:** Ensures the latest events are always visible.
+## 4. Extended Interactive Widgets
+- **File Selector:** A new widget type that provides a "..." button to launch a native OS file dialog.
+- **Slider Control:** Interactive horizontal sliders for numerical range selection.
+- **Dropdown (Combo Box):** Configurable list of options defined via CSV in the Node Builder.
+- **Multiline Text Area:** For handling large blocks of string data.
 
-### 4. Workflow Execution Engine
-- **Asynchronous Execution:** Uses `asyncio` in a dedicated background thread to prevent UI freezing during long-running tasks.
-- **Topological Sorting:** Automatically determines the correct execution order based on node connections.
-- **Data Propagation:** Seamlessly passes data from widgets and output ports to connected input ports.
-- **Visual Status:** Nodes change color based on their state (`running`, `success`, `failed`).
-
-### 5. Canvas Interactions
-- **Delete Key:** Quickly remove selected nodes or wires.
-- **Panning:** Middle-mouse button dragging for easy navigation across large workflows.
-- **Zooming:** Mouse wheel support for zooming in and out.
-- **Context Menu:** Right-click on the canvas to quickly add nodes from the registry.
-
-## Example Nodes Included
-- **Math Add:** Adds two numbers.
-- **String Concat:** Combines strings with a separator.
-- **Logic Compare:** Performs greater-than and equality checks.
-- **Async Delay:** Demonstrates non-blocking sleep.
-- **Fruit Selector:** Showcases the dropdown (QComboBox) widget.
-- **Console Print:** Logs input data to the system console and the Log Panel.
-- **Message Node:** Simple string passthrough with widget input.
-
-## Technical Improvements
-- **Node Registry:** Centralized management of builtin and custom JSON-defined nodes.
-- **Robust Serialization:** Workflows can be saved and loaded as JSON, preserving node positions, parameters, and connections.
-- **Unified Port Model:** Handles both builtin Python classes and dynamic JSON definitions consistently.
+## 5. Technical Improvements
+- **Automatic Code Sync:** The Node Builder now automatically updates Python class names and node metadata in the script based on UI changes.
+- **Name Validation:** Node names are automatically sanitized (replacing spaces/special chars with underscores) to ensure safe execution and file naming.
+- **SVG Rendering:** Native support for rendering vector graphics in node headers and the library list.

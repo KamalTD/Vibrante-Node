@@ -2,6 +2,8 @@
     "node_id": "console_print",
     "name": "Console Print",
     "description": "Prints the input data to the console.",
+    "category": "IO",
+    "icon_path": "icons/print.svg",
     "inputs": [
         {"name": "data", "type": "any", "widget_type": "text"}
     ],

@@ -2,6 +2,8 @@
     "node_id": "logic_compare",
     "name": "Logic Compare",
     "description": "Compares two values (a > b).",
+    "category": "Logic",
+    "icon_path": "icons/logic.svg",
     "inputs": [
         {"name": "a", "type": "any"},
         {"name": "b", "type": "any"}
