@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QGraphicsScene, QGraphicsItem, QMenu, QAction
 from PyQt5.QtCore import Qt, QPointF
+from PyQt5.QtGui import QColor, QPen
 from src.core.registry import NodeRegistry
 from src.ui.node_widget import NodeWidget
 from src.ui.canvas.edge import Edge
@@ -10,12 +11,38 @@ from uuid import uuid4, UUID
 class NodeScene(QGraphicsScene):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setBackgroundBrush(Qt.lightGray)
+        self.setBackgroundBrush(QColor(40, 40, 40)) # Darker background
         self.setSceneRect(-5000, -5000, 10000, 10000)
         
         self.nodes = [] # List of NodeWidget
         self.edges = []
         self.active_edge = None
+        self.file_path = None # Track current file
+
+        self.grid_size = 20
+        self.grid_pen = QPen(QColor("#555555"), 0.5)
+
+    def drawBackground(self, painter, rect):
+        super().drawBackground(painter, rect)
+        
+        # Draw custom grid
+        left = int(rect.left())
+        right = int(rect.right())
+        top = int(rect.top())
+        bottom = int(rect.bottom())
+        
+        first_left = left - (left % self.grid_size)
+        first_top = top - (top % self.grid_size)
+        
+        painter.setPen(self.grid_pen)
+        
+        # Draw vertical lines
+        for x in range(first_left, right, self.grid_size):
+            painter.drawLine(x, top, x, bottom)
+            
+        # Draw horizontal lines
+        for y in range(first_top, bottom, self.grid_size):
+            painter.drawLine(left, y, right, y)
 
     def to_workflow_model(self) -> WorkflowModel:
         model = WorkflowModel()
@@ -78,47 +105,51 @@ class NodeScene(QGraphicsScene):
                     self.edges.append(edge)
 
     def mousePressEvent(self, event):
-        if event.button() != Qt.LeftButton:
-            super().mousePressEvent(event)
-            return
-
-        item = self.itemAt(event.scenePos(), self.parent().view.transform())
-        if isinstance(item, PortWidget):
-            # If it's an input and already has a connection, disconnect it and drag it
-            if item.is_input:
-                existing_edge = next((e for e in self.edges if e.to_port == item), None)
-                if existing_edge:
-                    self.edges.remove(existing_edge)
-                    self.active_edge = existing_edge
-                    self.active_edge.to_port = None
-                    # The anchor 'from_port' is always the output port in our logic
-                    # So we just keep it as is and follow the mouse
+        view = self.views()[0] if self.views() else None
+        transform = view.transform() if view else None
+        item = self.itemAt(event.scenePos(), transform) if transform else self.itemAt(event.scenePos())
+        
+        if event.button() == Qt.LeftButton:
+            if isinstance(item, PortWidget):
+                # If it's an input and already has a connection, disconnect it and drag it
+                if item.is_input:
+                    existing_edge = next((e for e in self.edges if e.to_port == item), None)
+                    if existing_edge:
+                        self.edges.remove(existing_edge)
+                        self.active_edge = existing_edge
+                        self.active_edge.to_port = None
+                    else:
+                        self.active_edge = Edge(item)
+                        self.addItem(self.active_edge)
                 else:
                     self.active_edge = Edge(item)
                     self.addItem(self.active_edge)
-            else:
-                self.active_edge = Edge(item)
-                self.addItem(self.active_edge)
-            
-            self.active_edge.set_end_pos(event.scenePos())
-        else:
-            super().mousePressEvent(event)
+                
+                self.active_edge.set_end_pos(event.scenePos())
+                event.accept()
+                return
+            elif isinstance(item, Edge):
+                # Prioritize edge selection
+                item.setSelected(True)
+                super().mousePressEvent(event)
+                return
+
+        super().mousePressEvent(event)
 
     def mouseMoveEvent(self, event):
         if self.active_edge:
             self.active_edge.set_end_pos(event.scenePos())
-        super().mouseMoveEvent(event)
+            event.accept()
+        else:
+            super().mouseMoveEvent(event)
 
     def mouseReleaseEvent(self, event):
-        if event.button() != Qt.LeftButton:
-            super().mouseReleaseEvent(event)
-            return
-
-        if self.active_edge:
-            item = self.itemAt(event.scenePos(), self.parent().view.transform())
+        if self.active_edge and event.button() == Qt.LeftButton:
+            view = self.views()[0] if self.views() else None
+            transform = view.transform() if view else None
+            item = self.itemAt(event.scenePos(), transform) if transform else self.itemAt(event.scenePos())
+            
             if isinstance(item, PortWidget):
-                # Ensure we are connecting different ports on different nodes
-                # and one is input, one is output
                 if item != self.active_edge.from_port and \
                    item.parentItem() != self.active_edge.from_port.parentItem() and \
                    item.is_input != self.active_edge.from_port.is_input:
@@ -126,8 +157,7 @@ class NodeScene(QGraphicsScene):
                     target_input = item if item.is_input else self.active_edge.from_port
                     target_output = item if not item.is_input else self.active_edge.from_port
                     
-                    # ENFORCE SINGLE WIRE PER INPUT:
-                    # Remove any existing connection to this input port
+                    # ENFORCE SINGLE WIRE PER INPUT
                     old_edge = next((e for e in self.edges if e.to_port == target_input), None)
                     if old_edge:
                         self.removeItem(old_edge)
@@ -135,8 +165,8 @@ class NodeScene(QGraphicsScene):
 
                     self.active_edge.from_port = target_output
                     self.active_edge.to_port = target_input
-                        
                     self.active_edge.update_path()
+                    
                     if self.active_edge not in self.edges:
                         self.edges.append(self.active_edge)
                     self.active_edge = None
@@ -144,10 +174,11 @@ class NodeScene(QGraphicsScene):
                     self.removeItem(self.active_edge)
                     self.active_edge = None
             else:
-                # Disconnect if dropped in empty space
                 self.removeItem(self.active_edge)
                 self.active_edge = None
-        super().mouseReleaseEvent(event)
+            event.accept()
+        else:
+            super().mouseReleaseEvent(event)
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Delete:
