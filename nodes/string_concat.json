@@ -1,0 +1,14 @@
+{
+    "node_id": "string_concat",
+    "name": "String Concat",
+    "description": "Concatenates two strings with an optional separator.",
+    "inputs": [
+        {"name": "str1", "type": "string"},
+        {"name": "str2", "type": "string"},
+        {"name": "separator", "type": "string"}
+    ],
+    "outputs": [
+        {"name": "combined", "type": "string"}
+    ],
+    "python_code": "from src.nodes.base import BaseNode\n\nclass StringConcatNode(BaseNode):\n    name = \"String Concat\"\n    \n    def __init__(self):\n        super().__init__()\n        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"str1\", \"string\")\n        self.add_input(\"str2\", \"string\")\n        self.add_input(\"separator\", \"string\")\n        self.add_output(\"combined\", \"string\")\n        # [AUTO-GENERATED-PORTS-END]\n        \n    async def execute(self, inputs):\n        s1 = str(inputs.get(\"str1\", \"\"))\n        s2 = str(inputs.get(\"str2\", \"\"))\n        sep = str(inputs.get(\"separator\", \" \"))\n        \n        res = f\"{s1}{sep}{s2}\"\n        return {\"combined\": res}\n\ndef register_node():\n    return StringConcatNode\n"
+}

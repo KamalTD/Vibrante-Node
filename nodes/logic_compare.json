@@ -1,0 +1,14 @@
+{
+    "node_id": "logic_compare",
+    "name": "Logic Compare",
+    "description": "Compares two values (a > b).",
+    "inputs": [
+        {"name": "a", "type": "any"},
+        {"name": "b", "type": "any"}
+    ],
+    "outputs": [
+        {"name": "greater", "type": "boolean"},
+        {"name": "equal", "type": "boolean"}
+    ],
+    "python_code": "from src.nodes.base import BaseNode\n\nclass LogicCompareNode(BaseNode):\n    name = \"Logic Compare\"\n    \n    def __init__(self):\n        super().__init__()\n        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"a\", \"any\")\n        self.add_input(\"b\", \"any\")\n        self.add_output(\"greater\", \"boolean\")\n        self.add_output(\"equal\", \"boolean\")\n        # [AUTO-GENERATED-PORTS-END]\n        \n    async def execute(self, inputs):\n        a = inputs.get(\"a\")\n        b = inputs.get(\"b\")\n        \n        greater = False\n        equal = False\n        \n        try:\n            greater = a > b\n            equal = a == b\n        except:\n            pass\n            \n        return {\n            \"greater\": greater,\n            \"equal\": equal\n        }\n\ndef register_node():\n    return LogicCompareNode\n"
+}

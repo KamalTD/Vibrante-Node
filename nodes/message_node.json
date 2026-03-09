@@ -1,0 +1,12 @@
+{
+    "node_id": "message_node",
+    "name": "Message Node",
+    "description": "Displays a message and passes it through.",
+    "inputs": [
+        {"name": "msg", "type": "string", "widget_type": "text"}
+    ],
+    "outputs": [
+        {"name": "out", "type": "string"}
+    ],
+    "python_code": "from src.nodes.base import BaseNode\n\nclass MessageNode(BaseNode):\n    name = \"Message Node\"\n    \n    def __init__(self):\n        super().__init__()\n        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"msg\", \"string\", widget_type=\"text\")\n        self.add_output(\"out\", \"string\")\n        # [AUTO-GENERATED-PORTS-END]\n        \n    async def execute(self, inputs):\n        msg = str(inputs.get(\"msg\", \"\"))\n        print(f\"MESSAGE: {msg}\")\n        return {\"out\": msg}\n\ndef register_node():\n    return MessageNode\n"
+}
