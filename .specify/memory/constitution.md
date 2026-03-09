@@ -1,50 +1,63 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+<sync_impact_report>
+- Version change: 1.0.0 → 2.0.0
+- List of modified principles:
+  - Node-First Architecture → Modular Python Architecture (Redefined for Python/Desktop)
+  - JSON-Driven Pipelines → Workflow Serialization & Integrity
+  - Observability by Default → Stability & Sandboxed Execution
+  - Extensible Node System → Scriptable Extensibility
+  - Robust Error Handling → Separation of Concerns (UI/Logic/Engine)
+  - Parallel Execution Support → Performance & Async Execution
+- Added sections: User Experience Consistency, Testing Standards
+- Removed sections: Hybrid Interface (Replaced by Desktop focus)
+- Templates requiring updates:
+  - .specify/templates/plan-template.md (✅ updated)
+  - .specify/templates/spec-template.md (✅ updated)
+  - .specify/templates/tasks-template.md (✅ updated)
+- Follow-up TODOs: Update existing research and plan files to reflect Python transition.
+</sync_impact_report>
+-->
+
+# node_based_app Constitution (Python Edition)
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Modular Python Architecture
+The application must maintain a strict separation between UI (View), Node Logic (Controller), and Execution Engine (Model). All code must utilize Type Hints, comprehensive Docstrings (Google style), and modular structure to ensure long-term maintainability.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### II. Scriptable Extensibility
+Developers MUST be able to add custom nodes via external Python scripts without modifying the core codebase. The system should dynamically discover and load these nodes at runtime.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### III. Stability & Sandboxed Execution
+Invalid node scripts or runtime execution errors MUST be caught and reported gracefully. A single node failure must not crash the entire application or corrupt the UI state. Execution should be sandboxed where possible.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### IV. Workflow Serialization & Integrity
+All workflows must be serializable to a structured format (JSON/YAML). Serialization logic must include versioning and integrity checks to ensure compatibility across application updates.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### V. Performance & Async Execution
+The engine must support efficient dependency resolution and caching of node results. Heavy processing tasks MUST run asynchronously to keep the UI responsive (e.g., using `asyncio` or QThreads).
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+### VI. User Experience Consistency
+Node creation, connection, and parameter editing must follow consistent UI patterns. The UI must provide immediate visual feedback for invalid connections or state errors.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+## Testing Standards
+- **Unit Testing**: Mandatory for all node execution logic, graph validation algorithms, and serialization handlers.
+- **Integration Testing**: Required for engine-to-UI communication and script loading mechanisms.
+- **Validation**: Every connection and parameter change must be validated against a schema before execution.
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
-
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+## Technical Constraints
+- **Language**: Python 3.10+
+- **Type Safety**: `mypy` or `pyright` for static type checking.
+- **UI Framework**: PySide6 (Qt for Python) or similar modern desktop framework.
+- **Validation**: `pydantic` or `cattrs` for data integrity.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
+### Amendment Procedure
+Changes to these principles require a version bump and a Sync Impact Report.
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+### Versioning Policy
+- MAJOR: Language shift (e.g., JS to Python) or fundamental architectural re-alignment.
+- MINOR: New UI patterns or expanded testing requirements.
+- PATCH: Clarifications and wording.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 2.0.0 | **Ratified**: 2026-03-09 | **Last Amended**: 2026-03-09

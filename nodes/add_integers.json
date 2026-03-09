@@ -1,0 +1,28 @@
+{
+    "node_id": "add_integers",
+    "name": "add_integers",
+    "description": "Adds two integers provided via spinboxes.",
+    "inputs": [
+        {
+            "name": "a",
+            "type": "int",
+            "widget_type": "int",
+            "options": null
+        },
+        {
+            "name": "b",
+            "type": "int",
+            "widget_type": "int",
+            "options": null
+        }
+    ],
+    "outputs": [
+        {
+            "name": "result",
+            "type": "int",
+            "widget_type": null,
+            "options": null
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\n\nclass AddIntegersNode(BaseNode):\n    name = \"Add Integers\"\n    \n    def __init__(self):\n        super().__init__()        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"a\", \"int\", widget_type=\"int\")\n        self.add_input(\"b\", \"int\", widget_type=\"int\")\n        self.add_output(\"result\", \"int\")\n        # [AUTO-GENERATED-PORTS-END]\n        \n    async def execute(self, inputs):\n        a = int(inputs.get(\"a\", 0))\n        b = int(inputs.get(\"b\", 0))\n        return {\"result\": a + b}\n\ndef register_node():\n    return AddIntegersNode\n"
+}

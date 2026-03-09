@@ -1,0 +1,5 @@
+PyQt5
+pydantic
+toposort
+pytest
+pytest-qt

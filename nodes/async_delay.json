@@ -1,0 +1,13 @@
+{
+    "node_id": "async_delay",
+    "name": "Async Delay",
+    "description": "Delays execution for a specified number of seconds.",
+    "inputs": [
+        {"name": "input_data", "type": "any"},
+        {"name": "seconds", "type": "number"}
+    ],
+    "outputs": [
+        {"name": "output_data", "type": "any"}
+    ],
+    "python_code": "import asyncio\nfrom src.nodes.base import BaseNode\n\nclass AsyncDelayNode(BaseNode):\n    name = \"Async Delay\"\n    \n    def __init__(self):\n        super().__init__()\n        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"input_data\", \"any\")\n        self.add_input(\"seconds\", \"number\")\n        self.add_output(\"output_data\", \"any\")\n        # [AUTO-GENERATED-PORTS-END]\n        \n    async def execute(self, inputs):\n        data = inputs.get(\"input_data\")\n        delay = float(inputs.get(\"seconds\", 1.0))\n        \n        # Demonstrates async non-blocking behavior\n        await asyncio.sleep(delay)\n        \n        return {\"output_data\": data}\n\ndef register_node():\n    return AsyncDelayNode\n"
+}
