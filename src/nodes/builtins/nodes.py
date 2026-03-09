@@ -1,17 +1,29 @@
 from src.nodes.base import BaseNode, NodeRegistry
+import os
 
 class FileLoaderNode(BaseNode):
     name = "File Loader"
+    category = "IO"
     def __init__(self):
         super().__init__()
-        self.add_output("file_data")
-        self.add_parameter("file_path", str, "")
+        self.add_input("file_path", "string", widget_type="file")
+        self.add_output("file_data", "string")
+        self.icon_path = "icons/folder.svg"
 
     async def execute(self, inputs):
-        return {"file_data": f"Content of {self.get_parameter('file_path')}"}
+        path = inputs.get("file_path")
+        if not path or not os.path.exists(path):
+            return {"file_data": ""}
+        try:
+            with open(path, "r") as f:
+                data = f.read()
+            return {"file_data": data}
+        except:
+            return {"file_data": "Error reading file"}
 
 class DataProcessorNode(BaseNode):
     name = "Data Processor"
+    category = "General"
     def __init__(self):
         super().__init__()
         self.add_input("data_in")
@@ -22,6 +34,7 @@ class DataProcessorNode(BaseNode):
 
 class ConsoleSinkNode(BaseNode):
     name = "Console Sink"
+    category = "IO"
     def __init__(self):
         super().__init__()
         self.add_input("data")

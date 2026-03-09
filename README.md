@@ -1,48 +1,43 @@
 # Vibrante-Node
 
-**Vibrante-Node** is a dynamic, Python-based desktop application for creating and executing visual workflows. Built with PyQt5 and Asyncio, it allows users to design complex processing pipelines through an intuitive node-based interface, with real-time feedback and extensible custom node definitions.
+**Vibrante-Node** is a professional, Python-based desktop application designed for creating and executing complex visual workflows. Combining a powerful node-based canvas with an integrated professional code editor, it empowers users to build modular data pipelines with real-time feedback and high-performance execution.
+
+---
+
+## 🌟 Latest Enhancements
+
+### 💻 Professional Code Editor
+The built-in Node Builder now features a specialized source code editor designed for Python development:
+- **IntelliSense:** Smart code completion suggestions.
+- **Real-time Linting:** Instant error detection as you type.
+- **Advanced Editing:** Auto-indentation, bracket matching, and auto-closing.
+- **Dracula Theme:** High-contrast syntax highlighting for maximum readability.
+
+### 📁 Smart Node Library
+- **Search & Categories:** Quickly find nodes using the real-time search bar or browse by organized categories (Math, Logic, IO, etc.).
+- **Visual Feedback:** High-quality **SVG icons** for every node in the library and on the canvas.
+
+### 🎭 Modern UI & Theming
+- **Dynamic Themes:** Switch between sleek **Dark Mode** and standard **Light Mode** instantly.
+- **Improved Canvas:** Nodes now feature clear port labels and integrated widgets for direct data interaction.
+- **Interactive Toolbar:** Icon-based toolbar with tooltips for intuitive workflow control.
 
 ---
 
 ## 🚀 Key Features
 
-### 🎨 Intuitive Visual Canvas
-- **Bidirectional Connections:** Drag wires from outputs to inputs or vice versa.
-- **Single-Input Enforcement:** Automatically manages logical data flow by allowing only one connection per input port.
-- **Redrag to Disconnect:** Intuitive "pull-away" gesture to break existing connections.
-- **Canvas Navigation:** Smooth Panning (Middle Mouse) and Zooming (Mouse Wheel).
-
-### 🛠️ Interactive Node Widgets
-Nodes aren't just static boxes; they support live UI components for direct data entry:
-- **String Inputs:** Standard Text Boxes and Multiline Text Areas.
-- **Numerical Controls:** Integer and Float Spin Boxes, plus Sliders.
-- **Logic & Selection:** Checkboxes for booleans and Dropdowns (QComboBox) for predefined options.
-
-### ⚡ Powerful Execution Engine
-- **Asynchronous Processing:** Non-blocking background execution ensures the UI remains responsive during long-running tasks.
-- **Topological Sorting:** Smart dependency resolution ensures nodes execute in the correct order.
-- **Data Propagation:** Real-time flow of data from widgets and connected nodes throughout the network.
-- **Visual Status:** Nodes provide immediate visual cues (`Running`, `Success`, `Failed`).
-
-### 📝 Integrated Node Builder
-Create your own nodes using a built-in editor that supports:
-- **Live Port Management:** Add/Remove inputs and outputs via a simple table.
-- **Python Scripting:** Define node logic using standard Python strings.
-- **Widget Configuration:** Configure interactive widgets and dropdown options (CSV) directly.
-
-### 🪵 Fancy Event Log
-A color-coded, dockable log window provides detailed feedback:
-- `[EXEC]` Cyan: Execution status.
-- `[OK]` Green: Data output and success messages.
-- `[ERROR]` Red: Errors and stack traces.
+- **Interactive Node Widgets:** Embed Text Boxes, Sliders, Dropdowns, and File Selectors directly into your nodes.
+- **Advanced Connections:** Bidirectional wire dragging, single-input enforcement, and redrag-to-disconnect.
+- **Asynchronous Engine:** Background execution via `asyncio` keeps the UI responsive during processing.
+- **Fancy Event Log:** Color-coded dockable window for real-time execution tracking and error reporting.
 
 ---
 
-## 📥 Installation
+## 📥 Installation & Setup
 
 ### Prerequisites
-- Python 3.10 or higher
-- `pip` (Python package manager)
+- Python 3.10+
+- `pip`
 
 ### Setup
 1. **Clone the repository:**
@@ -56,48 +51,25 @@ A color-coded, dockable log window provides detailed feedback:
    pip install -r requirements.txt
    ```
 
----
-
-## 🏃 How to Run
-
-Launch the application using the main entry point:
-```bash
-python ./src/main.py
-```
-
----
-
-## 📖 Quick Start & Usage
-
-1. **Add Nodes:** Right-click on the canvas or use the **Library Panel** on the left to add nodes like `Math Add`, `String Concat`, or `Console Print`.
-2. **Configure Data:** Use the widgets embedded directly on the nodes (e.g., type text into a `Message Node` or adjust a slider).
-3. **Connect Nodes:** Click and drag from an output port (right side) to an input port (left side).
-4. **Run Workflow:** Press **F5** or click the **"Run Workflow"** button in the toolbar.
-5. **View Results:** Watch the **Event Log** at the bottom for real-time output and execution steps.
+3. **Run the App:**
+   ```bash
+   python ./src/main.py
+   ```
 
 ---
 
 ## 📂 Project Structure
 
 ```text
+├── icons/              # SVG icon set for the node library
 ├── nodes/              # JSON definitions for custom nodes
 ├── src/
 │   ├── core/           # Engine, Registry, and Graph logic
-│   ├── ui/             # PyQt components (Canvas, Widgets, Panels)
-│   ├── utils/          # Runtime wrappers and syntax highlighters
+│   ├── ui/             # PyQt components (Canvas, Editor, Library)
 │   └── main.py         # Application entry point
 ├── workflows/          # Saved pipeline files (.json)
-└── DOCUMENTATION.md    # Detailed technical feature list
+└── DOCUMENTATION.md    # Full technical feature list
 ```
-
----
-
-## 🤝 Example Nodes Included
-- **Math Add:** Real-time numerical addition.
-- **String Concat:** Join strings with configurable separators.
-- **Fruit Selector:** Demonstrates dropdown widget usage.
-- **Async Delay:** Showcases non-blocking asynchronous execution.
-- **Console Print:** Logs network data to the system console.
 
 ---
 
