@@ -218,6 +218,9 @@ class NodeScene(QGraphicsScene):
             super().contextMenuEvent(event)
 
     def add_node_by_name(self, node_id, pos):
+        if isinstance(pos, tuple):
+            pos = QPointF(pos[0], pos[1])
+            
         node_class = NodeRegistry.get_class(node_id)
         if node_class:
             node_definition = node_class()
@@ -225,5 +228,54 @@ class NodeScene(QGraphicsScene):
             node_widget.setPos(pos)
             self.addItem(node_widget)
             self.nodes.append(node_widget)
+            return node_widget
         else:
             print(f"Warning: Node class for '{node_id}' not found in registry.")
+            return None
+
+    def find_node_by_name(self, name: str):
+        """Find the first node widget with the given name."""
+        for node in self.nodes:
+            if node.node_definition.name == name:
+                return node
+        return None
+
+    def connect_nodes(self, from_node, from_port_name, to_node, to_port_name):
+        """
+        Programmatically connect two nodes.
+        :param from_node: NodeWidget instance or node name (str)
+        :param from_port_name: Name of the output port
+        :param to_node: NodeWidget instance or node name (str)
+        :param to_port_name: Name of the input port
+        """
+        # Resolve nodes if names are provided
+        if isinstance(from_node, str):
+            from_node = self.find_node_by_name(from_node)
+        if isinstance(to_node, str):
+            to_node = self.find_node_by_name(to_node)
+            
+        if not from_node or not to_node:
+            if self.parent() and hasattr(self.parent(), 'log_panel'):
+                self.parent().log_panel.log(f"Connect Error: One or both nodes not found.", "error")
+            return None
+
+        from_port = next((p for p in from_node.output_widgets if p.port_definition.name == from_port_name), None)
+        to_port = next((p for p in to_node.input_widgets if p.port_definition.name == to_port_name), None)
+        
+        if from_port and to_port:
+            # Enforce single wire per input
+            old_edge = next((e for e in self.edges if e.to_port == to_port), None)
+            if old_edge:
+                self.removeItem(old_edge)
+                self.edges.remove(old_edge)
+
+            edge = Edge(from_port, to_port)
+            self.addItem(edge)
+            self.edges.append(edge)
+            edge.update_path()
+            return edge
+        else:
+            if self.parent() and hasattr(self.parent(), 'log_panel'):
+                msg = f"Connect Error: Port not found. (From: {from_port_name}, To: {to_port_name})"
+                self.parent().log_panel.log(msg, "error")
+            return None

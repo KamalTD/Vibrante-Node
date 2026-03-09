@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QLineEdit, QTextEdit, QTableWidget, QTableWidgetItem, QPlainTextEdit, QPushButton, QLabel, QSplitter, QWidget, QMessageBox, QFileDialog
+from PyQt5.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QLineEdit, QTextEdit, QTableWidget, QTableWidgetItem, QPlainTextEdit, QPushButton, QLabel, QSplitter, QWidget, QMessageBox, QFileDialog, QComboBox
 from PyQt5.QtCore import Qt, QTimer
 import os
 import ast
@@ -7,6 +7,9 @@ from src.utils.highlighter import PythonHighlighter
 from src.core.registry import NodeRegistry
 from src.core.models import NodeDefinitionJSON, PortModel
 from src.ui.code_editor import CodeEditor
+
+AVAILABLE_WIDGETS = ["", "text", "text_area", "int", "float", "bool", "dropdown", "slider", "file"]
+AVAILABLE_TYPES = ["any", "int", "float", "string", "bool", "list", "dict"]
 
 class NodeBuilderDialog(QDialog):
     def __init__(self, parent=None, editing_node_id=None):
@@ -174,13 +177,16 @@ def register_node():
         """
         Parses the code using AST and updates the UI tables.
         """
+        if self._is_syncing:
+            return
+            
         self._is_syncing = True
         try:
             code = self.code_edit.toPlainText()
             tree = ast.parse(code)
             
-            inputs = []
-            outputs = []
+            inputs = {} # name -> type
+            outputs = {} # name -> type
             
             class PortVisitor(ast.NodeVisitor):
                 def visit_Call(self, node):
@@ -192,16 +198,22 @@ def register_node():
                                 port_type = node.args[1].value
                             
                             if node.func.attr == "add_input":
-                                inputs.append((port_name, port_type))
+                                inputs[port_name] = port_type
                             else:
-                                outputs.append((port_name, port_type))
+                                outputs[port_name] = port_type
                     self.generic_visit(node)
 
             PortVisitor().visit(tree)
             
-            # Update Tables
-            self._update_table(self.inputs_table, inputs)
-            self._update_table(self.outputs_table, outputs)
+            # Convert to list for comparison and update
+            input_list = [(k, v) for k, v in inputs.items()]
+            output_list = [(k, v) for k, v in outputs.items()]
+            
+            # Check if actual changes happened before updating table to avoid signal storm
+            if self._table_needs_update(self.inputs_table, input_list):
+                self._update_table(self.inputs_table, input_list)
+            if self._table_needs_update(self.outputs_table, output_list):
+                self._update_table(self.outputs_table, output_list)
             
         except Exception as e:
             # Code might be invalid while typing, ignore
@@ -209,7 +221,19 @@ def register_node():
         finally:
             self._is_syncing = False
 
+    def _table_needs_update(self, table, new_ports):
+        if table.rowCount() != len(new_ports):
+            return True
+        for i, (name, p_type) in enumerate(new_ports):
+            name_item = table.item(i, 0)
+            type_combo = table.cellWidget(i, 1)
+            if not name_item or not type_combo: return True
+            if name_item.text() != name or type_combo.currentText() != p_type:
+                return True
+        return False
+
     def _update_table(self, table, ports):
+        table.blockSignals(True)
         table.setRowCount(0)
         for p in ports:
             # p can be (name, type) or PortModel
@@ -221,14 +245,31 @@ def register_node():
             row = table.rowCount()
             table.insertRow(row)
             table.setItem(row, 0, QTableWidgetItem(name))
-            table.setItem(row, 1, QTableWidgetItem(p_type))
-            table.setItem(row, 2, QTableWidgetItem(p_widget or ""))
+            
+            # Use Dropdown for type column
+            type_combo = QComboBox()
+            type_combo.addItems(AVAILABLE_TYPES)
+            type_combo.setCurrentText(p_type or "any")
+            type_combo.currentTextChanged.connect(self._sync_ui_to_code)
+            table.setCellWidget(row, 1, type_combo)
+            
+            # Use Dropdown for widget column
+            widget_combo = QComboBox()
+            widget_combo.addItems(AVAILABLE_WIDGETS)
+            widget_combo.setCurrentText(p_widget or "")
+            widget_combo.currentTextChanged.connect(self._sync_ui_to_code)
+            table.setCellWidget(row, 2, widget_combo)
+            
             table.setItem(row, 3, QTableWidgetItem(p_options))
+        table.blockSignals(False)
 
     def _sync_ui_to_code(self):
         """
         Updates the auto-generated ports section in the code.
         """
+        if self._is_syncing:
+            return
+            
         self._is_syncing = True
         try:
             name = self.name_edit.text().strip() or "MyNode"
@@ -236,24 +277,42 @@ def register_node():
             
             # Prepare injection string
             injection = "        # [AUTO-GENERATED-PORTS-START]\n"
+            seen_inputs = set()
             for row in range(self.inputs_table.rowCount()):
                 item_name = self.inputs_table.item(row, 0)
-                item_type = self.inputs_table.item(row, 1)
-                item_widget = self.inputs_table.item(row, 2)
+                if not item_name: continue
+                
+                port_name = item_name.text().strip()
+                if not port_name or port_name in seen_inputs: continue
+                seen_inputs.add(port_name)
+                
+                type_combo = self.inputs_table.cellWidget(row, 1)
+                item_widget_combo = self.inputs_table.cellWidget(row, 2)
                 item_options = self.inputs_table.item(row, 3)
-                if item_name and item_type:
-                    w_str = f', widget_type="{item_widget.text()}"' if item_widget and item_widget.text() else ""
-                    # Options injection if dropdown
-                    if item_widget and item_widget.text() == "dropdown" and item_options and item_options.text():
-                        opts = [o.strip() for o in item_options.text().split(",")]
-                        w_str += f', options={opts}'
-                    injection += f'        self.add_input("{item_name.text()}", "{item_type.text()}"{w_str})\n'
+                
+                type_str = type_combo.currentText() if type_combo else "any"
+                w_type = item_widget_combo.currentText() if item_widget_combo else ""
+                w_str = f', widget_type="{w_type}"' if w_type else ""
+                
+                # Options injection if dropdown
+                if w_type == "dropdown" and item_options and item_options.text():
+                    opts = [o.strip() for o in item_options.text().split(",")]
+                    w_str += f', options={opts}'
+                injection += f'        self.add_input("{port_name}", "{type_str}"{w_str})\n'
             
+            seen_outputs = set()
             for row in range(self.outputs_table.rowCount()):
                 item_name = self.outputs_table.item(row, 0)
-                item_type = self.outputs_table.item(row, 1)
-                if item_name and item_type:
-                    injection += f'        self.add_output("{item_name.text()}", "{item_type.text()}")\n'
+                if not item_name: continue
+                
+                port_name = item_name.text().strip()
+                if not port_name or port_name in seen_outputs: continue
+                seen_outputs.add(port_name)
+                
+                type_combo = self.outputs_table.cellWidget(row, 1)
+                type_str = type_combo.currentText() if type_combo else "any"
+                injection += f'        self.add_output("{port_name}", "{type_str}")\n'
+                
             injection += "        # [AUTO-GENERATED-PORTS-END]"
 
             # Replace section using markers
@@ -261,11 +320,17 @@ def register_node():
             pattern = r"(\s*)# \[AUTO-GENERATED-PORTS-START\].*?# \[AUTO-GENERATED-PORTS-END\]"
             if re.search(pattern, code, re.DOTALL):
                 code = re.sub(pattern, injection, code, flags=re.DOTALL)
+            else:
+                # If markers are missing, try to inject after __init__
+                init_pattern = r"(def __init__\(self.*?\):.*?super\(\)\.__init__\(.*?\))"
+                if re.search(init_pattern, code, re.DOTALL):
+                    code = re.sub(init_pattern, r"\1\n" + injection, code, flags=re.DOTALL)
             
             # ALSO UPDATE CLASS NAME AND NAME ATTRIBUTE
             # Sanitize name for class
             safe_name = "".join(x for x in name.title() if not x.isspace())
-            if not safe_name.endswith("Node"): safe_name += "Node"
+            if safe_name and not safe_name.endswith("Node"): safe_name += "Node"
+            if not safe_name: safe_name = "MyNode"
             
             # Update class definition
             code = re.sub(r"class \w+\(BaseNode\):", f"class {safe_name}(BaseNode):", code)
@@ -274,23 +339,39 @@ def register_node():
             # Update register_node return
             code = re.sub(r"return \w+", f"return {safe_name}", code)
             
-            self.code_edit.setPlainText(code)
+            if code != self.code_edit.toPlainText():
+                self.code_edit.setPlainText(code)
         finally:
             self._is_syncing = False
 
     def _add_row(self, table):
+        table.blockSignals(True)
         row = table.rowCount()
         table.insertRow(row)
         table.setItem(row, 0, QTableWidgetItem(f"port_{row}"))
-        table.setItem(row, 1, QTableWidgetItem("any"))
-        table.setItem(row, 2, QTableWidgetItem("")) # Widget column
+        
+        # Add type combo
+        type_combo = QComboBox()
+        type_combo.addItems(AVAILABLE_TYPES)
+        type_combo.currentTextChanged.connect(self._sync_ui_to_code)
+        table.setCellWidget(row, 1, type_combo)
+        
+        # Add widget combo
+        widget_combo = QComboBox()
+        widget_combo.addItems(AVAILABLE_WIDGETS)
+        widget_combo.currentTextChanged.connect(self._sync_ui_to_code)
+        table.setCellWidget(row, 2, widget_combo)
+        
         table.setItem(row, 3, QTableWidgetItem("")) # Options column
+        table.blockSignals(False)
         self._sync_ui_to_code()
 
     def _remove_row(self, table):
         row = table.currentRow()
         if row >= 0:
+            table.blockSignals(True)
             table.removeRow(row)
+            table.blockSignals(False)
             self._sync_ui_to_code()
 
     def test_node(self):
@@ -303,24 +384,44 @@ def register_node():
             QMessageBox.critical(self, "Syntax Error", str(e))
 
     def save_node(self):
+        # Force a final sync from UI to code to ensure consistency
+        self._sync_ui_to_code()
+        
         node_id = self.name_edit.text().strip()
         if not node_id:
             QMessageBox.warning(self, "Error", "Node ID/Name is required.")
             return
             
         inputs = []
+        seen_inputs = set()
         for r in range(self.inputs_table.rowCount()):
-            name = self.inputs_table.item(r, 0).text()
-            p_type = self.inputs_table.item(r, 1).text()
-            p_widget = self.inputs_table.item(r, 2).text() if self.inputs_table.item(r, 2) else None
+            name_item = self.inputs_table.item(r, 0)
+            if not name_item: continue
+            name = name_item.text().strip()
+            if not name or name in seen_inputs: continue
+            seen_inputs.add(name)
+            
+            type_combo = self.inputs_table.cellWidget(r, 1)
+            p_type = type_combo.currentText() if type_combo else "any"
+            
+            widget_combo = self.inputs_table.cellWidget(r, 2)
+            p_widget = widget_combo.currentText() if widget_combo else None
+            
             p_options_str = self.inputs_table.item(r, 3).text() if self.inputs_table.item(r, 3) else ""
             p_options = [o.strip() for o in p_options_str.split(",")] if p_options_str else None
             inputs.append(PortModel(name=name, type=p_type, widget_type=p_widget or None, options=p_options))
             
         outputs = []
+        seen_outputs = set()
         for r in range(self.outputs_table.rowCount()):
-            name = self.outputs_table.item(r, 0).text()
-            p_type = self.outputs_table.item(r, 1).text()
+            name_item = self.outputs_table.item(r, 0)
+            if not name_item: continue
+            name = name_item.text().strip()
+            if not name or name in seen_outputs: continue
+            seen_outputs.add(name)
+            
+            type_combo = self.outputs_table.cellWidget(r, 1)
+            p_type = type_combo.currentText() if type_combo else "any"
             outputs.append(PortModel(name=name, type=p_type))
 
         definition = NodeDefinitionJSON(
