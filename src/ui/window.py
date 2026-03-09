@@ -9,6 +9,7 @@ from src.ui.canvas.view import NodeView
 from src.ui.node_builder import NodeBuilderDialog
 from src.ui.library_panel import LibraryPanel
 from src.ui.log_panel import LogPanel
+from src.ui.scripting_console import ScriptingConsole
 from src.core.models import WorkflowModel
 from src.core.registry import NodeRegistry
 from src.core.engine import NetworkExecutor
@@ -39,6 +40,10 @@ class MainWindow(QMainWindow):
         self.log_panel = LogPanel(self)
         self.addDockWidget(Qt.BottomDockWidgetArea, self.log_panel)
         self.log_panel.log("Application started", "info")
+        
+        self.scripting_console = ScriptingConsole(self)
+        self.addDockWidget(Qt.BottomDockWidgetArea, self.scripting_console)
+        self.scripting_console.hide() # Hidden by default
         
         # Connect Library Signals
         self.library_panel.node_selected.connect(self._on_node_selected)
@@ -107,6 +112,10 @@ class MainWindow(QMainWindow):
         toggle_log = self.log_panel.toggleViewAction()
         toggle_log.setText("Show/Hide Event Log")
         window_menu.addAction(toggle_log)
+        
+        toggle_script = self.scripting_console.toggleViewAction()
+        toggle_script.setText("Show/Hide Scripting Console")
+        window_menu.addAction(toggle_script)
 
         # Themes Menu
         theme_menu = menubar.addMenu('&Themes')

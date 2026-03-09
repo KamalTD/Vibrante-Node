@@ -8,16 +8,16 @@ def test_workflow_serialization():
     n1_id = uuid4()
     n2_id = uuid4()
     
-    gm.add_node(NodeInstanceModel(id=n1_id, definition_name="SourceNode", position=(0,0), parameters={"val": 10}))
-    gm.add_node(NodeInstanceModel(id=n2_id, definition_name="SinkNode", position=(200,0)))
+    gm.add_node(NodeInstanceModel(instance_id=n1_id, node_id="SourceNode", position=(0,0), parameters={"val": 10}))
+    gm.add_node(NodeInstanceModel(instance_id=n2_id, node_id="SinkNode", position=(200,0)))
     
     gm.add_connection(ConnectionModel(from_node=n1_id, from_port="out", to_node=n2_id, to_port="in"))
     
     model = gm.to_model()
-    json_data = model.json()
+    json_data = model.model_dump_json()
     
     # Deserialize
-    new_model = WorkflowModel.parse_raw(json_data)
+    new_model = WorkflowModel.model_validate_json(json_data)
     assert len(new_model.nodes) == 2
     assert len(new_model.connections) == 1
     

@@ -185,6 +185,24 @@ class CodeEditor(QPlainTextEdit):
                 event.ignore()
                 return
 
+        # Smart Indentation on Enter
+        if event.key() in (Qt.Key_Return, Qt.Key_Enter):
+            cursor = self.textCursor()
+            block = cursor.block()
+            text = block.text().rstrip()
+            indent = ""
+            for char in text:
+                if char == ' ': indent += " "
+                elif char == '\t': indent += "\t"
+                else: break
+            
+            if text.endswith(":"):
+                indent += "    "
+            
+            super().keyPressEvent(event)
+            self.insertPlainText(indent)
+            return
+
         cursor = self.textCursor()
         
         # Block Indent
@@ -201,8 +219,8 @@ class CodeEditor(QPlainTextEdit):
                     if not cursor.movePosition(QTextCursor.NextBlock): break
                     end += 4
                 return
-            elif not event.modifiers() == Qt.NoModifier:
-                super().keyPressEvent(event)
+            elif event.modifiers() == Qt.NoModifier:
+                self.insertPlainText("    ") # Soft tab
                 return
 
         # Auto-closing
@@ -216,8 +234,10 @@ class CodeEditor(QPlainTextEdit):
         super().keyPressEvent(event)
 
         # Trigger Completer
+        ctrl_space = (event.modifiers() == Qt.ControlModifier and event.key() == Qt.Key_Space)
         completion_prefix = self.text_under_cursor()
-        if not event.text() or len(completion_prefix) < 1:
+        
+        if (not event.text() and not ctrl_space) or (len(completion_prefix) < 1 and not ctrl_space):
             self.completer.popup().hide()
             return
 
@@ -228,6 +248,9 @@ class CodeEditor(QPlainTextEdit):
         cr = self.cursorRect()
         cr.setWidth(self.completer.popup().sizeHintForColumn(0) + self.completer.popup().verticalScrollBar().sizeHint().width())
         self.completer.complete(cr)
+
+    def set_completer_list(self, words):
+        self.completer.setModel(QStringListModel(words, self.completer))
 
     def wheelEvent(self, event):
         if event.modifiers() == Qt.ControlModifier:

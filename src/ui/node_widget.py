@@ -166,6 +166,33 @@ class NodeWidget(QGraphicsItem):
             proxy.setPos(20, y_pos - 10) # Offset slightly from port
             self.param_widgets[p_model.name] = proxy
 
+    def set_parameter(self, name, value):
+        """Programmatically set a parameter and update its UI widget."""
+        self.node_definition.parameters[name] = value
+        
+        if name in self.param_widgets:
+            proxy = self.param_widgets[name]
+            w = proxy.widget()
+            
+            # Update the widget based on its type
+            from PyQt5.QtWidgets import QLineEdit, QSpinBox, QDoubleSpinBox, QCheckBox, QComboBox, QSlider, QTextEdit
+            
+            if isinstance(w, QLineEdit):
+                w.setText(str(value))
+            elif isinstance(w, QSpinBox) or isinstance(w, QDoubleSpinBox) or isinstance(w, QSlider):
+                w.setValue(value)
+            elif isinstance(w, QCheckBox):
+                w.setChecked(bool(value))
+            elif isinstance(w, QComboBox):
+                w.setCurrentText(str(value))
+            elif isinstance(w, QTextEdit):
+                w.setPlainText(str(value))
+            elif hasattr(w, "layout"): # Complex widget like 'file'
+                # Find the line edit inside the layout
+                line_edit = w.findChild(QLineEdit)
+                if line_edit:
+                    line_edit.setText(str(value))
+
     def _update_param(self, name, value):
         self.node_definition.parameters[name] = value
 
