@@ -14,7 +14,7 @@ class TestNode(BaseNode):
         self.add_input("in")
         self.add_output("out")
     async def execute(self, inputs):
-        return {"out": inputs.get("in", 0) + 1}
+        return {"out": (inputs.get("in") or 0) + 1}
 
 @pytest.fixture
 def setup_nodes():

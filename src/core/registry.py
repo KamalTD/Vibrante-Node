@@ -8,11 +8,12 @@ from src.nodes.base import BaseNode
 class NodeRegistry:
     _definitions: Dict[str, NodeDefinitionJSON] = {}
     _classes: Dict[str, Type[BaseNode]] = {}
+    last_error: Optional[str] = None
 
     @classmethod
     def load_all(cls, directory: str):
         """
-        Scans directory for .json files and registers them.
+        Scans directory and subdirectories for .json files and registers them.
         """
         # First register builtins
         cls.register_builtins()
@@ -21,10 +22,11 @@ class NodeRegistry:
             os.makedirs(directory)
             return
 
-        for filename in os.listdir(directory):
-            if filename.endswith(".json"):
-                path = os.path.join(directory, filename)
-                cls.load_node(path)
+        for root, _, filenames in os.walk(directory):
+            for filename in filenames:
+                if filename.endswith(".json"):
+                    path = os.path.join(root, filename)
+                    cls.load_node(path)
 
     @classmethod
     def register_builtins(cls):
@@ -54,13 +56,15 @@ class NodeRegistry:
 
     @classmethod
     def load_node(cls, file_path: str) -> bool:
+        cls.last_error = None
         try:
             with open(file_path, "r") as f:
                 data = json.load(f)
             definition = NodeDefinitionJSON.model_validate(data)
             return cls.register_definition(definition)
         except (json.JSONDecodeError, ValidationError, Exception) as e:
-            print(f"Error loading node from {file_path}: {e}")
+            cls.last_error = f"Error loading node from {file_path}: {e}"
+            print(cls.last_error)
             return False
 
     @classmethod
@@ -72,18 +76,47 @@ class NodeRegistry:
         try:
             namespace = {}
             exec(definition.python_code, namespace)
+            
+            node_class = None
             if 'register_node' in namespace:
                 node_class = namespace['register_node']()
-                if issubclass(node_class, BaseNode):
-                    node_class.name = definition.name
-                    node_class.node_id = definition.node_id
-                    node_class.category = definition.category
-                    node_class.icon_path = definition.icon_path # Set icon_path
-                    cls._classes[definition.node_id] = node_class
-                    return True
+            elif 'execute' in namespace:
+                # Simplified format: just execute function
+                class DynamicNode(BaseNode):
+                    def __init__(self):
+                        super().__init__()
+                        # Dynamically add ports from definition
+                        for inp in definition.inputs:
+                            self.add_input(inp.name, inp.type, inp.widget_type, inp.options)
+                        for out in definition.outputs:
+                            self.add_output(out.name, out.type)
+                            
+                    async def execute(self, inputs):
+                        # Call the execute function from namespace
+                        return await namespace['execute'](self, inputs)
+                
+                # Assign a name to the dynamic class for better debugging
+                class_name = "".join(x for x in definition.name.title() if not x.isspace())
+                if not class_name.endswith("Node"): class_name += "Node"
+                DynamicNode.__name__ = class_name
+                node_class = DynamicNode
+            
+            if node_class and issubclass(node_class, BaseNode):
+                # Set class attributes
+                node_class.name = definition.name
+                node_class.node_id = definition.node_id
+                node_class.category = definition.category
+                node_class.description = definition.description
+                node_class.icon_path = definition.icon_path
+                
+                cls._classes[definition.node_id] = node_class
+                return True
+            
+            cls.last_error = f"Definition '{definition.node_id}' does not have 'register_node' or 'execute' function."
             return False
         except Exception as e:
-            print(f"Error generating class for {definition.node_id}: {e}")
+            cls.last_error = f"Error generating class for {definition.node_id}: {e}"
+            print(cls.last_error)
             return False
 
     @classmethod

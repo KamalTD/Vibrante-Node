@@ -54,9 +54,20 @@ class NodeBuilderDialog(QDialog):
         config_layout.addWidget(self.desc_edit)
 
         config_layout.addWidget(QLabel("Category:"))
-        self.category_edit = QLineEdit()
-        self.category_edit.setPlaceholderText("e.g. Math, String, Logic")
-        config_layout.addWidget(self.category_edit)
+        from src.utils.color_manager import ColorManager
+        from PyQt5.QtGui import QPixmap, QIcon
+        self.category_combo = QComboBox()
+        self.category_combo.setEditable(True)
+        
+        # Populate with existing categories and their colors
+        categories = ColorManager.get_all_categories(NodeRegistry._definitions)
+        for cat in categories:
+            color = ColorManager.get_category_color(cat)
+            pixmap = QPixmap(16, 16)
+            pixmap.fill(color)
+            self.category_combo.addItem(QIcon(pixmap), cat)
+            
+        config_layout.addWidget(self.category_combo)
 
         config_layout.addWidget(QLabel("Icon Path:"))
         icon_layout = QHBoxLayout()
@@ -440,7 +451,7 @@ def register_node():
             node_id=node_id,
             name=node_id,
             description=self.desc_edit.toPlainText(),
-            category=self.category_edit.text() or "General",
+            category=self.category_combo.currentText() or "General",
             icon_path=self.icon_edit.text() or None,
             inputs=inputs,
             outputs=outputs,
@@ -467,7 +478,7 @@ def register_node():
             if defn:
                 self.name_edit.setText(defn.node_id)
                 self.desc_edit.setPlainText(defn.description)
-                self.category_edit.setText(defn.category)
+                self.category_combo.setCurrentText(defn.category or "General")
                 self.icon_edit.setText(defn.icon_path or "")
                 self._update_table(self.inputs_table, defn.inputs)
                 self._update_table(self.outputs_table, defn.outputs)

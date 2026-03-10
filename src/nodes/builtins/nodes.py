@@ -29,6 +29,7 @@ class DataProcessorNode(BaseNode):
         super().__init__()
         self.add_input("data_in")
         self.add_output("data_out")
+        self.icon_path = "icons/gear.svg"
 
     async def execute(self, inputs):
         return {"data_out": f"Processed: {inputs.get('data_in')}"}
@@ -39,6 +40,7 @@ class ConsoleSinkNode(BaseNode):
     def __init__(self):
         super().__init__()
         self.add_input("data")
+        self.icon_path = "icons/terminal.svg"
 
     async def execute(self, inputs):
         print(f"SINK: {inputs.get('data')}")

@@ -1,0 +1,14 @@
+{
+  "node_id": "example_line_counter",
+  "name": "Line Counter",
+  "description": "Counts the number of lines in a text string.",
+  "category": "String",
+  "inputs": [
+    { "name": "text", "type": "string", "widget_type": "text_area" }
+  ],
+  "outputs": [
+    { "name": "count", "type": "int" }
+  ],
+  "icon_path": "icons/hash.svg",
+  "python_code": "from src.nodes.base import BaseNode\n\nclass LineCounterNode(BaseNode):\n    name = \"Line Counter\"\n    \n    def __init__(self):\n        super().__init__()\n        self.icon_path = \"icons/hash.svg\"\n        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"text\", \"string\", widget_type=\"text_area\")\n        self.add_output(\"count\", \"int\")\n        # [AUTO-GENERATED-PORTS-END]\n        \n    async def execute(self, inputs):\n        text = inputs.get('text', '')\n        return {'count': len(str(text).splitlines())}\n\ndef register_node():\n    return LineCounterNode\n"
+}

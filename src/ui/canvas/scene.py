@@ -144,6 +144,7 @@ class NodeScene(QGraphicsScene):
         view = self.views()[0] if self.views() else None
         transform = view.transform() if view else None
         item = self.itemAt(event.scenePos(), transform) if transform else self.itemAt(event.scenePos())
+        is_dark = self.backgroundBrush().color().lightness() < 128
         if event.button() == Qt.LeftButton:
             if isinstance(item, PortWidget):
                 if item.is_input:
@@ -157,9 +158,11 @@ class NodeScene(QGraphicsScene):
                         self._trigger_unplug(from_p, to_p)
                     else:
                         self.active_edge = Edge(item)
+                        self.active_edge.apply_theme(is_dark)
                         self.addItem(self.active_edge)
                 else:
                     self.active_edge = Edge(item)
+                    self.active_edge.apply_theme(is_dark)
                     self.addItem(self.active_edge)
                 self.active_edge.set_end_pos(event.scenePos())
                 event.accept()
@@ -265,6 +268,11 @@ class NodeScene(QGraphicsScene):
             node_widget.setPos(pos)
             self.addItem(node_widget)
             self.nodes.append(node_widget)
+            
+            # Inherit theme
+            is_dark = self.backgroundBrush().color().lightness() < 128
+            node_widget.apply_theme(is_dark)
+            
             # Ensure states are initialized correctly (all enabled)
             node_widget._refresh_widget_states()
             return node_widget
@@ -290,9 +298,25 @@ class NodeScene(QGraphicsScene):
                 self.edges.remove(old_edge)
                 self._trigger_unplug(from_p, to_p)
             edge = Edge(from_port, to_port)
+            is_dark = self.backgroundBrush().color().lightness() < 128
+            edge.apply_theme(is_dark)
             self.addItem(edge)
             self.edges.append(edge)
             edge.update_path()
             self._trigger_plug(from_port, to_port)
             return edge
         return None
+
+    def apply_theme(self, is_dark=True):
+        if is_dark:
+            self.setBackgroundBrush(QColor(40, 40, 40))
+            self.grid_pen = QPen(QColor("#555555"), 0.5)
+        else:
+            self.setBackgroundBrush(QColor(255, 255, 255))
+            self.grid_pen = QPen(QColor("#d0d0d0"), 0.5)
+        
+        for node in self.nodes:
+            node.apply_theme(is_dark)
+        for edge in self.edges:
+            edge.apply_theme(is_dark)
+        self.update()

@@ -8,12 +8,19 @@ class Edge(QGraphicsPathItem):
         self.from_port = from_port
         self.to_port = to_port
         self.pos_end = QPointF(0, 0)
+        self.is_dark = True
         
         self.setZValue(-1) # Draw edges behind nodes
         self.setFlag(QGraphicsPathItem.ItemIsSelectable)
-        self.setPen(QPen(Qt.white, 2))
+        self.apply_theme(True)
         
         self.update_path()
+
+    def apply_theme(self, is_dark=True):
+        self.is_dark = is_dark
+        color = Qt.white if is_dark else Qt.black
+        self.setPen(QPen(color, 2))
+        self.update()
 
     def update_path(self):
         """

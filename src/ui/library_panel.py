@@ -35,6 +35,28 @@ class LibraryPanel(QDockWidget):
         self.setWidget(self.container)
         
         self.refresh()
+        self.apply_theme(is_dark=True) # Default to dark theme as MainWindow does
+
+    def apply_theme(self, is_dark=True):
+        if is_dark:
+            # Dark theme: background #2b2b2b (matches window background) or #3c3f41 (dark gray)
+            # Text: white/light-gray
+            self.container.setStyleSheet("background-color: #2b2b2b; color: white;")
+            self.tree_widget.setStyleSheet("""
+                QTreeWidget { background-color: #3c3f41; color: #ffffff; border: 1px solid #2b2b2b; }
+                QTreeWidget::item:hover { background-color: #4b4d4d; }
+                QTreeWidget::item:selected { background-color: #5c5e5e; }
+            """)
+            self.search_bar.setStyleSheet("background-color: #3c3f41; color: white; border: 1px solid #2b2b2b;")
+        else:
+            # Light theme: background light gray (#f0f0f0), text black
+            self.container.setStyleSheet("background-color: #f0f0f0; color: black;")
+            self.tree_widget.setStyleSheet("""
+                QTreeWidget { background-color: #ffffff; color: #000000; border: 1px solid #cccccc; }
+                QTreeWidget::item:hover { background-color: #e0e0e0; }
+                QTreeWidget::item:selected { background-color: #d0d0d0; }
+            """)
+            self.search_bar.setStyleSheet("background-color: #ffffff; color: black; border: 1px solid #cccccc;")
 
     def refresh(self):
         self.tree_widget.clear()

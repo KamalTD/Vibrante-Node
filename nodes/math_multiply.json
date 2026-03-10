@@ -1,0 +1,15 @@
+{
+  "node_id": "example_math_multiply",
+  "name": "Math Multiply",
+  "description": "Multiplies two numbers.",
+  "category": "Math",
+  "inputs": [
+    { "name": "a", "type": "float", "widget_type": "float" },
+    { "name": "b", "type": "float", "widget_type": "float" }
+  ],
+  "outputs": [
+    { "name": "result", "type": "float" }
+  ],
+  "icon_path": "icons/multiply.svg",
+  "python_code": "from src.nodes.base import BaseNode\n\nclass MathMultiplyNode(BaseNode):\n    name = \"Math Multiply\"\n    description = \"Multiplies two numbers.\"\n    \n    def __init__(self):\n        super().__init__()\n        self.icon_path = \"icons/multiply.svg\"\n        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"a\", \"float\", widget_type=\"float\")\n        self.add_input(\"b\", \"float\", widget_type=\"float\")\n        self.add_output(\"result\", \"float\")\n        # [AUTO-GENERATED-PORTS-END]\n        \n    async def execute(self, inputs):\n        a_val = inputs.get('a')\n        b_val = inputs.get('b')\n        a = float(a_val) if a_val is not None else 0.0\n        b = float(b_val) if b_val is not None else 0.0\n        return {'result': a * b}\n\ndef register_node():\n    return MathMultiplyNode\n"
+}
