@@ -142,9 +142,21 @@ class {name}(BaseNode):
         # [AUTO-GENERATED-PORTS-START]
         # [AUTO-GENERATED-PORTS-END]
         
+    def on_plug_sync(self, port_name, is_input, other_node, other_port_name):
+        # Access the other node's port data using the specific other_port_name
+        data = other_node.get_parameter(other_port_name)
+        self.log_info(f"Connected to {{other_node.name}} port '{{other_port_name}}'. Data: {{data}}")
+
+    def on_unplug_sync(self, port_name, is_input):
+        self.log_info(f"Disconnected {{port_name}}")
+
+    async def on_plug(self, port_name, is_input, other_node, other_port_name):
+        pass
+
+    async def on_unplug(self, port_name, is_input):
+        pass
+
     async def execute(self, inputs):
-        # inputs is a dict: {{port_name: value}}
-        # return a dict: {{port_name: value}}
         return {{}}
 
 def register_node():

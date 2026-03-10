@@ -1,14 +1,24 @@
 {
     "node_id": "message_node",
-    "name": "Message Node",
+    "name": "message_node",
     "description": "Displays a message and passes it through.",
     "category": "String",
     "icon_path": "icons/message.svg",
     "inputs": [
-        {"name": "msg", "type": "string", "widget_type": "text"}
+        {
+            "name": "msg",
+            "type": "string",
+            "widget_type": "text",
+            "options": null
+        }
     ],
     "outputs": [
-        {"name": "out", "type": "string"}
+        {
+            "name": "out",
+            "type": "string",
+            "widget_type": null,
+            "options": null
+        }
     ],
-    "python_code": "from src.nodes.base import BaseNode\n\nclass MessageNode(BaseNode):\n    name = \"Message Node\"\n    \n    def __init__(self):\n        super().__init__()\n        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"msg\", \"string\", widget_type=\"text\")\n        self.add_output(\"out\", \"string\")\n        # [AUTO-GENERATED-PORTS-END]\n        \n    async def execute(self, inputs):\n        msg = str(inputs.get(\"msg\", \"\"))\n        print(f\"MESSAGE: {msg}\")\n        return {\"out\": msg}\n\ndef register_node():\n    return MessageNode\n"
+    "python_code": "from src.nodes.base import BaseNode\n\nclass Message_Node(BaseNode):\n    name = \"message_node\"\n    \n    def __init__(self):\n        super().__init__()        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"msg\", \"string\", widget_type=\"text\")\n        self.add_output(\"out\", \"string\")\n        # [AUTO-GENERATED-PORTS-END]\n        \n    def on_parameter_changed(self, name, value):\n        if name == \"msg\":\n            self.parameters[\"out\"] = value\n    def on_unplug_sync(self, port_name, is_input):\n        self.log_info(f\"Disconnected {port_name}\")\n\n       \n    async def execute(self, inputs):\n        msg = str(inputs.get(\"msg\", \"\"))\n        print(f\"MESSAGE: {msg}\")\n        return {\"out\": msg}\n\ndef register_node():\n    return Message_Node\n"
 }

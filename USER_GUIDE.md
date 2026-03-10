@@ -8,15 +8,16 @@ Welcome to Vibrante-Node! This guide will help you get started with building and
 -   **Main Canvas (Center)**: Your workspace.
     -   **Pan**: Middle-mouse button drag.
     -   **Zoom**: Mouse wheel.
-    -   **Delete**: Select an item and press the `Delete` key or use the Trash icon in the toolbar.
--   **Event Log (Bottom)**: Real-time feedback on execution, outputs, and errors.
+    -   **Delete**: Select an item and press the `Delete` key.
+-   **Event Log (Bottom)**: Real-time feedback on execution, outputs, and connection events.
 
 ## 🔗 Building a Workflow
 
 1.  **Add Nodes**: Use the library or right-click on the canvas to add nodes.
-2.  **Connect Ports**: Click and drag from an **Output Port** (right side of a node) to an **Input Port** (left side of another node).
-    -   *Note: Input ports only accept one wire. Connecting a new wire will replace the old one.*
-3.  **Configure Data**: Many nodes have built-in widgets like sliders, text boxes, or dropdowns. You can type data directly into these on the canvas.
+2.  **Connect Ports**: Click and drag from an **Output Port** (right side) to an **Input Port** (left side).
+    -   *Live Sync*: When you connect two nodes, the data from the source is instantly pushed to the destination.
+3.  **Configure Data**: Interact with widgets (text boxes, sliders, etc.) directly on the node.
+    -   *Reactive Flow*: Destination widgets are disabled when connected but will **update live** as you change the source node's values.
 4.  **Run**: Click the **Play** icon in the toolbar or press `F5`.
 
 ## 🛠️ Using the Node Builder
@@ -25,19 +26,20 @@ Vibrante-Node allows you to create your own nodes with custom Python logic:
 
 1.  **Open Builder**: Click the "New Node" icon in the toolbar.
 2.  **Configure UI**:
-    -   Add **Inputs** and **Outputs** in the tables.
-    -   Choose a **Widget Type** (e.g., `slider`, `dropdown`) if you want a UI control on the node.
-    -   For dropdowns, enter comma-separated values in the **Options** column.
-3.  **Write Logic**: Use the built-in code editor on the right.
-    -   The `execute` function receives an `inputs` dictionary.
-    -   It must return a dictionary where keys match your **Output** names.
-4.  **Save**: Click "Save & Register". Your node will appear in the library immediately.
+    -   Add **Inputs** and **Outputs** using the tables.
+    -   Select **Type** and **Widget** using the interactive dropdowns.
+3.  **Write Logic**:
+    -   `on_plug_sync`: Use this to react immediately to connections (e.g., `other_node.get_parameter(other_port_name)`).
+    -   `on_parameter_changed`: Use this to update outputs reactively as the user types.
+    -   `execute`: The main logic run when the workflow executes.
+4.  **Save**: Click "Save & Register". Your node is now ready to use.
 
 ## 🌓 Themes
 
-You can switch between **Dark** and **Light** modes at any time using the **Themes** menu. Themes apply globally across all windows.
+You can switch between **Dark** and **Light** modes at any time using the **Themes** menu. Themes apply globally.
 
 ## 🪵 Troubleshooting
 
--   **Node is Red**: The node failed during execution. Check the **Event Log** at the bottom for the specific error message and line number.
--   **Python Errors**: If your custom node has a syntax error, the Node Builder code editor will highlight the line in red in the gutter.
+-   **Node is Red**: The node failed during execution. Check the **Event Log** for the error.
+-   **Widgets are Disabled**: This is normal! Widgets are disabled when they are receiving data from another node via a wire.
+-   **Crashes**: If the app closes, check `crash.log` in the project folder for details.
