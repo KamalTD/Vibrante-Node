@@ -1,0 +1,68 @@
+{
+    "nodes": [
+        {
+            "instance_id": "d2d9a498-d8cc-4ca6-a020-6584cf7822e4",
+            "node_id": "console_print",
+            "position": [
+                10.5,
+                -128.0
+            ],
+            "parameters": {
+                "data": null,
+                "out": null
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "028440d7-a497-48f7-885c-94eb2031d582",
+            "node_id": "example_random_float",
+            "position": [
+                -359.0,
+                -65.0
+            ],
+            "parameters": {
+                "min": null,
+                "max": 50.0,
+                "value": null
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "3835364b-9905-4c48-b676-c306d7c335f1",
+            "node_id": "add_integers",
+            "position": [
+                14.279200000000003,
+                56.59600000000003
+            ],
+            "parameters": {
+                "a": null,
+                "b": null,
+                "result": null
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "891aa9df-a157-440b-a7ed-6982f687cdb5",
+            "node_id": "console_print",
+            "position": [
+                281.25,
+                -118.75
+            ],
+            "parameters": {
+                "data": null,
+                "out": null
+            },
+            "state": "idle"
+        }
+    ],
+    "connections": [
+        {
+            "id": "62590df0-1929-4c8c-beab-8e81a5bed3a2",
+            "from_node": "028440d7-a497-48f7-885c-94eb2031d582",
+            "from_port": "value",
+            "to_node": "d2d9a498-d8cc-4ca6-a020-6584cf7822e4",
+            "to_port": "data"
+        }
+    ],
+    "metadata": {}
+}

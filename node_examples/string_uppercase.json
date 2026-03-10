@@ -1,0 +1,14 @@
+{
+  "node_id": "example_string_uppercase",
+  "name": "String Uppercase",
+  "description": "Converts input string to uppercase.",
+  "category": "String",
+  "inputs": [
+    { "name": "text", "type": "string", "widget_type": "text" }
+  ],
+  "outputs": [
+    { "name": "result", "type": "string" }
+  ],
+  "icon_path": "icons/uppercase.svg",
+  "python_code": "from src.nodes.base import BaseNode\n\nclass StringUppercaseNode(BaseNode):\n    name = \"String Uppercase\"\n    \n    def __init__(self):\n        super().__init__()\n        self.icon_path = \"icons/uppercase.svg\"\n        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"text\", \"string\", widget_type=\"text\")\n        self.add_output(\"result\", \"string\")\n        # [AUTO-GENERATED-PORTS-END]\n        \n    async def execute(self, inputs):\n        text = inputs.get('text', '')\n        return {'result': str(text).upper()}\n\ndef register_node():\n    return StringUppercaseNode\n"
+}

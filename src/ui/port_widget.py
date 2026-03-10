@@ -3,6 +3,20 @@ from PyQt5.QtCore import Qt, QPointF
 from PyQt5.QtGui import QColor, QBrush, QPen
 
 class PortWidget(QGraphicsEllipseItem):
+    # Map data types to colors
+    TYPE_COLORS = {
+        "int": QColor(0, 255, 255),      # Cyan
+        "float": QColor(255, 255, 0),    # Yellow
+        "number": QColor(255, 255, 0),   # Yellow
+        "string": QColor(189, 147, 249), # Purple
+        "bool": QColor(80, 250, 123),    # Green
+        "boolean": QColor(80, 250, 123), # Green
+        "list": QColor(255, 184, 108),   # Orange
+        "dict": QColor(255, 85, 85),     # Red
+        "any": QColor(139, 233, 253),    # Light Blue/Cyan
+        "default": QColor(170, 170, 170) # Gray
+    }
+
     def __init__(self, port_definition, is_input=True, parent=None):
         super().__init__(parent)
         self.port_definition = port_definition
@@ -10,11 +24,24 @@ class PortWidget(QGraphicsEllipseItem):
         self.radius = 6
         self.setRect(-self.radius, -self.radius, self.radius * 2, self.radius * 2)
         
+        self.setAcceptHoverEvents(True)
         self._init_ui()
 
     def _init_ui(self):
-        self.setBrush(QBrush(QColor(100, 255, 100) if self.is_input else QColor(255, 100, 100)))
+        # Color based on type (handling both PortModel.type and Port.data_type)
+        data_type = "any"
+        if hasattr(self.port_definition, "type"):
+            data_type = self.port_definition.type.lower()
+        elif hasattr(self.port_definition, "data_type"):
+            data_type = self.port_definition.data_type.lower()
+            
+        color = self.TYPE_COLORS.get(data_type, self.TYPE_COLORS["default"])
+        
+        self.setBrush(QBrush(color))
         self.setPen(QPen(Qt.black, 1))
+        
+        # Tooltip showing name and type
+        self.setToolTip(f"{self.port_definition.name}\nType: {data_type}")
         
         # Position within parent (NodeWidget)
         if self.is_input:

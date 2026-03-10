@@ -1,8 +1,9 @@
 import sys
 import os
+import shutil
 import asyncio
 import threading
-from PyQt5.QtWidgets import QMainWindow, QAction, QFileDialog, QVBoxLayout, QWidget, QGraphicsView, QGraphicsScene, QToolBar, QMessageBox, QDockWidget, QMenu, QStyle, QTabWidget
+from PyQt5.QtWidgets import QMainWindow, QAction, QFileDialog, QVBoxLayout, QWidget, QGraphicsView, QGraphicsScene, QToolBar, QMessageBox, QDockWidget, QMenu, QStyle, QTabWidget, QStatusBar, QLabel
 from PyQt5.QtCore import Qt
 from src.ui.canvas.scene import NodeScene
 from src.ui.canvas.view import NodeView
@@ -13,6 +14,7 @@ from src.ui.scripting_console import ScriptingConsole
 from src.core.models import WorkflowModel
 from src.core.registry import NodeRegistry
 from src.core.engine import NetworkExecutor
+from src.ui.node_widget import NodeWidget
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -32,6 +34,7 @@ class MainWindow(QMainWindow):
         self.tabs.setTabsClosable(True)
         self.tabs.tabCloseRequested.connect(self._close_tab)
         self.setCentralWidget(self.tabs)
+        self.tabs.currentChanged.connect(self._on_tab_changed)
 
         # Setup Panels
         self.library_panel = LibraryPanel(self)
@@ -53,16 +56,49 @@ class MainWindow(QMainWindow):
         # Setup Menu & Toolbars
         self._init_menu()
         self._init_toolbar()
+        self._init_statusbar()
 
         # Create initial tab
         self.add_new_workflow()
+
+    def _init_statusbar(self):
+        self.statusbar = QStatusBar()
+        self.setStatusBar(self.statusbar)
+        
+        self.status_label = QLabel("Ready")
+        self.status_label.setFixedWidth(120)
+        self.statusbar.addWidget(self.status_label)
+        
+        self.node_desc_label = QLabel("")
+        self.node_desc_label.setStyleSheet("color: #aaa; margin-left: 20px;")
+        self.statusbar.addPermanentWidget(self.node_desc_label, 1) # Description spans most of the space
 
     def add_new_workflow(self, name="New Workflow"):
         scene = NodeScene(self)
         view = NodeView(scene, self)
         index = self.tabs.addTab(view, name)
         self.tabs.setCurrentIndex(index)
+        
+        # Connect selection signal
+        scene.selectionChanged.connect(self._on_selection_changed)
+        
         return view
+
+    def _on_selection_changed(self):
+        scene = self.get_current_scene()
+        if not scene: return
+        
+        selected_items = scene.selectedItems()
+        if len(selected_items) == 1 and isinstance(selected_items[0], NodeWidget):
+            node = selected_items[0]
+            desc = getattr(node.node_definition, 'description', "No description available.")
+            self.node_desc_label.setText(f"Selected Node: {node.node_definition.name} - {desc}")
+        else:
+            self.node_desc_label.setText("")
+
+    def _on_tab_changed(self, index):
+        # Refresh description for new tab's selection
+        self._on_selection_changed()
 
     def _close_tab(self, index):
         if self.tabs.count() > 1:
@@ -101,6 +137,10 @@ class MainWindow(QMainWindow):
         new_node_action.setShortcut('Ctrl+N')
         new_node_action.triggered.connect(self.open_node_builder)
         node_menu.addAction(new_node_action)
+
+        load_node_action = QAction('&Load Node from JSON...', self)
+        load_node_action.triggered.connect(self.load_node_json)
+        node_menu.addAction(load_node_action)
 
         # Window Menu
         window_menu = menubar.addMenu('&Window')
@@ -237,11 +277,33 @@ class MainWindow(QMainWindow):
             QTabBar::tab { background: #3c3f41; color: #ffffff; padding: 8px; border: 1px solid #2b2b2b; }
             QTabBar::tab:selected { background: #4b4d4d; border-bottom: 2px solid #50fa7b; }
         """)
+        if hasattr(self, 'library_panel'):
+            self.library_panel.apply_theme(is_dark=True)
+        if hasattr(self, 'log_panel'):
+            self.log_panel.apply_theme(is_dark=True)
+            
+        # Apply to all workflow scenes
+        if hasattr(self, 'tabs'):
+            for i in range(self.tabs.count()):
+                view = self.tabs.widget(i)
+                if isinstance(view, NodeView):
+                    view.scene().apply_theme(is_dark=True)
 
     def _apply_light_theme(self):
         from PyQt5.QtWidgets import QApplication
         app = QApplication.instance()
         app.setStyleSheet("") # Reset to default
+        if hasattr(self, 'library_panel'):
+            self.library_panel.apply_theme(is_dark=False)
+        if hasattr(self, 'log_panel'):
+            self.log_panel.apply_theme(is_dark=False)
+            
+        # Apply to all workflow scenes
+        if hasattr(self, 'tabs'):
+            for i in range(self.tabs.count()):
+                view = self.tabs.widget(i)
+                if isinstance(view, NodeView):
+                    view.scene().apply_theme(is_dark=False)
 
     def _on_node_selected(self, node_id):
         scene = self.get_current_scene()
@@ -270,6 +332,41 @@ class MainWindow(QMainWindow):
         dialog = NodeBuilderDialog(self)
         if dialog.exec_():
             self.library_panel.refresh()
+
+    def load_node_json(self):
+        file_path, _ = QFileDialog.getOpenFileName(self, "Load Node JSON", "", "Node Files (*.json)")
+        if not file_path:
+            return
+
+        try:
+            # Validate the JSON content first using the registry
+            success = NodeRegistry.load_node(file_path)
+            if not success:
+                err = NodeRegistry.last_error or "Unknown validation error"
+                QMessageBox.critical(self, "Error", f"Invalid node definition JSON:\n\n{err}")
+                return
+
+            # If valid, copy it to the permanent nodes directory
+            node_id = os.path.splitext(os.path.basename(file_path))[0]
+            # Get actual node_id from definition if possible to ensure consistency
+            defn = NodeRegistry.get_definition(node_id)
+            if defn:
+                node_id = defn.node_id
+            
+            dest_path = os.path.join(self.nodes_dir, f"{node_id}.json")
+            
+            if os.path.exists(dest_path):
+                res = QMessageBox.question(self, "Overwrite", f"Node '{node_id}' already exists. Overwrite?", 
+                                         QMessageBox.Yes | QMessageBox.No)
+                if res == QMessageBox.No: return
+
+            shutil.copy2(file_path, dest_path)
+            self.library_panel.refresh()
+            self.log_panel.log(f"Node '{node_id}' added to library from {file_path}", "success")
+            QMessageBox.information(self, "Success", f"Node '{node_id}' has been added to your library.")
+
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"Failed to load node: {str(e)}")
 
     def save_workflow(self):
         scene = self.get_current_scene()
@@ -308,6 +405,7 @@ class MainWindow(QMainWindow):
         if not scene: return
         
         self.execute_btn.setEnabled(False)
+        self.status_label.setText("Running...")
         tab_name = self.tabs.tabText(self.tabs.currentIndex())
         self.log_panel.log(f"Starting execution for [{tab_name}]...", "execution")
         
@@ -338,6 +436,7 @@ class MainWindow(QMainWindow):
 
     def _on_execution_finished(self, success):
         self.execute_btn.setEnabled(True)
+        self.status_label.setText("Ready")
         status = "successfully" if success else "with errors"
         self.log_panel.log(f"Execution finished {status}.", "info" if success else "error")
 

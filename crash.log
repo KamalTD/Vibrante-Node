@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "G:\MyData\test_python\node_based_pipeline\node_based_app\src\ui\window.py", line 302, in _apply_light_theme
+    view.scene().apply_theme(is_dark=False)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "G:\MyData\test_python\node_based_pipeline\node_based_app\src\ui\canvas\scene.py", line 309, in apply_theme
+    node.apply_theme(is_dark)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "G:\MyData\test_python\node_based_pipeline\node_based_app\src\ui\node_widget.py", line 54, in apply_theme
+    w.setStyleSheet(f"background-color: {bg_color}; color: {text_color.name()}; border: 1px solid {border_color};")
+                                                            ^^^^^^^^^^^^^^^
+AttributeError: 'GlobalColor' object has no attribute 'name'

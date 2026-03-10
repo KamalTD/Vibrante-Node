@@ -1,0 +1,15 @@
+{
+  "node_id": "example_logic_and",
+  "name": "Logic AND",
+  "description": "Performs logical AND operation.",
+  "category": "Logic",
+  "inputs": [
+    { "name": "a", "type": "bool", "widget_type": "bool" },
+    { "name": "b", "type": "bool", "widget_type": "bool" }
+  ],
+  "outputs": [
+    { "name": "result", "type": "bool" }
+  ],
+  "icon_path": "icons/logic.svg",
+  "python_code": "from src.nodes.base import BaseNode\n\nclass LogicAndNode(BaseNode):\n    name = \"Logic AND\"\n    \n    def __init__(self):\n        super().__init__()\n        self.icon_path = \"icons/logic.svg\"\n        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"a\", \"bool\", widget_type=\"bool\")\n        self.add_input(\"b\", \"bool\", widget_type=\"bool\")\n        self.add_output(\"result\", \"bool\")\n        # [AUTO-GENERATED-PORTS-END]\n        \n    async def execute(self, inputs):\n        a = inputs.get('a', False)\n        b = inputs.get('b', False)\n        return {'result': bool(a) and bool(b)}\n\ndef register_node():\n    return LogicAndNode\n"
+}

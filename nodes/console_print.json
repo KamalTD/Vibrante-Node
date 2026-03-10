@@ -3,12 +3,12 @@
     "name": "Console Print",
     "description": "Prints the input data to the console.",
     "category": "IO",
-    "icon_path": "icons/print.svg",
+    "icon_path": "icons/terminal.svg",
     "inputs": [
         {"name": "data", "type": "any", "widget_type": "text"}
     ],
     "outputs": [
         {"name": "out", "type": "any"}
     ],
-    "python_code": "from src.nodes.base import BaseNode\n\nclass ConsolePrintNode(BaseNode):\n    name = \"Console Print\"\n    \n    def __init__(self):\n        super().__init__()\n        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"data\", \"any\", widget_type=\"text\")\n        self.add_output(\"out\", \"any\")\n        # [AUTO-GENERATED-PORTS-END]\n        \n    async def execute(self, inputs):\n        data = inputs.get(\"data\", \"\")\n        print(f\"[CONSOLE PRINT]: {data}\")\n        return {\"out\": data}\n\ndef register_node():\n    return ConsolePrintNode\n"
+    "python_code": "from src.nodes.base import BaseNode\n\nclass ConsolePrintNode(BaseNode):\n    name = \"Console Print\"\n    description = \"Prints the input data to the console.\"\n    \n    def __init__(self):\n        super().__init__()\n        self.icon_path = \"icons/terminal.svg\"\n        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"data\", \"any\", widget_type=\"text\")\n        self.add_output(\"out\", \"any\")\n        # [AUTO-GENERATED-PORTS-END]\n        \n    async def execute(self, inputs):\n        data_val = inputs.get(\"data\")\n        data = str(data_val) if data_val is not None else \"\"\n        print(f\"[CONSOLE PRINT]: {data}\")\n        return {\"out\": data}\n\ndef register_node():\n    return ConsolePrintNode\n"
 }

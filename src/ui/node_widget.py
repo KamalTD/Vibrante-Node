@@ -22,8 +22,39 @@ class NodeWidget(QGraphicsItem):
         self.output_labels = []
         self.param_widgets = {} # name -> proxy_widget
         self.status = "idle" # idle, running, success, failed
+        self.is_dark = True
         
         self._init_ui()
+
+    def apply_theme(self, is_dark=True):
+        self.is_dark = is_dark
+        q_text_color = QColor(Qt.white) if is_dark else QColor(Qt.black)
+        
+        if hasattr(self, 'title_text') and self.title_text:
+            self.title_text.setDefaultTextColor(q_text_color)
+            
+        for label in self.input_labels + self.output_labels:
+            label.setDefaultTextColor(q_text_color)
+            
+        # Update parameter labels and widgets via stylesheet
+        bg_color = "#333" if is_dark else "#eee"
+        border_color = "#555" if is_dark else "#ccc"
+        label_color = "#aaa" if is_dark else "#555"
+        text_color_name = q_text_color.name()
+        
+        for proxy in self.param_widgets.values():
+            container = proxy.widget()
+            if not container: continue
+            
+            param_label = container.findChild(QLabel)
+            if param_label:
+                param_label.setStyleSheet(f"color: {label_color}; font-size: 9px; font-weight: bold; background: transparent;")
+            
+            from PyQt5.QtWidgets import QLineEdit, QSpinBox, QDoubleSpinBox, QCheckBox, QComboBox, QSlider, QTextEdit
+            for w in container.findChildren((QLineEdit, QSpinBox, QDoubleSpinBox, QCheckBox, QComboBox, QSlider, QTextEdit)):
+                w.setStyleSheet(f"background-color: {bg_color}; color: {text_color_name}; border: 1px solid {border_color};")
+        
+        self.update()
 
     def _init_ui(self):
         # Header
@@ -223,10 +254,29 @@ class NodeWidget(QGraphicsItem):
 
     def set_parameter(self, name, value, propagate=True):
         """Programmatically set a parameter and update its UI widget."""
-        if self.node_definition.parameters.get(name) == value:
+        # Type Conversion attempt based on port definition
+        port_def = next((p for p in self.node_definition.inputs.values() if p.name == name), None)
+        if not port_def: # Check outputs too if needed
+             port_def = next((p for p in self.node_definition.outputs.values() if p.name == name), None)
+        
+        target_value = value
+        if port_def:
+            try:
+                if port_def.data_type == 'int': target_value = int(value)
+                elif port_def.data_type in ['float', 'number']: target_value = float(value)
+                elif port_def.data_type == 'string': target_value = str(value)
+                elif port_def.data_type == 'bool':
+                    if isinstance(value, str): target_value = value.lower() in ['true', '1', 'yes']
+                    else: target_value = bool(value)
+            except (ValueError, TypeError):
+                # If conversion fails, keep original or default to None/0? 
+                # Keeping original allows node's execute to handle it with its own log/fallback
+                pass
+
+        if self.node_definition.parameters.get(name) == target_value:
             return # No change
             
-        self.node_definition.parameters[name] = value
+        self.node_definition.parameters[name] = target_value
         
         # 1. Update UI
         if name in self.param_widgets:
@@ -294,7 +344,8 @@ class NodeWidget(QGraphicsItem):
         return super().itemChange(change, value)
 
     def paint(self, painter, option, widget):
-        base_color = QColor(40, 40, 40)
+        from src.utils.color_manager import ColorManager
+        base_color = QColor(40, 40, 40) if self.is_dark else QColor(220, 220, 220)
         if self.status == "running": base_color = QColor(100, 100, 0)
         elif self.status == "success": base_color = QColor(0, 80, 0)
         elif self.status == "failed": base_color = QColor(100, 0, 0)
@@ -305,7 +356,9 @@ class NodeWidget(QGraphicsItem):
         painter.drawRoundedRect(self.boundingRect(), 10, 10)
         
         # 2. DRAW HEADER
-        header_color = QColor(60, 60, 60)
+        # Use Category Color from ColorManager
+        header_color = ColorManager.get_category_color(self.node_definition.category)
+        
         painter.setBrush(QBrush(header_color))
         path = QPainterPath()
         path.addRoundedRect(self.boundingRect(), 10, 10)
@@ -313,6 +366,13 @@ class NodeWidget(QGraphicsItem):
         painter.setClipPath(path)
         painter.setPen(Qt.NoPen)
         painter.drawRect(0, 0, int(self.width), 35)
+        
+        # Draw text contrast (black or white)
+        if header_color.lightness() > 150:
+            self.title_text.setDefaultTextColor(Qt.black)
+        else:
+            self.title_text.setDefaultTextColor(Qt.white)
+            
         painter.restore()
         
         painter.setPen(QPen(QColor(30, 30, 30), 1))

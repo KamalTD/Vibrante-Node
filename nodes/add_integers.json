@@ -1,9 +1,9 @@
 {
     "node_id": "add_integers",
-    "name": "add_integers",
+    "name": "Add Integers",
     "description": "Adds two integers provided via spinboxes.",
     "category": "Math",
-    "icon_path": "icons/math.svg",
+    "icon_path": "icons/plus.svg",
     "inputs": [
         {
             "name": "a",
@@ -26,5 +26,5 @@
             "options": null
         }
     ],
-    "python_code": "from src.nodes.base import BaseNode\n\nclass AddIntegersNode(BaseNode):\n    name = \"Add Integers\"\n    \n    def __init__(self):\n        super().__init__()        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"a\", \"int\", widget_type=\"int\")\n        self.add_input(\"b\", \"int\", widget_type=\"int\")\n        self.add_output(\"result\", \"int\")\n        # [AUTO-GENERATED-PORTS-END]\n        \n    async def execute(self, inputs):\n        a = int(inputs.get(\"a\", 0))\n        b = int(inputs.get(\"b\", 0))\n        return {\"result\": a + b}\n\ndef register_node():\n    return AddIntegersNode\n"
+    "python_code": "from src.nodes.base import BaseNode\n\nclass AddIntegersNode(BaseNode):\n    name = \"Add Integers\"\n    description = \"Adds two integers provided via spinboxes.\"\n    \n    def __init__(self):\n        super().__init__()\n        self.icon_path = \"icons/plus.svg\"\n        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"a\", \"int\", widget_type=\"int\")\n        self.add_input(\"b\", \"int\", widget_type=\"int\")\n        self.add_output(\"result\", \"int\")\n        # [AUTO-GENERATED-PORTS-END]\n        \n    async def execute(self, inputs):\n        a_val = inputs.get(\"a\")\n        b_val = inputs.get(\"b\")\n        a = int(a_val) if a_val is not None else 0\n        b = int(b_val) if b_val is not None else 0\n        return {\"result\": a + b}\n\ndef register_node():\n    return AddIntegersNode\n"
 }

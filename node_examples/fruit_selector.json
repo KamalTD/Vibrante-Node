@@ -1,0 +1,30 @@
+{
+    "node_id": "fruit_selector",
+    "name": "fruit_selector",
+    "description": "Select a fruit from a dropdown.",
+    "category": "Selection",
+    "icon_path": "icons/list.svg",
+    "inputs": [
+        {
+            "name": "choice",
+            "type": "string",
+            "widget_type": "dropdown",
+            "options": [
+                "Apple",
+                "Banana",
+                "Cherry",
+                "Date"
+            ]
+        }
+    ],
+    "outputs": [
+        {
+            "name": "selected",
+            "type": "string",
+            "widget_type": null,
+            "options": null
+        }
+    ],
+    "icon_path": "icons/list.svg",
+    "python_code": "from src.nodes.base import BaseNode\n\nclass Fruit_SelectorNode(BaseNode):\n    name = \"fruit_selector\"\n    \n    def __init__(self):\n        super().__init__()\n        self.icon_path = \"icons/list.svg\"\n        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"choice\", \"string\", widget_type=\"dropdown\", options=['Apple', 'Banana', 'Cherry', 'Date'])\n        self.add_output(\"selected\", \"string\")\n        # [AUTO-GENERATED-PORTS-END]\n        \n    async def execute(self, inputs):\n        choice = inputs.get(\"choice\", \"Apple\")\n        return {\"selected\": choice}\n    async def on_plug(self, port_name, is_input, other_node, other_port_name):\n        # Called when a connection is established\n        print(f\"Connected {port_name} to {other_node.name}.{other_port_name}\")\n        self.log_info(f\"Connected {port_name} to {other_node.name}.{other_port_name}\")\n\n    async def on_unplug(self, port_name, is_input):\n        # Called when a connection is removed\n        self.log_info(f\"Disconnected {port_name}\")\n\ndef register_node():\n    return Fruit_SelectorNode\n"
+}
