@@ -1,6 +1,8 @@
 # Vibrante-Node
 
-**Vibrante-Node** is a professional, Python-based desktop application designed for creating and executing complex visual workflows. Combining a powerful node-based canvas with an integrated professional code editor, it empowers users to build modular data pipelines with real-time feedback and high-performance execution.
+**Vibrante-Node** is a Python-node-based visual framework for building modular systems through connected nodes and data flows. It provides an intuitive graph interface where complex logic can be constructed visually by linking nodes together.
+
+The project focuses on flexibility, extensibility, and developer productivity, making it suitable for building tools such as visual pipelines, automation workflows, and data-processing graphs. Node-based systems allow complex operations to be organized as interconnected components rather than traditional linear code structures, improving clarity and scalability in large workflows.
 
 ---
 
