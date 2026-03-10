@@ -1,10 +1,10 @@
 # Vibrante-Node - Technical API Documentation
 
-This document provides a comprehensive reference for the Vibrante-Node Scripting API. Use this guide to build custom nodes with the integrated Python editor.
+This document provides a comprehensive reference for the Vibrante-Node Scripting API and Workflow Automation system.
 
 ---
 
-## 🏗️ Core Class: `BaseNode`
+## 🏗️ Part 1: Node Scripting API (`BaseNode`)
 
 All custom nodes must inherit from `BaseNode`. This class provides the fundamental interface for ports, parameters, logging, and lifecycle events.
 
@@ -16,128 +16,120 @@ All custom nodes must inherit from `BaseNode`. This class provides the fundament
 | `description` | `str` | Tooltip/help text for the node. |
 | `icon_path` | `str` | Relative path to an SVG/PNG icon. |
 
----
-
-## 🛠️ API Methods
-
-### 🔹 Configuration (Usually in `__init__`)
+### 🛠️ Configuration Methods (Usually in `__init__`)
 
 #### `self.add_input(name, data_type="any", widget_type=None, options=None)`
-Adds an input port to the node.
-- **`name`**: Unique identifier for the port.
-- **`data_type`**: Type constraint (e.g., "int", "string").
-- **`widget_type`**: Optional UI widget: `"text"`, `"text_area"`, `"int"`, `"float"`, `"bool"`, `"dropdown"`, `"slider"`, `"file"`.
-- **`options`**: List of strings for `"dropdown"`.
+Adds an input port.
+- **`widget_type`**: `"text"`, `"text_area"`, `"int"`, `"float"`, `"bool"`, `"dropdown"`, `"slider"`, `"file"`.
 
 #### `self.add_output(name, data_type="any")`
-Adds an output port to the node.
+Adds an output port.
 
-#### `self.add_parameter(name, param_type, default=None)`
-Defines a custom internal parameter not necessarily linked to a port.
+### 🔄 Lifecycle Hooks
 
----
-
-### 🔹 Data Access
-
-#### `self.get_parameter(name, default=None)`
-Retrieves the current value of an input or parameter.
-- **Note**: Can be used to read data from `other_node` during plug events.
-
-#### `self[name]` (Shortcut)
-Access parameters using dictionary syntax: `value = self["my_port"]`.
+- `on_plug_sync(port_name, is_input, other_node, other_port_name)`: **Immediate reaction** on connection.
+- `on_unplug_sync(port_name, is_input)`: Cleanup on disconnection.
+- `on_parameter_changed(name, value)`: Triggered when a UI widget value is changed.
+- `async def execute(self, inputs)`: The main logic run during workflow execution.
 
 ---
 
-### 🔹 Logging
-Messages are sent to the **Event Log** panel.
-- `self.log_info(msg)`: Purple text.
-- `self.log_success(msg)`: Green text.
-- `self.log_error(msg)`: Red text (use for critical failures).
+## 🤖 Part 2: Workflow Automation API
+
+Vibrante-Node features a built-in **Scripting Console** (Window -> Show/Hide Scripting Console) that allows you to automate the editor, build networks programmatically, and perform batch operations.
+
+### 🔹 Available Globals
+| Global | Type | Description |
+| :--- | :--- | :--- |
+| `app` | `MainWindow` | The main application window. |
+| `scene` | `NodeScene` | The active canvas/tab. |
+| `registry` | `NodeRegistry` | Access all available node types. |
+| `print()` | `Function` | Logs to the Scripting Console and Event Log. |
 
 ---
 
-## 🔄 Lifecycle Hooks
+### 🛠️ Automation Methods
 
-### 🔹 `on_plug_sync(port_name, is_input, other_node, other_port_name)`
-**Sync (GUI Thread)**. Called immediately when a wire is connected.
-- Use this for instant UI reactions or to copy data from `other_node`.
-- **`other_node`**: The node on the other end of the wire.
-- **`other_port_name`**: The specific port name on the other node.
+#### `scene.add_node_by_name(node_id, pos)`
+Adds a node to the canvas.
+- **`node_id`**: The slug/name of the node in the library.
+- **`pos`**: Tuple `(x, y)` or `QPointF`.
+- **Returns**: `NodeWidget` instance.
 
-### 🔹 `on_unplug_sync(port_name, is_input)`
-**Sync (GUI Thread)**. Called when a wire is removed.
-- Use this to reset values or clear internal states.
+#### `scene.connect_nodes(node_a, port_a, node_b, port_b)`
+Creates a wire between two ports.
+- **`node_a`/`node_b`**: `NodeWidget` instances or node name strings.
 
-### 🔹 `on_parameter_changed(name, value)`
-Called whenever a user interacts with a widget on the node.
-- Use this to dynamically update output values or other parameters.
+#### `node.set_parameter(name, value)`
+Programmatically updates a widget's value and propagates data downstream.
 
-### 🔹 `async on_plug(...)` / `async on_unplug(...)`
-**Async (Background Thread)**. Same as sync versions but for heavy operations (IO, Network) that shouldn't freeze the UI.
+#### `app.add_new_workflow(name)`
+Creates a new empty tab.
+
+#### `app.execute_pipeline()`
+Triggers the execution of the active workflow.
 
 ---
 
-## ⚡ Execution Logic
+## 📖 Automation Use Cases & Examples
 
-### `async def execute(self, inputs)`
-The primary logic executed when the workflow runs.
-- **`inputs`**: A dictionary containing data from all connected input ports.
-- **Return**: A dictionary where keys match your **Output Port** names.
+### 🔹 Example 1: Build a Math Pipeline Automatically
+This script clears the scene and builds a multiplier network.
 
 ```python
-async def execute(self, inputs):
-    val = inputs.get("data_in", 0)
-    result = val * 2
-    return {"data_out": result}
-```
+# 1. Clear current scene
+scene.clear()
 
----
+# 2. Add nodes
+n1 = scene.add_node_by_name("math_add", (100, 100))
+n2 = scene.add_node_by_name("console_print", (400, 100))
 
-## 📖 Complete Scripting Example
-
-A reactive node that displays data from its neighbor instantly upon connection:
-
-```python
-from src.nodes.base import BaseNode
-
-class ReactiveNode(BaseNode):
-    name = "Reactive Example"
+if n1 and n2:
+    # 3. Setup initial values
+    n1.set_parameter("a", 50)
+    n1.set_parameter("b", 25)
     
-    def __init__(self):
-        super().__init__()
-        # 1. Setup Ports
-        self.add_input("in_port", "any", widget_type="text")
-        self.add_output("out_port", "any")
+    # 4. Connect them
+    scene.connect_nodes(n1, "sum", n2, "data")
+    
+    print("Pipeline built successfully!")
+```
+
+### 🔹 Example 2: Stress Test / Grid Generation
+Create a grid of 25 Message Nodes connected in a chain.
+
+```python
+prev_node = None
+for i in range(5):
+    for j in range(5):
+        curr = scene.add_node_by_name("message_node", (j*300, i*200))
+        curr.set_parameter("msg", f"Node {i},{j}")
         
-    def on_plug_sync(self, port_name, is_input, other_node, other_port_name):
-        # 2. React to connection
-        if is_input:
-            # Read data from the other node's output port
-            data = other_node.get_parameter(other_port_name)
-            self.log_info(f"Incoming data detected: {data}")
-            # Automatically update our own widget
-            self.set_parameter("in_port", data)
+        if prev_node:
+            scene.connect_nodes(prev_node, "out", curr, "msg")
+        prev_node = curr
+```
 
-    def on_parameter_changed(self, name, value):
-        # 3. Handle live user typing
-        if name == "in_port":
-            self.log_info(f"User is typing: {value}")
-            # Update output port so next node sees it
-            self.parameters["out_port"] = value
+### 🔹 Example 3: Batch Execution
+Automate running the workflow after setting a parameter.
 
-    async def execute(self, inputs):
-        # 4. Standard execution
-        return {"out_port": inputs.get("in_port")}
-
-def register_node():
-    return ReactiveNode
+```python
+# Find a specific node by its library name
+node = scene.find_node_by_name("Message Node")
+if node:
+    node.set_parameter("msg", "Automated Trigger")
+    # Run the whole pipeline
+    app.execute_pipeline()
 ```
 
 ---
 
-## 🛠️ UI Helpers (Inside Scripts)
+## 🛠️ Advanced: Node Internal Access
+You can access the underlying Python logic of any node on the canvas via `node.node_definition`.
 
-When working with `other_node` in plug events, you can use these methods:
-- `node.name`: Access the node's display name.
-- `node.set_parameter(name, value)`: Update a widget value on that node.
-- `node.log_info(msg)`: Trigger a log message from that node's context.
+```python
+# Access the actual BaseNode instance
+logic = node.node_definition
+print(f"Node Class: {type(logic).__name__}")
+print(f"Current parameters: {logic.parameters}")
+```
