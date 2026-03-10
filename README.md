@@ -16,17 +16,21 @@ The project focuses on flexibility, extensibility, and developer productivity, m
 
 ## 🌟 Latest Enhancements
 
-### ⚡ Reactive Data Propagation
-Workflow data now flows in **real-time** across the canvas:
-- **Instant Sync:** Changing a value in one node immediately updates all connected downstream nodes.
-- **Visual Monitoring:** Destination widgets update live even when disabled by a connection, acting as real-time monitors.
-- **Predictive Flow:** Smart data mirroring ensures nodes possess output data even before the full workflow is executed.
+### 🎨 Visual Overhaul & Theming
+*   **Dynamic Dark/Light Themes:** Fully integrated theme switching across the entire application, including the canvas and all dock panels.
+*   **Category-Based Coloring:** Nodes are automatically color-coded based on their category (Math, Logic, Data, etc.) for instant visual identification.
+*   **Refined Node Layout:** Nodes automatically scale to fit their content with perfectly centered widgets and clear headers.
 
-### 🔄 Node Lifecycle Events
-Nodes are now fully "aware" of their environment:
-- **on_plug_sync:** React instantly when a wire is connected.
-- **on_unplug_sync:** Cleanup or reset logic when disconnected.
-- **on_parameter_changed:** Custom logic that triggers as you type or interact with widgets.
+### 🔌 Type-Coded Ports
+*   **Visual Data Types:** Ports are color-coded by data type (e.g., Cyan for `int`, Purple for `string`), making connections intuitive and error-resistant.
+*   **Interactive Tooltips:** Hover over any port to see its name and expected data type instantly.
+
+### 🤖 Automation Suite
+*   **Power-User Examples:** 11 new Python scripts demonstrating batch processing, scene management, and complex workflow automation.
+*   **Scripting Console:** Full access to the internal API for programmatically manipulating the node graph.
+
+### 📊 Interactive Status Bar
+*   **Real-time Feedback:** Monitor execution status and get detailed descriptions of selected nodes directly in the status bar.
 
 ### 🏗️ Advanced Node Builder
 The specialized creation tool is now more powerful:
@@ -34,10 +38,11 @@ The specialized creation tool is now more powerful:
 - **Automatic Code Generation:** Generates full Python class structures with lifecycle stubs automatically.
 - **Robust Sync:** Bi-directional synchronization between the UI tables and the Python source code.
 
-### 🎨 Refined Node Layout
-- **Dynamic Scaling:** Nodes automatically resize their width and height to fit any number of ports and widgets perfectly.
-- **Vertical Centering:** All parameter widgets are automatically distributed and centered within the node body.
-- **Clean UI:** Professional header rendering with no overlapping lines and clear, bold parameter labeling.
+### ⚡ Reactive Data Propagation
+Workflow data now flows in **real-time** across the canvas:
+- **Instant Sync:** Changing a value in one node immediately updates all connected downstream nodes.
+- **Visual Monitoring:** Destination widgets update live even when disabled by a connection, acting as real-time monitors.
+- **Predictive Flow:** Smart data mirroring ensures nodes possess output data even before the full workflow is executed.
 
 ---
 
