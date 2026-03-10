@@ -94,14 +94,18 @@ Detailed documentation is available for both users and developers:
 ## 📂 Project Structure
 
 ```text
-├── nodes/              # JSON definitions for custom nodes
-├── src/
-│   ├── core/           # Engine, Registry, and Graph logic
-│   ├── ui/             # PyQt components (Canvas, Editor, Library)
-│   ├── utils/          # Runtime and Threading helpers
+├── examples/           # Automation scripts and custom node examples
+├── icons/              # UI icons (SVG format)
+├── nodes/              # Primary JSON definitions for custom nodes
+├── node_examples/      # Pre-built node library for quick reference
+├── src/                # Application source code
+│   ├── core/           # Engine, Registry, and Graph management
+│   ├── ui/             # PyQt5 components (Canvas, Panels, Node Widgets)
+│   ├── utils/          # Theming, Runtime, and Threading helpers
 │   └── main.py         # Application entry point
+├── tests/              # Unit and integration tests
 ├── workflows/          # Saved pipeline files (.json)
-└── DOCUMENTATION.md    # Full technical feature list
+└── DOCUMENTATION.md    # Detailed technical documentation
 ```
 
 ---
