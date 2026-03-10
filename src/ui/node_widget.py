@@ -1,6 +1,6 @@
-from PyQt5.QtWidgets import QGraphicsItem, QGraphicsRectItem, QGraphicsTextItem, QGraphicsProxyWidget, QLineEdit, QSpinBox, QDoubleSpinBox, QCheckBox, QLabel, QComboBox, QSlider, QTextEdit, QWidget, QHBoxLayout, QPushButton
+from PyQt5.QtWidgets import QGraphicsItem, QGraphicsRectItem, QGraphicsTextItem, QGraphicsProxyWidget, QLineEdit, QSpinBox, QDoubleSpinBox, QCheckBox, QLabel, QComboBox, QSlider, QTextEdit, QWidget, QHBoxLayout, QPushButton, QVBoxLayout
 from PyQt5.QtCore import Qt, QRectF
-from PyQt5.QtGui import QColor, QPen, QBrush, QPixmap
+from PyQt5.QtGui import QColor, QPen, QBrush, QPixmap, QPainterPath
 from src.ui.port_widget import PortWidget
 from uuid import uuid4
 
@@ -9,8 +9,8 @@ class NodeWidget(QGraphicsItem):
         super().__init__(parent)
         self.node_definition = node_definition
         self.instance_id = instance_id or uuid4()
-        self.width = 180
-        self.height = 120
+        self.width = 220
+        self.height = 140 # Initial minimum
         
         self.setFlag(QGraphicsItem.ItemIsMovable)
         self.setFlag(QGraphicsItem.ItemIsSelectable)
@@ -18,6 +18,8 @@ class NodeWidget(QGraphicsItem):
         
         self.input_widgets = []
         self.output_widgets = []
+        self.input_labels = []
+        self.output_labels = []
         self.param_widgets = {} # name -> proxy_widget
         self.status = "idle" # idle, running, success, failed
         
@@ -29,63 +31,123 @@ class NodeWidget(QGraphicsItem):
         self.title_text.setDefaultTextColor(Qt.white)
         self.title_text.setPos(10, 5)
 
-        # Create Ports and parameter widgets
-        y_offset = 40
+        # 1. Create Ports
+        y_in = 45
         inputs = self.node_definition.inputs
-        
-        # Handle both list (from NodeDefinitionJSON) and dict (from BaseNode instance)
         input_list = inputs if isinstance(inputs, list) else inputs.values()
-        
         for p_model in input_list:
-            # Input Port
             p = PortWidget(p_model, is_input=True, parent=self)
-            p.setPos(0, y_offset)
+            p.setPos(0, y_in)
             self.input_widgets.append(p)
-            
-            # Port Label
             label = QGraphicsTextItem(p_model.name, self)
             label.setDefaultTextColor(Qt.white)
             label.setFont(self._get_port_font())
-            label.setPos(12, y_offset - 10)
+            label.setPos(12, y_in - 10)
+            self.input_labels.append(label)
+            y_in += 25
             
-            # Associated Parameter Widget
-            if hasattr(p_model, 'widget_type') and p_model.widget_type:
-                self._create_param_widget(p_model, y_offset + 15)
-                y_offset += 45 # More space for widgets
-            else:
-                y_offset += 25
-        
-        # Calculate height based on ports
-        self.height = max(120, y_offset + 10)
-            
+        y_out = 45
         outputs = self.node_definition.outputs
-        y_out = 40
         output_list = outputs if isinstance(outputs, list) else outputs.values()
-        
         for p_model in output_list:
             p = PortWidget(p_model, is_input=False, parent=self)
             p.setPos(self.width, y_out)
             self.output_widgets.append(p)
-            
-            # Port Label
             label = QGraphicsTextItem(p_model.name, self)
             label.setDefaultTextColor(Qt.white)
             label.setFont(self._get_port_font())
-            # Right align label
-            br = label.boundingRect()
-            label.setPos(self.width - br.width() - 12, y_out - 10)
-            
+            self.output_labels.append(label)
             y_out += 25
+
+        # 2. Create Parameter Widgets
+        for p_model in input_list:
+            if hasattr(p_model, 'widget_type') and p_model.widget_type:
+                self._create_param_widget(p_model)
+
+        # 3. Calculate Dynamic Height
+        proxies = list(self.param_widgets.values())
+        params_total_height = 0
+        for p in proxies:
+            params_total_height += p.widget().sizeHint().height() + 10
+            
+        ports_max_y = max(y_in, y_out)
+        self.height = max(140, ports_max_y + params_total_height + 20)
+        
+        self._auto_size(ports_max_y)
+
+    def _auto_size(self, ports_bottom_y):
+        """Dynamically scales the node width and centers children."""
+        self.prepareGeometryChange()
+        
+        # 1. Width Calculation
+        min_width = 220
+        content_width = 0
+        if self.title_text:
+            content_width = max(content_width, self.title_text.boundingRect().width() + 40)
+        for proxy in self.param_widgets.values():
+            w = proxy.widget()
+            if w:
+                content_width = max(content_width, w.sizeHint().width() + 100)
+        for i in range(max(len(self.input_labels), len(self.output_labels))):
+            w_row = 80
+            if i < len(self.input_labels): w_row += self.input_labels[i].boundingRect().width()
+            if i < len(self.output_labels): w_row += self.output_labels[i].boundingRect().width()
+            content_width = max(content_width, w_row + 20)
+        self.width = max(min_width, content_width)
+        
+        # 2. Vertical Centering for params
+        body_top = ports_bottom_y + 10
+        body_bottom = self.height - 10
+        proxies = list(self.param_widgets.values())
+        if proxies:
+            total_h = sum([p.widget().sizeHint().height() for p in proxies])
+            spacing = max(5, (body_bottom - body_top - total_h) / (len(proxies) + 1))
+            current_y = body_top + spacing
+            for proxy in proxies:
+                w = proxy.widget()
+                if w:
+                    w.setFixedWidth(self.width - 100) 
+                    proxy.setPos(50, current_y)
+                    current_y += w.sizeHint().height() + spacing
+
+        # 3. Reposition Outputs
+        for i, p in enumerate(self.output_widgets):
+            p.setPos(self.width, p.pos().y())
+            if i < len(self.output_labels):
+                label = self.output_labels[i]
+                label.setPos(self.width - label.boundingRect().width() - 12, p.pos().y() - 10)
+        
+        self._refresh_widget_states()
+
+    def _refresh_widget_states(self):
+        """Disables widgets if their input port has a connection."""
+        if not self.scene(): return
+        for p_name, proxy in self.param_widgets.items():
+            port_widget = next((pw for pw in self.input_widgets if pw.port_definition.name == p_name), None)
+            if port_widget:
+                is_connected = any(e.to_port == port_widget for e in self.scene().edges)
+                container = proxy.widget()
+                container.setEnabled(not is_connected)
+                for child in container.findChildren(QWidget):
+                    child.setEnabled(not is_connected)
 
     def _get_port_font(self):
         from PyQt5.QtGui import QFont
         f = QFont("Arial", 8)
         return f
 
-    def _create_param_widget(self, p_model, y_pos):
+    def _create_param_widget(self, p_model):
         proxy = QGraphicsProxyWidget(self)
-        w = None
+        container = QWidget()
+        layout = QVBoxLayout(container)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(2)
         
+        param_label = QLabel(p_model.name)
+        param_label.setStyleSheet("color: #aaa; font-size: 9px; font-weight: bold; background: transparent;")
+        layout.addWidget(param_label)
+        
+        w = None
         if p_model.widget_type == 'text':
             w = QLineEdit()
             val = self.node_definition.parameters.get(p_model.name)
@@ -94,7 +156,7 @@ class NodeWidget(QGraphicsItem):
         elif p_model.widget_type == 'text_area':
             w = QTextEdit()
             w.setAcceptRichText(False)
-            w.setMinimumHeight(60)
+            w.setMaximumHeight(60)
             val = self.node_definition.parameters.get(p_model.name)
             w.setPlainText(str(val) if val is not None else "")
             w.textChanged.connect(lambda: self._update_param(p_model.name, w.toPlainText()))
@@ -125,7 +187,7 @@ class NodeWidget(QGraphicsItem):
             w.currentTextChanged.connect(lambda val: self._update_param(p_model.name, val))
         elif p_model.widget_type == 'slider':
             w = QSlider(Qt.Horizontal)
-            w.setRange(0, 100) # Default
+            w.setRange(0, 100)
             val = self.node_definition.parameters.get(p_model.name)
             w.setValue(int(val) if val is not None else 0)
             w.valueChanged.connect(lambda val: self._update_param(p_model.name, val))
@@ -134,67 +196,84 @@ class NodeWidget(QGraphicsItem):
             l = QHBoxLayout(w)
             l.setContentsMargins(0, 0, 0, 0)
             l.setSpacing(2)
-            
             path_edit = QLineEdit()
             val = self.node_definition.parameters.get(p_model.name)
             path_edit.setText(str(val) if val is not None else "")
-            
             btn = QPushButton("...")
             btn.setFixedWidth(25)
-            
             def select_file():
                 from PyQt5.QtWidgets import QFileDialog
-                # We need to find the parent window for the dialog
                 curr = self.scene().views()[0] if self.scene() and self.scene().views() else None
                 path, _ = QFileDialog.getOpenFileName(curr, "Select File")
                 if path:
                     path_edit.setText(path)
                     self._update_param(p_model.name, path)
-
             btn.clicked.connect(select_file)
             path_edit.textChanged.connect(lambda val: self._update_param(p_model.name, val))
-            
             l.addWidget(path_edit)
             l.addWidget(btn)
-            # Override standard width handling for this complex widget
-            w.setFixedWidth(self.width - 40)
 
         if w:
-            w.setFixedWidth(self.width - 40)
             w.setStyleSheet("background-color: #333; color: white; border: 1px solid #555;")
-            proxy.setWidget(w)
-            proxy.setPos(20, y_pos - 10) # Offset slightly from port
-            self.param_widgets[p_model.name] = proxy
+            layout.addWidget(w)
+            
+        container.setStyleSheet("background: transparent;")
+        proxy.setWidget(container)
+        self.param_widgets[p_model.name] = proxy
 
-    def set_parameter(self, name, value):
+    def set_parameter(self, name, value, propagate=True):
         """Programmatically set a parameter and update its UI widget."""
+        if self.node_definition.parameters.get(name) == value:
+            return # No change
+            
         self.node_definition.parameters[name] = value
         
+        # 1. Update UI
         if name in self.param_widgets:
             proxy = self.param_widgets[name]
-            w = proxy.widget()
-            
-            # Update the widget based on its type
+            container = proxy.widget()
             from PyQt5.QtWidgets import QLineEdit, QSpinBox, QDoubleSpinBox, QCheckBox, QComboBox, QSlider, QTextEdit
-            
-            if isinstance(w, QLineEdit):
-                w.setText(str(value))
-            elif isinstance(w, QSpinBox) or isinstance(w, QDoubleSpinBox) or isinstance(w, QSlider):
-                w.setValue(value)
-            elif isinstance(w, QCheckBox):
-                w.setChecked(bool(value))
-            elif isinstance(w, QComboBox):
-                w.setCurrentText(str(value))
-            elif isinstance(w, QTextEdit):
-                w.setPlainText(str(value))
-            elif hasattr(w, "layout"): # Complex widget like 'file'
-                # Find the line edit inside the layout
-                line_edit = w.findChild(QLineEdit)
-                if line_edit:
-                    line_edit.setText(str(value))
+            w = container.findChild(QLineEdit) or container.findChild(QSpinBox) or \
+                container.findChild(QDoubleSpinBox) or container.findChild(QCheckBox) or \
+                container.findChild(QComboBox) or container.findChild(QSlider) or \
+                container.findChild(QTextEdit)
+
+            if w:
+                w.blockSignals(True) # Prevent recursion
+                if isinstance(w, QLineEdit): w.setText(str(value))
+                elif isinstance(w, QSpinBox) or isinstance(w, QDoubleSpinBox) or isinstance(w, QSlider): w.setValue(value)
+                elif isinstance(w, QCheckBox): w.setChecked(bool(value))
+                elif isinstance(w, QComboBox): w.setCurrentText(str(value))
+                elif isinstance(w, QTextEdit): w.setPlainText(str(value))
+                w.blockSignals(False)
+
+        # 2. Trigger node logic
+        self.node_definition.on_parameter_changed(name, value)
+        
+        # 3. Push downstream
+        if propagate:
+            self._propagate_all_outputs()
 
     def _update_param(self, name, value):
+        """Internal handler for widget value changes."""
         self.node_definition.parameters[name] = value
+        self.node_definition.on_parameter_changed(name, value)
+        self._propagate_all_outputs()
+
+    def _propagate_all_outputs(self):
+        """Pushes all current output port values to connected downstream nodes."""
+        if not self.scene(): return
+        
+        for edge in self.scene().edges:
+            if edge.from_port.parentItem() == self:
+                out_port_name = edge.from_port.port_definition.name
+                current_val = self.node_definition.get_parameter(out_port_name)
+                
+                target_node = edge.to_port.parentItem()
+                target_port_name = edge.to_port.port_definition.name
+                
+                # Recursive push to destination
+                target_node.set_parameter(target_port_name, current_val, propagate=True)
 
     def set_status(self, status: str):
         self.status = status
@@ -216,32 +295,36 @@ class NodeWidget(QGraphicsItem):
 
     def paint(self, painter, option, widget):
         base_color = QColor(40, 40, 40)
-        if self.status == "running":
-            base_color = QColor(100, 100, 0)
-        elif self.status == "success":
-            base_color = QColor(0, 80, 0)
-        elif self.status == "failed":
-            base_color = QColor(100, 0, 0)
+        if self.status == "running": base_color = QColor(100, 100, 0)
+        elif self.status == "success": base_color = QColor(0, 80, 0)
+        elif self.status == "failed": base_color = QColor(100, 0, 0)
 
+        # 1. DRAW BODY
         painter.setPen(QPen(Qt.black, 1))
         painter.setBrush(QBrush(base_color))
         painter.drawRoundedRect(self.boundingRect(), 10, 10)
         
+        # 2. DRAW HEADER
         header_color = QColor(60, 60, 60)
         painter.setBrush(QBrush(header_color))
-        painter.drawRoundedRect(QRectF(0, 0, self.width, 30), 10, 10)
-        painter.drawRect(QRectF(0, 15, self.width, 15))
+        path = QPainterPath()
+        path.addRoundedRect(self.boundingRect(), 10, 10)
+        painter.save()
+        painter.setClipPath(path)
+        painter.setPen(Qt.NoPen)
+        painter.drawRect(0, 0, int(self.width), 35)
+        painter.restore()
+        
+        painter.setPen(QPen(QColor(30, 30, 30), 1))
+        painter.drawLine(0, 35, int(self.width), 35)
 
-        # Draw Icon if exists
         if hasattr(self.node_definition, 'icon_path') and self.node_definition.icon_path:
             pixmap = QPixmap(self.node_definition.icon_path)
             if not pixmap.isNull():
-                painter.drawPixmap(5, 5, 20, 20, pixmap)
-                self.title_text.setPos(30, 5)
-            else:
-                self.title_text.setPos(10, 5)
-        else:
-            self.title_text.setPos(10, 5)
+                painter.drawPixmap(8, 8, 20, 20, pixmap)
+                self.title_text.setPos(32, 5)
+            else: self.title_text.setPos(10, 5)
+        else: self.title_text.setPos(10, 5)
 
         if self.isSelected():
             painter.setPen(QPen(QColor(255, 165, 0), 2))

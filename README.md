@@ -14,30 +14,37 @@
 
 ## 🌟 Latest Enhancements
 
-### 💻 Professional Code Editor
-The built-in Node Builder now features a specialized source code editor designed for Python development:
-- **IntelliSense:** Smart code completion suggestions.
-- **Real-time Linting:** Instant error detection as you type.
-- **Advanced Editing:** Auto-indentation, bracket matching, and auto-closing.
-- **Dracula Theme:** High-contrast syntax highlighting for maximum readability.
+### ⚡ Reactive Data Propagation
+Workflow data now flows in **real-time** across the canvas:
+- **Instant Sync:** Changing a value in one node immediately updates all connected downstream nodes.
+- **Visual Monitoring:** Destination widgets update live even when disabled by a connection, acting as real-time monitors.
+- **Predictive Flow:** Smart data mirroring ensures nodes possess output data even before the full workflow is executed.
 
-### 📁 Smart Node Library
-- **Search & Categories:** Quickly find nodes using the real-time search bar or browse by organized categories (Math, Logic, IO, etc.).
-- **Visual Feedback:** High-quality **SVG icons** for every node in the library and on the canvas.
+### 🔄 Node Lifecycle Events
+Nodes are now fully "aware" of their environment:
+- **on_plug_sync:** React instantly when a wire is connected.
+- **on_unplug_sync:** Cleanup or reset logic when disconnected.
+- **on_parameter_changed:** Custom logic that triggers as you type or interact with widgets.
 
-### 🎭 Modern UI & Theming
-- **Dynamic Themes:** Switch between sleek **Dark Mode** and standard **Light Mode** instantly.
-- **Improved Canvas:** Nodes now feature clear port labels and integrated widgets for direct data interaction.
-- **Interactive Toolbar:** Icon-based toolbar with tooltips for intuitive workflow control.
+### 🏗️ Advanced Node Builder
+The specialized creation tool is now more powerful:
+- **Interactive Selectors:** Dropdown menus for selecting port **Types** and **Widget** styles.
+- **Automatic Code Generation:** Generates full Python class structures with lifecycle stubs automatically.
+- **Robust Sync:** Bi-directional synchronization between the UI tables and the Python source code.
+
+### 🎨 Refined Node Layout
+- **Dynamic Scaling:** Nodes automatically resize their width and height to fit any number of ports and widgets perfectly.
+- **Vertical Centering:** All parameter widgets are automatically distributed and centered within the node body.
+- **Clean UI:** Professional header rendering with no overlapping lines and clear, bold parameter labeling.
 
 ---
 
 ## 🚀 Key Features
 
 - **Interactive Node Widgets:** Embed Text Boxes, Sliders, Dropdowns, and File Selectors directly into your nodes.
-- **Advanced Connections:** Bidirectional wire dragging, single-input enforcement, and redrag-to-disconnect.
-- **Asynchronous Engine:** Background execution via `asyncio` keeps the UI responsive during processing.
-- **Fancy Event Log:** Color-coded dockable window for real-time execution tracking and error reporting.
+- **Thread-Safe Logging:** Background nodes communicate with the UI via a robust signal-based logging system.
+- **Asynchronous Engine:** Background execution via `asyncio` keeps the UI responsive during high-load processing.
+- **Robust Persistence:** Workflows and custom nodes are saved as clean, portable JSON definitions.
 
 ---
 
@@ -78,11 +85,11 @@ Detailed documentation is available for both users and developers:
 ## 📂 Project Structure
 
 ```text
-├── icons/              # SVG icon set for the node library
 ├── nodes/              # JSON definitions for custom nodes
 ├── src/
 │   ├── core/           # Engine, Registry, and Graph logic
 │   ├── ui/             # PyQt components (Canvas, Editor, Library)
+│   ├── utils/          # Runtime and Threading helpers
 │   └── main.py         # Application entry point
 ├── workflows/          # Saved pipeline files (.json)
 └── DOCUMENTATION.md    # Full technical feature list

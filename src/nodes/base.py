@@ -35,19 +35,47 @@ class BaseNode(ABC):
 
     def add_input(self, name: str, data_type: str = "any", widget_type: str = None, options: List[str] = None):
         self.inputs[name] = Port(name, data_type, widget_type, options)
-        if widget_type:
-            # Initialize parameter for the widget
+        # Always initialize parameter key to ensure it's accessible via .parameters.get()
+        if name not in self.parameters:
             self.parameters[name] = None
 
     def add_output(self, name: str, data_type: str = "any"):
         self.outputs[name] = Port(name, data_type)
+        # ALSO initialize output name in parameters so other nodes can query its 'last known' or 'default' state
+        if name not in self.parameters:
+            self.parameters[name] = None
 
     def add_parameter(self, name: str, param_type: Type, default: Any = None):
         self.parameter_types[name] = param_type
         self.parameters[name] = default
 
-    def get_parameter(self, name: str) -> Any:
-        return self.parameters.get(name)
+    def get_parameter(self, name: str, default: Any = None) -> Any:
+        """Safely retrieve a parameter value."""
+        return self.parameters.get(name, default)
+
+    def __getitem__(self, key: str) -> Any:
+        """Shortcut for get_parameter: node['param_name']"""
+        return self.get_parameter(key)
+
+    async def on_plug(self, port_name: str, is_input: bool, other_node: 'BaseNode', other_port_name: str):
+        """Called when a connection is established (Async)."""
+        pass
+
+    async def on_unplug(self, port_name: str, is_input: bool):
+        """Called when a connection is removed (Async)."""
+        pass
+
+    def on_plug_sync(self, port_name: str, is_input: bool, other_node: 'BaseNode', other_port_name: str):
+        """Called when a connection is established (Sync)."""
+        pass
+
+    def on_unplug_sync(self, port_name: str, is_input: bool):
+        """Called when a connection is removed (Sync)."""
+        pass
+
+    def on_parameter_changed(self, name: str, value: Any):
+        """Called when a parameter/widget value is changed."""
+        pass
 
     @abstractmethod
     async def execute(self, inputs: Dict[str, Any]) -> Dict[str, Any]:
