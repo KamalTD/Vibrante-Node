@@ -174,9 +174,21 @@ class MainWindow(QMainWindow):
         user_guide_act.triggered.connect(lambda: self._open_doc("USER_GUIDE.md"))
         help_menu.addAction(user_guide_act)
         
+        node_builder_act = QAction('Node Builder API', self)
+        node_builder_act.triggered.connect(lambda: self._open_doc("NODE_BUILDER_API.md"))
+        help_menu.addAction(node_builder_act)
+        
+        automation_act = QAction('Automation API', self)
+        automation_act.triggered.connect(lambda: self._open_doc("AUTOMATION_API.md"))
+        help_menu.addAction(automation_act)
+        
         dev_doc_act = QAction('Developer Documentation', self)
         dev_doc_act.triggered.connect(lambda: self._open_doc("DEVELOPER.md"))
         help_menu.addAction(dev_doc_act)
+        
+        feature_list_act = QAction('Technical Feature List', self)
+        feature_list_act.triggered.connect(lambda: self._open_doc("DOCUMENTATION.md"))
+        help_menu.addAction(feature_list_act)
         
         help_menu.addSeparator()
         
@@ -193,11 +205,30 @@ class MainWindow(QMainWindow):
             QMessageBox.critical(self, "Error", f"Documentation file not found: {filename}")
 
     def _show_about(self):
+        description = (
+            "Vibrante-Node is a Python-node-based visual framework for building modular systems "
+            "through connected nodes and data flows. It provides an intuitive graph interface "
+            "where complex logic can be constructed visually by linking nodes together.<br><br>"
+            "The project focuses on flexibility, extensibility, and developer productivity, "
+            "making it suitable for building tools such as visual pipelines, automation workflows, "
+            "and data-processing graphs."
+        )
+        
+        license_text = (
+            "Permission is granted to use, modify, and test this software for personal and non-commercial purposes.<br><br>"
+            "Commercial use, redistribution in commercial products, or use within commercial services requires "
+            "written permission from the author."
+        )
+        
         QMessageBox.about(self, "About Vibrante-Node",
-            "<h3>Vibrante-Node v1.0</h3>"
-            "<p>A professional node-based visual workflow editor for Python.</p>"
-            "<p><b>Copyright &copy; 2026 KamalTD</b></p>"
-            "<p>Built with PyQt5, Asyncio, and ❤️</p>")
+            f"<h3>Vibrante-Node v1.0</h3>"
+            f"<p>{description}</p>"
+            f"<hr>"
+            f"<p><b>Copyright &copy; 2026 Mahmoud Kamal - KamalTD</b></p>"
+            f"<p>GitHub: <a href='https://github.com/KamalTD'>https://github.com/KamalTD</a></p>"
+            f"<p>Built with PyQt5, Asyncio, and ❤️</p>"
+            f"<hr>"
+            f"<p><small>{license_text}</small></p>")
 
     def _init_toolbar(self):
         toolbar = self.addToolBar("Main")
