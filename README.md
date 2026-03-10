@@ -76,9 +76,11 @@ The specialized creation tool is now more powerful:
 ## 📚 Documentation
 
 Detailed documentation is available for both users and developers:
--   📖 **[User Guide](USER_GUIDE.md)**: How to use the interface, build workflows, and use the Node Builder.
--   🛠️ **[Developer Documentation](DEVELOPER.md)**: Technical architecture, data flow, and how to extend the system.
--   📄 **[Full Feature List](DOCUMENTATION.md)**: Detailed breakdown of all technical features.
+-   📖 **[User Guide](USER_GUIDE.md)**: How to use the interface and build workflows.
+-   🛠️ **[Node Builder API](NODE_BUILDER_API.md)**: In-depth guide for creating custom nodes.
+-   🤖 **[Automation API](AUTOMATION_API.md)**: Reference for Scripting Console automation.
+-   🛠️ **[Developer Documentation](DEVELOPER.md)**: Technical architecture and internal data flow.
+-   📄 **[Technical Feature List](DOCUMENTATION.md)**: Detailed breakdown of all platform features.
 
 ---
 
