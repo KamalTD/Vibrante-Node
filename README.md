@@ -107,4 +107,9 @@ Detailed documentation is available for both users and developers:
 ---
 
 ## 📜 License
-This project is provided for educational and developmental purposes. Feel free to fork and extend!
+
+Permission is granted to use, modify, and test this software for personal and non-commercial purposes.
+
+Commercial use, redistribution in commercial products, or use within commercial services requires written permission from the author.
+
+Contributions are welcome via pull requests.
