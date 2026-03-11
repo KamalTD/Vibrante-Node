@@ -67,10 +67,21 @@ class NetworkExecutor(QObject):
             instance._on_log = create_logger(node_id)
 
             def create_output_handler(nid):
-                def handler(name, value):
+                async def handler(name, value):
                     self.node_results[nid][name] = value
                     self.node_output.emit(nid, {name: value})
-                return handler
+                    
+                    # FLOW-BASED ROUTING: If an 'exec' port is written to, follow it
+                    # We only do this if the node has any 'exec' connections
+                    if value:
+                        node_inst = self.node_instances.get(nid)
+                        if node_inst and getattr(node_inst.outputs.get(name), 'data_type', 'any') == 'exec':
+                            # Follow the flow for this specific exec pin
+                            for conn in self.graph_manager.connections:
+                                if conn.from_node == nid and conn.from_port == name and conn.is_exec:
+                                    # Use a background task to not block the current node's execute
+                                    asyncio.create_task(self._execute_flow(conn.to_node))
+                return lambda name, value: asyncio.create_task(handler(name, value))
             instance._on_output = create_output_handler(node_id)
 
         # 2. IDENTIFY EXECUTION STRATEGY
@@ -111,13 +122,16 @@ class NetworkExecutor(QObject):
         success = await self._run_single_node(node_id)
         if not success or self._is_stopped: return
 
-        # 2. Find next node(s) via 'exec' pins
-        # We handle standard 'out' pin first
+        # 2. Find next node(s) via standard 'exec_out' or 'out' pins
+        # Branching nodes (if/loop) handle their own routing via _on_output
         next_conns = [c for c in self.graph_manager.connections if c.from_node == node_id and c.is_exec]
         
-        # Sort by port name if multiple (usually just one 'out')
-        for conn in sorted(next_conns, key=lambda c: c.from_port):
-            await self._execute_flow(conn.to_node)
+        # Only follow standard sequential output pins here to avoid double-execution 
+        # for nodes that also emit streaming exec signals
+        standard_pins = ["exec_out", "out", "then"]
+        for conn in next_conns:
+            if conn.from_port in standard_pins:
+                await self._execute_flow(conn.to_node)
 
     async def _run_single_node(self, node_id: UUID) -> bool:
         if self._is_stopped: return False
