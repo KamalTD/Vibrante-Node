@@ -308,6 +308,13 @@ class MainWindow(QMainWindow):
         self.execute_btn.triggered.connect(self.execute_pipeline)
         toolbar.addAction(self.execute_btn)
 
+        # Stop Workflow
+        self.stop_btn = QAction(self.style().standardIcon(QStyle.SP_MediaStop), "Stop Workflow", self)
+        self.stop_btn.setToolTip("Stop the active pipeline (Shift+F5)")
+        self.stop_btn.triggered.connect(self.stop_execution)
+        self.stop_btn.setEnabled(False)
+        toolbar.addAction(self.stop_btn)
+
     def _delete_selected(self):
         scene = self.get_current_scene()
         if not scene: return
@@ -474,6 +481,7 @@ class MainWindow(QMainWindow):
             return
         
         self.execute_btn.setEnabled(False)
+        self.stop_btn.setEnabled(True)
         self.status_label.setText("Running...")
         tab_name = self.tabs.tabText(self.tabs.currentIndex())
         self.log_panel.log(f"Starting execution for [{tab_name}]...", "execution")
@@ -503,12 +511,19 @@ class MainWindow(QMainWindow):
 
         threading.Thread(target=run_async_loop, daemon=True).start()
 
+    def stop_execution(self):
+        if hasattr(self, 'current_executor') and self.current_executor:
+            self.current_executor.stop()
+            self.status_label.setText("Stopping...")
+            self.log_panel.log("Stop requested...", "warning")
+
     def _on_execution_finished(self, success):
         self._is_executing = False
         self.execute_btn.setEnabled(True)
+        self.stop_btn.setEnabled(False)
         self.status_label.setText("Ready")
-        status = "successfully" if success else "with errors"
-        self.log_panel.log(f"Execution finished {status}.", "info" if success else "error")
+        status = "successfully" if success else "or stopped"
+        self.log_panel.log(f"Execution finished {status}.", "info" if success else "warning")
 
     def _on_node_started(self, node_instance_id):
         widget = self._find_node_widget(node_instance_id)

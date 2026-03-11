@@ -20,11 +20,16 @@ class NetworkExecutor(QObject):
         self.graph_manager = graph_manager
         self.node_instances: Dict[UUID, Any] = {}
         self.node_results: Dict[UUID, Dict[str, Any]] = {}
+        self._is_stopped = False
+
+    def stop(self):
+        self._is_stopped = True
 
     async def run(self):
         """
         Executes the graph in topological order with data flow.
         """
+        self._is_stopped = False
         try:
             order = self.graph_manager.get_topological_sort()
         except Exception as e:
@@ -37,6 +42,10 @@ class NetworkExecutor(QObject):
 
         # 1. PREPARE ALL NODES
         for node_id, node_model in self.graph_manager.nodes.items():
+            if self._is_stopped:
+                self.execution_finished.emit(False)
+                return
+            
             node_class = NodeRegistry.get_class(node_model.node_id)
             if not node_class:
                 err = f"Unknown node type: {node_model.node_id}"
@@ -92,6 +101,9 @@ class NetworkExecutor(QObject):
         # 2. INITIAL DATA SYNC PASS
         # Ensures that nodes start with values from their connected peers
         for conn in self.graph_manager.connections:
+            if self._is_stopped:
+                self.execution_finished.emit(False)
+                return
             if conn.from_node in self.node_instances and conn.to_node in self.node_instances:
                 f_inst = self.node_instances[conn.from_node]
                 t_inst = self.node_instances[conn.to_node]
@@ -103,18 +115,23 @@ class NetworkExecutor(QObject):
 
         # 3. EXECUTION LOOP
         for layer in order:
+            if self._is_stopped:
+                self.execution_finished.emit(False)
+                return
             tasks = []
             for node_id in layer:
                 tasks.append(self._run_single_node(node_id))
             
             results = await asyncio.gather(*tasks)
-            if not all(results):
+            if not all(results) or self._is_stopped:
                 self.execution_finished.emit(False)
                 return
 
         self.execution_finished.emit(True)
 
     async def _run_single_node(self, node_id: UUID) -> bool:
+        if self._is_stopped:
+            return False
         self.node_started.emit(node_id)
         instance = self.node_instances[node_id]
         
@@ -125,6 +142,11 @@ class NetworkExecutor(QObject):
                 from_results = self.node_results.get(conn.from_node, {})
                 if conn.from_port in from_results:
                     inputs[conn.to_port] = from_results.get(conn.from_port)
+        
+        # NOTE: This only checks before starting. Long-running 'execute' methods 
+        # would need to handle cancellation internally if they are very long.
+        if self._is_stopped:
+            return False
         
         success, result, error = await SafeRuntime.run_node_safe(instance.execute, inputs)
         
