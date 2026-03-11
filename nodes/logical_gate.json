@@ -29,5 +29,5 @@
             "type": "bool"
         }
     ],
-    "python_code": "async def execute(self, inputs):\n    a = bool(inputs.get('a', False))\n    b = bool(inputs.get('b', False))\n    op = inputs.get('operation', 'AND')\n    \n    if op == 'AND': res = a and b\n    elif op == 'OR': res = a or b\n    elif op == 'NOT': res = not a\n    else: res = False\n    \n    self.log_info(f\"Logic: {a} {op} {b} -> {res}\")\n    return {'result': res}"
+    "python_code": "def _run_logic(self):\n    a = bool(self.get_parameter('a', False))\n    b = bool(self.get_parameter('b', False))\n    op = self.get_parameter('operation', 'AND')\n    \n    if op == 'AND': res = a and b\n    elif op == 'OR': res = a or b\n    elif op == 'NOT': res = not a\n    else: res = False\n    return res\n\nasync def execute(self, inputs):\n    res = self._run_logic()\n    return {'result': res}\n\ndef on_parameter_changed(self, name, value):\n    if name in ['a', 'b', 'operation']:\n        res = self._run_logic()\n        self.set_output('result', res)"
 }
