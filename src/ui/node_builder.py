@@ -168,6 +168,14 @@ class {name}(BaseNode):
         pass
 
     async def execute(self, inputs):
+        \"\"\"
+        Main execution logic for the node.
+        
+        :param inputs: A dictionary containing data from connected input ports and widgets.
+                       Key: Port Name (string), Value: Port Data (any).
+        :return: A dictionary containing data to be sent to output ports.
+                 Key: Port Name (string), Value: Port Data (any).
+        \"\"\"
         return {{}}
 
 def register_node():
