@@ -92,8 +92,23 @@ class NodeRegistry:
                             self.add_output(out.name, out.type)
                             
                     async def execute(self, inputs):
-                        # Call the execute function from namespace
                         return await namespace['execute'](self, inputs)
+                    
+                    def on_parameter_changed(self, name, value):
+                        if 'on_parameter_changed' in namespace:
+                            namespace['on_parameter_changed'](self, name, value)
+                            
+                    def on_plug_sync(self, port_name, is_input, other_node, other_port_name):
+                        if 'on_plug_sync' in namespace:
+                            namespace['on_plug_sync'](self, port_name, is_input, other_node, other_port_name)
+
+                    # Add any other helper functions from namespace to the class
+                    pass
+                
+                # Copy helper functions (starting with _) to the class
+                for key, func in namespace.items():
+                    if key.startswith('_') and callable(func):
+                        setattr(DynamicNode, key, func)
                 
                 # Assign a name to the dynamic class for better debugging
                 class_name = "".join(x for x in definition.name.title() if not x.isspace())
