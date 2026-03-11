@@ -8,6 +8,20 @@ class PortModel(BaseModel):
     widget_type: Optional[str] = None # 'text', 'int', 'float', 'bool', 'dropdown', 'slider', 'text_area'
     options: Optional[List[str]] = None # For dropdown
 
+class StickyNoteModel(BaseModel):
+    id: UUID = Field(default_factory=uuid4)
+    position: Tuple[float, float]
+    size: Tuple[float, float] = (200.0, 150.0)
+    text: str = "New Note"
+    color: str = "#ffffcc"
+
+class BackdropModel(BaseModel):
+    id: UUID = Field(default_factory=uuid4)
+    position: Tuple[float, float]
+    size: Tuple[float, float] = (400.0, 300.0)
+    title: str = "Network Box"
+    color: str = "#444444"
+
 class NodeDefinitionJSON(BaseModel):
     node_id: str
     name: str
@@ -35,4 +49,6 @@ class ConnectionModel(BaseModel):
 class WorkflowModel(BaseModel):
     nodes: List[NodeInstanceModel] = Field(default_factory=list)
     connections: List[ConnectionModel] = Field(default_factory=list)
+    sticky_notes: List[StickyNoteModel] = Field(default_factory=list)
+    backdrops: List[BackdropModel] = Field(default_factory=list)
     metadata: Dict[str, Any] = Field(default_factory=dict)

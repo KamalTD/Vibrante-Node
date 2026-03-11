@@ -6,8 +6,10 @@ from src.core.registry import NodeRegistry
 from src.ui.node_widget import NodeWidget
 from src.ui.canvas.edge import Edge
 from src.ui.port_widget import PortWidget
-from src.core.models import WorkflowModel, NodeInstanceModel, ConnectionModel
+from src.core.models import WorkflowModel, NodeInstanceModel, ConnectionModel, StickyNoteModel, BackdropModel
 from src.utils.runtime import AsyncRuntime
+from src.ui.canvas.sticky_note import StickyNote
+from src.ui.canvas.backdrop import Backdrop
 from uuid import uuid4, UUID
 
 class NodeScene(QGraphicsScene):
@@ -18,8 +20,10 @@ class NodeScene(QGraphicsScene):
         
         self.nodes = [] # List of NodeWidget
         self.edges = []
+        self.sticky_notes = []
+        self.backdrops = []
         self.active_edge = None
-        self.file_path = None # Track current file
+        self.file_path = None
 
         self.grid_size = 20
         self.grid_pen = QPen(QColor("#555555"), 0.5)
@@ -36,7 +40,6 @@ class NodeScene(QGraphicsScene):
         fn = fn_widget.node_definition
         tn = tn_widget.node_definition
         
-        # 1. Sync (Wrapped in try-except to prevent crashes from typos in node code)
         try:
             fn.on_unplug_sync(from_port.port_definition.name, False)
         except Exception as e:
@@ -47,11 +50,9 @@ class NodeScene(QGraphicsScene):
         except Exception as e:
             print(f"Error in {tn.name} on_unplug_sync: {e}")
         
-        # Refresh UI for both
         fn_widget._refresh_widget_states()
         tn_widget._refresh_widget_states()
         
-        # 2. Async
         self._safe_async_call(fn.on_unplug(from_port.port_definition.name, False))
         self._safe_async_call(tn.on_unplug(to_port.port_definition.name, True))
 
@@ -63,13 +64,10 @@ class NodeScene(QGraphicsScene):
         fn = fn_widget.node_definition
         tn = tn_widget.node_definition
         
-        # 1. DATA SYNC: Set target node's parameter to match source port value
         source_val = fn.get_parameter(from_port.port_definition.name)
         if source_val is not None:
-            # Update target's parameter and UI widget
             tn_widget.set_parameter(to_port.port_definition.name, source_val)
 
-        # 2. Sync Events
         try:
             fn.on_plug_sync(from_port.port_definition.name, False, tn, to_port.port_definition.name)
         except Exception as e:
@@ -80,11 +78,9 @@ class NodeScene(QGraphicsScene):
         except Exception as e:
             print(f"Error in {tn.name} on_plug_sync: {e}")
         
-        # Refresh UI for both
         fn_widget._refresh_widget_states()
         tn_widget._refresh_widget_states()
         
-        # 3. Async
         self._safe_async_call(fn.on_plug(from_port.port_definition.name, False, tn, to_port.port_definition.name))
         self._safe_async_call(tn.on_plug(to_port.port_definition.name, True, fn, from_port.port_definition.name))
 
@@ -121,24 +117,62 @@ class NodeScene(QGraphicsScene):
                     to_port=edge.to_port.port_definition.name
                 )
                 model.connections.append(conn_model)
+        for note in self.sticky_notes:
+            model.sticky_notes.append(StickyNoteModel(
+                id=note.instance_id,
+                position=(note.pos().x(), note.pos().y()),
+                size=(note.rect().width(), note.rect().height()),
+                text=note.get_text(),
+                color=note.bg_color.name()
+            ))
+        for box in self.backdrops:
+            model.backdrops.append(BackdropModel(
+                id=box.instance_id,
+                position=(box.pos().x(), box.pos().y()),
+                size=(box.rect().width(), box.rect().height()),
+                title=box.title_item.toPlainText(),
+                color=box.bg_color.name()
+            ))
         return model
 
     def from_workflow_model(self, model: WorkflowModel):
         self.clear()
         self.nodes = []
         self.edges = []
+        self.sticky_notes = []
+        self.backdrops = []
         id_to_widget = {}
+        
         for node_model in model.nodes:
             widget = self.add_node_by_name(node_model.node_id, QPointF(node_model.position[0], node_model.position[1]))
             if widget:
                 widget.instance_id = node_model.instance_id
                 widget.node_definition.parameters = node_model.parameters
                 id_to_widget[node_model.instance_id] = widget
+        
         for conn in model.connections:
             from_widget = id_to_widget.get(conn.from_node)
             to_widget = id_to_widget.get(conn.to_node)
             if from_widget and to_widget:
                 self.connect_nodes(from_widget, conn.from_port, to_widget, conn.to_port)
+                
+        for note_model in model.sticky_notes:
+            self.add_sticky_note(note_model.text, note_model.position, note_model.size, note_model.color, note_model.id)
+            
+        for bd_model in model.backdrops:
+            self.add_backdrop(bd_model.title, bd_model.position, bd_model.size, bd_model.color, bd_model.id)
+
+    def add_sticky_note(self, text="New Note", pos=(0, 0), size=(200, 150), color="#ffffcc", instance_id=None):
+        note = StickyNote(text, pos, size, color, instance_id)
+        self.addItem(note)
+        self.sticky_notes.append(note)
+        return note
+
+    def add_backdrop(self, title="Network Box", pos=(0, 0), size=(400, 300), color="#444444", instance_id=None):
+        box = Backdrop(title, pos, size, color, instance_id)
+        self.addItem(box)
+        self.backdrops.append(box)
+        return box
 
     def mousePressEvent(self, event):
         view = self.views()[0] if self.views() else None
@@ -229,6 +263,12 @@ class NodeScene(QGraphicsScene):
                     self.removeItem(item)
                 elif isinstance(item, NodeWidget):
                     self._remove_node_widget(item)
+                elif isinstance(item, StickyNote):
+                    if item in self.sticky_notes: self.sticky_notes.remove(item)
+                    self.removeItem(item)
+                elif isinstance(item, Backdrop):
+                    if item in self.backdrops: self.backdrops.remove(item)
+                    self.removeItem(item)
         super().keyPressEvent(event)
 
     def _remove_node_widget(self, node_widget):
@@ -246,10 +286,25 @@ class NodeScene(QGraphicsScene):
     def contextMenuEvent(self, event):
         menu = QMenu()
         pos = event.scenePos()
+        
+        # Core Items
+        add_note_act = QAction("Add Sticky Note", self.parent())
+        add_note_act.triggered.connect(lambda: self.add_sticky_note(pos=(pos.x(), pos.y())))
+        menu.addAction(add_note_act)
+        
+        add_bd_act = QAction("Add Network Box (Backdrop)", self.parent())
+        add_bd_act.triggered.connect(lambda: self.add_backdrop(pos=(pos.x(), pos.y())))
+        menu.addAction(add_bd_act)
+        
+        menu.addSeparator()
+        
+        # Nodes Submenu
+        node_menu = menu.addMenu("Add Node")
         for node_id in NodeRegistry.list_node_ids():
-            action = QAction(f"Add {node_id}", self.parent())
+            action = QAction(f"{node_id}", self.parent())
             action.triggered.connect(lambda checked, nid=node_id, p=pos: self.add_node_by_name(nid, p))
-            menu.addAction(action)
+            node_menu.addAction(action)
+            
         if not menu.isEmpty(): menu.exec_(event.screenPos())
         else: super().contextMenuEvent(event)
 
