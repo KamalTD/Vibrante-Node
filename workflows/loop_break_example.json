@@ -1,0 +1,85 @@
+{
+    "nodes": [
+        {
+            "instance_id": "8489813d-5136-4074-9f0e-36511a5b8221",
+            "node_id": "for_loop",
+            "position": [
+                -500.0,
+                0.0
+            ],
+            "parameters": {
+                "start": 0,
+                "end": 10,
+                "step": 1
+            }
+        },
+        {
+            "instance_id": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
+            "node_id": "loop_body",
+            "position": [
+                -150.0,
+                0.0
+            ],
+            "parameters": {
+                "operation": "Batch Job",
+                "delay": 0.5
+            }
+        },
+        {
+            "instance_id": "f5290df0-1929-4c8c-beab-8e81a5bed3a4",
+            "node_id": "compare",
+            "position": [
+                150.0,
+                -50.0
+            ],
+            "parameters": {
+                "operation": ">",
+                "b": 5
+            }
+        },
+        {
+            "instance_id": "d1d9a498-d8cc-4ca6-a020-6584cf7822e4",
+            "node_id": "console_print",
+            "position": [
+                450.0,
+                100.0
+            ],
+            "parameters": {
+                "data": "Running..."
+            }
+        }
+    ],
+    "connections": [
+        {
+            "id": "e4290df0-1929-4c8c-beab-8e81a5bed3a2",
+            "from_node": "8489813d-5136-4074-9f0e-36511a5b8221",
+            "from_port": "indices",
+            "to_node": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
+            "to_port": "indices"
+        },
+        {
+            "id": "f5290df0-1929-4c8c-beab-8e81a5bed3a3",
+            "from_node": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
+            "from_port": "current_index",
+            "to_node": "f5290df0-1929-4c8c-beab-8e81a5bed3a4",
+            "to_port": "a"
+        },
+        {
+            "id": "f5290df0-1929-4c8c-beab-8e81a5bed3a5",
+            "from_node": "f5290df0-1929-4c8c-beab-8e81a5bed3a4",
+            "from_port": "result",
+            "to_node": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
+            "to_port": "break_condition"
+        },
+        {
+            "id": "f5290df0-1929-4c8c-beab-8e81a5bed3a6",
+            "from_node": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
+            "from_port": "current_index",
+            "to_node": "d1d9a498-d8cc-4ca6-a020-6584cf7822e4",
+            "to_port": "data"
+        }
+    ],
+    "metadata": {
+        "description": "Example showing how to use 'break_condition' in a Loop Body. The loop stops as soon as current_index > 5."
+    }
+}
