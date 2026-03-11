@@ -1,0 +1,33 @@
+{
+    "node_id": "compare",
+    "name": "Compare",
+    "description": "Compares two inputs based on a chosen operation.",
+    "category": "Logic",
+    "icon_path": "icons/scales.svg",
+    "inputs": [
+        {
+            "name": "a",
+            "type": "any",
+            "widget_type": "text"
+        },
+        {
+            "name": "operation",
+            "type": "string",
+            "widget_type": "dropdown",
+            "options": ["==", "!=", ">", "<", ">=", "<="],
+            "default": "=="
+        },
+        {
+            "name": "b",
+            "type": "any",
+            "widget_type": "text"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "result",
+            "type": "bool"
+        }
+    ],
+    "python_code": "async def execute(self, inputs):\n    a = inputs.get('a')\n    b = inputs.get('b')\n    op = inputs.get('operation', '==')\n    \n    self.log_info(f\"Comparing {a} {op} {b}\")\n    \n    try:\n        # Attempt numeric conversion for better comparisons if applicable\n        try:\n            a_num = float(a) if a is not None else 0.0\n            b_num = float(b) if b is not None else 0.0\n            a, b = a_num, b_num\n        except (ValueError, TypeError):\n            pass\n            \n        if op == '==': res = a == b\n        elif op == '!=': res = a != b\n        elif op == '>': res = a > b\n        elif op == '<': res = a < b\n        elif op == '>=': res = a >= b\n        elif op == '<=': res = a <= b\n        else: res = False\n        \n        return {'result': res}\n    except Exception as e:\n        self.log_error(f\"Comparison failed: {e}\")\n        return {'result': False}"
+}

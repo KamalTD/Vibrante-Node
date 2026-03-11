@@ -1,0 +1,33 @@
+{
+    "node_id": "logical_gate",
+    "name": "Logical Gate",
+    "description": "Performs AND, OR, or NOT logic operations.",
+    "category": "Logic",
+    "icon_path": "icons/logic.svg",
+    "inputs": [
+        {
+            "name": "operation",
+            "type": "string",
+            "widget_type": "dropdown",
+            "options": ["AND", "OR", "NOT"],
+            "default": "AND"
+        },
+        {
+            "name": "a",
+            "type": "bool",
+            "widget_type": "bool"
+        },
+        {
+            "name": "b",
+            "type": "bool",
+            "widget_type": "bool"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "result",
+            "type": "bool"
+        }
+    ],
+    "python_code": "async def execute(self, inputs):\n    a = bool(inputs.get('a', False))\n    b = bool(inputs.get('b', False))\n    op = inputs.get('operation', 'AND')\n    \n    if op == 'AND': res = a and b\n    elif op == 'OR': res = a or b\n    elif op == 'NOT': res = not a\n    else: res = False\n    \n    self.log_info(f\"Logic: {a} {op} {b} -> {res}\")\n    return {'result': res}"
+}
