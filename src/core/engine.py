@@ -27,26 +27,23 @@ class NetworkExecutor(QObject):
 
     async def run(self):
         """
-        Executes the graph in topological order with data flow.
+        Executes the graph. Follows 'exec' pins if present, otherwise uses topological sort.
         """
         self._is_stopped = False
-        try:
-            order = self.graph_manager.get_topological_sort()
-        except Exception as e:
-            print(f"ERROR: Graph execution failed during topological sort: {e}")
-            self.execution_finished.emit(False)
-            return
-
+        
+        # 1. PREPARE ALL NODES
         self.node_results = {}
         self.node_instances = {}
-
-        # 1. PREPARE ALL NODES
         for node_id, node_model in self.graph_manager.nodes.items():
             if self._is_stopped:
                 self.execution_finished.emit(False)
                 return
             
             node_class = NodeRegistry.get_class(node_model.node_id)
+            if not node_class:
+                from src.nodes.base import NodeRegistry as BaseRegistry
+                node_class = BaseRegistry.get_node_class(node_model.node_id)
+                
             if not node_class:
                 err = f"Unknown node type: {node_model.node_id}"
                 self.node_error.emit(node_id, err)
@@ -55,105 +52,89 @@ class NetworkExecutor(QObject):
             
             instance = node_class()
             instance.name = node_model.node_id
-            
-            # Set parameters from model
             for p_name, p_val in node_model.parameters.items():
                 if p_name in instance.parameters:
                     instance.parameters[p_name] = p_val
             
-            # ENSURE FRESH START: Clear all output ports
             instance.clear_outputs()
-            
-            # Smart Clear Inputs: Only reset parameters that receive data from a connection
-            # This prevents stale feedback (like break_condition) while preserving standalone data (like indices)
-            connected_inputs = [c.to_port for c in self.graph_manager.connections if c.to_node == node_id]
-            for port_name in connected_inputs:
-                if port_name in instance.parameters:
-                    instance.parameters[port_name] = None
-            
             self.node_instances[node_id] = instance
             self.node_results[node_id] = {}
 
-            # SETUP HOOKS (Logging and Real-time data propagation)
+            # SETUP HOOKS
             instance._check_stopped = lambda: self._is_stopped
-            
             def create_logger(nid):
                 return lambda msg, lvl: self.node_log.emit(nid, msg, lvl)
             instance._on_log = create_logger(node_id)
 
             def create_output_handler(nid):
                 def handler(name, value):
-                    partial_results = {name: value}
-                    self.node_results[nid].update(partial_results)
-                    self.node_output.emit(nid, partial_results)
-                    
-                    # PROPAGATE TO CONNECTED NODES IN REAL-TIME
-                    for conn in self.graph_manager.connections:
-                        if conn.from_node == nid and conn.from_port == name:
-                            t_id = conn.to_node
-                            if t_id in self.node_instances:
-                                t_inst = self.node_instances[t_id]
-                                if conn.to_port in t_inst.parameters:
-                                    t_inst.parameters[conn.to_port] = value
-                                    t_inst.on_parameter_changed(conn.to_port, value)
+                    self.node_results[nid][name] = value
+                    self.node_output.emit(nid, {name: value})
                 return handler
-            
             instance._on_output = create_output_handler(node_id)
 
-        # 2. INITIAL DATA SYNC PASS
-        # Ensures that nodes start with values from their connected peers
-        for conn in self.graph_manager.connections:
-            if self._is_stopped:
-                self.execution_finished.emit(False)
-                return
-            if conn.from_node in self.node_instances and conn.to_node in self.node_instances:
-                f_inst = self.node_instances[conn.from_node]
-                t_inst = self.node_instances[conn.to_node]
-                val = f_inst.get_parameter(conn.from_port)
-                if val is not None:
-                    if conn.to_port in t_inst.parameters:
-                        t_inst.parameters[conn.to_port] = val
-                        t_inst.on_parameter_changed(conn.to_port, val)
-
-        # 3. EXECUTION LOOP
-        for layer in order:
-            if self._is_stopped:
-                self.execution_finished.emit(False)
-                return
-            tasks = []
-            for node_id in layer:
-                tasks.append(self._run_single_node(node_id))
+        # 2. IDENTIFY EXECUTION STRATEGY
+        # Find 'entry' nodes: nodes with 'exec' output but no 'exec' input, OR no 'exec' pins at all
+        exec_conns = [c for c in self.graph_manager.connections if c.is_exec]
+        
+        if exec_conns:
+            # FLOW-BASED EXECUTION
+            # Find nodes that have exec_out connected but no exec_in connected
+            has_exec_in = {c.to_node for c in exec_conns}
+            has_exec_out = {c.from_node for c in exec_conns}
+            entry_nodes = list(has_exec_out - has_exec_in)
             
-            results = await asyncio.gather(*tasks)
-            if not all(results) or self._is_stopped:
-                self.execution_finished.emit(False)
-                return
+            if not entry_nodes:
+                # If it's a closed loop or single node with exec, pick the first one with an exec pin
+                entry_nodes = [list(has_exec_out)[0]] if has_exec_out else []
 
-        self.execution_finished.emit(True)
+            for start_node in entry_nodes:
+                await self._execute_flow(start_node)
+        else:
+            # CLASSIC DATA-FLOW (TOPOLOGICAL)
+            try:
+                order = self.graph_manager.get_topological_sort()
+                for layer in order:
+                    if self._is_stopped: break
+                    tasks = [self._run_single_node(nid) for nid in layer]
+                    await asyncio.gather(*tasks)
+            except Exception as e:
+                print(f"Classic execution failed: {e}")
+
+        self.execution_finished.emit(not self._is_stopped)
+
+    async def _execute_flow(self, node_id: UUID):
+        """Recursively follows the execution chain."""
+        if self._is_stopped: return
+
+        # 1. Run the current node
+        success = await self._run_single_node(node_id)
+        if not success or self._is_stopped: return
+
+        # 2. Find next node(s) via 'exec' pins
+        # We handle standard 'out' pin first
+        next_conns = [c for c in self.graph_manager.connections if c.from_node == node_id and c.is_exec]
+        
+        # Sort by port name if multiple (usually just one 'out')
+        for conn in sorted(next_conns, key=lambda c: c.from_port):
+            await self._execute_flow(conn.to_node)
 
     async def _run_single_node(self, node_id: UUID) -> bool:
-        if self._is_stopped:
-            return False
+        if self._is_stopped: return False
         self.node_started.emit(node_id)
         instance = self.node_instances[node_id]
         
-        # Merge latest parameters with results from upstream neighbors
+        # Pull data inputs
         inputs = instance.parameters.copy()
         for conn in self.graph_manager.connections:
-            if conn.to_node == node_id:
+            if conn.to_node == node_id and not conn.is_exec:
                 from_results = self.node_results.get(conn.from_node, {})
                 if conn.from_port in from_results:
                     inputs[conn.to_port] = from_results.get(conn.from_port)
         
-        # NOTE: This only checks before starting. Long-running 'execute' methods 
-        # would need to handle cancellation internally if they are very long.
-        if self._is_stopped:
-            return False
-        
         success, result, error = await SafeRuntime.run_node_safe(instance.execute, inputs)
         
         if success:
-            # Final output emission
             self.node_results[node_id].update(result)
             self.node_output.emit(node_id, result)
             self.node_finished.emit(node_id, "success")

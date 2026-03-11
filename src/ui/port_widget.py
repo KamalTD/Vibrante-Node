@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QGraphicsEllipseItem, QGraphicsItem
-from PyQt5.QtCore import Qt, QPointF
-from PyQt5.QtGui import QColor, QBrush, QPen
+from PyQt5.QtCore import Qt, QPointF, QRectF
+from PyQt5.QtGui import QColor, QBrush, QPen, QPolygonF, QPainter
 
 class PortWidget(QGraphicsEllipseItem):
     # Map data types to colors
@@ -14,6 +14,7 @@ class PortWidget(QGraphicsEllipseItem):
         "list": QColor(255, 184, 108),   # Orange
         "dict": QColor(255, 85, 85),     # Red
         "any": QColor(139, 233, 253),    # Light Blue/Cyan
+        "exec": QColor(255, 255, 255),   # White
         "default": QColor(170, 170, 170) # Gray
     }
 
@@ -24,11 +25,19 @@ class PortWidget(QGraphicsEllipseItem):
         self.radius = 6
         self.setRect(-self.radius, -self.radius, self.radius * 2, self.radius * 2)
         
+        # Determine if it's an execution port
+        data_type = "any"
+        if hasattr(self.port_definition, "type"):
+            data_type = self.port_definition.type.lower()
+        elif hasattr(self.port_definition, "data_type"):
+            data_type = self.port_definition.data_type.lower()
+        self.port_type = "exec" if data_type == "exec" else "data"
+        
         self.setAcceptHoverEvents(True)
         self._init_ui()
 
     def _init_ui(self):
-        # Color based on type (handling both PortModel.type and Port.data_type)
+        # Color based on type
         data_type = "any"
         if hasattr(self.port_definition, "type"):
             data_type = self.port_definition.type.lower()
@@ -43,11 +52,19 @@ class PortWidget(QGraphicsEllipseItem):
         # Tooltip showing name and type
         self.setToolTip(f"{self.port_definition.name}\nType: {data_type}")
         
-        # Position within parent (NodeWidget)
-        if self.is_input:
-            self.setPos(0, 50)  # Simple placeholder position
+    def paint(self, painter, option, widget):
+        if self.port_type == "exec":
+            painter.setRenderHint(QPainter.Antialiasing)
+            painter.setBrush(self.brush())
+            painter.setPen(self.pen())
+            
+            # Draw a triangle (arrow head)
+            poly = QPolygonF()
+            r = self.radius
+            poly << QPointF(-r, -r) << QPointF(r, 0) << QPointF(-r, r)
+            painter.drawPolygon(poly)
         else:
-            self.setPos(150, 50) # Simple placeholder position
+            super().paint(painter, option, widget)
 
     def get_scene_pos(self) -> QPointF:
         return self.scenePos()
