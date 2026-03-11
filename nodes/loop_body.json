@@ -2,7 +2,8 @@
     "node_id": "loop_body",
     "name": "Loop Body",
     "description": "Executes logic for each index in a provided list. Simulates loop body behavior in a single execution pass.",
-    "category": "Control",
+    "category": "Operations",
+    "icon_path": "icons/list.svg",
     "inputs": [
         {
             "name": "indices",
