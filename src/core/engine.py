@@ -52,7 +52,9 @@ class NetworkExecutor(QObject):
                 if p_name in instance.parameters:
                     instance.parameters[p_name] = p_val
             
-            instance.clear_outputs() # Clean state for new run
+            # ENSURE FRESH START: Clear all transient data from previous runs
+            instance.clear_outputs()
+            instance.clear_input_parameters()
             
             self.node_instances[node_id] = instance
             self.node_results[node_id] = {}

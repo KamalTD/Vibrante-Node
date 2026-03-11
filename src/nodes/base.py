@@ -34,6 +34,13 @@ class BaseNode(ABC):
         for name in self.outputs:
             self.parameters[name] = None
 
+    def clear_input_parameters(self):
+        """Resets all input parameters that are not widgets to None."""
+        for name, port in self.inputs.items():
+            # If it's an input that usually comes from another node (no widget or just flow)
+            # we reset it to ensure stale data doesn't trigger logic (like break_condition)
+            self.parameters[name] = None
+
     def log_info(self, msg: str):
         if self._on_log: self._on_log(msg, "info")
         else: print(f"INFO: {msg}")
