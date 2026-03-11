@@ -27,7 +27,6 @@ class Backdrop(QGraphicsRectItem):
         font.setBold(True)
         font.setPointSize(12)
         self.title_item.setFont(font)
-        # Enable text editing
         self.title_item.setTextInteractionFlags(Qt.TextEditorInteraction)
 
         # Resize State
@@ -47,9 +46,7 @@ class Backdrop(QGraphicsRectItem):
                pos.y() > self.rect().height() - self.resize_handle_size
 
     def mousePressEvent(self, event):
-        # If clicking on the title area, allow title item to handle it
         if self.title_item.boundingRect().contains(event.pos()):
-            # Important: don't call super() if we want the child to get focus correctly
             pass
             
         if event.button() == Qt.LeftButton and self._is_on_handle(event.pos()):
@@ -83,26 +80,34 @@ class Backdrop(QGraphicsRectItem):
         painter.setPen(Qt.NoPen)
         painter.drawRoundedRect(header_rect, 10, 10)
         
-        # Draw Resize Handle (bottom right)
+        # Resize Handle (bottom right)
         painter.setBrush(QBrush(QColor(255, 255, 255, 100)))
         handle_rect = QRectF(self.rect().width() - 15, self.rect().height() - 15, 10, 10)
         painter.drawRect(handle_rect)
 
-        # Selection highlight
         if self.isSelected():
             painter.setPen(QPen(QColor(255, 165, 0), 2))
             painter.setBrush(Qt.NoBrush)
             painter.drawRoundedRect(self.rect().adjusted(-2, -2, 2, 2), 10, 10)
 
     def itemChange(self, change, value):
-        if change == QGraphicsItem.ItemPositionHasChanged and self.scene():
+        if change == QGraphicsItem.ItemPositionChange and self.scene():
+            # Calculate delta based on new value (which is the proposed new position)
             delta = value - self.pos()
-            # Move all nodes inside the backdrop that are NOT explicitly selected
+            
+            # Find nodes that were INSIDE before we moved
+            # Use current pos for check
+            current_bounds = self.sceneBoundingRect()
+            
             for item in self.scene().items():
+                # Avoid circular dependencies and only move specific types
                 from src.ui.node_widget import NodeWidget
                 from src.ui.canvas.sticky_note import StickyNote
-                if isinstance(item, (NodeWidget, StickyNote)) and \
-                   self.sceneBoundingRect().contains(item.sceneBoundingRect()):
-                    if not item.isSelected():
-                        item.setPos(item.pos() + delta)
+                
+                if isinstance(item, (NodeWidget, StickyNote)):
+                    if current_bounds.contains(item.sceneBoundingRect()):
+                        # Only move child if it's NOT also selected (prevent double move)
+                        if not item.isSelected():
+                            item.setPos(item.pos() + delta)
+                            
         return super().itemChange(change, value)
