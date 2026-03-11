@@ -20,6 +20,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         print("MainWindow init started")
         super().__init__()
+        self._is_executing = False # Execution guard
         self.setWindowTitle("Vibrante-Node Pipeline Editor")
         self.resize(1200, 800)
         
@@ -432,9 +433,13 @@ class MainWindow(QMainWindow):
             self.log_panel.log(f"Workflow loaded: {file_path}", "info")
 
     def execute_pipeline(self):
+        if self._is_executing:
+            return
+            
         scene = self.get_current_scene()
         if not scene: return
         
+        self._is_executing = True
         self.execute_btn.setEnabled(False)
         self.status_label.setText("Running...")
         tab_name = self.tabs.tabText(self.tabs.currentIndex())
@@ -466,6 +471,7 @@ class MainWindow(QMainWindow):
         threading.Thread(target=run_async_loop, daemon=True).start()
 
     def _on_execution_finished(self, success):
+        self._is_executing = False
         self.execute_btn.setEnabled(True)
         self.status_label.setText("Ready")
         status = "successfully" if success else "with errors"
