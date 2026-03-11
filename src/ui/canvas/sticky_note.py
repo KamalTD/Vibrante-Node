@@ -22,17 +22,13 @@ class StickyNote(QGraphicsRectItem):
         self.text_item.setPos(5, 5)
         self.text_item.setTextWidth(size[0] - 10)
         self.text_item.setDefaultTextColor(Qt.black)
-        self.text_item.setTextInteractionFlags(Qt.NoTextInteraction)
+        # Enable text editing
+        self.text_item.setTextInteractionFlags(Qt.TextEditorInteraction)
 
         # Resize State
         self.resizing = False
         self.resize_handle_size = 15
         self.setAcceptHoverEvents(True)
-
-    def mouseDoubleClickEvent(self, event):
-        self.text_item.setTextInteractionFlags(Qt.TextEditorInteraction)
-        self.text_item.setFocus()
-        super().mouseDoubleClickEvent(event)
 
     def hoverMoveEvent(self, event):
         if self._is_on_handle(event.pos()):
@@ -46,6 +42,9 @@ class StickyNote(QGraphicsRectItem):
                pos.y() > self.rect().height() - self.resize_handle_size
 
     def mousePressEvent(self, event):
+        if self.text_item.boundingRect().contains(event.pos()):
+            pass # Let text item handle it
+            
         if event.button() == Qt.LeftButton and self._is_on_handle(event.pos()):
             self.resizing = True
             event.accept()
@@ -64,7 +63,6 @@ class StickyNote(QGraphicsRectItem):
 
     def mouseReleaseEvent(self, event):
         self.resizing = False
-        self.text_item.setTextInteractionFlags(Qt.NoTextInteraction)
         super().mouseReleaseEvent(event)
 
     def paint(self, painter, option, widget):
