@@ -52,9 +52,15 @@ class NetworkExecutor(QObject):
                 if p_name in instance.parameters:
                     instance.parameters[p_name] = p_val
             
-            # ENSURE FRESH START: Clear all transient data from previous runs
+            # ENSURE FRESH START: Clear all output ports
             instance.clear_outputs()
-            instance.clear_input_parameters()
+            
+            # Smart Clear Inputs: Only reset parameters that receive data from a connection
+            # This prevents stale feedback (like break_condition) while preserving standalone data (like indices)
+            connected_inputs = [c.to_port for c in self.graph_manager.connections if c.to_node == node_id]
+            for port_name in connected_inputs:
+                if port_name in instance.parameters:
+                    instance.parameters[port_name] = None
             
             self.node_instances[node_id] = instance
             self.node_results[node_id] = {}
