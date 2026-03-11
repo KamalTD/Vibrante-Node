@@ -138,7 +138,7 @@ class NodeWidget(QGraphicsItem):
                 w = proxy.widget()
                 if w:
                     w.setFixedWidth(int(self.width - 100)) 
-                    proxy.setPos(50, current_y)
+                    proxy.setPos(50, int(current_y))
                     current_y += w.sizeHint().height() + spacing
 
         # 3. Reposition Outputs
@@ -294,11 +294,16 @@ class NodeWidget(QGraphicsItem):
 
             if w:
                 w.blockSignals(True) # Prevent recursion
-                if isinstance(w, QLineEdit): w.setText(str(target_value))
-                elif isinstance(w, (QSpinBox, QDoubleSpinBox, QSlider)): w.setValue(target_value)
+                if isinstance(w, QLineEdit): w.setText(str(target_value) if target_value is not None else "")
+                elif isinstance(w, (QSpinBox, QDoubleSpinBox, QSlider)): 
+                    if target_value is not None:
+                        try:
+                            w.setValue(target_value)
+                        except TypeError:
+                            pass # Guard against bad types
                 elif isinstance(w, QCheckBox): w.setChecked(bool(target_value))
-                elif isinstance(w, QComboBox): w.setCurrentText(str(target_value))
-                elif isinstance(w, QTextEdit): w.setPlainText(str(target_value))
+                elif isinstance(w, QComboBox): w.setCurrentText(str(target_value) if target_value is not None else "")
+                elif isinstance(w, QTextEdit): w.setPlainText(str(target_value) if target_value is not None else "")
                 w.blockSignals(False)
 
         # 2. Trigger node logic

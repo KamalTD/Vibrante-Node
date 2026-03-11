@@ -11,6 +11,7 @@
                 "start": 0,
                 "end": 10,
                 "step": 1,
+                "trigger": null,
                 "indices": [
                     0,
                     1,
@@ -35,9 +36,6 @@
                 239.67500000000007
             ],
             "parameters": {
-                "operation": "Batch Job",
-                "delay": 0.0,
-                "break_condition": true,
                 "indices": [
                     0,
                     1,
@@ -50,9 +48,9 @@
                     8,
                     9
                 ],
-                "completed": false,
-                "broken": true,
-                "current_index": 6,
+                "operation": "Batch Job",
+                "delay": 0.0,
+                "break_condition": true,
                 "results": [
                     0,
                     1,
@@ -61,7 +59,10 @@
                     4,
                     5,
                     6
-                ]
+                ],
+                "current_index": 6,
+                "completed": false,
+                "broken": true
             },
             "state": "idle"
         },
@@ -73,10 +74,10 @@
                 4.37500000000006
             ],
             "parameters": {
+                "a": 6,
                 "operation": ">",
                 "b": "5",
-                "result": true,
-                "a": 6
+                "result": true
             },
             "state": "idle"
         },
@@ -112,42 +113,42 @@
     ],
     "connections": [
         {
-            "id": "b1a2480a-ef5c-4ab1-8321-065d73ec7f57",
+            "id": "ef9ad42f-c089-4b01-a27e-61cf1b7bdd98",
             "from_node": "8489813d-5136-4074-9f0e-36511a5b8221",
             "from_port": "indices",
             "to_node": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
             "to_port": "indices"
         },
         {
-            "id": "726c7342-40a2-406e-8773-88bad19e0745",
+            "id": "bf7b7b4b-a330-4ab0-ae6a-0c528cb8af8e",
             "from_node": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
             "from_port": "current_index",
             "to_node": "f5290df0-1929-4c8c-beab-8e81a5bed3a4",
             "to_port": "a"
         },
         {
-            "id": "11cfd300-f399-4e4f-b7ec-9389070e3ec3",
+            "id": "2a78a5e8-687d-4444-a4cf-91b9c76f3f36",
             "from_node": "f5290df0-1929-4c8c-beab-8e81a5bed3a4",
             "from_port": "result",
             "to_node": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
             "to_port": "break_condition"
         },
         {
-            "id": "deecf019-deec-4ed4-a6dc-acad8f61533c",
+            "id": "9936cb9b-1939-47ae-a36c-d66c29253c9b",
             "from_node": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
             "from_port": "broken",
             "to_node": "bd724095-a7a9-470a-9525-a78fbaf87b3a",
             "to_port": "condition"
         },
         {
-            "id": "da113d1a-b234-4709-9e3a-8cc5c4cb3440",
+            "id": "03e2babb-3cc2-4701-80c5-4838cd933c60",
             "from_node": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
             "from_port": "current_index",
             "to_node": "bd724095-a7a9-470a-9525-a78fbaf87b3a",
             "to_port": "data"
         },
         {
-            "id": "3961db9a-d5ba-4c07-8af9-56ae43e0d97b",
+            "id": "8ad63681-06bb-42a5-886f-b23259c3b06b",
             "from_node": "bd724095-a7a9-470a-9525-a78fbaf87b3a",
             "from_port": "on_true",
             "to_node": "d1d9a498-d8cc-4ca6-a020-6584cf7822e4",
