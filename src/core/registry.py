@@ -82,31 +82,30 @@ class NodeRegistry:
                 node_class = namespace['register_node']()
             elif 'execute' in namespace:
                 # Simplified format: just execute function
+                # Create a closure to capture namespace
+                local_namespace = namespace.copy()
+                
                 class DynamicNode(BaseNode):
                     def __init__(self):
                         super().__init__()
-                        # Dynamically add ports from definition
                         for inp in definition.inputs:
                             self.add_input(inp.name, inp.type, inp.widget_type, inp.options)
                         for out in definition.outputs:
                             self.add_output(out.name, out.type)
                             
                     async def execute(self, inputs):
-                        return await namespace['execute'](self, inputs)
+                        return await local_namespace['execute'](self, inputs)
                     
                     def on_parameter_changed(self, name, value):
-                        if 'on_parameter_changed' in namespace:
-                            namespace['on_parameter_changed'](self, name, value)
+                        if 'on_parameter_changed' in local_namespace:
+                            local_namespace['on_parameter_changed'](self, name, value)
                             
                     def on_plug_sync(self, port_name, is_input, other_node, other_port_name):
-                        if 'on_plug_sync' in namespace:
-                            namespace['on_plug_sync'](self, port_name, is_input, other_node, other_port_name)
+                        if 'on_plug_sync' in local_namespace:
+                            local_namespace['on_plug_sync'](self, port_name, is_input, other_node, other_port_name)
 
-                    # Add any other helper functions from namespace to the class
-                    pass
-                
-                # Copy helper functions (starting with _) to the class
-                for key, func in namespace.items():
+                # Move helper functions to class level
+                for key, func in local_namespace.items():
                     if key.startswith('_') and callable(func):
                         setattr(DynamicNode, key, func)
                 
