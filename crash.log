@@ -1,11 +1,14 @@
 Traceback (most recent call last):
-  File "G:\MyData\test_python\node_based_pipeline\node_based_app\src\ui\window.py", line 302, in _apply_light_theme
-    view.scene().apply_theme(is_dark=False)
-    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
-  File "G:\MyData\test_python\node_based_pipeline\node_based_app\src\ui\canvas\scene.py", line 309, in apply_theme
-    node.apply_theme(is_dark)
-    ~~~~~~~~~~~~~~~~^^^^^^^^^
-  File "G:\MyData\test_python\node_based_pipeline\node_based_app\src\ui\node_widget.py", line 54, in apply_theme
-    w.setStyleSheet(f"background-color: {bg_color}; color: {text_color.name()}; border: 1px solid {border_color};")
-                                                            ^^^^^^^^^^^^^^^
-AttributeError: 'GlobalColor' object has no attribute 'name'
+  File "G:\MyData\test_python\node_based_pipeline\node_based_app\src\ui\window.py", line 430, in load_workflow
+    scene.from_workflow_model(workflow_model)
+  File "G:\MyData\test_python\node_based_pipeline\node_based_app\src\ui\canvas\scene.py", line 132, in from_workflow_model
+    widget = self.add_node_by_name(node_model.node_id, QPointF(node_model.position[0], node_model.position[1]))
+  File "G:\MyData\test_python\node_based_pipeline\node_based_app\src\ui\canvas\scene.py", line 267, in add_node_by_name
+    node_widget = NodeWidget(node_definition)
+  File "G:\MyData\test_python\node_based_pipeline\node_based_app\src\ui\node_widget.py", line 27, in __init__
+    self._init_ui()
+  File "G:\MyData\test_python\node_based_pipeline\node_based_app\src\ui\node_widget.py", line 107, in _init_ui
+    self._auto_size(ports_max_y)
+  File "G:\MyData\test_python\node_based_pipeline\node_based_app\src\ui\node_widget.py", line 140, in _auto_size
+    w.setFixedWidth(self.width - 100)
+TypeError: setFixedWidth(self, w: int): argument 1 has unexpected type 'float'
