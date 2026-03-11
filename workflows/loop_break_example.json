@@ -4,82 +4,185 @@
             "instance_id": "8489813d-5136-4074-9f0e-36511a5b8221",
             "node_id": "for_loop",
             "position": [
-                -500.0,
-                0.0
+                -691.075,
+                81.42500000000004
             ],
             "parameters": {
                 "start": 0,
                 "end": 10,
-                "step": 1
-            }
+                "step": 1,
+                "indices": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9
+                ],
+                "current_index": 9
+            },
+            "state": "idle"
         },
         {
             "instance_id": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
             "node_id": "loop_body",
             "position": [
-                -150.0,
-                0.0
+                -365.82500000000005,
+                239.67500000000007
             ],
             "parameters": {
                 "operation": "Batch Job",
-                "delay": 0.5
-            }
+                "delay": 0.0,
+                "break_condition": true,
+                "indices": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9
+                ],
+                "completed": false,
+                "broken": true,
+                "current_index": 6,
+                "results": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6
+                ]
+            },
+            "state": "idle"
         },
         {
             "instance_id": "f5290df0-1929-4c8c-beab-8e81a5bed3a4",
             "node_id": "compare",
             "position": [
-                150.0,
-                -50.0
+                -18.412499999999994,
+                4.37500000000006
             ],
             "parameters": {
                 "operation": ">",
-                "b": 5
-            }
+                "b": "5",
+                "result": true,
+                "a": 6
+            },
+            "state": "idle"
         },
         {
             "instance_id": "d1d9a498-d8cc-4ca6-a020-6584cf7822e4",
             "node_id": "console_print",
             "position": [
-                450.0,
-                100.0
+                331.1750000000002,
+                320.17500000000007
             ],
             "parameters": {
-                "data": "Running..."
-            }
+                "data": 6,
+                "out": "6"
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "bd724095-a7a9-470a-9525-a78fbaf87b3a",
+            "node_id": "if_condition",
+            "position": [
+                25.92500000000001,
+                436.67500000000007
+            ],
+            "parameters": {
+                "condition": true,
+                "data": 6,
+                "on_true": 6,
+                "on_false": null,
+                "result": true
+            },
+            "state": "idle"
         }
     ],
     "connections": [
         {
-            "id": "e4290df0-1929-4c8c-beab-8e81a5bed3a2",
+            "id": "b6c3bac0-4a79-4ef8-8b85-43b4d237acab",
             "from_node": "8489813d-5136-4074-9f0e-36511a5b8221",
             "from_port": "indices",
             "to_node": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
             "to_port": "indices"
         },
         {
-            "id": "f5290df0-1929-4c8c-beab-8e81a5bed3a3",
+            "id": "3631f256-4427-47d8-814b-45c852a38411",
             "from_node": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
             "from_port": "current_index",
             "to_node": "f5290df0-1929-4c8c-beab-8e81a5bed3a4",
             "to_port": "a"
         },
         {
-            "id": "f5290df0-1929-4c8c-beab-8e81a5bed3a5",
+            "id": "cec6763a-81e0-4fcf-8076-8a7b4b01532a",
             "from_node": "f5290df0-1929-4c8c-beab-8e81a5bed3a4",
             "from_port": "result",
             "to_node": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
             "to_port": "break_condition"
         },
         {
-            "id": "f5290df0-1929-4c8c-beab-8e81a5bed3a6",
+            "id": "3ecc0b49-ab92-419c-8f80-f1603f21f85d",
+            "from_node": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
+            "from_port": "broken",
+            "to_node": "bd724095-a7a9-470a-9525-a78fbaf87b3a",
+            "to_port": "condition"
+        },
+        {
+            "id": "6c900574-13c1-4082-bb5c-adee98262595",
             "from_node": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
             "from_port": "current_index",
+            "to_node": "bd724095-a7a9-470a-9525-a78fbaf87b3a",
+            "to_port": "data"
+        },
+        {
+            "id": "da621d52-d764-478b-9337-e514460ab5c7",
+            "from_node": "bd724095-a7a9-470a-9525-a78fbaf87b3a",
+            "from_port": "on_true",
             "to_node": "d1d9a498-d8cc-4ca6-a020-6584cf7822e4",
             "to_port": "data"
         }
     ],
-    "metadata": {
-        "description": "Example showing how to use 'break_condition' in a Loop Body. The loop stops as soon as current_index > 5."
-    }
+    "sticky_notes": [
+        {
+            "id": "70539d5c-c93a-421d-a43e-ca6e2e8c2e32",
+            "position": [
+                349.54999999999995,
+                27.050000000000068
+            ],
+            "size": [
+                278.75,
+                197.49999999999997
+            ],
+            "text": "If loop index",
+            "color": "#ffffcc"
+        }
+    ],
+    "backdrops": [
+        {
+            "id": "9e89dd10-84ff-4775-8dc3-a85e1b0ee777",
+            "position": [
+                -723.575,
+                -102.82499999999993
+            ],
+            "size": [
+                1550.625,
+                682.3749999999999
+            ],
+            "title": "Loop with IF condition",
+            "color": "#444444"
+        }
+    ],
+    "metadata": {}
 }
