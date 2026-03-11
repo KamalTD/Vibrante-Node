@@ -22,26 +22,61 @@ class StickyNote(QGraphicsRectItem):
         self.text_item.setPos(5, 5)
         self.text_item.setTextWidth(size[0] - 10)
         self.text_item.setDefaultTextColor(Qt.black)
-        
-        # Make text editable on double click
         self.text_item.setTextInteractionFlags(Qt.NoTextInteraction)
-        
+
+        # Resize State
+        self.resizing = False
+        self.resize_handle_size = 15
+        self.setAcceptHoverEvents(True)
+
     def mouseDoubleClickEvent(self, event):
         self.text_item.setTextInteractionFlags(Qt.TextEditorInteraction)
         self.text_item.setFocus()
         super().mouseDoubleClickEvent(event)
 
-    def focusOutEvent(self, event):
+    def hoverMoveEvent(self, event):
+        if self._is_on_handle(event.pos()):
+            self.setCursor(Qt.SizeFDiagCursor)
+        else:
+            self.setCursor(Qt.ArrowCursor)
+        super().hoverMoveEvent(event)
+
+    def _is_on_handle(self, pos):
+        return pos.x() > self.rect().width() - self.resize_handle_size and \
+               pos.y() > self.rect().height() - self.resize_handle_size
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton and self._is_on_handle(event.pos()):
+            self.resizing = True
+            event.accept()
+        else:
+            super().mousePressEvent(event)
+
+    def mouseMoveEvent(self, event):
+        if self.resizing:
+            new_width = max(50, event.pos().x())
+            new_height = max(50, event.pos().y())
+            self.setRect(0, 0, new_width, new_height)
+            self.text_item.setTextWidth(new_width - 10)
+            event.accept()
+        else:
+            super().mouseMoveEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        self.resizing = False
         self.text_item.setTextInteractionFlags(Qt.NoTextInteraction)
-        super().focusOutEvent(event)
+        super().mouseReleaseEvent(event)
 
     def paint(self, painter, option, widget):
-        # Draw background
         painter.setPen(self.pen())
         painter.setBrush(self.brush())
         painter.drawRect(self.rect())
         
-        # Draw selection highlight
+        # Resize Handle
+        painter.setBrush(QBrush(QColor(0, 0, 0, 50)))
+        handle_rect = QRectF(self.rect().width() - 10, self.rect().height() - 10, 10, 10)
+        painter.drawRect(handle_rect)
+
         if self.isSelected():
             painter.setPen(QPen(QColor(255, 165, 0), 2, Qt.DashLine))
             painter.setBrush(Qt.NoBrush)
