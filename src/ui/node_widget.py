@@ -255,22 +255,26 @@ class NodeWidget(QGraphicsItem):
     def set_parameter(self, name, value, propagate=True):
         """Programmatically set a parameter and update its UI widget."""
         # Type Conversion attempt based on port definition
-        port_def = next((p for p in self.node_definition.inputs.values() if p.name == name), None)
-        if not port_def: # Check outputs too if needed
-             port_def = next((p for p in self.node_definition.outputs.values() if p.name == name), None)
+        inputs = self.node_definition.inputs
+        input_list = inputs if isinstance(inputs, list) else inputs.values()
+        outputs = self.node_definition.outputs
+        output_list = outputs if isinstance(outputs, list) else outputs.values()
+        
+        port_def = next((p for p in input_list if p.name == name), None)
+        if not port_def:
+             port_def = next((p for p in output_list if p.name == name), None)
         
         target_value = value
         if port_def:
             try:
-                if port_def.data_type == 'int': target_value = int(value)
-                elif port_def.data_type in ['float', 'number']: target_value = float(value)
-                elif port_def.data_type == 'string': target_value = str(value)
-                elif port_def.data_type == 'bool':
+                data_type = getattr(port_def, 'data_type', getattr(port_def, 'type', 'any')).lower()
+                if data_type == 'int': target_value = int(value)
+                elif data_type in ['float', 'number']: target_value = float(value)
+                elif data_type == 'string': target_value = str(value)
+                elif data_type == 'bool':
                     if isinstance(value, str): target_value = value.lower() in ['true', '1', 'yes']
                     else: target_value = bool(value)
             except (ValueError, TypeError):
-                # If conversion fails, keep original or default to None/0? 
-                # Keeping original allows node's execute to handle it with its own log/fallback
                 pass
 
         if self.node_definition.parameters.get(name) == target_value:
@@ -290,15 +294,15 @@ class NodeWidget(QGraphicsItem):
 
             if w:
                 w.blockSignals(True) # Prevent recursion
-                if isinstance(w, QLineEdit): w.setText(str(value))
-                elif isinstance(w, QSpinBox) or isinstance(w, QDoubleSpinBox) or isinstance(w, QSlider): w.setValue(value)
-                elif isinstance(w, QCheckBox): w.setChecked(bool(value))
-                elif isinstance(w, QComboBox): w.setCurrentText(str(value))
-                elif isinstance(w, QTextEdit): w.setPlainText(str(value))
+                if isinstance(w, QLineEdit): w.setText(str(target_value))
+                elif isinstance(w, (QSpinBox, QDoubleSpinBox, QSlider)): w.setValue(target_value)
+                elif isinstance(w, QCheckBox): w.setChecked(bool(target_value))
+                elif isinstance(w, QComboBox): w.setCurrentText(str(target_value))
+                elif isinstance(w, QTextEdit): w.setPlainText(str(target_value))
                 w.blockSignals(False)
 
         # 2. Trigger node logic
-        self.node_definition.on_parameter_changed(name, value)
+        self.node_definition.on_parameter_changed(name, target_value)
         
         # 3. Push downstream
         if propagate:
