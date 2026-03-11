@@ -8,6 +8,8 @@ Welcome to Vibrante-Node! This guide will help you get started with building and
 -   **Main Canvas (Center)**: Your workspace.
     -   **Pan**: Middle-mouse button drag.
     -   **Zoom**: Mouse wheel.
+    -   **Focus**: Press `F` to focus on selected nodes or the center of the graph.
+    -   **Copy/Paste**: Press `Ctrl+C` to copy selected nodes and `Ctrl+V` to paste them at the cursor position.
     -   **Delete**: Select an item and press the `Delete` key.
 -   **Event Log (Bottom)**: Real-time feedback on execution, outputs, and connection events.
 
