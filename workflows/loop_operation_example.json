@@ -1,0 +1,59 @@
+{
+    "nodes": [
+        {
+            "instance_id": "8489813d-5136-4074-9f0e-36511a5b8221",
+            "node_id": "for_loop",
+            "position": [
+                -400.0,
+                0.0
+            ],
+            "parameters": {
+                "start": 0,
+                "end": 10,
+                "step": 1
+            }
+        },
+        {
+            "instance_id": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
+            "node_id": "loop_body",
+            "position": [
+                -50.0,
+                0.0
+            ],
+            "parameters": {
+                "operation": "Exporting Frame",
+                "delay": 0.5
+            }
+        },
+        {
+            "instance_id": "d1d9a498-d8cc-4ca6-a020-6584cf7822e4",
+            "node_id": "console_print",
+            "position": [
+                350.0,
+                0.0
+            ],
+            "parameters": {
+                "data": "Status"
+            }
+        }
+    ],
+    "connections": [
+        {
+            "id": "e4290df0-1929-4c8c-beab-8e81a5bed3a2",
+            "from_node": "8489813d-5136-4074-9f0e-36511a5b8221",
+            "from_port": "indices",
+            "to_node": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
+            "to_port": "indices"
+        },
+        {
+            "id": "f5290df0-1929-4c8c-beab-8e81a5bed3a3",
+            "from_node": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
+            "from_port": "current_index",
+            "to_node": "d1d9a498-d8cc-4ca6-a020-6584cf7822e4",
+            "to_port": "data"
+        }
+    ],
+    "metadata": {
+        "description": "Demonstrates the 'operation' field in Loop Body, useful for batch tasks like exporting sequences."
+    }
+}
