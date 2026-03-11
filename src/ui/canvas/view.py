@@ -58,7 +58,28 @@ class NodeView(QGraphicsView):
             self.setCursor(Qt.OpenHandCursor)
             # We don't start panning yet, just show the cursor
             # Actual pan starts on mouse press + space
+        elif event.key() == Qt.Key_F:
+            self.focus_on_selection()
         super().keyPressEvent(event)
+
+    def focus_on_selection(self):
+        scene = self.scene()
+        if not scene: return
+        
+        selected_items = scene.selectedItems()
+        if selected_items:
+            # Focus on bounding rect of selected items
+            rect = selected_items[0].sceneBoundingRect()
+            for item in selected_items[1:]:
+                rect = rect.united(item.sceneBoundingRect())
+            self.centerOn(rect.center())
+        else:
+            # Focus on all items if any, otherwise origin
+            items_rect = scene.itemsBoundingRect()
+            if items_rect.width() > 0 and items_rect.height() > 0:
+                self.centerOn(items_rect.center())
+            else:
+                self.centerOn(0, 0)
 
     def keyReleaseEvent(self, event: QKeyEvent):
         if event.key() == Qt.Key_Space and not event.isAutoRepeat():
