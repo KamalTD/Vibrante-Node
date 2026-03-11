@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="logo.png" width="400" alt="Vibrante-Node Logo">
+</p>
+
 # Vibrante-Node
 
 **Vibrante-Node** is a Python-node-based visual framework for building modular systems through connected nodes and data flows. It provides an intuitive graph interface where complex logic can be constructed visually by linking nodes together.
