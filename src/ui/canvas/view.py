@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene
 from PyQt5.QtCore import Qt, QPoint
-from PyQt5.QtGui import QPainter, QWheelEvent, QMouseEvent
+from PyQt5.QtGui import QPainter, QWheelEvent, QMouseEvent, QKeyEvent
 
 class NodeView(QGraphicsView):
     def __init__(self, scene: QGraphicsScene, parent=None):
@@ -17,17 +17,15 @@ class NodeView(QGraphicsView):
         self._last_pan_pos = QPoint()
 
     def mousePressEvent(self, event: QMouseEvent):
-        if event.button() == Qt.MiddleButton:
-            self._is_panning = True
-            self._last_pan_pos = event.pos()
-            self.setCursor(Qt.ClosedHandCursor)
-            self.setDragMode(QGraphicsView.NoDrag) # Disable rubberband while panning
+        if event.button() == Qt.MiddleButton or (event.button() == Qt.LeftButton and event.modifiers() == Qt.AltModifier):
+            self._start_pan(event.pos())
             event.accept()
         else:
             super().mousePressEvent(event)
 
     def mouseMoveEvent(self, event: QMouseEvent):
         if self._is_panning:
+            # Manually pan the view by shifting scrollbars
             delta = event.pos() - self._last_pan_pos
             self._last_pan_pos = event.pos()
             self.horizontalScrollBar().setValue(self.horizontalScrollBar().value() - delta.x())
@@ -37,13 +35,35 @@ class NodeView(QGraphicsView):
             super().mouseMoveEvent(event)
 
     def mouseReleaseEvent(self, event: QMouseEvent):
-        if event.button() == Qt.MiddleButton:
-            self._is_panning = False
-            self.setCursor(Qt.ArrowCursor)
-            self.setDragMode(QGraphicsView.RubberBandDrag) # Re-enable rubberband
+        if self._is_panning:
+            # Stop panning on any button release if we were panning
+            self._stop_pan()
             event.accept()
         else:
             super().mouseReleaseEvent(event)
+
+    def _start_pan(self, pos):
+        self._is_panning = True
+        self._last_pan_pos = pos
+        self.setCursor(Qt.ClosedHandCursor)
+        self.setDragMode(QGraphicsView.NoDrag)
+
+    def _stop_pan(self):
+        self._is_panning = False
+        self.setCursor(Qt.ArrowCursor)
+        self.setDragMode(QGraphicsView.RubberBandDrag)
+
+    def keyPressEvent(self, event: QKeyEvent):
+        if event.key() == Qt.Key_Space and not event.isAutoRepeat():
+            self.setCursor(Qt.OpenHandCursor)
+            # We don't start panning yet, just show the cursor
+            # Actual pan starts on mouse press + space
+        super().keyPressEvent(event)
+
+    def keyReleaseEvent(self, event: QKeyEvent):
+        if event.key() == Qt.Key_Space and not event.isAutoRepeat():
+            self._stop_pan()
+        super().keyReleaseEvent(event)
 
     def wheelEvent(self, event: QWheelEvent):
         """
