@@ -479,6 +479,10 @@ class MainWindow(QMainWindow):
 
     def _on_node_output(self, node_instance_id, results):
         widget = self._find_node_widget(node_instance_id)
+        if widget:
+            for name, val in results.items():
+                widget.set_parameter(name, val, propagate=True)
+                
         name = widget.node_definition.name if widget else "Unknown"
         res_str = ", ".join([f"{k}: {v}" for k, v in results.items()])
         self.log_panel.log(f"Node '{name}' output -> {res_str}", "success")
