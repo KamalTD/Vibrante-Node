@@ -29,6 +29,11 @@ class BaseNode(ABC):
             if self._on_output:
                 self._on_output(name, value)
 
+    def clear_outputs(self):
+        """Resets all output parameters to None before a new execution."""
+        for name in self.outputs:
+            self.parameters[name] = None
+
     def log_info(self, msg: str):
         if self._on_log: self._on_log(msg, "info")
         else: print(f"INFO: {msg}")

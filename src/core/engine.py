@@ -52,6 +52,8 @@ class NetworkExecutor(QObject):
                 if p_name in instance.parameters:
                     instance.parameters[p_name] = p_val
             
+            instance.clear_outputs() # Ensure previous results don't leak into this run
+            
             self.node_instances[node_id] = instance
             self.node_results[node_id] = {} # Pre-init results map
 
