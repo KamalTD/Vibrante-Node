@@ -29,5 +29,5 @@
             "type": "bool"
         }
     ],
-    "python_code": "async def execute(self, inputs):\n    cond = bool(inputs.get('condition', False))\n    data = inputs.get('data')\n    \n    self.log_info(f\"Evaluating condition: {cond}\")\n    \n    if cond:\n        return {'on_true': data, 'on_false': None, 'result': True}\n    else:\n        return {'on_true': None, 'on_false': data, 'result': False}"
+    "python_code": "async def execute(self, inputs):\n    cond = bool(inputs.get('condition', False))\n    data = inputs.get('data')\n    \n    self.log_info(f\"Evaluating condition: {cond}\")\n    \n    if cond:\n        return {'on_true': data, 'on_false': None, 'result': True}\n    else:\n        return {'on_true': None, 'on_false': data, 'result': False}\n\ndef on_parameter_changed(self, name, value):\n    if name == 'condition':\n        cond = bool(value)\n        data = self.get_parameter('data')\n        self.log_info(f\"Condition changed reactive: {cond}\")\n        if cond:\n            self.set_output('on_true', data)\n            self.set_output('on_false', None)\n        else:\n            self.set_output('on_true', None)\n            self.set_output('on_false', data)\n        self.set_output('result', cond)"
 }
