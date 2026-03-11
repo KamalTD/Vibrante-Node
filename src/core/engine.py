@@ -35,26 +35,49 @@ class NetworkExecutor(QObject):
         self.node_results = {}
         self.node_instances = {}
 
-        # Instantiate nodes
+        # 1. Instantiate nodes and setup hooks immediately
         for node_id, node_model in self.graph_manager.nodes.items():
             node_class = NodeRegistry.get_class(node_model.node_id)
             if not node_class:
                 err = f"Unknown node type: {node_model.node_id}"
-                print(f"ERROR: {err}")
                 self.node_error.emit(node_id, err)
                 self.execution_finished.emit(False)
                 return
             
             instance = node_class()
-            instance.name = node_model.node_id # Ensure name is set for logging
+            instance.name = node_model.node_id
+            
             # Set parameters
             for p_name, p_val in node_model.parameters.items():
                 if p_name in instance.parameters:
                     instance.parameters[p_name] = p_val
             
             self.node_instances[node_id] = instance
+            self.node_results[node_id] = {} # Pre-init results map
 
-        # Execute layer by layer
+            # SETUP HOOKS EARLY (Critical for feedback loops)
+            def create_logger(nid): return lambda msg, lvl: self.node_log.emit(nid, msg, lvl)
+            instance._on_log = create_logger(node_id)
+
+            def create_output_handler(nid):
+                def handler(name, value):
+                    partial_results = {name: value}
+                    self.node_results[nid].update(partial_results)
+                    self.node_output.emit(nid, partial_results)
+                    
+                    # REAL-TIME PROPAGATION
+                    for conn in self.graph_manager.connections:
+                        if conn.from_node == nid and conn.from_port == name:
+                            target_id = conn.to_node
+                            if target_id in self.node_instances:
+                                target_inst = self.node_instances[target_id]
+                                target_inst.parameters[conn.to_port] = value
+                                target_inst.on_parameter_changed(conn.to_port, value)
+                return handler
+            
+            instance._on_output = create_output_handler(node_id)
+
+        # 2. Execute layer by layer
         for layer in order:
             tasks = []
             for node_id in layer:
@@ -71,35 +94,7 @@ class NetworkExecutor(QObject):
         self.node_started.emit(node_id)
         
         instance = self.node_instances[node_id]
-        self.node_results[node_id] = {} # Initialize empty results for this node
         
-        # Setup logging hook
-        def node_logger(msg, level):
-            self.node_log.emit(node_id, msg, level)
-        instance._on_log = node_logger
-
-        # Setup streaming output hook
-        def node_output_handler(name, value):
-            # Emit partial results to UI immediately
-            partial_results = {name: value}
-            # Update internal results map so downstream can pull it if needed
-            self.node_results[node_id].update(partial_results)
-            self.node_output.emit(node_id, partial_results)
-            
-            # REAL-TIME PROPAGATION: Push to connected nodes immediately
-            for conn in self.graph_manager.connections:
-                if conn.from_node == node_id and conn.from_port == name:
-                    target_id = conn.to_node
-                    if target_id in self.node_instances:
-                        target_instance = self.node_instances[target_id]
-                        # Set parameter on the instance directly
-                        if conn.to_port in target_instance.parameters:
-                            target_instance.parameters[conn.to_port] = value
-                            # Trigger on_parameter_changed for reactive behavior
-                            target_instance.on_parameter_changed(conn.to_port, value)
-        
-        instance._on_output = node_output_handler
-
         # Collect inputs: start with parameters (widget values)
         inputs = instance.parameters.copy()
         
