@@ -21,6 +21,13 @@ class BaseNode(ABC):
         self.parameter_types: Dict[str, Type] = {}
         self._on_log = None # Hook for engine to capture logs
         self._on_output = None # Hook for engine to capture intermediate outputs
+        self._check_stopped = None # Hook for engine to check cancellation
+
+    def is_stopped(self) -> bool:
+        """Checks if the execution has been requested to stop."""
+        if self._check_stopped:
+            return self._check_stopped()
+        return False
 
     def set_output(self, name: str, value: Any):
         """Allows a node to push output data during execution (streaming)."""
