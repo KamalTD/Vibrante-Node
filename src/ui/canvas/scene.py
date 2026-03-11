@@ -12,6 +12,9 @@ from src.ui.canvas.sticky_note import StickyNote
 from src.ui.canvas.backdrop import Backdrop
 from uuid import uuid4, UUID
 
+# Simple global clipboard for cross-tab copy/paste
+global_clipboard = {"nodes": None}
+
 class NodeScene(QGraphicsScene):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -25,8 +28,42 @@ class NodeScene(QGraphicsScene):
         self.active_edge = None
         self.file_path = None
 
+        self.history = []
+        self.redo_stack = []
+        self._undoing = False
+
         self.grid_size = 20
         self.grid_pen = QPen(QColor("#555555"), 0.5)
+
+    def push_history(self):
+        if self._undoing: return
+        snapshot = self.to_workflow_model().model_dump()
+        self.history.append(snapshot)
+        self.redo_stack.clear()
+        if len(self.history) > 50: # Limit history
+            self.history.pop(0)
+
+    def undo(self):
+        if not self.history: return
+        self._undoing = True
+        current = self.to_workflow_model().model_dump()
+        self.redo_stack.append(current)
+        
+        last_state = self.history.pop()
+        model = WorkflowModel.model_validate(last_state)
+        self.from_workflow_model(model)
+        self._undoing = False
+
+    def redo(self):
+        if not self.redo_stack: return
+        self._undoing = True
+        current = self.to_workflow_model().model_dump()
+        self.history.append(current)
+        
+        next_state = self.redo_stack.pop()
+        model = WorkflowModel.model_validate(next_state)
+        self.from_workflow_model(model)
+        self._undoing = False
 
     def _safe_async_call(self, coro):
         """Helper to call async methods from the UI thread using a background loop."""
@@ -97,6 +134,130 @@ class NodeScene(QGraphicsScene):
             painter.drawLine(x, top, x, bottom)
         for y in range(first_top, bottom, self.grid_size):
             painter.drawLine(left, y, right, y)
+
+    def copy_selection(self):
+        selected_items = self.selectedItems()
+        if not selected_items:
+            return None
+        
+        # Serialize only selected nodes, notes, backdrops and internal connections
+        model = WorkflowModel()
+        node_ids = set()
+        
+        for item in selected_items:
+            if isinstance(item, NodeWidget):
+                node_ids.add(item.instance_id)
+                node_model = NodeInstanceModel(
+                    instance_id=item.instance_id,
+                    node_id=getattr(item.node_definition, 'node_id', item.node_definition.name),
+                    position=(item.pos().x(), item.pos().y()),
+                    parameters=item.node_definition.parameters.copy()
+                )
+                model.nodes.append(node_model)
+            elif isinstance(item, StickyNote):
+                model.sticky_notes.append(StickyNoteModel(
+                    id=item.instance_id,
+                    position=(item.pos().x(), item.pos().y()),
+                    size=(item.rect().width(), item.rect().height()),
+                    text=item.get_text(),
+                    color=item.bg_color.name()
+                ))
+            elif isinstance(item, Backdrop):
+                model.backdrops.append(BackdropModel(
+                    id=item.instance_id,
+                    position=(item.pos().x(), item.pos().y()),
+                    size=(item.rect().width(), item.rect().height()),
+                    title=item.title_item.toPlainText(),
+                    color=item.bg_color.name()
+                ))
+            
+        for edge in self.edges:
+            if edge.from_port and edge.to_port:
+                f_id = edge.from_port.parentItem().instance_id
+                t_id = edge.to_port.parentItem().instance_id
+                if f_id in node_ids and t_id in node_ids:
+                    conn_model = ConnectionModel(
+                        from_node=f_id,
+                        from_port=edge.from_port.port_definition.name,
+                        to_node=t_id,
+                        to_port=edge.to_port.port_definition.name
+                    )
+                    model.connections.append(conn_model)
+        
+        global_clipboard["nodes"] = model.model_dump()
+        return global_clipboard["nodes"]
+
+    def paste_selection(self, target_pos: QPointF = None, pos_offset: QPointF = None):
+        data = global_clipboard.get("nodes")
+        if not data:
+            return
+            
+        model = WorkflowModel.model_validate(data)
+        
+        # Calculate offset if target_pos is provided
+        if target_pos is not None:
+            # Find the top-left of the copied group as reference
+            all_positions = []
+            for n in model.nodes: all_positions.append(n.position)
+            for n in model.sticky_notes: all_positions.append(n.position)
+            for n in model.backdrops: all_positions.append(n.position)
+            
+            if all_positions:
+                min_x = min(p[0] for p in all_positions)
+                min_y = min(p[1] for p in all_positions)
+                pos_offset = target_pos - QPointF(min_x, min_y)
+        
+        # Default offset if neither target_pos nor pos_offset is provided
+        if pos_offset is None:
+            pos_offset = QPointF(30, 30)
+
+        # Map old IDs to new IDs to maintain connections
+        import uuid
+        id_map = {}
+        new_items = []
+        
+        self.clearSelection()
+        
+        # Paste Nodes
+        for node_model in model.nodes:
+            new_pos = QPointF(node_model.position[0], node_model.position[1]) + pos_offset
+            widget = self.add_node_by_name(node_model.node_id, new_pos)
+            if widget:
+                new_id = str(uuid.uuid4())
+                id_map[node_model.instance_id] = new_id
+                widget.instance_id = new_id
+                for p_name, p_val in node_model.parameters.items():
+                    widget.set_parameter(p_name, p_val, propagate=False)
+                widget.setSelected(True)
+                new_items.append(widget)
+                
+        # Paste Connections
+        for conn in model.connections:
+            from_id = id_map.get(conn.from_node)
+            to_id = id_map.get(conn.to_node)
+            if from_id and to_id:
+                from_w = next((n for n in self.nodes if n.instance_id == from_id), None)
+                to_w = next((n for n in self.nodes if n.instance_id == to_id), None)
+                if from_w and to_w:
+                    self.connect_nodes(from_w, conn.from_port, to_w, conn.to_port)
+
+        # Paste Sticky Notes
+        for note_model in model.sticky_notes:
+            new_pos = QPointF(note_model.position[0], note_model.position[1]) + pos_offset
+            note = self.add_sticky_note(note_model.text, (new_pos.x(), new_pos.y()), 
+                                      note_model.size, note_model.color)
+            note.setSelected(True)
+            new_items.append(note)
+
+        # Paste Backdrops
+        for bd_model in model.backdrops:
+            new_pos = QPointF(bd_model.position[0], bd_model.position[1]) + pos_offset
+            box = self.add_backdrop(bd_model.title, (new_pos.x(), new_pos.y()), 
+                                   bd_model.size, bd_model.color)
+            box.setSelected(True)
+            new_items.append(box)
+        
+        return new_items
 
     def to_workflow_model(self) -> WorkflowModel:
         model = WorkflowModel()
@@ -169,18 +330,24 @@ class NodeScene(QGraphicsScene):
             self.add_backdrop(bd_model.title, bd_model.position, bd_model.size, bd_model.color, bd_model.id)
 
     def add_sticky_note(self, text="New Note", pos=(0, 0), size=(200, 150), color="#ffffcc", instance_id=None):
+        self.push_history()
         note = StickyNote(text, pos, size, color, instance_id)
         self.addItem(note)
         self.sticky_notes.append(note)
         return note
 
     def add_backdrop(self, title="Network Box", pos=(0, 0), size=(400, 300), color="#444444", instance_id=None):
+        self.push_history()
         box = Backdrop(title, pos, size, color, instance_id)
         self.addItem(box)
         self.backdrops.append(box)
         return box
 
     def mousePressEvent(self, event):
+        # Snap history before potential move or connection change
+        if event.button() == Qt.LeftButton:
+            self.push_history()
+            
         view = self.views()[0] if self.views() else None
         transform = view.transform() if view else None
         item = self.itemAt(event.scenePos(), transform) if transform else self.itemAt(event.scenePos())
@@ -259,6 +426,7 @@ class NodeScene(QGraphicsScene):
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Delete:
+            self.push_history()
             for item in self.selectedItems():
                 if isinstance(item, Edge):
                     if item in self.edges:
@@ -298,8 +466,13 @@ class NodeScene(QGraphicsScene):
         
         # 1. Option to wrap selection in Backdrop
         if selected_nodes:
+            copy_act = QAction(f"Copy {len(selected_nodes)} Nodes", self.parent())
+            copy_act.triggered.connect(self.copy_selection)
+            menu.addAction(copy_act)
+            
             wrap_act = QAction(f"Wrap {len(selected_nodes)} Nodes in Box", self.parent())
             def wrap_selection():
+                self.push_history()
                 # Calculate bounding rect of all selected nodes
                 rect = selected_nodes[0].sceneBoundingRect()
                 for node in selected_nodes[1:]:
@@ -314,6 +487,12 @@ class NodeScene(QGraphicsScene):
             
             wrap_act.triggered.connect(wrap_selection)
             menu.addAction(wrap_act)
+            menu.addSeparator()
+
+        if global_clipboard.get("nodes"):
+            paste_act = QAction("Paste Nodes", self.parent())
+            paste_act.triggered.connect(lambda: self.paste_selection(target_pos=pos))
+            menu.addAction(paste_act)
             menu.addSeparator()
 
         # Core Items
@@ -331,7 +510,10 @@ class NodeScene(QGraphicsScene):
         node_menu = menu.addMenu("Add Node")
         for node_id in NodeRegistry.list_node_ids():
             action = QAction(f"{node_id}", self.parent())
-            action.triggered.connect(lambda checked, nid=node_id, p=pos: self.add_node_by_name(nid, p))
+            def spawn_node(nid=node_id, p=pos):
+                self.push_history()
+                self.add_node_by_name(nid, p)
+            action.triggered.connect(spawn_node)
             node_menu.addAction(action)
             
         if not menu.isEmpty(): menu.exec_(event.screenPos())
@@ -368,6 +550,7 @@ class NodeScene(QGraphicsScene):
         return None
 
     def connect_nodes(self, from_node, from_port_name, to_node, to_port_name):
+        self.push_history()
         if isinstance(from_node, str): from_node = self.find_node_by_name(from_node)
         if isinstance(to_node, str): to_node = self.find_node_by_name(to_node)
         if not from_node or not to_node: return None
