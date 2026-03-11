@@ -35,7 +35,7 @@ class NetworkExecutor(QObject):
         self.node_results = {}
         self.node_instances = {}
 
-        # 1. Instantiate nodes and setup hooks immediately
+        # 1. PREPARE ALL NODES
         for node_id, node_model in self.graph_manager.nodes.items():
             node_class = NodeRegistry.get_class(node_model.node_id)
             if not node_class:
@@ -47,18 +47,19 @@ class NetworkExecutor(QObject):
             instance = node_class()
             instance.name = node_model.node_id
             
-            # Set parameters
+            # Set parameters from model
             for p_name, p_val in node_model.parameters.items():
                 if p_name in instance.parameters:
                     instance.parameters[p_name] = p_val
             
-            instance.clear_outputs() # Ensure previous results don't leak into this run
+            instance.clear_outputs() # Clean state for new run
             
             self.node_instances[node_id] = instance
-            self.node_results[node_id] = {} # Pre-init results map
+            self.node_results[node_id] = {}
 
-            # SETUP HOOKS EARLY (Critical for feedback loops)
-            def create_logger(nid): return lambda msg, lvl: self.node_log.emit(nid, msg, lvl)
+            # SETUP HOOKS (Logging and Real-time data propagation)
+            def create_logger(nid):
+                return lambda msg, lvl: self.node_log.emit(nid, msg, lvl)
             instance._on_log = create_logger(node_id)
 
             def create_output_handler(nid):
@@ -67,19 +68,32 @@ class NetworkExecutor(QObject):
                     self.node_results[nid].update(partial_results)
                     self.node_output.emit(nid, partial_results)
                     
-                    # REAL-TIME PROPAGATION
+                    # PROPAGATE TO CONNECTED NODES IN REAL-TIME
                     for conn in self.graph_manager.connections:
                         if conn.from_node == nid and conn.from_port == name:
-                            target_id = conn.to_node
-                            if target_id in self.node_instances:
-                                target_inst = self.node_instances[target_id]
-                                target_inst.parameters[conn.to_port] = value
-                                target_inst.on_parameter_changed(conn.to_port, value)
+                            t_id = conn.to_node
+                            if t_id in self.node_instances:
+                                t_inst = self.node_instances[t_id]
+                                if conn.to_port in t_inst.parameters:
+                                    t_inst.parameters[conn.to_port] = value
+                                    t_inst.on_parameter_changed(conn.to_port, value)
                 return handler
             
             instance._on_output = create_output_handler(node_id)
 
-        # 2. Execute layer by layer
+        # 2. INITIAL DATA SYNC PASS
+        # Ensures that nodes start with values from their connected peers
+        for conn in self.graph_manager.connections:
+            if conn.from_node in self.node_instances and conn.to_node in self.node_instances:
+                f_inst = self.node_instances[conn.from_node]
+                t_inst = self.node_instances[conn.to_node]
+                val = f_inst.get_parameter(conn.from_port)
+                if val is not None:
+                    if conn.to_port in t_inst.parameters:
+                        t_inst.parameters[conn.to_port] = val
+                        t_inst.on_parameter_changed(conn.to_port, val)
+
+        # 3. EXECUTION LOOP
         for layer in order:
             tasks = []
             for node_id in layer:
@@ -94,24 +108,21 @@ class NetworkExecutor(QObject):
 
     async def _run_single_node(self, node_id: UUID) -> bool:
         self.node_started.emit(node_id)
-        
         instance = self.node_instances[node_id]
         
-        # Collect inputs: start with parameters (widget values)
+        # Merge latest parameters with results from upstream neighbors
         inputs = instance.parameters.copy()
-        
-        # Overwrite with values from connections
         for conn in self.graph_manager.connections:
             if conn.to_node == node_id:
-                from_node_results = self.node_results.get(conn.from_node, {})
-                if conn.from_port in from_node_results:
-                    inputs[conn.to_port] = from_node_results.get(conn.from_port)
+                from_results = self.node_results.get(conn.from_node, {})
+                if conn.from_port in from_results:
+                    inputs[conn.to_port] = from_results.get(conn.from_port)
         
-        print(f"DEBUG EXECUTE {instance.name}: {inputs}")
         success, result, error = await SafeRuntime.run_node_safe(instance.execute, inputs)
         
         if success:
-            self.node_results[node_id] = result
+            # Final output emission
+            self.node_results[node_id].update(result)
             self.node_output.emit(node_id, result)
             self.node_finished.emit(node_id, "success")
             return True
