@@ -29,7 +29,11 @@
         {
             "name": "current_index",
             "type": "int"
+        },
+        {
+            "name": "completed",
+            "type": "bool"
         }
     ],
-    "python_code": "import asyncio\nasync def execute(self, inputs):\n    indices = inputs.get('indices')\n    if indices is None: indices = []\n    \n    op = inputs.get('operation', 'Iteration')\n    delay = float(inputs.get('delay', 0.0))\n    \n    self.log_info(f\"Starting: {op} for {len(indices)} items.\")\n    \n    results = []\n    for i in indices:\n        # Log using the operation string as a prefix\n        self.log_info(f\"{op} -> Index: {i}\")\n        \n        # Stream the index to UI\n        self.set_output('current_index', i)\n        results.append(i)\n        \n        if delay > 0:\n            await asyncio.sleep(delay)\n            \n    self.log_success(f\"Finished: {op}\")\n    return {'results': results, 'current_index': indices[-1] if indices else None}"
+    "python_code": "import asyncio\nasync def execute(self, inputs):\n    indices = inputs.get('indices')\n    if indices is None: indices = []\n    \n    op = inputs.get('operation', 'Iteration')\n    delay = float(inputs.get('delay', 0.0))\n    \n    self.log_info(f\"Starting: {op} for {len(indices)} items.\")\n    \n    # Explicitly set completed to False at start\n    self.set_output('completed', False)\n    \n    results = []\n    for i in indices:\n        # Log using the operation string as a prefix\n        self.log_info(f\"{op} -> Index: {i}\")\n        \n        # Stream the index to UI\n        self.set_output('current_index', i)\n        results.append(i)\n        \n        if delay > 0:\n            await asyncio.sleep(delay)\n            \n    self.log_success(f\"Finished: {op}\")\n    \n    # FINALLY emit completed trigger\n    self.set_output('completed', True)\n    \n    return {\n        'results': results, \n        'current_index': indices[-1] if indices else None,\n        'completed': True\n    }"
 }
