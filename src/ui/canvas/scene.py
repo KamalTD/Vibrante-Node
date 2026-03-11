@@ -287,6 +287,29 @@ class NodeScene(QGraphicsScene):
         menu = QMenu()
         pos = event.scenePos()
         
+        selected_items = self.selectedItems()
+        selected_nodes = [i for i in selected_items if isinstance(i, NodeWidget)]
+        
+        # 1. Option to wrap selection in Backdrop
+        if selected_nodes:
+            wrap_act = QAction(f"Wrap {len(selected_nodes)} Nodes in Box", self.parent())
+            def wrap_selection():
+                # Calculate bounding rect of all selected nodes
+                rect = selected_nodes[0].sceneBoundingRect()
+                for node in selected_nodes[1:]:
+                    rect = rect.united(node.sceneBoundingRect())
+                
+                # Add padding
+                padding = 40
+                box_pos = (rect.x() - padding, rect.y() - padding - 20) # Extra top for title
+                box_size = (rect.width() + padding*2, rect.height() + padding*2 + 20)
+                
+                self.add_backdrop(title="Grouped Nodes", pos=box_pos, size=box_size)
+            
+            wrap_act.triggered.connect(wrap_selection)
+            menu.addAction(wrap_act)
+            menu.addSeparator()
+
         # Core Items
         add_note_act = QAction("Add Sticky Note", self.parent())
         add_note_act.triggered.connect(lambda: self.add_sticky_note(pos=(pos.x(), pos.y())))
