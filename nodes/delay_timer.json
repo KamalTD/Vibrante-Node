@@ -1,14 +1,15 @@
 {
-  "node_id": "example_delay_timer",
-  "name": "Delay Timer",
-  "description": "Waits for a specified amount of time.",
-  "category": "Control",
-  "inputs": [
-    { "name": "seconds", "type": "float", "widget_type": "float" }
-  ],
-  "outputs": [
-    { "name": "done", "type": "bool" }
-  ],
-  "icon_path": "icons/timer.svg",
-  "python_code": "import asyncio\nfrom src.nodes.base import BaseNode\n\nclass DelayTimerNode(BaseNode):\n    name = \"Delay Timer\"\n    \n    def __init__(self):\n        super().__init__()\n        self.icon_path = \"icons/timer.svg\"\n        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"seconds\", \"float\", widget_type=\"float\")\n        self.add_output(\"done\", \"bool\")\n        # [AUTO-GENERATED-PORTS-END]\n        \n    async def execute(self, inputs):\n        try:\n            sec = float(inputs.get('seconds', 1.0))\n        except (ValueError, TypeError):\n            self.log_error(f\"Invalid seconds value: {inputs.get('seconds')}. Defaulting to 1.0\")\n            sec = 1.0\n        await asyncio.sleep(sec)\n        return {'done': True}\n\ndef register_node():\n    return DelayTimerNode\n"
+    "node_id": "delay_timer",
+    "name": "Delay Timer",
+    "description": "Pauses execution for a specified duration (seconds).",
+    "category": "Control",
+    "icon_path": "icons/timer.svg",
+    "inputs": [
+        {"name": "exec_in", "type": "exec"},
+        {"name": "delay", "type": "float", "widget_type": "float", "default": 1.0}
+    ],
+    "outputs": [
+        {"name": "exec_out", "type": "exec"}
+    ],
+    "python_code": "import asyncio\nasync def execute(self, inputs):\n    delay = float(inputs.get('delay', 1.0))\n    self.log_info(f\"Starting delay of {delay}s\")\n    await asyncio.sleep(delay)\n    self.log_success(\"Delay finished\")\n    self.set_output('exec_out', True)\n    return {}"
 }

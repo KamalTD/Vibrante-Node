@@ -1,33 +1,37 @@
 {
     "node_id": "if_condition",
     "name": "If Condition",
-    "description": "Routes input data to either the True or False output based on a condition.",
+    "description": "Routes execution to either the True or False path based on a condition.",
     "category": "Logic",
     "icon_path": "icons/scales.svg",
     "inputs": [
         {
+            "name": "exec_in",
+            "type": "exec"
+        },
+        {
             "name": "condition",
             "type": "bool",
             "widget_type": "bool"
-        },
-        {
-            "name": "data",
-            "type": "any"
         }
     ],
     "outputs": [
         {
-            "name": "on_true",
-            "type": "any"
+            "name": "exec_true",
+            "type": "exec"
         },
         {
-            "name": "on_false",
-            "type": "any"
+            "name": "exec_false",
+            "type": "exec"
+        },
+        {
+            "name": "then",
+            "type": "exec"
         },
         {
             "name": "result",
             "type": "bool"
         }
     ],
-    "python_code": "async def execute(self, inputs):\n    cond = bool(inputs.get('condition', False))\n    data = inputs.get('data')\n    \n    self.log_info(f\"Evaluating condition: {cond}\")\n    \n    if cond:\n        return {'on_true': data, 'on_false': None, 'result': True}\n    else:\n        return {'on_true': None, 'on_false': data, 'result': False}\n\ndef on_parameter_changed(self, name, value):\n    if name == 'condition':\n        cond = bool(value)\n        data = self.get_parameter('data')\n        self.log_info(f\"Condition changed reactive: {cond}\")\n        if cond:\n            self.set_output('on_true', data)\n            self.set_output('on_false', None)\n        else:\n            self.set_output('on_true', None)\n            self.set_output('on_false', data)\n        self.set_output('result', cond)"
+    "python_code": "async def execute(self, inputs):\n    cond = bool(inputs.get('condition', False))\n    self.log_info(f\"Evaluating condition: {cond}\")\n    \n    # In execution-flow model, if_condition node handles routing its own flow\n    if cond:\n        # Trigger exec_true branch\n        self.set_output('exec_true', True)\n    else:\n        # Trigger exec_false branch\n        self.set_output('exec_false', True)\n        \n    # Always trigger 'then' when done if we want sequential flow\n    self.set_output('then', True)\n    \n    return {'result': cond}"
 }
