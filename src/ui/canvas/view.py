@@ -74,10 +74,19 @@ class NodeView(QGraphicsView):
                 rect = rect.united(item.sceneBoundingRect())
             self.centerOn(rect.center())
         else:
-            # Focus on all items if any, otherwise origin
-            items_rect = scene.itemsBoundingRect()
-            if items_rect.width() > 0 and items_rect.height() > 0:
-                self.centerOn(items_rect.center())
+            # Focus on all nodes, notes, and backdrops specifically
+            # This avoids being skewed by long edges or scene boundaries
+            from src.ui.node_widget import NodeWidget
+            from src.ui.canvas.sticky_note import StickyNote
+            from src.ui.canvas.backdrop import Backdrop
+            
+            content_items = [i for i in scene.items() if isinstance(i, (NodeWidget, StickyNote, Backdrop))]
+            
+            if content_items:
+                rect = content_items[0].sceneBoundingRect()
+                for item in content_items[1:]:
+                    rect = rect.united(item.sceneBoundingRect())
+                self.centerOn(rect.center())
             else:
                 self.centerOn(0, 0)
 
