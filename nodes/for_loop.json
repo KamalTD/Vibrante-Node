@@ -1,0 +1,45 @@
+{
+    "node_id": "for_loop",
+    "name": "For Loop",
+    "description": "Generates a sequence of numbers from start to end with a given step. Outputs the full list of indices and triggers completion.",
+    "category": "Control",
+    "inputs": [
+        {
+            "name": "start",
+            "type": "int",
+            "widget_type": "int",
+            "default": 0
+        },
+        {
+            "name": "end",
+            "type": "int",
+            "widget_type": "int",
+            "default": 10
+        },
+        {
+            "name": "step",
+            "type": "int",
+            "widget_type": "int",
+            "default": 1
+        },
+        {
+            "name": "trigger",
+            "type": "any"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "indices",
+            "type": "list"
+        },
+        {
+            "name": "last_index",
+            "type": "int"
+        },
+        {
+            "name": "completed",
+            "type": "bool"
+        }
+    ],
+    "python_code": "async def execute(self, inputs):\n    start = int(inputs.get('start', 0))\n    end = int(inputs.get('end', 10))\n    step = int(inputs.get('step', 1))\n    \n    self.log_info(f\"Generating loop sequence from {start} to {end} (step {step})\")\n    \n    indices = list(range(start, end, step))\n    last = indices[-1] if indices else None\n    \n    return {\n        'indices': indices,\n        'last_index': last,\n        'completed': True\n    }"
+}
