@@ -59,11 +59,17 @@ class BaseNode(ABC):
         if name not in self.parameters:
             self.parameters[name] = None
 
+    def add_exec_input(self, name: str = "in"):
+        self.add_input(name, data_type="exec")
+
     def add_output(self, name: str, data_type: str = "any"):
         self.outputs[name] = Port(name, data_type)
         # ALSO initialize output name in parameters so other nodes can query its 'last known' or 'default' state
         if name not in self.parameters:
             self.parameters[name] = None
+
+    def add_exec_output(self, name: str = "out"):
+        self.add_output(name, data_type="exec")
 
     def add_parameter(self, name: str, param_type: Type, default: Any = None):
         self.parameter_types[name] = param_type

@@ -278,7 +278,8 @@ class NodeScene(QGraphicsScene):
                     from_node=edge.from_port.parentItem().instance_id,
                     from_port=edge.from_port.port_definition.name,
                     to_node=edge.to_port.parentItem().instance_id,
-                    to_port=edge.to_port.port_definition.name
+                    to_port=edge.to_port.port_definition.name,
+                    is_exec=edge.from_port.port_type == "exec"
                 )
                 model.connections.append(conn_model)
         for note in self.sticky_notes:

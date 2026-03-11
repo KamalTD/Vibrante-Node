@@ -62,15 +62,25 @@ class NodeWidget(QGraphicsItem):
         self.title_text.setDefaultTextColor(Qt.white)
         self.title_text.setPos(10, 5)
 
-        # 1. Create Ports
+        # 1. Create Ports (Sorted: exec first)
         y_in = 45
         inputs = self.node_definition.inputs
         input_list = inputs if isinstance(inputs, list) else inputs.values()
-        for p_model in input_list:
+        
+        # Sort so 'exec' type comes first
+        sorted_inputs = sorted(input_list, key=lambda x: 0 if getattr(x, 'type', 'any').lower() == 'exec' or getattr(x, 'data_type', 'any').lower() == 'exec' else 1)
+        
+        for p_model in sorted_inputs:
             p = PortWidget(p_model, is_input=True, parent=self)
             p.setPos(0, y_in)
             self.input_widgets.append(p)
-            label = QGraphicsTextItem(p_model.name, self)
+            
+            # Hide label for standard exec pins
+            label_text = p_model.name
+            if p.port_type == "exec" and label_text in ["in", "exec_in", "trigger"]:
+                label_text = ""
+                
+            label = QGraphicsTextItem(label_text, self)
             label.setDefaultTextColor(Qt.white)
             label.setFont(self._get_port_font())
             label.setPos(12, y_in - 10)
@@ -80,17 +90,26 @@ class NodeWidget(QGraphicsItem):
         y_out = 45
         outputs = self.node_definition.outputs
         output_list = outputs if isinstance(outputs, list) else outputs.values()
-        for p_model in output_list:
+        
+        # Sort so 'exec' type comes first
+        sorted_outputs = sorted(output_list, key=lambda x: 0 if getattr(x, 'type', 'any').lower() == 'exec' or getattr(x, 'data_type', 'any').lower() == 'exec' else 1)
+
+        for p_model in sorted_outputs:
             p = PortWidget(p_model, is_input=False, parent=self)
             p.setPos(self.width, y_out)
             self.output_widgets.append(p)
-            label = QGraphicsTextItem(p_model.name, self)
+            
+            label_text = p_model.name
+            if p.port_type == "exec" and label_text in ["out", "exec_out", "then", "exit"]:
+                label_text = ""
+                
+            label = QGraphicsTextItem(label_text, self)
             label.setDefaultTextColor(Qt.white)
             label.setFont(self._get_port_font())
             self.output_labels.append(label)
             y_out += 25
 
-        # 2. Create Parameter Widgets
+        # 2. Create Parameter Widgets (using original list order)
         for p_model in input_list:
             if hasattr(p_model, 'widget_type') and p_model.widget_type:
                 self._create_param_widget(p_model)

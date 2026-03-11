@@ -45,6 +45,7 @@ class ConnectionModel(BaseModel):
     from_port: str
     to_node: UUID
     to_port: str
+    is_exec: bool = False
 
 class WorkflowModel(BaseModel):
     nodes: List[NodeInstanceModel] = Field(default_factory=list)
