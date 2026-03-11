@@ -150,7 +150,10 @@ class NodeScene(QGraphicsScene):
             widget = self.add_node_by_name(node_model.node_id, QPointF(node_model.position[0], node_model.position[1]))
             if widget:
                 widget.instance_id = node_model.instance_id
-                widget.node_definition.parameters = node_model.parameters
+                # SYNC: Apply parameters to UI widgets and node definition
+                for p_name, p_val in node_model.parameters.items():
+                    widget.set_parameter(p_name, p_val, propagate=False)
+                
                 id_to_widget[node_model.instance_id] = widget
         
         for conn in model.connections:
