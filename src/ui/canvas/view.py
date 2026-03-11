@@ -67,15 +67,15 @@ class NodeView(QGraphicsView):
         if not scene: return
         
         selected_items = scene.selectedItems()
+        target_rect = None
+
         if selected_items:
             # Focus on bounding rect of selected items
-            rect = selected_items[0].sceneBoundingRect()
+            target_rect = selected_items[0].sceneBoundingRect()
             for item in selected_items[1:]:
-                rect = rect.united(item.sceneBoundingRect())
-            self.centerOn(rect.center())
+                target_rect = target_rect.united(item.sceneBoundingRect())
         else:
             # Focus on all nodes, notes, and backdrops specifically
-            # This avoids being skewed by long edges or scene boundaries
             from src.ui.node_widget import NodeWidget
             from src.ui.canvas.sticky_note import StickyNote
             from src.ui.canvas.backdrop import Backdrop
@@ -83,12 +83,17 @@ class NodeView(QGraphicsView):
             content_items = [i for i in scene.items() if isinstance(i, (NodeWidget, StickyNote, Backdrop))]
             
             if content_items:
-                rect = content_items[0].sceneBoundingRect()
+                target_rect = content_items[0].sceneBoundingRect()
                 for item in content_items[1:]:
-                    rect = rect.united(item.sceneBoundingRect())
-                self.centerOn(rect.center())
-            else:
-                self.centerOn(0, 0)
+                    target_rect = target_rect.united(item.sceneBoundingRect())
+        
+        if target_rect:
+            # Add some padding (10%)
+            padding = max(target_rect.width(), target_rect.height()) * 0.1
+            target_rect.adjust(-padding, -padding, padding, padding)
+            self.fitInView(target_rect, Qt.KeepAspectRatio)
+        else:
+            self.centerOn(0, 0)
 
     def keyReleaseEvent(self, event: QKeyEvent):
         if event.key() == Qt.Key_Space and not event.isAutoRepeat():
