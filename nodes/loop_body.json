@@ -11,8 +11,7 @@
         {
             "name": "operation",
             "type": "string",
-            "widget_type": "text",
-            "default": "print(f'Iteration: {i}')"
+            "widget_type": "text"
         }
     ],
     "outputs": [
@@ -21,5 +20,5 @@
             "type": "list"
         }
     ],
-    "python_code": "async def execute(self, inputs):\n    indices = inputs.get('indices', [])\n    op = inputs.get('operation', \"\")\n    \n    self.log_info(f\"Executing loop body for {len(indices)} items.\")\n    \n    results = []\n    for i in indices:\n        # In a real system, this would trigger other nodes.\n        # Here we simulate an operation per iteration.\n        self.log_info(f\"Loop Iteration: index={i}\")\n        results.append(i)\n        \n    return {'results': results}"
+    "python_code": "async def execute(self, inputs):\n    # Robustly handle uninitialized inputs\n    indices = inputs.get('indices')\n    if indices is None: indices = []\n    \n    op = inputs.get('operation')\n    if op is None: op = \"\"\n    \n    self.log_info(f\"Executing loop body for {len(indices)} items.\")\n    \n    results = []\n    for i in indices:\n        # Simulation of a sub-graph execution\n        self.log_info(f\"Loop Iteration: index={i}\")\n        results.append(i)\n        \n    return {'results': results}"
 }
