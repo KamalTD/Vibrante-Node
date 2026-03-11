@@ -20,6 +20,14 @@ class BaseNode(ABC):
         self.parameters: Dict[str, Any] = {}
         self.parameter_types: Dict[str, Type] = {}
         self._on_log = None # Hook for engine to capture logs
+        self._on_output = None # Hook for engine to capture intermediate outputs
+
+    def set_output(self, name: str, value: Any):
+        """Allows a node to push output data during execution (streaming)."""
+        if name in self.outputs:
+            self.parameters[name] = value
+            if self._on_output:
+                self._on_output(name, value)
 
     def log_info(self, msg: str):
         if self._on_log: self._on_log(msg, "info")

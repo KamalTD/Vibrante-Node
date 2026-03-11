@@ -67,11 +67,22 @@ class NetworkExecutor(QObject):
         self.node_started.emit(node_id)
         
         instance = self.node_instances[node_id]
+        self.node_results[node_id] = {} # Initialize empty results for this node
         
         # Setup logging hook
         def node_logger(msg, level):
             self.node_log.emit(node_id, msg, level)
         instance._on_log = node_logger
+
+        # Setup streaming output hook
+        def node_output_handler(name, value):
+            # Emit partial results to UI immediately
+            partial_results = {name: value}
+            # Update internal results map so downstream can pull it if needed
+            self.node_results[node_id].update(partial_results)
+            self.node_output.emit(node_id, partial_results)
+        
+        instance._on_output = node_output_handler
 
         # Collect inputs: start with parameters (widget values)
         inputs = instance.parameters.copy()
