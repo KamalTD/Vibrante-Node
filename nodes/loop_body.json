@@ -12,6 +12,12 @@
             "name": "operation",
             "type": "string",
             "widget_type": "text"
+        },
+        {
+            "name": "delay",
+            "type": "float",
+            "widget_type": "float",
+            "default": 0.0
         }
     ],
     "outputs": [
@@ -20,5 +26,5 @@
             "type": "list"
         }
     ],
-    "python_code": "async def execute(self, inputs):\n    # Robustly handle uninitialized inputs\n    indices = inputs.get('indices')\n    if indices is None: indices = []\n    \n    op = inputs.get('operation')\n    if op is None: op = \"\"\n    \n    self.log_info(f\"Executing loop body for {len(indices)} items.\")\n    \n    results = []\n    for i in indices:\n        # Simulation of a sub-graph execution\n        self.log_info(f\"Loop Iteration: index={i}\")\n        results.append(i)\n        \n    return {'results': results}"
+    "python_code": "import asyncio\nasync def execute(self, inputs):\n    # Robustly handle uninitialized inputs\n    indices = inputs.get('indices')\n    if indices is None: indices = []\n    \n    op = inputs.get('operation')\n    if op is None: op = \"\"\n    \n    delay = float(inputs.get('delay', 0.0))\n    \n    self.log_info(f\"Executing loop body for {len(indices)} items with {delay}s delay.\")\n    \n    results = []\n    for i in indices:\n        # Simulation of a sub-graph execution\n        self.log_info(f\"Loop Iteration: index={i}\")\n        results.append(i)\n        if delay > 0:\n            await asyncio.sleep(delay)\n        \n    return {'results': results}"
 }
