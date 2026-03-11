@@ -525,6 +525,16 @@ class MainWindow(QMainWindow):
         status = "successfully" if success else "or stopped"
         self.log_panel.log(f"Execution finished {status}.", "info" if success else "warning")
 
+        # After a short delay, reset all nodes to 'idle' to clear status colors
+        from PyQt5.QtCore import QTimer
+        QTimer.singleShot(2000, self._reset_node_statuses)
+
+    def _reset_node_statuses(self):
+        scene = self.get_current_scene()
+        if scene:
+            for node in scene.nodes:
+                node.set_status("idle")
+
     def _on_node_started(self, node_instance_id):
         widget = self._find_node_widget(node_instance_id)
         name = widget.node_definition.name if widget else "Unknown"
