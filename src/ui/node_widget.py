@@ -137,7 +137,7 @@ class NodeWidget(QGraphicsItem):
             for proxy in proxies:
                 w = proxy.widget()
                 if w:
-                    w.setFixedWidth(self.width - 100) 
+                    w.setFixedWidth(int(self.width - 100)) 
                     proxy.setPos(50, current_y)
                     current_y += w.sizeHint().height() + spacing
 
