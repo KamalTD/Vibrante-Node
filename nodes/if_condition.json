@@ -1,0 +1,33 @@
+{
+    "node_id": "if_condition",
+    "name": "If Condition",
+    "description": "Routes input data to either the True or False output based on a condition.",
+    "category": "Logic",
+    "icon_path": "icons/scales.svg",
+    "inputs": [
+        {
+            "name": "condition",
+            "type": "bool",
+            "widget_type": "bool"
+        },
+        {
+            "name": "data",
+            "type": "any"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "on_true",
+            "type": "any"
+        },
+        {
+            "name": "on_false",
+            "type": "any"
+        },
+        {
+            "name": "result",
+            "type": "bool"
+        }
+    ],
+    "python_code": "async def execute(self, inputs):\n    cond = bool(inputs.get('condition', False))\n    data = inputs.get('data')\n    \n    self.log_info(f\"Evaluating condition: {cond}\")\n    \n    if cond:\n        return {'on_true': data, 'on_false': None, 'result': True}\n    else:\n        return {'on_true': None, 'on_false': data, 'result': False}"
+}
