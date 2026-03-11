@@ -75,6 +75,8 @@ class NetworkExecutor(QObject):
             self.node_results[node_id] = {}
 
             # SETUP HOOKS (Logging and Real-time data propagation)
+            instance._check_stopped = lambda: self._is_stopped
+            
             def create_logger(nid):
                 return lambda msg, lvl: self.node_log.emit(nid, msg, lvl)
             instance._on_log = create_logger(node_id)
