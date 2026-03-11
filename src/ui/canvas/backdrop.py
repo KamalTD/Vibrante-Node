@@ -27,23 +27,15 @@ class Backdrop(QGraphicsRectItem):
         font.setBold(True)
         font.setPointSize(12)
         self.title_item.setFont(font)
-        self.title_item.setTextInteractionFlags(Qt.NoTextInteraction)
+        # Enable text editing
+        self.title_item.setTextInteractionFlags(Qt.TextEditorInteraction)
 
         # Resize State
         self.resizing = False
         self.resize_handle_size = 20
         self.setAcceptHoverEvents(True)
 
-    def mouseDoubleClickEvent(self, event):
-        # Enable title editing
-        if self.title_item.boundingRect().contains(event.pos()):
-            self.title_item.setTextInteractionFlags(Qt.TextEditorInteraction)
-            self.title_item.setFocus()
-        else:
-            super().mouseDoubleClickEvent(event)
-
     def hoverMoveEvent(self, event):
-        # Change cursor near bottom-right corner
         if self._is_on_handle(event.pos()):
             self.setCursor(Qt.SizeFDiagCursor)
         else:
@@ -55,6 +47,11 @@ class Backdrop(QGraphicsRectItem):
                pos.y() > self.rect().height() - self.resize_handle_size
 
     def mousePressEvent(self, event):
+        # If clicking on the title area, allow title item to handle it
+        if self.title_item.boundingRect().contains(event.pos()):
+            # Important: don't call super() if we want the child to get focus correctly
+            pass
+            
         if event.button() == Qt.LeftButton and self._is_on_handle(event.pos()):
             self.resizing = True
             event.accept()
@@ -72,8 +69,6 @@ class Backdrop(QGraphicsRectItem):
 
     def mouseReleaseEvent(self, event):
         self.resizing = False
-        # Stop title editing if clicking outside
-        self.title_item.setTextInteractionFlags(Qt.NoTextInteraction)
         super().mouseReleaseEvent(event)
 
     def paint(self, painter, option, widget):
