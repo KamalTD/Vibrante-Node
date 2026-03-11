@@ -2,7 +2,8 @@
     "node_id": "for_loop",
     "name": "For Loop",
     "description": "Generates a sequence of numbers from start to end with a given step. Outputs the full list of indices.",
-    "category": "Control",
+    "category": "Operations",
+    "icon_path": "icons/gear.svg",
     "inputs": [
         {
             "name": "start",
