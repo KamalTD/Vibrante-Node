@@ -28,6 +28,7 @@ class NetworkExecutor(QObject):
         try:
             order = self.graph_manager.get_topological_sort()
         except Exception as e:
+            print(f"ERROR: Graph execution failed during topological sort: {e}")
             self.execution_finished.emit(False)
             return
 
@@ -38,11 +39,14 @@ class NetworkExecutor(QObject):
         for node_id, node_model in self.graph_manager.nodes.items():
             node_class = NodeRegistry.get_class(node_model.node_id)
             if not node_class:
-                self.node_error.emit(node_id, f"Unknown node type: {node_model.node_id}")
+                err = f"Unknown node type: {node_model.node_id}"
+                print(f"ERROR: {err}")
+                self.node_error.emit(node_id, err)
                 self.execution_finished.emit(False)
                 return
             
             instance = node_class()
+            instance.name = node_model.node_id # Ensure name is set for logging
             # Set parameters
             for p_name, p_val in node_model.parameters.items():
                 if p_name in instance.parameters:
@@ -81,6 +85,18 @@ class NetworkExecutor(QObject):
             # Update internal results map so downstream can pull it if needed
             self.node_results[node_id].update(partial_results)
             self.node_output.emit(node_id, partial_results)
+            
+            # REAL-TIME PROPAGATION: Push to connected nodes immediately
+            for conn in self.graph_manager.connections:
+                if conn.from_node == node_id and conn.from_port == name:
+                    target_id = conn.to_node
+                    if target_id in self.node_instances:
+                        target_instance = self.node_instances[target_id]
+                        # Set parameter on the instance directly
+                        if conn.to_port in target_instance.parameters:
+                            target_instance.parameters[conn.to_port] = value
+                            # Trigger on_parameter_changed for reactive behavior
+                            target_instance.on_parameter_changed(conn.to_port, value)
         
         instance._on_output = node_output_handler
 

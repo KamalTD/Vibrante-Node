@@ -40,10 +40,14 @@ class GraphManager:
         except toposort.CircularDependencyError:
             return False
 
-    def get_topological_sort(self) -> List[Set[UUID]]:
+    def get_topological_sort(self, ignore_ports: List[str] = None) -> List[Set[UUID]]:
         """
         Returns the nodes in topological order for execution.
+        :param ignore_ports: List of port names to ignore when calculating dependencies (breaks cycles).
         """
+        if ignore_ports is None:
+            ignore_ports = ["break_condition"] # Default special ports that allow feedback
+            
         data = {}
         # Ensure all nodes are in the data dictionary
         for node_id in self.nodes:
@@ -51,9 +55,17 @@ class GraphManager:
 
         # Add dependencies from connections
         for conn in self.connections:
+            # If the destination port is in the ignore list, don't count it as a hard dependency
+            if conn.to_port in ignore_ports:
+                continue
+                
             data[conn.to_node].add(conn.from_node)
         
-        return list(toposort.toposort(data))
+        try:
+            return list(toposort.toposort(data))
+        except toposort.CircularDependencyError as e:
+            # Re-raise with more context
+            raise toposort.CircularDependencyError(f"Workflow contains a cycle that couldn't be resolved: {e}")
 
     def to_model(self) -> WorkflowModel:
         return WorkflowModel(
