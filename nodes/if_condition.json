@@ -1,7 +1,7 @@
 {
     "node_id": "if_condition",
     "name": "If Condition",
-    "description": "Routes execution to either the True or False path based on a condition.",
+    "description": "Routes execution and data to either the True or False path based on a condition.",
     "category": "Logic",
     "icon_path": "icons/scales.svg",
     "inputs": [
@@ -13,6 +13,10 @@
             "name": "condition",
             "type": "bool",
             "widget_type": "bool"
+        },
+        {
+            "name": "data",
+            "type": "any"
         }
     ],
     "outputs": [
@@ -29,9 +33,17 @@
             "type": "exec"
         },
         {
+            "name": "on_true",
+            "type": "any"
+        },
+        {
+            "name": "on_false",
+            "type": "any"
+        },
+        {
             "name": "result",
             "type": "bool"
         }
     ],
-    "python_code": "async def execute(self, inputs):\n    cond = bool(inputs.get('condition', False))\n    self.log_info(f\"Evaluating condition: {cond}\")\n    \n    # In execution-flow model, if_condition node handles routing its own flow\n    if cond:\n        # Trigger exec_true branch\n        self.set_output('exec_true', True)\n    else:\n        # Trigger exec_false branch\n        self.set_output('exec_false', True)\n        \n    # Always trigger 'then' when done if we want sequential flow\n    self.set_output('then', True)\n    \n    return {'result': cond}"
+    "python_code": "async def execute(self, inputs):\n    cond = bool(inputs.get('condition', False))\n    data = inputs.get('data')\n    self.log_info(f\"Evaluating condition: {cond}\")\n    \n    # Trigger execution branches\n    if cond:\n        self.set_output('exec_true', True)\n    else:\n        self.set_output('exec_false', True)\n        \n    # Trigger sequential output\n    self.set_output('then', True)\n    \n    # Set data outputs\n    return {\n        'on_true': data if cond else None,\n        'on_false': None if cond else data,\n        'result': cond\n    }"
 }

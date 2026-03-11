@@ -37,7 +37,11 @@
         {
             "name": "current_index",
             "type": "int"
+        },
+        {
+            "name": "indices",
+            "type": "list"
         }
     ],
-    "python_code": "import asyncio\nasync def execute(self, inputs):\n    start = int(inputs.get('start', 0))\n    end = int(inputs.get('end', 10))\n    step = int(inputs.get('step', 1))\n    \n    self.log_info(f\"Looping from {start} to {end}\")\n    \n    for i in range(start, end, step):\n        if self.is_stopped():\n            break\n            \n        self.set_output('current_index', i)\n        self.log_info(f\"Loop iteration: {i}\")\n        \n        # Trigger loop body branch\n        self.set_output('loop_body', True)\n        \n        # Optional: yield to event loop if we want real-time UI updates between iterations\n        await asyncio.sleep(0.01)\n        \n    # Trigger sequential output when loop is fully done\n    self.set_output('then', True)\n    return {}"
+    "python_code": "import asyncio\nasync def execute(self, inputs):\n    start = int(inputs.get('start', 0))\n    end = int(inputs.get('end', 10))\n    step = int(inputs.get('step', 1))\n    \n    indices = list(range(start, end, step))\n    self.log_info(f\"Looping from {start} to {end}\")\n    \n    for i in indices:\n        if self.is_stopped():\n            break\n            \n        self.set_output('current_index', i)\n        self.log_info(f\"Loop iteration: {i}\")\n        \n        # Trigger loop body branch\n        self.set_output('loop_body', True)\n        \n        # Yield to event loop\n        await asyncio.sleep(0.01)\n        \n    # Trigger sequential output when loop is fully done\n    self.set_output('then', True)\n    return {'indices': indices}"
 }
