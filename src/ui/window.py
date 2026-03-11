@@ -435,11 +435,13 @@ class MainWindow(QMainWindow):
     def execute_pipeline(self):
         if self._is_executing:
             return
+        self._is_executing = True
             
         scene = self.get_current_scene()
-        if not scene: return
+        if not scene: 
+            self._is_executing = False
+            return
         
-        self._is_executing = True
         self.execute_btn.setEnabled(False)
         self.status_label.setText("Running...")
         tab_name = self.tabs.tabText(self.tabs.currentIndex())
