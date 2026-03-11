@@ -8,9 +8,11 @@ The project focuses on flexibility, extensibility, and developer productivity, m
 
 ## 📸 Screenshots
 
-![Vibrante-Node UI 1](shots/01.PNG)
-![Vibrante-Node UI 2](shots/02.PNG)
-![Vibrante-Node UI 3](shots/03.PNG)
+![Vibrante-Node UI 1](shots/04.PNG)
+![Vibrante-Node UI 2](shots/05.PNG)
+![Vibrante-Node UI 3](shots/06.PNG)
+![Vibrante-Node UI 4](shots/07.PNG)
+![Vibrante-Node UI 5](shots/08.PNG)
 
 ---
 
