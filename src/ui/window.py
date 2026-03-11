@@ -5,6 +5,7 @@ import asyncio
 import threading
 from PyQt5.QtWidgets import QMainWindow, QAction, QFileDialog, QVBoxLayout, QWidget, QGraphicsView, QGraphicsScene, QToolBar, QMessageBox, QDockWidget, QMenu, QStyle, QTabWidget, QStatusBar, QLabel
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QCursor
 from src.ui.canvas.scene import NodeScene
 from src.ui.canvas.view import NodeView
 from src.ui.node_builder import NodeBuilderDialog
@@ -21,6 +22,7 @@ class MainWindow(QMainWindow):
         print("MainWindow init started")
         super().__init__()
         self._is_executing = False # Execution guard
+        self._is_dark_theme = True # Track theme state
         self.setWindowTitle("Vibrante-Node Pipeline Editor")
         self.resize(1200, 800)
         
@@ -47,7 +49,6 @@ class MainWindow(QMainWindow):
         
         self.scripting_console = ScriptingConsole(self)
         self.addDockWidget(Qt.BottomDockWidgetArea, self.scripting_console)
-        self.scripting_console.hide() # Hidden by default
         
         # Connect Library Signals
         self.library_panel.node_selected.connect(self._on_node_selected)
@@ -82,6 +83,9 @@ class MainWindow(QMainWindow):
         
         # Connect selection signal
         scene.selectionChanged.connect(self._on_selection_changed)
+        
+        # Apply current theme
+        scene.apply_theme(is_dark=self._is_dark_theme)
         
         return view
 
@@ -132,6 +136,31 @@ class MainWindow(QMainWindow):
         load_action.setShortcut('Ctrl+O')
         load_action.triggered.connect(self.load_workflow)
         file_menu.addAction(load_action)
+
+        # Edit Menu
+        edit_menu = menubar.addMenu('&Edit')
+        
+        undo_action = QAction('&Undo', self)
+        undo_action.setShortcut('Ctrl+Z')
+        undo_action.triggered.connect(self._undo)
+        edit_menu.addAction(undo_action)
+        
+        redo_action = QAction('&Redo', self)
+        redo_action.setShortcut('Ctrl+Y')
+        redo_action.triggered.connect(self._redo)
+        edit_menu.addAction(redo_action)
+        
+        edit_menu.addSeparator()
+
+        copy_action = QAction('&Copy', self)
+        copy_action.setShortcut('Ctrl+C')
+        copy_action.triggered.connect(self._copy_selection)
+        edit_menu.addAction(copy_action)
+        
+        paste_action = QAction('&Paste', self)
+        paste_action.setShortcut('Ctrl+V')
+        paste_action.triggered.connect(self._paste_selection)
+        edit_menu.addAction(paste_action)
 
         node_menu = menubar.addMenu('&Nodes')
         new_node_action = QAction('&New Node Builder...', self)
@@ -288,6 +317,7 @@ class MainWindow(QMainWindow):
         scene.keyPressEvent(event)
 
     def _apply_dark_theme(self):
+        self._is_dark_theme = True
         from PyQt5.QtWidgets import QApplication
         app = QApplication.instance()
         app.setStyleSheet("""
@@ -322,6 +352,7 @@ class MainWindow(QMainWindow):
                     view.scene().apply_theme(is_dark=True)
 
     def _apply_light_theme(self):
+        self._is_dark_theme = False
         from PyQt5.QtWidgets import QApplication
         app = QApplication.instance()
         app.setStyleSheet("") # Reset to default
@@ -517,3 +548,29 @@ class MainWindow(QMainWindow):
             if widget.instance_id == instance_id:
                 return widget
         return None
+
+    def _copy_selection(self):
+        scene = self.get_current_scene()
+        if scene:
+            scene.copy_selection()
+
+    def _paste_selection(self):
+        scene = self.get_current_scene()
+        view = self.get_current_view()
+        if scene and view:
+            # Map mouse position to scene coordinates
+            mouse_pos = view.mapFromGlobal(QCursor.pos())
+            scene_pos = view.mapToScene(mouse_pos)
+            scene.paste_selection(target_pos=scene_pos)
+
+    def _undo(self):
+        scene = self.get_current_scene()
+        if scene:
+            self.log_panel.log("Undoing...", "info")
+            scene.undo()
+
+    def _redo(self):
+        scene = self.get_current_scene()
+        if scene:
+            self.log_panel.log("Redoing...", "info")
+            scene.redo()

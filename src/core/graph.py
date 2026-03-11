@@ -61,11 +61,7 @@ class GraphManager:
                 
             data[conn.to_node].add(conn.from_node)
         
-        try:
-            return list(toposort.toposort(data))
-        except toposort.CircularDependencyError as e:
-            # Re-raise with more context
-            raise toposort.CircularDependencyError(f"Workflow contains a cycle that couldn't be resolved: {e}")
+        return list(toposort.toposort(data))
 
     def to_model(self) -> WorkflowModel:
         return WorkflowModel(
