@@ -22,7 +22,8 @@
                 0.0
             ],
             "parameters": {
-                "operation": "Print index"
+                "operation": "Print index",
+                "delay": 3.0
             },
             "state": "idle"
         },
@@ -56,6 +57,6 @@
         }
     ],
     "metadata": {
-        "description": "Example workflow demonstrating For Loop and Loop Body nodes."
+        "description": "Example workflow demonstrating For Loop and Loop Body nodes with a 3-second delay."
     }
 }
