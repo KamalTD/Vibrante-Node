@@ -1,0 +1,25 @@
+{
+    "node_id": "loop_body",
+    "name": "Loop Body",
+    "description": "Executes logic for each index in a provided list. Simulates loop body behavior in a single execution pass.",
+    "category": "Control",
+    "inputs": [
+        {
+            "name": "indices",
+            "type": "list"
+        },
+        {
+            "name": "operation",
+            "type": "string",
+            "widget_type": "text",
+            "default": "print(f'Iteration: {i}')"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "results",
+            "type": "list"
+        }
+    ],
+    "python_code": "async def execute(self, inputs):\n    indices = inputs.get('indices', [])\n    op = inputs.get('operation', \"\")\n    \n    self.log_info(f\"Executing loop body for {len(indices)} items.\")\n    \n    results = []\n    for i in indices:\n        # In a real system, this would trigger other nodes.\n        # Here we simulate an operation per iteration.\n        self.log_info(f\"Loop Iteration: index={i}\")\n        results.append(i)\n        \n    return {'results': results}"
+}
