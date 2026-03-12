@@ -15,7 +15,11 @@ The Node Builder features a fully-integrated, professional-grade source code edi
 
 ### 🔹 High-Performance Execution Engine
 - **Asynchronous Execution**: Uses a background `asyncio` loop to keep the UI responsive.
-- **Topological Sorting**: Automatically determines execution order based on node dependencies.
+- **Topological Sorting**: Automatically determines execution order for data-only graphs.
+- **Hybrid Flow + Data Model (v1.0.5)**: 
+    - **Flow-Based Routing**: Execution follows `exec` pins sequentially.
+    - **Recursive Data Pulling**: Before any node executes, it recursively triggers upstream data-only nodes to ensure all inputs are current.
+    - **Re-entrant Execution**: Fixed deadlocks in `NetworkExecutor` to allow nested flow calls (essential for Loops).
 - **Recursive Data Propagation**: A live system that pushes parameter changes through the entire node chain instantly as the user interacts with the UI.
 
 ### 🔹 Advanced Connection System
