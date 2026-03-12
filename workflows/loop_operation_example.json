@@ -8,10 +8,68 @@
                 0.0
             ],
             "parameters": {
+                "exec_in": null,
+                "exec_out": true,
                 "start": 0,
-                "end": 10,
-                "step": 1
-            }
+                "end": 50,
+                "step": 1,
+                "then": true,
+                "loop_body": null,
+                "current_index": 49,
+                "indices": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9,
+                    10,
+                    11,
+                    12,
+                    13,
+                    14,
+                    15,
+                    16,
+                    17,
+                    18,
+                    19,
+                    20,
+                    21,
+                    22,
+                    23,
+                    24,
+                    25,
+                    26,
+                    27,
+                    28,
+                    29,
+                    30,
+                    31,
+                    32,
+                    33,
+                    34,
+                    35,
+                    36,
+                    37,
+                    38,
+                    39,
+                    40,
+                    41,
+                    42,
+                    43,
+                    44,
+                    45,
+                    46,
+                    47,
+                    48,
+                    49
+                ]
+            },
+            "state": "idle"
         },
         {
             "instance_id": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
@@ -21,39 +79,304 @@
                 0.0
             ],
             "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "indices": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9,
+                    10,
+                    11,
+                    12,
+                    13,
+                    14,
+                    15,
+                    16,
+                    17,
+                    18,
+                    19,
+                    20,
+                    21,
+                    22,
+                    23,
+                    24,
+                    25,
+                    26,
+                    27,
+                    28,
+                    29,
+                    30,
+                    31,
+                    32,
+                    33,
+                    34,
+                    35,
+                    36,
+                    37,
+                    38,
+                    39,
+                    40,
+                    41,
+                    42,
+                    43,
+                    44,
+                    45,
+                    46,
+                    47,
+                    48,
+                    49
+                ],
                 "operation": "Exporting Frame",
-                "delay": 0.5
-            }
+                "delay": 0.0,
+                "break_condition": null,
+                "exec_on_finished": true,
+                "results": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9,
+                    10,
+                    11,
+                    12,
+                    13,
+                    14,
+                    15,
+                    16,
+                    17,
+                    18,
+                    19,
+                    20,
+                    21,
+                    22,
+                    23,
+                    24,
+                    25,
+                    26,
+                    27,
+                    28,
+                    29,
+                    30,
+                    31,
+                    32,
+                    33,
+                    34,
+                    35,
+                    36,
+                    37,
+                    38,
+                    39,
+                    40,
+                    41,
+                    42,
+                    43,
+                    44,
+                    45,
+                    46,
+                    47,
+                    48,
+                    49
+                ],
+                "current_index": 49,
+                "completed": true,
+                "broken": false
+            },
+            "state": "idle"
         },
         {
             "instance_id": "d1d9a498-d8cc-4ca6-a020-6584cf7822e4",
             "node_id": "console_print",
             "position": [
-                350.0,
-                0.0
+                925.1875,
+                11.125
             ],
             "parameters": {
-                "data": "Status"
-            }
+                "exec_in": true,
+                "exec_out": true,
+                "data": "Now printing ::====>>> 49",
+                "out": "Now printing ::====>>> 49"
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "f7919802-967a-4006-86e7-c15673fc7005",
+            "node_id": "string_concat",
+            "position": [
+                645.125,
+                7.7425
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "str1": "Now printing ::",
+                "str2": "49",
+                "separator": "====>>> ",
+                "combined": "Now printing ::====>>> 49"
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "fed41f37-7e22-4733-8ca6-1caaf417ced5",
+            "node_id": "variable_node",
+            "position": [
+                309.37500000000006,
+                205.3125
+            ],
+            "parameters": {
+                "type": "string",
+                "value": "Now printing ::",
+                "out": "Now printing ::"
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "1b6d6080-4670-4eb1-a106-771e9d6f4c51",
+            "node_id": "variable_node",
+            "position": [
+                309.62500000000006,
+                425.3125
+            ],
+            "parameters": {
+                "type": "string",
+                "value": "====>>> ",
+                "out": "====>>> "
+            },
+            "state": "idle"
         }
     ],
     "connections": [
         {
-            "id": "e4290df0-1929-4c8c-beab-8e81a5bed3a2",
+            "id": "3a0261f2-8a86-4b4f-9da8-37e7b06318fc",
             "from_node": "8489813d-5136-4074-9f0e-36511a5b8221",
             "from_port": "indices",
             "to_node": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
-            "to_port": "indices"
+            "to_port": "indices",
+            "is_exec": false
         },
         {
-            "id": "f5290df0-1929-4c8c-beab-8e81a5bed3a3",
+            "id": "eb47b322-51e9-4437-a646-4ddbe887f3f9",
+            "from_node": "8489813d-5136-4074-9f0e-36511a5b8221",
+            "from_port": "exec_out",
+            "to_node": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "6038042c-836e-4322-b97f-4c7007f47664",
+            "from_node": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
+            "from_port": "exec_out",
+            "to_node": "f7919802-967a-4006-86e7-c15673fc7005",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "b79c2ee7-64b4-464f-8fc4-6d5c2cdfb7a3",
             "from_node": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
             "from_port": "current_index",
+            "to_node": "f7919802-967a-4006-86e7-c15673fc7005",
+            "to_port": "str2",
+            "is_exec": false
+        },
+        {
+            "id": "f2683038-b184-4b02-b619-9416644cef7c",
+            "from_node": "f7919802-967a-4006-86e7-c15673fc7005",
+            "from_port": "exec_out",
             "to_node": "d1d9a498-d8cc-4ca6-a020-6584cf7822e4",
-            "to_port": "data"
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "76a031b2-1446-41a9-8ccf-a380833b92c0",
+            "from_node": "f7919802-967a-4006-86e7-c15673fc7005",
+            "from_port": "combined",
+            "to_node": "d1d9a498-d8cc-4ca6-a020-6584cf7822e4",
+            "to_port": "data",
+            "is_exec": false
+        },
+        {
+            "id": "7ed852ff-8659-4c13-87b7-2aca7fb074e1",
+            "from_node": "fed41f37-7e22-4733-8ca6-1caaf417ced5",
+            "from_port": "out",
+            "to_node": "f7919802-967a-4006-86e7-c15673fc7005",
+            "to_port": "str1",
+            "is_exec": false
+        },
+        {
+            "id": "758b6b15-b55e-440f-a4fe-c992b6f9503d",
+            "from_node": "1b6d6080-4670-4eb1-a106-771e9d6f4c51",
+            "from_port": "out",
+            "to_node": "f7919802-967a-4006-86e7-c15673fc7005",
+            "to_port": "separator",
+            "is_exec": false
         }
     ],
-    "metadata": {
-        "description": "Demonstrates the 'operation' field in Loop Body, useful for batch tasks like exporting sequences."
-    }
+    "sticky_notes": [
+        {
+            "id": "5f3a0e4b-6d1a-42c2-b5e1-8899c7d4e3f0",
+            "position": [
+                -445.0,
+                -245.3125
+            ],
+            "size": [
+                300.0,
+                150.0
+            ],
+            "text": "Loop Iteration Example\n\nThis workflow demonstrates how to iterate over a range of indices and perform string operations.",
+            "color": "#ffffcc"
+        },
+        {
+            "id": "a1b2c3d4-e5f6-4a8b-c9d0-e1a2b3c4d5e6",
+            "position": [
+                559.5999999999999,
+                469.9999999999999
+            ],
+            "size": [
+                350.0,
+                150.0
+            ],
+            "text": "Data Pull Mechanism\n\nNote that Variable nodes do not have execution pins. They are 'pulled' by the String Concat node during its execution.",
+            "color": "#e6f3ff"
+        }
+    ],
+    "backdrops": [
+        {
+            "id": "7b8a9c0d-1e2f-4a3b-c4d5-e6f7a8b9c0d1",
+            "position": [
+                -450.0,
+                -80.0
+            ],
+            "size": [
+                679.6875,
+                454.99999999999994
+            ],
+            "title": "Loop Configuration",
+            "color": "#333333"
+        },
+        {
+            "id": "8c9d0e1f-2a3b-4c5d-6e7f-8a9b0c1d2e3f",
+            "position": [
+                246.87500000000006,
+                -84.6875
+            ],
+            "size": [
+                900.0,
+                750.0
+            ],
+            "title": "Processing Logic",
+            "color": "#444444"
+        }
+    ],
+    "metadata": {}
 }

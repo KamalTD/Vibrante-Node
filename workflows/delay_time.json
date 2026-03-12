@@ -1,0 +1,74 @@
+{
+    "nodes": [
+        {
+            "instance_id": "a9b20501-6fb7-4f4e-aa38-afb3a57494b1",
+            "node_id": "delay_timer",
+            "position": [
+                -248.0,
+                -64.0
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "delay": 3.0
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "0c62e787-0840-4b71-ad4e-005a56546194",
+            "node_id": "console_print",
+            "position": [
+                39.74148437500001,
+                -63.931953125
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "data": "Wait time : 3 seconds",
+                "out": "Wait time : 3 seconds"
+            },
+            "state": "idle"
+        }
+    ],
+    "connections": [
+        {
+            "id": "df80133f-c03d-4e7c-9b21-79f5d262975f",
+            "from_node": "a9b20501-6fb7-4f4e-aa38-afb3a57494b1",
+            "from_port": "exec_out",
+            "to_node": "0c62e787-0840-4b71-ad4e-005a56546194",
+            "to_port": "exec_in",
+            "is_exec": true
+        }
+    ],
+    "sticky_notes": [
+        {
+            "id": "67e683c4-2eaf-4919-8eb0-0a49d8f13621",
+            "position": [
+                332.1660156250001,
+                -51.45578125
+            ],
+            "size": [
+                244.949453125,
+                51.45578125
+            ],
+            "text": "Print \"Wait time : 3 seconds\" after 3 seconds",
+            "color": "#ffffcc"
+        }
+    ],
+    "backdrops": [
+        {
+            "id": "94125aca-fe60-43fa-8181-dea9b7ed194c",
+            "position": [
+                -288.0,
+                -124.0
+            ],
+            "size": [
+                595.0,
+                257.0
+            ],
+            "title": "Delay Time\n",
+            "color": "#444444"
+        }
+    ],
+    "metadata": {}
+}

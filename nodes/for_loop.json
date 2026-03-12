@@ -47,5 +47,5 @@
             "type": "list"
         }
     ],
-    "python_code": "import asyncio\nasync def execute(self, inputs):\n    start = int(inputs.get('start', 0))\n    end = int(inputs.get('end', 10))\n    step = int(inputs.get('step', 1))\n    \n    indices = list(range(start, end, step))\n    self.log_info(f\"Generated range: {start} to {end}\")\n    \n    # Trigger exec_out explicitly to continue flow to next node (e.g. Loop Body)\n    await self.set_output('exec_out', True)\n    \n    # Trigger then explicitly (backward compatible name for Finished)\n    await self.set_output('then', True)\n    \n    return {'indices': indices, 'current_index': indices[-1] if indices else 0}"
+    "python_code": "import asyncio\nasync def execute(self, inputs):\n    start = int(inputs.get('start', 0))\n    end = int(inputs.get('end', 10))\n    step = int(inputs.get('step', 1))\n    \n    indices = list(range(start, end, step))\n    self.log_info(f\"Generated range: {start} to {end}\")\n    \n    # Trigger ONLY exec_out to start the loop\n    # Downstream Loop Body will trigger its own finished pin\n    await self.set_output('exec_out', True)\n    \n    return {'indices': indices, 'current_index': indices[-1] if indices else 0}"
 }

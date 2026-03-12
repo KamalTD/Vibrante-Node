@@ -1,0 +1,262 @@
+{
+    "nodes": [
+        {
+            "instance_id": "550e8400-e29b-41d4-a716-446655440000",
+            "node_id": "logical_gate",
+            "position": [
+                71.09374999999977,
+                287.9882812499999
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "operation": "AND",
+                "a": true,
+                "b": true,
+                "result": true
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "550e8400-e29b-41d4-a716-446655440001",
+            "node_id": "if_condition",
+            "position": [
+                421.0937499999998,
+                290.4296874999999
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "condition": true,
+                "data": "Logic Gate Result was True!",
+                "exec_false": false,
+                "on_true": "Logic Gate Result was True!",
+                "on_false": null,
+                "result": true
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "550e8400-e29b-41d4-a716-446655440002",
+            "node_id": "console_print",
+            "position": [
+                771.0937499999998,
+                190.42968749999991
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "data": "Now you can see it is : True",
+                "out": "Now you can see it is : True"
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "550e8400-e29b-41d4-a716-446655440003",
+            "node_id": "console_print",
+            "position": [
+                771.0937499999998,
+                440.4296874999999
+            ],
+            "parameters": {
+                "exec_in": false,
+                "exec_out": true,
+                "data": "Now you can see it is : False",
+                "out": "Now you can see it is : False"
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "d3c21fcf-7b96-48be-b08b-bb9f4c816ce9",
+            "node_id": "variable_node",
+            "position": [
+                -325.9960937500001,
+                141.74609374999994
+            ],
+            "parameters": {
+                "type": "int",
+                "value": "1",
+                "out": 1
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "b9c376d1-758f-4162-91a3-e35e99310739",
+            "node_id": "variable_node",
+            "position": [
+                -322.6718750000001,
+                395.3046874999999
+            ],
+            "parameters": {
+                "type": "int",
+                "value": "1",
+                "out": 1
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "8d62564f-4e7e-44b1-b794-921dc2144e8e",
+            "node_id": "variable_node",
+            "position": [
+                432.2187499999998,
+                588.1953124999998
+            ],
+            "parameters": {
+                "type": "string",
+                "value": "Now you can see it is : False",
+                "out": "Now you can see it is : False"
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "b76e5685-346b-4dfc-8786-59c745405c4a",
+            "node_id": "variable_node",
+            "position": [
+                425.22187499999984,
+                -42.54531250000005
+            ],
+            "parameters": {
+                "type": "string",
+                "value": "Now you can see it is : True",
+                "out": "Now you can see it is : True"
+            },
+            "state": "idle"
+        }
+    ],
+    "connections": [
+        {
+            "id": "7eed65a9-5f30-42c3-8d69-c6109995d348",
+            "from_node": "550e8400-e29b-41d4-a716-446655440000",
+            "from_port": "result",
+            "to_node": "550e8400-e29b-41d4-a716-446655440001",
+            "to_port": "condition",
+            "is_exec": false
+        },
+        {
+            "id": "b589793a-5e36-4dfa-b5e2-cb25c8ec2040",
+            "from_node": "550e8400-e29b-41d4-a716-446655440000",
+            "from_port": "exec_out",
+            "to_node": "550e8400-e29b-41d4-a716-446655440001",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "888dec47-036d-4453-98fa-f78515461a2e",
+            "from_node": "550e8400-e29b-41d4-a716-446655440001",
+            "from_port": "exec_false",
+            "to_node": "550e8400-e29b-41d4-a716-446655440003",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "3312a1ad-ec0c-49e7-92d7-db53245aba2d",
+            "from_node": "d3c21fcf-7b96-48be-b08b-bb9f4c816ce9",
+            "from_port": "out",
+            "to_node": "550e8400-e29b-41d4-a716-446655440000",
+            "to_port": "a",
+            "is_exec": false
+        },
+        {
+            "id": "e00384c8-4c63-44fd-ab25-a41fd97efc97",
+            "from_node": "b9c376d1-758f-4162-91a3-e35e99310739",
+            "from_port": "out",
+            "to_node": "550e8400-e29b-41d4-a716-446655440000",
+            "to_port": "b",
+            "is_exec": false
+        },
+        {
+            "id": "bcd843a8-eb10-4472-a38b-9b44ef10045a",
+            "from_node": "8d62564f-4e7e-44b1-b794-921dc2144e8e",
+            "from_port": "out",
+            "to_node": "550e8400-e29b-41d4-a716-446655440003",
+            "to_port": "data",
+            "is_exec": false
+        },
+        {
+            "id": "3126af31-cc6b-4082-b2bb-9ac4f1cf138e",
+            "from_node": "b76e5685-346b-4dfc-8786-59c745405c4a",
+            "from_port": "out",
+            "to_node": "550e8400-e29b-41d4-a716-446655440002",
+            "to_port": "data",
+            "is_exec": false
+        },
+        {
+            "id": "3200a0c8-93d8-49fc-ba35-d1c2c5ba9c05",
+            "from_node": "550e8400-e29b-41d4-a716-446655440001",
+            "from_port": "exec_out",
+            "to_node": "550e8400-e29b-41d4-a716-446655440002",
+            "to_port": "exec_in",
+            "is_exec": true
+        }
+    ],
+    "sticky_notes": [
+        {
+            "id": "d5e6f7a8-b9c0-4d1e-a2b3-c4d5e6f7a8b9",
+            "position": [
+                5.175781249999886,
+                -52.44140625000003
+            ],
+            "size": [
+                300.0,
+                100.0
+            ],
+            "text": "Logic Gate determines if the condition is True or False.",
+            "color": "#ffffcc"
+        },
+        {
+            "id": "e6f7a8b9-c0d1-4e2f-a3b4-c5d6e7f8a9b0",
+            "position": [
+                740.9179687499998,
+                -64.6484375
+            ],
+            "size": [
+                300.0,
+                100.0
+            ],
+            "text": "If Condition routes execution based on the gate result.",
+            "color": "#e6f3ff"
+        },
+        {
+            "id": "46cd2e4d-a729-4c3c-a9aa-9ed2de496f25",
+            "position": [
+                1021.872125303599,
+                487.1413725167997
+            ],
+            "size": [
+                268.5754943890663,
+                65.16423793034909
+            ],
+            "text": "If False will print \"Now you can see it is : False\"",
+            "color": "#ffffcc"
+        },
+        {
+            "id": "128798f6-fe67-43de-abb4-0f4b0fa17a79",
+            "position": [
+                1017.8931275084219,
+                240.7909362936
+            ],
+            "size": [
+                268.5754943890663,
+                65.16423793034909
+            ],
+            "text": "If False will print \"Now you can see it is : True\"",
+            "color": "#ffffcc"
+        }
+    ],
+    "backdrops": [
+        {
+            "id": "f7a8b9c0-d1e2-4f3a-b4c5-d6e7f8a9b0c1",
+            "position": [
+                -381.73828125,
+                -124.4140625
+            ],
+            "size": [
+                1514.5507812499995,
+                944.7265624999997
+            ],
+            "title": "Logic & Branching Example",
+            "color": "#333333"
+        }
+    ],
+    "metadata": {}
+}
