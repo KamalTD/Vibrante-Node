@@ -61,8 +61,35 @@ class NodeWidget(QGraphicsItem):
         self.title_text = QGraphicsTextItem(self.node_definition.name, self)
         self.title_text.setDefaultTextColor(Qt.white)
         self.title_text.setPos(10, 5)
+        
+        self.rebuild_ports()
 
-        # 1. Create Ports (Sorted: exec first)
+    def rebuild_ports(self):
+        """Dynamic port reconstruction."""
+        # 1. Identify affected edges BEFORE detaching old ports
+        affected_edges_out = [] # (edge, port_name)
+        affected_edges_in = [] # (edge, port_name)
+        
+        if self.scene():
+            for edge in self.scene().edges:
+                if edge.from_port in self.output_widgets:
+                    affected_edges_out.append((edge, edge.from_port.port_definition.name))
+                if edge.to_port in self.input_widgets:
+                    affected_edges_in.append((edge, edge.to_port.port_definition.name))
+
+        # 2. Clear old port widgets and labels
+        for w in self.input_widgets + self.output_widgets + self.input_labels + self.output_labels:
+            if self.scene() and w.scene(): 
+                self.scene().removeItem(w)
+            else:
+                w.setParentItem(None)
+                
+        self.input_widgets.clear()
+        self.output_widgets.clear()
+        self.input_labels.clear()
+        self.output_labels.clear()
+
+        # 3. Create Ports (Sorted: exec first)
         y_in = 45
         inputs = self.node_definition.inputs
         input_list = inputs if isinstance(inputs, list) else inputs.values()
@@ -75,13 +102,12 @@ class NodeWidget(QGraphicsItem):
             p.setPos(0, y_in)
             self.input_widgets.append(p)
             
-            # Hide label for standard exec pins
             label_text = p_model.name
             if p.port_type == "exec" and label_text in ["in", "exec_in", "trigger"]:
                 label_text = ""
                 
             label = QGraphicsTextItem(label_text, self)
-            label.setDefaultTextColor(Qt.white)
+            label.setDefaultTextColor(Qt.white if self.is_dark else Qt.black)
             label.setFont(self._get_port_font())
             label.setPos(12, y_in - 10)
             self.input_labels.append(label)
@@ -104,17 +130,18 @@ class NodeWidget(QGraphicsItem):
                 label_text = ""
                 
             label = QGraphicsTextItem(label_text, self)
-            label.setDefaultTextColor(Qt.white)
+            label.setDefaultTextColor(Qt.white if self.is_dark else Qt.black)
             label.setFont(self._get_port_font())
             self.output_labels.append(label)
             y_out += 25
 
-        # 2. Create Parameter Widgets (using original list order)
+        # 4. Parameter Widgets (Only create if not already exists)
         for p_model in input_list:
             if hasattr(p_model, 'widget_type') and p_model.widget_type:
-                self._create_param_widget(p_model)
+                if p_model.name not in self.param_widgets:
+                    self._create_param_widget(p_model)
 
-        # 3. Calculate Dynamic Height
+        # 5. Calculate Dynamic Height
         proxies = list(self.param_widgets.values())
         params_total_height = 0
         for p in proxies:
@@ -124,6 +151,28 @@ class NodeWidget(QGraphicsItem):
         self.height = max(140, ports_max_y + params_total_height + 20)
         
         self._auto_size(ports_max_y)
+        
+        # 6. Reconnect Edges to new PortWidgets
+        for edge, name in affected_edges_out:
+            new_p = next((p for p in self.output_widgets if p.port_definition.name == name), None)
+            if new_p: 
+                edge.from_port = new_p
+                edge.update_path()
+            else:
+                # Port gone? Remove edge
+                if self.scene() and edge in self.scene().edges:
+                    self.scene().removeItem(edge)
+                    self.scene().edges.remove(edge)
+
+        for edge, name in affected_edges_in:
+            new_p = next((p for p in self.input_widgets if p.port_definition.name == name), None)
+            if new_p: 
+                edge.to_port = new_p
+                edge.update_path()
+            else:
+                if self.scene() and edge in self.scene().edges:
+                    self.scene().removeItem(edge)
+                    self.scene().edges.remove(edge)
 
     def _auto_size(self, ports_bottom_y):
         """Dynamically scales the node width and centers children."""
@@ -132,7 +181,7 @@ class NodeWidget(QGraphicsItem):
         # 1. Width Calculation
         min_width = 220
         content_width = 0
-        if self.title_text:
+        if hasattr(self, 'title_text') and self.title_text:
             content_width = max(content_width, self.title_text.boundingRect().width() + 40)
         for proxy in self.param_widgets.values():
             w = proxy.widget()
@@ -356,6 +405,18 @@ class NodeWidget(QGraphicsItem):
     def set_status(self, status: str):
         self.status = status
         self.update()
+
+    def is_port_connected(self, port_name, is_input):
+        """Checks if a port has any active connections in the scene."""
+        if not self.scene(): return False
+        for edge in self.scene().edges:
+            if is_input:
+                if edge.to_port and edge.to_port.parentItem() == self and edge.to_port.port_definition.name == port_name:
+                    return True
+            else:
+                if edge.from_port and edge.from_port.parentItem() == self and edge.from_port.port_definition.name == port_name:
+                    return True
+        return False
 
     def boundingRect(self):
         return QRectF(0, 0, self.width, self.height)

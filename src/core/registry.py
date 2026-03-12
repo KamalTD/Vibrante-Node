@@ -30,10 +30,17 @@ class NodeRegistry:
 
     @classmethod
     def register_builtins(cls):
-        from src.nodes.builtins.nodes import FileLoaderNode, DataProcessorNode, ConsoleSinkNode
+        from src.nodes.builtins.nodes import (
+            FileLoaderNode, DataProcessorNode, ConsoleSinkNode, 
+            SequenceNode, SetVariableNode, GetVariableNode, TwoWaySwitchNode
+        )
         cls._register_builtin_class(FileLoaderNode)
         cls._register_builtin_class(DataProcessorNode)
         cls._register_builtin_class(ConsoleSinkNode)
+        cls._register_builtin_class(SequenceNode)
+        cls._register_builtin_class(SetVariableNode)
+        cls._register_builtin_class(GetVariableNode)
+        cls._register_builtin_class(TwoWaySwitchNode)
 
     @classmethod
     def _register_builtin_class(cls, node_class: Type[BaseNode]):
