@@ -24,9 +24,12 @@ Vibrante-Node follows a modular architecture separated into three main layers:
 ## 📊 Data Flow
 
 1.  **Serialization**: The canvas is serialized into a `WorkflowModel` (JSON).
-2.  **Topological Sort**: `GraphManager` determines the order of execution so that a node only runs after its dependencies.
-3.  **Execution**: `NetworkExecutor` runs each node in an `asyncio` loop.
-4.  **Propagation**: Output dictionaries from one node are mapped to the input dictionaries of the next based on wire connections.
+2.  **Hybrid Execution Model (v1.0.5)**:
+    -   **Flow Mode**: If execution pins (`exec`) are connected, the engine follows them sequentially.
+    -   **Data Mode**: If no `exec` pins are present, `GraphManager` determines a topological sort.
+3.  **Recursive Data Pulling**: Before any node executes, `NetworkExecutor` recursively calls `_run_single_node_impl` on upstream data-only nodes to ensure all inputs are fresh.
+4.  **Re-entrant execution**: The `_exec_lock` was removed to allow nodes to trigger downstream flows (like loops) without deadlocking.
+5.  **Propagation**: Output dictionaries from one node are mapped to the input dictionaries of the next based on wire connections.
 
 ## 🛠️ How to Add a Built-in Node
 
