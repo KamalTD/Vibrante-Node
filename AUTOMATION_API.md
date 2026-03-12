@@ -38,8 +38,28 @@ When writing scripts in the console, the following objects are pre-loaded into y
 
 ### 🔹 Application Control (`app`)
 - **`app.add_new_workflow(name)`**: Opens a new empty tab.
-- **`app.execute_pipeline()`**: Starts the execution engine for the current tab.
+- **`app.execute_pipeline()`**: Starts the execution engine for the current tab. 
+    - **v1.0.5+**: Now supports hybrid **Flow + Data** execution with automatic recursive data pulling and re-entrant loop support.
 - **`app.save_workflow()`**: Triggers the save dialog or smart-saves if a path exists.
+
+---
+
+## ⚙️ Advanced Automation Concepts (v1.0.5+)
+
+### 🔹 Working with Flow & Data
+With the v1.0.5 engine, you can automate workflows that combine traditional execution paths with reactive data-only nodes:
+
+- **Reactive Pulling**: When you call `app.execute_pipeline()`, the engine will automatically find and refresh all connected "Data-Only" nodes (nodes with `use_exec: false`) before executing flow-based nodes.
+- **Loop Support**: You can now safely automate workflows containing `For Loop` and `Loop Body` nodes. The engine will handle the recursive execution of the loop body without deadlocking.
+
+### 🔹 Creating Data-Only Nodes via Scripting
+You can check if a node type is data-only by inspecting its registry definition:
+
+```python
+defn = registry.get_definition("math_add")
+if not defn.use_exec:
+    print("This is a pure data node!")
+```
 
 ---
 
