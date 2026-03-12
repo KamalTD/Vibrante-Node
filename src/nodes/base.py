@@ -22,6 +22,10 @@ class BaseNode(ABC):
         self._on_log = None # Hook for engine to capture logs
         self._on_output = None # Hook for engine to capture intermediate outputs
         self._check_stopped = None # Hook for engine to check cancellation
+        
+        # ALL NODES must have exactly one input and one output execution pin
+        self.add_exec_input("exec_in")
+        self.add_exec_output("exec_out")
 
     def is_stopped(self) -> bool:
         """Checks if the execution has been requested to stop."""
@@ -29,12 +33,12 @@ class BaseNode(ABC):
             return self._check_stopped()
         return False
 
-    def set_output(self, name: str, value: Any):
+    async def set_output(self, name: str, value: Any):
         """Allows a node to push output data during execution (streaming)."""
         if name in self.outputs:
             self.parameters[name] = value
             if self._on_output:
-                self._on_output(name, value)
+                await self._on_output(name, value)
 
     def clear_outputs(self):
         """Resets all output parameters to None before a new execution."""
@@ -59,7 +63,7 @@ class BaseNode(ABC):
         if name not in self.parameters:
             self.parameters[name] = None
 
-    def add_exec_input(self, name: str = "in"):
+    def add_exec_input(self, name: str = "exec_in"):
         self.add_input(name, data_type="exec")
 
     def add_output(self, name: str, data_type: str = "any"):
@@ -68,7 +72,7 @@ class BaseNode(ABC):
         if name not in self.parameters:
             self.parameters[name] = None
 
-    def add_exec_output(self, name: str = "out"):
+    def add_exec_output(self, name: str = "exec_out"):
         self.add_output(name, data_type="exec")
 
     def add_parameter(self, name: str, param_type: Type, default: Any = None):
@@ -99,7 +103,7 @@ class BaseNode(ABC):
         """Called when a connection is removed (Sync)."""
         pass
 
-    def on_parameter_changed(self, name: str, value: Any):
+    async def on_parameter_changed(self, name: str, value: Any):
         """Called when a parameter/widget value is changed."""
         pass
 

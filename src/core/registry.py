@@ -51,7 +51,8 @@ class NodeRegistry:
             python_code="" # Not used for builtins
         )
 
-        cls._definitions[definition.node_id] = definition
+        # Normalize and store
+        cls.register_definition(definition)
         cls._classes[definition.node_id] = node_class
 
     @classmethod
@@ -69,6 +70,19 @@ class NodeRegistry:
 
     @classmethod
     def register_definition(cls, definition: NodeDefinitionJSON) -> bool:
+        # 1. Normalize pins: Ensure at least 'exec_in' and 'exec_out' exist
+        # But allow other 'exec' type pins as well.
+        
+        # Inputs
+        has_exec_in = any(p.name == "exec_in" for p in definition.inputs)
+        if not has_exec_in:
+            definition.inputs.insert(0, PortModel(name="exec_in", type="exec"))
+            
+        # Outputs
+        has_exec_out = any(p.name == "exec_out" for p in definition.outputs)
+        if not has_exec_out:
+            definition.outputs.insert(0, PortModel(name="exec_out", type="exec"))
+
         cls._definitions[definition.node_id] = definition
         if not definition.python_code:
             return True # Builtin already registered
@@ -96,9 +110,9 @@ class NodeRegistry:
                     async def execute(self, inputs):
                         return await local_namespace['execute'](self, inputs)
                     
-                    def on_parameter_changed(self, name, value):
+                    async def on_parameter_changed(self, name, value):
                         if 'on_parameter_changed' in local_namespace:
-                            local_namespace['on_parameter_changed'](self, name, value)
+                            await local_namespace['on_parameter_changed'](self, name, value)
                             
                     def on_plug_sync(self, port_name, is_input, other_node, other_port_name):
                         if 'on_plug_sync' in local_namespace:

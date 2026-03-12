@@ -1,14 +1,29 @@
 {
-  "node_id": "example_math_abs",
-  "name": "Math Absolute",
-  "description": "Returns the absolute value of a number.",
-  "category": "Math",
-  "inputs": [
-    { "name": "value", "type": "float", "widget_type": "float" }
-  ],
-  "outputs": [
-    { "name": "result", "type": "float" }
-  ],
-  "icon_path": "icons/math.svg",
-  "python_code": "from src.nodes.base import BaseNode\n\nclass MathAbsNode(BaseNode):\n    name = \"Math Absolute\"\n    \n    def __init__(self):\n        super().__init__()\n        self.icon_path = \"icons/math.svg\"\n        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"value\", \"float\", widget_type=\"float\")\n        self.add_output(\"result\", \"float\")\n        # [AUTO-GENERATED-PORTS-END]\n        \n    async def execute(self, inputs):\n        val = float(inputs.get('value', 0.0))\n        return {'result': abs(val)}\n\ndef register_node():\n    return MathAbsNode\n"
+    "node_id": "example_math_abs",
+    "name": "Math Absolute",
+    "description": "Returns the absolute value of a number.",
+    "category": "Math",
+    "inputs": [
+        {
+            "name": "exec_in",
+            "type": "exec"
+        },
+        {
+            "name": "value",
+            "type": "float",
+            "widget_type": "float"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "exec_out",
+            "type": "exec"
+        },
+        {
+            "name": "result",
+            "type": "float"
+        }
+    ],
+    "icon_path": "icons/math.svg",
+    "python_code": "from src.nodes.base import BaseNode\n\nclass MathAbsNode(BaseNode):\n    name = \"Math Absolute\"\n    \n    def __init__(self):\n        super().__init__()\n        self.icon_path = \"icons/math.svg\"\n        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"value\", \"float\", widget_type=\"float\")\n        self.add_output(\"result\", \"float\")\n        # [AUTO-GENERATED-PORTS-END]\n        \n    async def execute(self, inputs):\n        val = float(inputs.get('value', 0.0))\n        await self.set_output(\"exec_out\", True)\n        return {'result': abs(val)}\n\ndef register_node():\n    return MathAbsNode\n"
 }

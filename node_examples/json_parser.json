@@ -1,14 +1,29 @@
 {
-  "node_id": "example_json_parser",
-  "name": "JSON Parser",
-  "description": "Parses a JSON string into a dictionary.",
-  "category": "Data",
-  "inputs": [
-    { "name": "json_str", "type": "string", "widget_type": "text_area" }
-  ],
-  "outputs": [
-    { "name": "data", "type": "dict" }
-  ],
-  "icon_path": "icons/braces.svg",
-  "python_code": "import json\nfrom src.nodes.base import BaseNode\n\nclass JsonParserNode(BaseNode):\n    name = \"JSON Parser\"\n    \n    def __init__(self):\n        super().__init__()\n        self.icon_path = \"icons/braces.svg\"\n        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"json_str\", \"string\", widget_type=\"text_area\")\n        self.add_output(\"data\", \"dict\")\n        # [AUTO-GENERATED-PORTS-END]\n        \n    async def execute(self, inputs):\n        s = inputs.get('json_str', '{}')\n        try:\n            return {'data': json.loads(s)}\n        except:\n            return {'data': {}}\n\ndef register_node():\n    return JsonParserNode\n"
+    "node_id": "example_json_parser",
+    "name": "JSON Parser",
+    "description": "Parses a JSON string into a dictionary.",
+    "category": "Data",
+    "inputs": [
+        {
+            "name": "exec_in",
+            "type": "exec"
+        },
+        {
+            "name": "json_str",
+            "type": "string",
+            "widget_type": "text_area"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "exec_out",
+            "type": "exec"
+        },
+        {
+            "name": "data",
+            "type": "dict"
+        }
+    ],
+    "icon_path": "icons/braces.svg",
+    "python_code": "import json\nfrom src.nodes.base import BaseNode\n\nclass JsonParserNode(BaseNode):\n    name = \"JSON Parser\"\n    \n    def __init__(self):\n        super().__init__()\n        self.icon_path = \"icons/braces.svg\"\n        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"json_str\", \"string\", widget_type=\"text_area\")\n        self.add_output(\"data\", \"dict\")\n        # [AUTO-GENERATED-PORTS-END]\n        \n    async def execute(self, inputs):\n        s = inputs.get('json_str', '{}')\n        try:\n            await self.set_output(\"exec_out\", True)\n            return {'data': json.loads(s)}\n        except:\n            return {'data': {}}\n\ndef register_node():\n    return JsonParserNode\n"
 }
