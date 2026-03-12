@@ -1,0 +1,152 @@
+{
+    "nodes": [
+        {
+            "instance_id": "da40bd3b-2498-4ef6-b9ac-b4c5a5947052",
+            "node_id": "Sequence",
+            "position": [
+                14.999999999999986,
+                82.50000000000001
+            ],
+            "parameters": {
+                "step_0": "Step 01",
+                "result": "Step 03",
+                "exec_step": true,
+                "exec_out": null,
+                "step_1": "Step 02",
+                "step_2": "Step 03",
+                "step_3": null
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "97f9dffe-4b3f-43c5-bebf-5c89d8f8a581",
+            "node_id": "variable_node",
+            "position": [
+                -422.0,
+                -78.0
+            ],
+            "parameters": {
+                "type": "string",
+                "value": "Step 01",
+                "out": "Step 01"
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "c2aefd3b-156b-4827-9c4a-3db3416c690a",
+            "node_id": "variable_node",
+            "position": [
+                -413.0,
+                162.0
+            ],
+            "parameters": {
+                "type": "string",
+                "value": "Step 02",
+                "out": "Step 02"
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "55abf23e-60fb-4702-a853-8645f55f53ed",
+            "node_id": "variable_node",
+            "position": [
+                -401.0,
+                402.0
+            ],
+            "parameters": {
+                "type": "string",
+                "value": "Step 03",
+                "out": "Step 03"
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "728f1563-b59c-4c4c-bd8a-a6a69b701528",
+            "node_id": "console_print",
+            "position": [
+                344.75,
+                107.25
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "data": "Step 03",
+                "out": "Step 01"
+            },
+            "state": "idle"
+        }
+    ],
+    "connections": [
+        {
+            "id": "98358225-01c9-4d92-b730-ad76cdf16671",
+            "from_node": "97f9dffe-4b3f-43c5-bebf-5c89d8f8a581",
+            "from_port": "out",
+            "to_node": "da40bd3b-2498-4ef6-b9ac-b4c5a5947052",
+            "to_port": "step_0",
+            "is_exec": false
+        },
+        {
+            "id": "10c8e9e6-21ed-4008-9747-73f0e41e33bd",
+            "from_node": "c2aefd3b-156b-4827-9c4a-3db3416c690a",
+            "from_port": "out",
+            "to_node": "da40bd3b-2498-4ef6-b9ac-b4c5a5947052",
+            "to_port": "step_1",
+            "is_exec": false
+        },
+        {
+            "id": "bd0193b6-0982-422c-addb-9844b6db6f2f",
+            "from_node": "55abf23e-60fb-4702-a853-8645f55f53ed",
+            "from_port": "out",
+            "to_node": "da40bd3b-2498-4ef6-b9ac-b4c5a5947052",
+            "to_port": "step_2",
+            "is_exec": false
+        },
+        {
+            "id": "93d1ad2c-d13e-48e5-bb82-53171475a06f",
+            "from_node": "da40bd3b-2498-4ef6-b9ac-b4c5a5947052",
+            "from_port": "result",
+            "to_node": "728f1563-b59c-4c4c-bd8a-a6a69b701528",
+            "to_port": "data",
+            "is_exec": false
+        },
+        {
+            "id": "2d324bbb-ca55-4014-ba1c-c19ecb78d673",
+            "from_node": "da40bd3b-2498-4ef6-b9ac-b4c5a5947052",
+            "from_port": "exec_step",
+            "to_node": "728f1563-b59c-4c4c-bd8a-a6a69b701528",
+            "to_port": "exec_in",
+            "is_exec": true
+        }
+    ],
+    "sticky_notes": [
+        {
+            "id": "f1a2b3c4-d5e6-4789-a1b2-c3d4e5f6a7b8",
+            "position": [
+                -25.195312500000142,
+                318.8476562499998
+            ],
+            "size": [
+                350.0,
+                120.0
+            ],
+            "text": "### Sequence Node Demo\nThis workflow demonstrates how the Sequence node pulls data from multiple variable sources and triggers a downstream Console Print for every single step.",
+            "color": "#ffffcc"
+        }
+    ],
+    "backdrops": [
+        {
+            "id": "a1b2c3d4-e5f6-4789-b1c2-d3e4f5a6b7c8",
+            "position": [
+                -480.0,
+                -150.0
+            ],
+            "size": [
+                1168.4765624999998,
+                801.8554687499998
+            ],
+            "title": "Execution Pipeline",
+            "color": "#2d2d2d"
+        }
+    ],
+    "metadata": {}
+}

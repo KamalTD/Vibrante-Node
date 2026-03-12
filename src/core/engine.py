@@ -20,9 +20,15 @@ class NetworkExecutor(QObject):
         self.graph_manager = graph_manager
         self.node_instances: Dict[UUID, Any] = {}
         self.node_results: Dict[UUID, Dict[str, Any]] = {}
+        self._executed_nodes: Set[UUID] = set() # Nodes that finished successfully
+        self._currently_executing: Set[UUID] = set() # Nodes currently in the stack
         self._is_stopped = False
         self._active_tasks: Set[asyncio.Task] = set()
         self._finished_event = asyncio.Event()
+        
+        # Pre-calculated lookup maps
+        self._incoming_data_conns: Dict[UUID, List[Any]] = {} 
+        self._driven_by_flow: Set[UUID] = set()
 
     def stop(self):
         self._is_stopped = True
@@ -46,13 +52,28 @@ class NetworkExecutor(QObject):
         """
         Executes the graph. Standardizes on flow-based execution via output triggers.
         """
+        from src.nodes.base import BaseNode
+        BaseNode.memory.clear()
+        
+        self._executed_nodes.clear()
+        self._currently_executing.clear()
         self._is_stopped = False
         self._active_tasks.clear()
         self._finished_event.clear()
         
-        # 1. PREPARE ALL NODES
+        # 1. PRE-CALCULATE LOOKUP MAPS
+        self._incoming_data_conns = {}
+        self._driven_by_flow = set()
+        for conn in self.graph_manager.connections:
+            if conn.is_exec:
+                self._driven_by_flow.add(conn.to_node)
+            else:
+                self._incoming_data_conns.setdefault(conn.to_node, []).append(conn)
+
+        # 2. PREPARE ALL NODES
         self.node_results = {}
         self.node_instances = {}
+        
         for node_id, node_model in self.graph_manager.nodes.items():
             if self._is_stopped:
                 self.execution_finished.emit(False)
@@ -71,6 +92,11 @@ class NetworkExecutor(QObject):
             
             instance = node_class()
             instance.name = node_model.node_id
+            
+            # 1. RESTORE DYNAMIC PORTS
+            instance.restore_from_parameters(node_model.parameters)
+            
+            # 2. SYNC PARAMETERS
             for p_name, p_val in node_model.parameters.items():
                 if p_name in instance.parameters:
                     instance.parameters[p_name] = p_val
@@ -94,20 +120,18 @@ class NetworkExecutor(QObject):
                     self.node_output.emit(nid, {name: value})
                     
                     # 1. REACTIVE DATA PROPAGATION
-                    is_flow_execution = len(exec_conns) > 0
+                    # exec_conns is defined below, but Python closures will find it
                     for conn in self.graph_manager.connections:
                         if conn.from_node == nid and conn.from_port == name and not conn.is_exec:
                             target_instance = self.node_instances.get(conn.to_node)
                             if target_instance:
                                 target_instance.parameters[conn.to_port] = value
                                 
-                                # Check if target node has an exec_in pin
-                                target_has_exec_in = any(p.data_type == 'exec' for p in target_instance.inputs.values())
+                                # Check if target node is actually being driven by flow connections
+                                # If it has no incoming exec connections, it should be reactive.
+                                is_driven_by_flow = conn.to_node in self._driven_by_flow
                                 
-                                # Trigger reactive updates if:
-                                # - We are in classic data-flow mode
-                                # - OR target node is a pure data node (no exec_in)
-                                if not is_flow_execution or not target_has_exec_in:
+                                if not is_driven_by_flow:
                                     await target_instance.on_parameter_changed(conn.to_port, value)
 
                     # 2. FLOW-BASED ROUTING
@@ -140,11 +164,12 @@ class NetworkExecutor(QObject):
                 has_exec_in_pin = any(p.data_type == 'exec' for p in instance.inputs.values())
                 has_exec_out_pin = any(p.data_type == 'exec' for p in instance.outputs.values())
                 
+                # Logic:
+                # 1. If it has no exec_in pin, it's a potential starter (data node or flow starter)
+                # 2. If it HAS an exec_in pin but NO connection to it, it's a flow starter
                 if not has_exec_in_pin:
-                    # Pure data provider or flow starter
                     entry_nodes.append(node_id)
                 elif node_id not in has_exec_in_conn:
-                    # Flow node that isn't triggered by anything
                     entry_nodes.append(node_id)
 
             if entry_nodes:
@@ -158,12 +183,20 @@ class NetworkExecutor(QObject):
                     await asyncio.sleep(0.05)
         else:
             # CLASSIC DATA-FLOW
+            # Instead of layer-by-layer topological sort (which executes layers in parallel),
+            # we trigger the "Leaf Nodes" (nodes with no consumers) and let them pull
+            # their dependencies recursively. This ensures ordered pulling (e.g., for Sequence Node).
+            
+            all_node_ids = set(self.node_instances.keys())
+            has_consumer = {c.from_node for c in self.graph_manager.connections if not c.is_exec}
+            leaf_nodes = [nid for nid in all_node_ids if nid not in has_consumer]
+            
+            # Filter to only connected nodes to avoid running orphaned nodes if unnecessary,
+            # but usually in classic data-flow we want to run everything that might be a starting point.
+            
             try:
-                order = self.graph_manager.get_topological_sort()
-                for layer in order:
-                    if self._is_stopped: break
-                    tasks = [self._run_single_node(nid) for nid in layer]
-                    await asyncio.gather(*tasks)
+                tasks = [self._run_single_node(nid) for nid in leaf_nodes]
+                await asyncio.gather(*tasks)
             except Exception as e:
                 print(f"Classic execution failed: {e}")
 
@@ -173,55 +206,73 @@ class NetworkExecutor(QObject):
         """Executes a single node. Flow continuation is handled EXCLUSIVELY by set_output calls."""
         if self._is_stopped: return
         
-        await self._run_single_node_impl(node_id)
+        await self._run_single_node_impl(node_id, is_data_pull=False)
 
     async def _run_single_node(self, node_id: UUID) -> bool:
         # This method is now redundant for internal calls but kept for external/reactive entry points
-        return await self._run_single_node_impl(node_id)
+        return await self._run_single_node_impl(node_id, is_data_pull=False)
 
-    async def _run_single_node_impl(self, node_id: UUID) -> bool:
+    async def _run_single_node_impl(self, node_id: UUID, is_data_pull: bool = False) -> bool:
         """Internal implementation of node execution without locking, to allow recursion for data pulling."""
         if self._is_stopped: return False
         
-        instance = self.node_instances[node_id]
-
-        # 1. PULL UPSTREAM DATA NODES
-        for conn in self.graph_manager.connections:
-            if conn.to_node == node_id and not conn.is_exec:
-                from_id = conn.from_node
-                from_inst = self.node_instances.get(from_id)
-                if from_inst:
-                    has_exec_in = any(p.data_type == 'exec' for p in from_inst.inputs.values())
-                    if not has_exec_in:
-                        await self._run_single_node_impl(from_id)
-
-        self.node_started.emit(node_id)
+        # Guard 1: Data Pulling Guard
+        # If we are just pulling data dependencies, don't run the same node twice.
+        # Flow triggers (is_data_pull=False) are allowed to re-run nodes (e.g. in loops).
+        if is_data_pull and node_id in self._executed_nodes:
+            return True
+            
+        # Guard 2: Re-entrancy Guard (Recursion Guard)
+        # Prevents infinite stack depth if there's a cycle.
+        if node_id in self._currently_executing:
+            return True
+            
+        self._currently_executing.add(node_id)
         
-        # Reset all exec outputs to allow re-triggering in subsequent cycles
-        for name, port in instance.outputs.items():
-            if port.data_type == 'exec':
-                instance.parameters[name] = None
-        
-        # Sync all inputs from current connected output states
-        for conn in self.graph_manager.connections:
-            if conn.to_node == node_id and not conn.is_exec:
+        try:
+            instance = self.node_instances[node_id]
+
+            # 1. PULL UPSTREAM DATA NODES (In Port Order)
+            incoming = self._incoming_data_conns.get(node_id, [])
+            
+            for port_name in instance.inputs:
+                for conn in incoming:
+                    if conn.to_port == port_name:
+                        from_id = conn.from_node
+                        from_inst = self.node_instances.get(from_id)
+                        if from_inst:
+                            # Check if source node is pullable (no exec_in)
+                            has_exec_in = any(p.data_type == 'exec' for p in from_inst.inputs.values())
+                            if not has_exec_in:
+                                await self._run_single_node_impl(from_id, is_data_pull=True)
+
+            self.node_started.emit(node_id)
+            
+            # Reset all exec outputs
+            for name, port in instance.outputs.items():
+                if port.data_type == 'exec':
+                    instance.parameters[name] = None
+            
+            # Sync all inputs
+            for conn in incoming:
                 from_results = self.node_results.get(conn.from_node, {})
                 if conn.from_port in from_results:
                     val = from_results.get(conn.from_port)
                     instance.parameters[conn.to_port] = val
                     await instance.on_parameter_changed(conn.to_port, val)
-        
-        # Pull final inputs for execute call
-        inputs = instance.parameters.copy()
-        
-        success, result, error = await SafeRuntime.run_node_safe(instance.execute, inputs)
-        
-        if success:
-            self.node_results[node_id].update(result)
-            self.node_output.emit(node_id, result)
-            self.node_finished.emit(node_id, "success")
-            return True
-        else:
-            self.node_error.emit(node_id, error)
-            self.node_finished.emit(node_id, "failed")
-            return False
+            
+            inputs = instance.parameters.copy()
+            success, result, error = await SafeRuntime.run_node_safe(instance.execute, inputs)
+            
+            if success:
+                self._executed_nodes.add(node_id)
+                self.node_results[node_id].update(result)
+                self.node_output.emit(node_id, result)
+                self.node_finished.emit(node_id, "success")
+                return True
+            else:
+                self.node_error.emit(node_id, error)
+                self.node_finished.emit(node_id, "failed")
+                return False
+        finally:
+            self._currently_executing.discard(node_id)

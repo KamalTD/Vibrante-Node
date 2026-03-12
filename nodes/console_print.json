@@ -1,7 +1,7 @@
 {
     "node_id": "console_print",
     "name": "Console Print",
-    "description": "Prints the input data to the console. Triggered by execution pin.",
+    "description": "Prints the input data to the console. Triggered by execution pin or reactive data changes.",
     "category": "IO",
     "icon_path": "icons/terminal.svg",
     "inputs": [
@@ -25,5 +25,5 @@
             "type": "any"
         }
     ],
-    "python_code": "async def execute(self, inputs):\n    data_val = inputs.get('data')\n    data = str(data_val) if data_val is not None else ''\n    self.log_success(f'[FINAL PRINT]: {data}')\n    print(f'PRINT NODE: {data}')\n    await self.set_output('out', data)\n    await self.set_output('exec_out', True)\n    return {'out': data}\n\nasync def on_parameter_changed(self, name, value):\n    # Keep output in sync, but DO NOT log or print here to avoid double execution feedback\n    if name == 'data':\n        self.parameters['out'] = value"
+    "python_code": "async def execute(self, inputs):\n    data_val = inputs.get('data')\n    data = str(data_val) if data_val is not None else ''\n    self.log_success(f'[FINAL PRINT]: {data}')\n    print(f'PRINT NODE: {data}')\n    await self.set_output('out', data)\n    await self.set_output('exec_out', True)\n    return {'out': data}\n\nasync def on_parameter_changed(self, name, value):\n    if name == 'data':\n        self.parameters['out'] = value\n        # REACTIVE: Always log data changes to the console/log panel\n        # This ensures that streaming nodes like 'Sequence' show every step\n        self.log_info(f'[STREAM]: {value}')\n        print(f'STREAM PRINT: {value}')"
 }

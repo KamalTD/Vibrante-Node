@@ -13,6 +13,9 @@ class BaseNode(ABC):
     description: str = ""
     category: str = "General"
     icon_path: Optional[str] = None
+    
+    # Shared memory for variables during a single execution run
+    memory: Dict[str, Any] = {}
 
     def __init__(self, use_exec: bool = True):
         self.inputs: Dict[str, Port] = {}
@@ -22,11 +25,24 @@ class BaseNode(ABC):
         self._on_log = None # Hook for engine to capture logs
         self._on_output = None # Hook for engine to capture intermediate outputs
         self._check_stopped = None # Hook for engine to check cancellation
+        self._on_ports_changed = None # Hook for UI to rebuild ports
+        self._is_port_connected = None # Hook for UI to check connections
         
         if use_exec:
             # DEFAULT pins if requested
             self.add_exec_input("exec_in")
             self.add_exec_output("exec_out")
+
+    def rebuild_ports(self):
+        """Notifies the UI to rebuild the node's ports."""
+        if self._on_ports_changed:
+            self._on_ports_changed()
+
+    def is_port_connected(self, name: str, is_input: bool) -> bool:
+        """Checks if a port is connected via the UI hook."""
+        if self._is_port_connected:
+            return self._is_port_connected(name, is_input)
+        return False
 
     def is_stopped(self) -> bool:
         """Checks if the execution has been requested to stop."""
@@ -79,6 +95,10 @@ class BaseNode(ABC):
     def add_parameter(self, name: str, param_type: Type, default: Any = None):
         self.parameter_types[name] = param_type
         self.parameters[name] = default
+
+    def restore_from_parameters(self, parameters: Dict[str, Any]):
+        """Optional hook to restore dynamic state (like ports) from saved parameters."""
+        pass
 
     def get_parameter(self, name: str, default: Any = None) -> Any:
         """Safely retrieve a parameter value."""
