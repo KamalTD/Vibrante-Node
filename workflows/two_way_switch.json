@@ -1,0 +1,334 @@
+{
+    "nodes": [
+        {
+            "instance_id": "27481429-23b6-4709-82b1-5a449a376b24",
+            "node_id": "Two Way Switch",
+            "position": [
+                0.0,
+                -125.0
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "condition": true,
+                "input_1": "Green",
+                "input_2": "Red",
+                "output": "Green"
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "e2e44093-66af-4af2-88f7-d193e12c7f25",
+            "node_id": "logical_gate",
+            "position": [
+                -597.0,
+                -115.0
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "operation": "AND",
+                "a": true,
+                "b": true,
+                "result": true
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "8dc927dd-fddd-48e4-84b8-3f882f84b558",
+            "node_id": "variable_node",
+            "position": [
+                -307.75,
+                -29.953124999999993
+            ],
+            "parameters": {
+                "type": "string",
+                "value": "Green",
+                "out": "Green"
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "6e15160b-4886-4a6a-91ff-934ed6bfeec2",
+            "node_id": "variable_node",
+            "position": [
+                -311.140625,
+                178.84375000000003
+            ],
+            "parameters": {
+                "type": "string",
+                "value": "Red",
+                "out": "Red"
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "4825d336-1e9b-499d-bf88-86ea587679a8",
+            "node_id": "console_print",
+            "position": [
+                363.0,
+                -120.0
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "data": "Green",
+                "out": "Green"
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "50a983bb-fc0b-4d4a-9ad8-c99a2c469b56",
+            "node_id": "Sequence",
+            "position": [
+                784.4882812499999,
+                170.94921874999997
+            ],
+            "parameters": {
+                "step_0": "Green",
+                "result": "Red",
+                "exec_step": true,
+                "exec_out": null,
+                "exec_in": true,
+                "step_1": "Red",
+                "step_2": null
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "7426d028-aa18-4435-bfde-c4e97ddec314",
+            "node_id": "logical_gate",
+            "position": [
+                -578.6132812499998,
+                493.3984374999997
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "operation": "AND",
+                "a": true,
+                "b": true,
+                "result": false
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "614d9cc2-5860-4f6e-a542-f53216fc933a",
+            "node_id": "variable_node",
+            "position": [
+                -285.61328124999983,
+                630.3984374999998
+            ],
+            "parameters": {
+                "type": "string",
+                "value": "White",
+                "out": "Green"
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "ecfd9028-5154-44be-9b6c-0b59b95a4728",
+            "node_id": "console_print",
+            "position": [
+                381.3867187500002,
+                488.3984374999997
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "data": "Red",
+                "out": "Red"
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "645d5149-69c0-45a2-9a0d-04304a255fac",
+            "node_id": "Two Way Switch",
+            "position": [
+                18.386718750000227,
+                483.3984374999997
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "condition": false,
+                "input_1": "Green",
+                "input_2": "Red",
+                "output": "Red"
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "b374a511-1d1a-4ddc-8a64-e47ceb44424c",
+            "node_id": "variable_node",
+            "position": [
+                -293.61328124999983,
+                847.3984374999998
+            ],
+            "parameters": {
+                "type": "string",
+                "value": "Black",
+                "out": "Red"
+            },
+            "state": "idle"
+        }
+    ],
+    "connections": [
+        {
+            "id": "23d4c1d7-04f3-4275-bdd3-4c5e8c51a8e6",
+            "from_node": "e2e44093-66af-4af2-88f7-d193e12c7f25",
+            "from_port": "result",
+            "to_node": "27481429-23b6-4709-82b1-5a449a376b24",
+            "to_port": "condition",
+            "is_exec": false
+        },
+        {
+            "id": "1e8dad3d-589b-440b-986b-097ed79f6cf0",
+            "from_node": "27481429-23b6-4709-82b1-5a449a376b24",
+            "from_port": "output",
+            "to_node": "4825d336-1e9b-499d-bf88-86ea587679a8",
+            "to_port": "data",
+            "is_exec": false
+        },
+        {
+            "id": "489734df-48ce-418c-b5ed-58d18e235cc7",
+            "from_node": "8dc927dd-fddd-48e4-84b8-3f882f84b558",
+            "from_port": "out",
+            "to_node": "27481429-23b6-4709-82b1-5a449a376b24",
+            "to_port": "input_1",
+            "is_exec": false
+        },
+        {
+            "id": "53ab8510-6dc5-4347-8b82-26a7d9b44888",
+            "from_node": "6e15160b-4886-4a6a-91ff-934ed6bfeec2",
+            "from_port": "out",
+            "to_node": "27481429-23b6-4709-82b1-5a449a376b24",
+            "to_port": "input_2",
+            "is_exec": false
+        },
+        {
+            "id": "eae89dea-b887-4966-b618-3966f6f3a35e",
+            "from_node": "27481429-23b6-4709-82b1-5a449a376b24",
+            "from_port": "exec_out",
+            "to_node": "4825d336-1e9b-499d-bf88-86ea587679a8",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "2a8e3805-1b65-417c-9f98-8c14e00c54b9",
+            "from_node": "e2e44093-66af-4af2-88f7-d193e12c7f25",
+            "from_port": "exec_out",
+            "to_node": "27481429-23b6-4709-82b1-5a449a376b24",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "11158e8a-5c2c-412c-b4b9-1131af4920a2",
+            "from_node": "7426d028-aa18-4435-bfde-c4e97ddec314",
+            "from_port": "result",
+            "to_node": "645d5149-69c0-45a2-9a0d-04304a255fac",
+            "to_port": "condition",
+            "is_exec": false
+        },
+        {
+            "id": "6fc076e9-7abb-4b12-8de1-4c87030e36d8",
+            "from_node": "614d9cc2-5860-4f6e-a542-f53216fc933a",
+            "from_port": "out",
+            "to_node": "645d5149-69c0-45a2-9a0d-04304a255fac",
+            "to_port": "input_1",
+            "is_exec": false
+        },
+        {
+            "id": "6352aceb-cfd5-411f-a964-c617078a5fd6",
+            "from_node": "b374a511-1d1a-4ddc-8a64-e47ceb44424c",
+            "from_port": "out",
+            "to_node": "645d5149-69c0-45a2-9a0d-04304a255fac",
+            "to_port": "input_2",
+            "is_exec": false
+        },
+        {
+            "id": "af1eb13f-2f5c-4012-b53f-b8cc7cccb6d3",
+            "from_node": "645d5149-69c0-45a2-9a0d-04304a255fac",
+            "from_port": "exec_out",
+            "to_node": "ecfd9028-5154-44be-9b6c-0b59b95a4728",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "2cb2db11-a0b5-470a-8cf6-11abe35861f4",
+            "from_node": "7426d028-aa18-4435-bfde-c4e97ddec314",
+            "from_port": "exec_out",
+            "to_node": "645d5149-69c0-45a2-9a0d-04304a255fac",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "0f068943-9e4c-455b-886e-5c8e72a99a88",
+            "from_node": "4825d336-1e9b-499d-bf88-86ea587679a8",
+            "from_port": "out",
+            "to_node": "50a983bb-fc0b-4d4a-9ad8-c99a2c469b56",
+            "to_port": "step_0",
+            "is_exec": false
+        },
+        {
+            "id": "4e868b6a-966c-4e8e-8260-fcd2b5911663",
+            "from_node": "645d5149-69c0-45a2-9a0d-04304a255fac",
+            "from_port": "output",
+            "to_node": "ecfd9028-5154-44be-9b6c-0b59b95a4728",
+            "to_port": "data",
+            "is_exec": false
+        },
+        {
+            "id": "ca743b76-4b82-44ca-b8dd-5842814993c1",
+            "from_node": "ecfd9028-5154-44be-9b6c-0b59b95a4728",
+            "from_port": "out",
+            "to_node": "50a983bb-fc0b-4d4a-9ad8-c99a2c469b56",
+            "to_port": "step_1",
+            "is_exec": false
+        }
+    ],
+    "sticky_notes": [
+        {
+            "id": "e1f2a3b4-c5d6-4789-b1a2-d3e4f5a6b7c8",
+            "position": [
+                736.7187499999997,
+                -55.85937500000006
+            ],
+            "size": [
+                400.0,
+                150.0
+            ],
+            "text": "### Conditional Logic Switch\nThis workflow uses two 'Two Way Switch' nodes to demonstrate conditional data flow. The output of each switch is then piped into a global Sequence node.",
+            "color": "#ffffcc"
+        }
+    ],
+    "backdrops": [
+        {
+            "id": "b1c2d3e4-f5a6-4789-a1b2-c3d4e5f6a7b8",
+            "position": [
+                -620.0,
+                -180.0
+            ],
+            "size": [
+                1291.25,
+                586.25
+            ],
+            "title": "Upper Logic Block",
+            "color": "#333333"
+        },
+        {
+            "id": "c1d2e3f4-a5b6-4789-b1c2-d3e4f5a6b7c8",
+            "position": [
+                -620.0,
+                420.0
+            ],
+            "size": [
+                1297.734375,
+                646.4062499999998
+            ],
+            "title": "Lower Logic Block",
+            "color": "#333333"
+        }
+    ],
+    "metadata": {}
+}
