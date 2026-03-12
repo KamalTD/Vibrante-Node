@@ -6,6 +6,10 @@
     "icon_path": "icons/scales.svg",
     "inputs": [
         {
+            "name": "exec_in",
+            "type": "exec"
+        },
+        {
             "name": "a",
             "type": "any",
             "widget_type": "text"
@@ -14,7 +18,14 @@
             "name": "operation",
             "type": "string",
             "widget_type": "dropdown",
-            "options": ["==", "!=", ">", "<", ">=", "<="],
+            "options": [
+                "==",
+                "!=",
+                ">",
+                "<",
+                ">=",
+                "<="
+            ],
             "default": "=="
         },
         {
@@ -25,9 +36,13 @@
     ],
     "outputs": [
         {
+            "name": "exec_out",
+            "type": "exec"
+        },
+        {
             "name": "result",
             "type": "bool"
         }
     ],
-    "python_code": "def _run_compare(self):\n    def convert(val):\n        if val is None: return 0\n        try: return float(val)\n        except (ValueError, TypeError): return str(val)\n\n    a = convert(self.get_parameter('a'))\n    b = convert(self.get_parameter('b'))\n    op = self.get_parameter('operation', '==')\n    \n    try:\n        if op == '==': res = a == b\n        elif op == '!=': res = a != b\n        elif op == '>': res = a > b\n        elif op == '<': res = a < b\n        elif op == '>=': res = a >= b\n        elif op == '<=': res = a <= b\n        else: res = False\n        return res\n    except: return False\n\nasync def execute(self, inputs):\n    res = self._run_compare()\n    return {'result': res}\n\ndef on_parameter_changed(self, name, value):\n    if name in ['a', 'b', 'operation']:\n        res = self._run_compare()\n        self.set_output('result', res)"
+    "python_code": "def _run_compare(self, inputs):\n    def convert(val):\n        if val is None: return 0\n        try: return float(val)\n        except (ValueError, TypeError): return str(val)\n\n    # Use current execution inputs instead of stale instance parameters\n    a = convert(inputs.get('a'))\n    b = convert(inputs.get('b'))\n    op = inputs.get('operation', '==')\n    \n    self.log_info(f\"Comparing: {a} {op} {b}\")\n    \n    try:\n        if op == '==': res = a == b\n        elif op == '!=': res = a != b\n        elif op == '>': res = a > b\n        elif op == '<': res = a < b\n        elif op == '>=': res = a >= b\n        elif op == '<=': res = a <= b\n        else: res = False\n        return res\n    except Exception as e:\n        self.log_error(f\"Comparison error: {e}\")\n        return False\n\nasync def execute(self, inputs):\n    res = self._run_compare(inputs)\n    await self.set_output('result', res)\n    await self.set_output('exec_out', True)\n    return {'result': res}\n\nasync def on_parameter_changed(self, name, value):\n    # This is for UI/Reactive updates, using instance parameters is correct here\n    if name in ['a', 'b', 'operation']:\n        def convert(val):\n            if val is None: return 0\n            try: return float(val)\n            except (ValueError, TypeError): return str(val)\n        \n        a = convert(self.get_parameter('a'))\n        b = convert(self.get_parameter('b'))\n        op = self.get_parameter('operation', '==')\n        res = False\n        try:\n            if op == '==': res = a == b\n            elif op == '!=': res = a != b\n            elif op == '>': res = a > b\n            elif op == '<': res = a < b\n            elif op == '>=': res = a >= b\n            elif op == '<=': res = a <= b\n        except: pass\n        await self.set_output('result', res)"
 }

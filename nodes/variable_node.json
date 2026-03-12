@@ -1,15 +1,24 @@
 {
     "node_id": "variable_node",
-    "name": "Variable Node",
-    "description": "Stores and outputs a value of a chosen type.",
+    "name": "Variable",
+    "description": "Holds a single value of a specific type.",
     "category": "Data",
     "icon_path": "icons/data.svg",
     "inputs": [
         {
+            "name": "exec_in",
+            "type": "exec"
+        },
+        {
             "name": "type",
             "type": "string",
             "widget_type": "dropdown",
-            "options": ["int", "float", "string", "bool"],
+            "options": [
+                "int",
+                "float",
+                "string",
+                "bool"
+            ],
             "default": "string"
         },
         {
@@ -20,9 +29,13 @@
     ],
     "outputs": [
         {
+            "name": "exec_out",
+            "type": "exec"
+        },
+        {
             "name": "out",
             "type": "any"
         }
     ],
-    "python_code": "async def execute(self, inputs):\n    v_type = inputs.get('type', 'string')\n    val = inputs.get('value')\n    \n    try:\n        if v_type == 'int': out = int(val) if val is not None else 0\n        elif v_type == 'float': out = float(val) if val is not None else 0.0\n        elif v_type == 'bool':\n            if isinstance(val, str): out = val.lower() in ['true', '1', 'yes']\n            else: out = bool(val)\n        else: out = str(val) if val is not None else \"\"\n        \n        return {'out': out}\n    except Exception as e:\n        self.log_error(f\"Variable cast error: {e}\")\n        return {'out': val}"
+    "python_code": "async def execute(self, inputs):\n    v_type = inputs.get('type', 'string')\n    val = inputs.get('value')\n    \n    try:\n        if v_type == 'int': out = int(val) if val is not None else 0\n        elif v_type == 'float': out = float(val) if val is not None else 0.0\n        elif v_type == 'bool':\n            if isinstance(val, str): out = val.lower() in ['true', '1', 'yes']\n            else: out = bool(val)\n        else: out = str(val) if val is not None else ''\n        \n        await self.set_output('out', out)\n        await self.set_output('exec_out', True)\n        await self.set_output(\"exec_out\", True)\n        return {'out': out}\n    except Exception as e:\n        self.log_error(f'Variable cast error: {e}')\n        await self.set_output('exec_out', True)\n        return {'out': val}"
 }

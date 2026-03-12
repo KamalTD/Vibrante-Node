@@ -1,0 +1,134 @@
+{
+    "nodes": [
+        {
+            "instance_id": "b374c81e-1bb6-4c5c-b3ce-62cc6f6213d0",
+            "node_id": "if_condition",
+            "position": [
+                -273.6539764404297,
+                -159.3664703369141
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": false,
+                "condition": false,
+                "data": true,
+                "exec_false": true,
+                "on_true": null,
+                "on_false": true,
+                "result": false
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "9743fb56-e4be-4e57-8d36-557cbb04d597",
+            "node_id": "variable_node",
+            "position": [
+                -685.2772369384767,
+                -161.94583129882815
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "type": "bool",
+                "value": "0",
+                "out": 0
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "7fad3497-2c61-4df5-8968-e78bd63b014c",
+            "node_id": "console_print",
+            "position": [
+                165.37246704101557,
+                -226.54113769531247
+            ],
+            "parameters": {
+                "exec_in": false,
+                "exec_out": true,
+                "data": "=========== True",
+                "out": "=========== True"
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "7e776f9d-23b2-491a-94f0-5946b71ad036",
+            "node_id": "console_print",
+            "position": [
+                159.40322875976557,
+                -30.076599121093736
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": null,
+                "data": "===========False",
+                "out": null
+            },
+            "state": "idle"
+        }
+    ],
+    "connections": [
+        {
+            "id": "e3c0cd82-75d4-4658-8812-14306059e5a0",
+            "from_node": "9743fb56-e4be-4e57-8d36-557cbb04d597",
+            "from_port": "exec_out",
+            "to_node": "b374c81e-1bb6-4c5c-b3ce-62cc6f6213d0",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "abb3c015-525f-448b-bf4d-44c8ad54266b",
+            "from_node": "9743fb56-e4be-4e57-8d36-557cbb04d597",
+            "from_port": "out",
+            "to_node": "b374c81e-1bb6-4c5c-b3ce-62cc6f6213d0",
+            "to_port": "condition",
+            "is_exec": false
+        },
+        {
+            "id": "4e5b0a18-f5fa-47da-8810-c8460b46cd54",
+            "from_node": "b374c81e-1bb6-4c5c-b3ce-62cc6f6213d0",
+            "from_port": "exec_out",
+            "to_node": "7fad3497-2c61-4df5-8968-e78bd63b014c",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "234090ab-0d25-45a0-a2e8-11e94f8aafba",
+            "from_node": "b374c81e-1bb6-4c5c-b3ce-62cc6f6213d0",
+            "from_port": "exec_false",
+            "to_node": "7e776f9d-23b2-491a-94f0-5946b71ad036",
+            "to_port": "exec_in",
+            "is_exec": true
+        }
+    ],
+    "sticky_notes": [
+        {
+            "id": "46047d67-44e3-471e-828c-12c85e73d6fb",
+            "position": [
+                448.2269287109375,
+                -270.60508728027344
+            ],
+            "size": [
+                334.75961196422577,
+                269.33193843364717
+            ],
+            "text": "If variable=1 (True) the output will be =========== True\nIf variable=0 (False) the output will be =========== False",
+            "color": "#ffffcc"
+        }
+    ],
+    "backdrops": [
+        {
+            "id": "0ef86e35-d083-4cf7-84d0-f339321f8bbd",
+            "position": [
+                -725.2772369384767,
+                -286.5411376953125
+            ],
+            "size": [
+                1150.6497039794922,
+                452.46453857421875
+            ],
+            "title": "If Condition",
+            "color": "#444444"
+        }
+    ],
+    "metadata": {}
+}

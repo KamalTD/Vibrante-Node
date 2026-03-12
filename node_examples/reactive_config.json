@@ -4,11 +4,25 @@
     "description": "Demonstrates advanced lifecycle events: prefix is automatically set when a node plugs into 'trigger'.",
     "category": "Control",
     "inputs": [
-        { "name": "trigger", "type": "any" }
+        {
+            "name": "exec_in",
+            "type": "exec"
+        },
+        {
+            "name": "trigger",
+            "type": "any"
+        }
     ],
     "outputs": [
-        { "name": "result", "type": "string" }
+        {
+            "name": "exec_out",
+            "type": "exec"
+        },
+        {
+            "name": "result",
+            "type": "string"
+        }
     ],
     "icon_path": "icons/gear.svg",
-    "python_code": "from src.nodes.base import BaseNode\n\nclass ReactiveConfigNode(BaseNode):\n    name = \"Reactive Config\"\n    \n    def __init__(self):\n        super().__init__()\n        self.icon_path = \"icons/gear.svg\"\n        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"trigger\", \"any\")\n        self.add_output(\"result\", \"string\")\n        # [AUTO-GENERATED-PORTS-END]\n        self.add_parameter(\"auto_prefix\", str, \"NONE\")\n\n    def on_plug_sync(self, port_name, is_input, other_node, other_port_name):\n        # When something plugs into 'trigger', copy its name as a prefix\n        if is_input and port_name == \"trigger\":\n            new_prefix = f\"FROM_{other_node.name.upper()}_\"\n            self.parameters[\"auto_prefix\"] = new_prefix\n            self.log_info(f\"Auto-configured prefix to: {new_prefix}\")\n\n    async def execute(self, inputs):\n        prefix = self.parameters.get(\"auto_prefix\", \"\")\n        return {\"result\": f\"{prefix}EXECUTED\"}\n\ndef register_node():\n    return ReactiveConfigNode\n"
+    "python_code": "from src.nodes.base import BaseNode\n\nclass ReactiveConfigNode(BaseNode):\n    name = \"Reactive Config\"\n    \n    def __init__(self):\n        super().__init__()\n        self.icon_path = \"icons/gear.svg\"\n        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"trigger\", \"any\")\n        self.add_output(\"result\", \"string\")\n        # [AUTO-GENERATED-PORTS-END]\n        self.add_parameter(\"auto_prefix\", str, \"NONE\")\n\n    def on_plug_sync(self, port_name, is_input, other_node, other_port_name):\n        # When something plugs into 'trigger', copy its name as a prefix\n        if is_input and port_name == \"trigger\":\n            new_prefix = f\"FROM_{other_node.name.upper()}_\"\n            self.parameters[\"auto_prefix\"] = new_prefix\n            self.log_info(f\"Auto-configured prefix to: {new_prefix}\")\n\n    async def execute(self, inputs):\n        prefix = self.parameters.get(\"auto_prefix\", \"\")\n        await self.set_output(\"exec_out\", True)\n        return {\"result\": f\"{prefix}EXECUTED\"}\n\ndef register_node():\n    return ReactiveConfigNode\n"
 }

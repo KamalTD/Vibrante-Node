@@ -5,11 +5,22 @@
     "category": "Control",
     "icon_path": "icons/timer.svg",
     "inputs": [
-        {"name": "exec_in", "type": "exec"},
-        {"name": "delay", "type": "float", "widget_type": "float", "default": 1.0}
+        {
+            "name": "exec_in",
+            "type": "exec"
+        },
+        {
+            "name": "delay",
+            "type": "float",
+            "widget_type": "float",
+            "default": 1.0
+        }
     ],
     "outputs": [
-        {"name": "exec_out", "type": "exec"}
+        {
+            "name": "exec_out",
+            "type": "exec"
+        }
     ],
-    "python_code": "import asyncio\nasync def execute(self, inputs):\n    delay = float(inputs.get('delay', 1.0))\n    self.log_info(f\"Starting delay of {delay}s\")\n    await asyncio.sleep(delay)\n    self.log_success(\"Delay finished\")\n    self.set_output('exec_out', True)\n    return {}"
+    "python_code": "import asyncio\nasync def execute(self, inputs):\n    delay = float(inputs.get('delay', 1.0))\n    self.log_info(f\"Starting delay of {delay}s\")\n    await asyncio.sleep(delay)\n    self.log_success(\"Delay finished\")\n    await self.set_output('exec_out', True)\n    await self.set_output(\"exec_out\", True)\n    return {}"
 }

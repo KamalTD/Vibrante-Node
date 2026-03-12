@@ -21,15 +21,34 @@ class NetworkExecutor(QObject):
         self.node_instances: Dict[UUID, Any] = {}
         self.node_results: Dict[UUID, Dict[str, Any]] = {}
         self._is_stopped = False
+        self._active_tasks: Set[asyncio.Task] = set()
+        self._finished_event = asyncio.Event()
 
     def stop(self):
         self._is_stopped = True
+        for task in self._active_tasks:
+            task.cancel()
+        self._finished_event.set()
+
+    def _track_task(self, coro):
+        """Helper to create and track a task in the current event loop."""
+        if self._is_stopped: return None
+        task = asyncio.create_task(coro)
+        self._active_tasks.add(task)
+        def on_done(t):
+            self._active_tasks.discard(t)
+            if not self._active_tasks:
+                self._finished_event.set()
+        task.add_done_callback(on_done)
+        return task
 
     async def run(self):
         """
-        Executes the graph. Follows 'exec' pins if present, otherwise uses topological sort.
+        Executes the graph. Standardizes on flow-based execution via output triggers.
         """
         self._is_stopped = False
+        self._active_tasks.clear()
+        self._finished_event.clear()
         
         # 1. PREPARE ALL NODES
         self.node_results = {}
@@ -68,41 +87,57 @@ class NetworkExecutor(QObject):
 
             def create_output_handler(nid):
                 async def handler(name, value):
+                    if self._is_stopped: return
+                    
+                    # Store result immediately
                     self.node_results[nid][name] = value
                     self.node_output.emit(nid, {name: value})
                     
-                    # FLOW-BASED ROUTING: If an 'exec' port is written to, follow it
-                    # We only do this if the node has any 'exec' connections
-                    if value:
+                    # 1. REACTIVE DATA PROPAGATION (Disabled during flow execution to prevent double-triggering)
+                    is_flow_execution = len(exec_conns) > 0
+                    for conn in self.graph_manager.connections:
+                        if conn.from_node == nid and conn.from_port == name and not conn.is_exec:
+                            target_instance = self.node_instances.get(conn.to_node)
+                            if target_instance:
+                                target_instance.parameters[conn.to_port] = value
+                                # ONLY trigger reactive updates if we are in classic data-flow mode
+                                # In flow-mode, nodes should wait for their 'exec_in'
+                                if not is_flow_execution:
+                                    await target_instance.on_parameter_changed(conn.to_port, value)
+
+                    # 2. FLOW-BASED ROUTING
+                    if value is True: # Strict check for execution pins
                         node_inst = self.node_instances.get(nid)
-                        if node_inst and getattr(node_inst.outputs.get(name), 'data_type', 'any') == 'exec':
-                            # Follow the flow for this specific exec pin
+                        port_def = node_inst.outputs.get(name) if node_inst else None
+                        if port_def and getattr(port_def, 'data_type', 'any') == 'exec':
                             for conn in self.graph_manager.connections:
                                 if conn.from_node == nid and conn.from_port == name and conn.is_exec:
-                                    # Use a background task to not block the current node's execute
-                                    asyncio.create_task(self._execute_flow(conn.to_node))
-                return lambda name, value: asyncio.create_task(handler(name, value))
+                                    await self._execute_flow(conn.to_node)
+                return handler
             instance._on_output = create_output_handler(node_id)
 
-        # 2. IDENTIFY EXECUTION STRATEGY
-        # Find 'entry' nodes: nodes with 'exec' output but no 'exec' input, OR no 'exec' pins at all
+        # 2. IDENTIFY ENTRY NODES
         exec_conns = [c for c in self.graph_manager.connections if c.is_exec]
         
         if exec_conns:
-            # FLOW-BASED EXECUTION
-            # Find nodes that have exec_out connected but no exec_in connected
             has_exec_in = {c.to_node for c in exec_conns}
             has_exec_out = {c.from_node for c in exec_conns}
             entry_nodes = list(has_exec_out - has_exec_in)
             
-            if not entry_nodes:
-                # If it's a closed loop or single node with exec, pick the first one with an exec pin
-                entry_nodes = [list(has_exec_out)[0]] if has_exec_out else []
+            if not entry_nodes and has_exec_out:
+                entry_nodes = [list(has_exec_out)[0]]
 
-            for start_node in entry_nodes:
-                await self._execute_flow(start_node)
+            if entry_nodes:
+                for start_node in entry_nodes:
+                    self._track_task(self._execute_flow(start_node))
+                
+                # WAIT FOR ALL FLOWS TO FINISH
+                while self._active_tasks and not self._is_stopped:
+                    await self._finished_event.wait()
+                    self._finished_event.clear()
+                    await asyncio.sleep(0.05)
         else:
-            # CLASSIC DATA-FLOW (TOPOLOGICAL)
+            # CLASSIC DATA-FLOW
             try:
                 order = self.graph_manager.get_topological_sort()
                 for layer in order:
@@ -115,36 +150,31 @@ class NetworkExecutor(QObject):
         self.execution_finished.emit(not self._is_stopped)
 
     async def _execute_flow(self, node_id: UUID):
-        """Recursively follows the execution chain."""
+        """Executes a single node. Flow continuation is handled EXCLUSIVELY by set_output calls."""
         if self._is_stopped: return
-
-        # 1. Run the current node
-        success = await self._run_single_node(node_id)
-        if not success or self._is_stopped: return
-
-        # 2. Find next node(s) via standard 'exec_out' or 'out' pins
-        # Branching nodes (if/loop) handle their own routing via _on_output
-        next_conns = [c for c in self.graph_manager.connections if c.from_node == node_id and c.is_exec]
-        
-        # Only follow standard sequential output pins here to avoid double-execution 
-        # for nodes that also emit streaming exec signals
-        standard_pins = ["exec_out", "out", "then"]
-        for conn in next_conns:
-            if conn.from_port in standard_pins:
-                await self._execute_flow(conn.to_node)
+        await self._run_single_node(node_id)
 
     async def _run_single_node(self, node_id: UUID) -> bool:
         if self._is_stopped: return False
         self.node_started.emit(node_id)
         instance = self.node_instances[node_id]
         
-        # Pull data inputs
-        inputs = instance.parameters.copy()
+        # Reset all exec outputs to allow re-triggering in subsequent cycles
+        for name, port in instance.outputs.items():
+            if port.data_type == 'exec':
+                instance.parameters[name] = None
+        
+        # Sync all inputs from current connected output states
         for conn in self.graph_manager.connections:
             if conn.to_node == node_id and not conn.is_exec:
                 from_results = self.node_results.get(conn.from_node, {})
                 if conn.from_port in from_results:
-                    inputs[conn.to_port] = from_results.get(conn.from_port)
+                    val = from_results.get(conn.from_port)
+                    instance.parameters[conn.to_port] = val
+                    await instance.on_parameter_changed(conn.to_port, val)
+        
+        # Pull final inputs for execute call
+        inputs = instance.parameters.copy()
         
         success, result, error = await SafeRuntime.run_node_safe(instance.execute, inputs)
         

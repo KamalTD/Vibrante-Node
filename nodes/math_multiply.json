@@ -5,13 +5,32 @@
     "category": "Math",
     "icon_path": "icons/multiply.svg",
     "inputs": [
-        {"name": "exec_in", "type": "exec"},
-        {"name": "a", "type": "float", "widget_type": "float", "default": 1.0},
-        {"name": "b", "type": "float", "widget_type": "float", "default": 1.0}
+        {
+            "name": "exec_in",
+            "type": "exec"
+        },
+        {
+            "name": "a",
+            "type": "float",
+            "widget_type": "float",
+            "default": 1.0
+        },
+        {
+            "name": "b",
+            "type": "float",
+            "widget_type": "float",
+            "default": 1.0
+        }
     ],
     "outputs": [
-        {"name": "exec_out", "type": "exec"},
-        {"name": "result", "type": "float"}
+        {
+            "name": "exec_out",
+            "type": "exec"
+        },
+        {
+            "name": "result",
+            "type": "float"
+        }
     ],
-    "python_code": "async def execute(self, inputs):\n    a = float(inputs.get('a', 1.0))\n    b = float(inputs.get('b', 1.0))\n    res = a * b\n    self.log_info(f\"Multiplying {a} * {b} = {res}\")\n    \n    self.set_output('exec_out', True)\n    return {'result': res}"
+    "python_code": "async def execute(self, inputs):\n    a = float(inputs.get('a', 1.0))\n    b = float(inputs.get('b', 1.0))\n    res = a * b\n    self.log_info(f\"Multiplying {a} * {b} = {res}\")\n    \n    await self.set_output('result', res)\n    await self.set_output('exec_out', True)\n    await self.set_output(\"exec_out\", True)\n    return {'result': res}"
 }

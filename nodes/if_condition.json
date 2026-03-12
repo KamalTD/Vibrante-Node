@@ -1,7 +1,7 @@
 {
     "node_id": "if_condition",
     "name": "If Condition",
-    "description": "Routes execution and data to either the True or False path based on a condition.",
+    "description": "Routes execution and data based on a condition. Triggers exec_out if True, exec_false if False.",
     "category": "Logic",
     "icon_path": "icons/scales.svg",
     "inputs": [
@@ -21,15 +21,11 @@
     ],
     "outputs": [
         {
-            "name": "exec_true",
+            "name": "exec_out",
             "type": "exec"
         },
         {
             "name": "exec_false",
-            "type": "exec"
-        },
-        {
-            "name": "then",
             "type": "exec"
         },
         {
@@ -45,5 +41,5 @@
             "type": "bool"
         }
     ],
-    "python_code": "async def execute(self, inputs):\n    cond = bool(inputs.get('condition', False))\n    data = inputs.get('data')\n    self.log_info(f\"Evaluating condition: {cond}\")\n    \n    # Trigger execution branches\n    if cond:\n        self.set_output('exec_true', True)\n    else:\n        self.set_output('exec_false', True)\n        \n    # Trigger sequential output\n    self.set_output('then', True)\n    \n    # Set data outputs\n    return {\n        'on_true': data if cond else None,\n        'on_false': None if cond else data,\n        'result': cond\n    }"
+    "python_code": "async def execute(self, inputs):\n    raw_cond = inputs.get('condition', False)\n    cond = bool(raw_cond)\n    data = inputs.get('data')\n    \n    self.log_info(f\"Evaluating condition: {cond} (Raw: {raw_cond}, Type: {type(raw_cond).__name__})\")\n    \n    # Set data outputs\n    await self.set_output('on_true', data if cond else None)\n    await self.set_output('on_false', None if cond else data)\n    await self.set_output('result', cond)\n\n    # Trigger appropriate execution branch\n    if cond:\n        self.log_info(\"Triggering TRUE branch (exec_out)\")\n        await self.set_output('exec_out', True)\n    else:\n        self.log_info(\"Triggering FALSE branch (exec_false)\")\n        await self.set_output('exec_false', True)\n    \n    return {\n        'on_true': data if cond else None,\n        'on_false': None if cond else data,\n        'result': cond,\n        'exec_out': cond,\n        'exec_false': not cond\n    }"
 }

@@ -6,6 +6,10 @@
     "icon_path": "icons/message.svg",
     "inputs": [
         {
+            "name": "exec_in",
+            "type": "exec"
+        },
+        {
             "name": "msg",
             "type": "string",
             "widget_type": "text",
@@ -14,11 +18,15 @@
     ],
     "outputs": [
         {
+            "name": "exec_out",
+            "type": "exec"
+        },
+        {
             "name": "out",
             "type": "string",
             "widget_type": null,
             "options": null
         }
     ],
-    "python_code": "from src.nodes.base import BaseNode\n\nclass MessageNode(BaseNode):\n    name = \"Message Node\"\n    description = \"Displays a message and passes it through.\"\n    \n    def __init__(self):\n        super().__init__()\n        self.icon_path = \"icons/message.svg\"\n        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"msg\", \"string\", widget_type=\"text\")\n        self.add_output(\"out\", \"string\")\n        # [AUTO-GENERATED-PORTS-END]\n        \n    def on_parameter_changed(self, name, value):\n        if name == \"msg\":\n            self.parameters[\"out\"] = value\n            \n    async def execute(self, inputs):\n        msg_val = inputs.get(\"msg\")\n        msg = str(msg_val) if msg_val is not None else \"\"\n        print(f\"MESSAGE: {msg}\")\n        return {\"out\": msg}\n\ndef register_node():\n    return MessageNode\n"
+    "python_code": "async def execute(self, inputs):\n    msg_val = inputs.get('msg')\n    msg = str(msg_val) if msg_val is not None else ''\n    self.log_info(f'MESSAGE: {msg}')\n    await self.set_output('out', msg)\n    await self.set_output('exec_out', True)\n    return {'out': msg}\n\nasync def on_parameter_changed(self, name, value):\n    if name == 'msg':\n        self.parameters['out'] = value"
 }

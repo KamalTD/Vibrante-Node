@@ -1,14 +1,29 @@
 {
-  "node_id": "example_file_reader",
-  "name": "File Reader",
-  "description": "Reads a file and returns its content.",
-  "category": "IO",
-  "inputs": [
-    { "name": "file_path", "type": "string", "widget_type": "file" }
-  ],
-  "outputs": [
-    { "name": "content", "type": "string" }
-  ],
-  "icon_path": "icons/folder.svg",
-  "python_code": "import os\nfrom src.nodes.base import BaseNode\n\nclass FileReaderNode(BaseNode):\n    name = \"File Reader\"\n    \n    def __init__(self):\n        super().__init__()\n        self.icon_path = \"icons/folder.svg\"\n        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"file_path\", \"string\", widget_type=\"file\")\n        self.add_output(\"content\", \"string\")\n        # [AUTO-GENERATED-PORTS-END]\n        \n    async def execute(self, inputs):\n        path = inputs.get('file_path', '')\n        if not os.path.exists(path):\n            return {'content': ''}\n        with open(path, 'r', encoding='utf-8') as f:\n            return {'content': f.read()}\n\ndef register_node():\n    return FileReaderNode\n"
+    "node_id": "example_file_reader",
+    "name": "File Reader",
+    "description": "Reads a file and returns its content.",
+    "category": "IO",
+    "inputs": [
+        {
+            "name": "exec_in",
+            "type": "exec"
+        },
+        {
+            "name": "file_path",
+            "type": "string",
+            "widget_type": "file"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "exec_out",
+            "type": "exec"
+        },
+        {
+            "name": "content",
+            "type": "string"
+        }
+    ],
+    "icon_path": "icons/folder.svg",
+    "python_code": "import os\nfrom src.nodes.base import BaseNode\n\nclass FileReaderNode(BaseNode):\n    name = \"File Reader\"\n    \n    def __init__(self):\n        super().__init__()\n        self.icon_path = \"icons/folder.svg\"\n        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"file_path\", \"string\", widget_type=\"file\")\n        self.add_output(\"content\", \"string\")\n        # [AUTO-GENERATED-PORTS-END]\n        \n    async def execute(self, inputs):\n        path = inputs.get('file_path', '')\n        if not os.path.exists(path):\n            await self.set_output(\"exec_out\", True)\n            return {'content': ''}\n        with open(path, 'r', encoding='utf-8') as f:\n            return {'content': f.read()}\n\ndef register_node():\n    return FileReaderNode\n"
 }

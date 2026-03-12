@@ -1,10 +1,14 @@
 {
     "node_id": "loop_body",
     "name": "Loop Body",
-    "description": "Executes logic for each index in a provided list. Simulates loop body behavior in a single execution pass.",
+    "description": "Executes logic for each index in a provided list. Triggers exec_out for each item, and exec_on_finished when done.",
     "category": "Operations",
     "icon_path": "icons/list.svg",
     "inputs": [
+        {
+            "name": "exec_in",
+            "type": "exec"
+        },
         {
             "name": "indices",
             "type": "list"
@@ -30,6 +34,14 @@
     ],
     "outputs": [
         {
+            "name": "exec_out",
+            "type": "exec"
+        },
+        {
+            "name": "exec_on_finished",
+            "type": "exec"
+        },
+        {
             "name": "results",
             "type": "list"
         },
@@ -46,5 +58,5 @@
             "type": "bool"
         }
     ],
-    "python_code": "import asyncio\nasync def execute(self, inputs):\n    # Extract inputs with defaults\n    indices = inputs.get('indices')\n    if indices is None: indices = []\n    \n    # Robustly handle None for delay and operation\n    raw_op = self.get_parameter('operation')\n    op = str(raw_op) if raw_op is not None else 'Iteration'\n    \n    raw_delay = self.get_parameter('delay')\n    delay = float(raw_delay) if raw_delay is not None else 0.0\n    \n    self.log_info(f\"Starting: {op} for {len(indices)} items.\")\n    \n    self.set_output('completed', False)\n    self.set_output('broken', False)\n    \n    results = []\n    is_broken = False\n    curr_i = None\n    \n    for i in indices:\n        # Check cancellation OR break FIRST\n        if self.is_stopped():\n            self.log_error(f\"Execution Interrupted: {op}\")\n            is_broken = True\n            break\n\n        if bool(self.get_parameter('break_condition', False)):\n            is_broken = True\n            break\n            \n        curr_i = i\n        self.log_info(f\"{op} -> Index: {i}\")\n        self.set_output('current_index', i)\n        results.append(i)\n        \n        if delay > 0:\n            await asyncio.sleep(delay)\n            \n    if is_broken:\n        self.log_error(f\"Loop Aborted: {op}\")\n        self.set_output('broken', True)\n    else:\n        self.log_success(f\"Loop Finished: {op}\")\n        self.set_output('completed', True)\n        \n    return {\n        'results': results, \n        'current_index': curr_i,\n        'completed': not is_broken,\n        'broken': is_broken\n    }"
+    "python_code": "import asyncio\nasync def execute(self, inputs):\n    # RESET break_condition at start of execute\n    self.parameters['break_condition'] = False\n\n    indices = inputs.get('indices')\n    if indices is None: indices = []\n    \n    raw_op = self.get_parameter('operation')\n    op = str(raw_op) if raw_op is not None else 'Iteration'\n    \n    raw_delay = self.get_parameter('delay')\n    try: delay = float(raw_delay)\n    except: delay = 0.0\n    \n    self.log_info(f\"Starting: {op} for {len(indices)} items. Delay: {delay}s\")\n    \n    await self.set_output('completed', False)\n    await self.set_output('broken', False)\n    \n    results = []\n    is_broken = False\n    curr_i = None\n    \n    for i in indices:\n        if self.is_stopped():\n            is_broken = True\n            break\n\n        # Yield to allow reactive updates\n        await asyncio.sleep(0.01)\n        \n        if bool(self.get_parameter('break_condition', False)):\n            self.log_info(f\"Break condition met at index {i}\")\n            is_broken = True\n            break\n            \n        curr_i = i\n        self.log_info(f\"Loop {op} -> Index: {i}\")\n        await self.set_output('current_index', i)\n        \n        # Trigger downstream chain for this iteration\n        await self.set_output('exec_out', True)\n        \n        results.append(i)\n        if delay > 0: await asyncio.sleep(delay)\n            \n    if is_broken:\n        self.log_error(f\"Loop Aborted: {op}\")\n        await self.set_output('broken', True)\n    else:\n        self.log_success(f\"Loop Finished: {op}\")\n        await self.set_output('completed', True)\n        \n    # Trigger FINAL execution pin after loop is completely done\n    await self.set_output('exec_on_finished', True)\n    \n    return {\n        'results': results, \n        'current_index': curr_i,\n        'completed': not is_broken,\n        'broken': is_broken\n    }"
 }

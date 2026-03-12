@@ -10,21 +10,7 @@
             "parameters": {
                 "start": 0,
                 "end": 10,
-                "step": 1,
-                "trigger": null,
-                "indices": [
-                    0,
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6,
-                    7,
-                    8,
-                    9
-                ],
-                "current_index": 9
+                "step": 1
             },
             "state": "idle"
         },
@@ -36,33 +22,8 @@
                 239.67500000000007
             ],
             "parameters": {
-                "indices": [
-                    0,
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6,
-                    7,
-                    8,
-                    9
-                ],
                 "operation": "Batch Job",
-                "delay": 0.0,
-                "break_condition": true,
-                "results": [
-                    0,
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6
-                ],
-                "current_index": 6,
-                "completed": false,
-                "broken": true
+                "delay": 0.5
             },
             "state": "idle"
         },
@@ -74,10 +35,8 @@
                 4.37500000000006
             ],
             "parameters": {
-                "a": 6,
                 "operation": ">",
-                "b": "5",
-                "result": true
+                "b": "5"
             },
             "state": "idle"
         },
@@ -85,12 +44,11 @@
             "instance_id": "d1d9a498-d8cc-4ca6-a020-6584cf7822e4",
             "node_id": "console_print",
             "position": [
-                331.1750000000002,
-                320.17500000000007
+                688.1750000000002,
+                412.17500000000007
             ],
             "parameters": {
-                "data": 6,
-                "out": "6"
+                "data": "Loop was interrupted!"
             },
             "state": "idle"
         },
@@ -98,61 +56,78 @@
             "instance_id": "bd724095-a7a9-470a-9525-a78fbaf87b3a",
             "node_id": "if_condition",
             "position": [
-                25.92500000000001,
-                436.67500000000007
+                340.92500000000001,
+                428.67500000000007
             ],
             "parameters": {
-                "condition": true,
-                "data": 6,
-                "on_true": 6,
-                "on_false": null,
-                "result": true
             },
             "state": "idle"
         }
     ],
     "connections": [
         {
-            "id": "ef9ad42f-c089-4b01-a27e-61cf1b7bdd98",
+            "id": "2cf06644-f88a-444b-8083-5c762a19fcb2",
             "from_node": "8489813d-5136-4074-9f0e-36511a5b8221",
             "from_port": "indices",
             "to_node": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
-            "to_port": "indices"
+            "to_port": "indices",
+            "is_exec": false
         },
         {
-            "id": "bf7b7b4b-a330-4ab0-ae6a-0c528cb8af8e",
+            "id": "d7ec6d46-5d02-4397-b8f0-3b1de106a520",
             "from_node": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
             "from_port": "current_index",
             "to_node": "f5290df0-1929-4c8c-beab-8e81a5bed3a4",
-            "to_port": "a"
+            "to_port": "a",
+            "is_exec": false
         },
         {
-            "id": "2a78a5e8-687d-4444-a4cf-91b9c76f3f36",
+            "id": "94f0c1c0-2c62-42d3-aac4-64a4ff0e565d",
             "from_node": "f5290df0-1929-4c8c-beab-8e81a5bed3a4",
             "from_port": "result",
             "to_node": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
-            "to_port": "break_condition"
+            "to_port": "break_condition",
+            "is_exec": false
         },
         {
-            "id": "9936cb9b-1939-47ae-a36c-d66c29253c9b",
+            "id": "8174b065-f25c-4a88-985d-d96bd3291ed1",
             "from_node": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
             "from_port": "broken",
             "to_node": "bd724095-a7a9-470a-9525-a78fbaf87b3a",
-            "to_port": "condition"
+            "to_port": "condition",
+            "is_exec": false
         },
         {
-            "id": "03e2babb-3cc2-4701-80c5-4838cd933c60",
+            "id": "19e0d532-d602-4298-9434-a471942c2300",
+            "from_node": "8489813d-5136-4074-9f0e-36511a5b8221",
+            "from_port": "exec_out",
+            "to_node": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "fae71f9f-2945-4406-9aa4-03c2026d93b9",
             "from_node": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
-            "from_port": "current_index",
-            "to_node": "bd724095-a7a9-470a-9525-a78fbaf87b3a",
-            "to_port": "data"
+            "from_port": "exec_out",
+            "to_node": "f5290df0-1929-4c8c-beab-8e81a5bed3a4",
+            "to_port": "exec_in",
+            "is_exec": true
         },
         {
-            "id": "8ad63681-06bb-42a5-886f-b23259c3b06b",
+            "id": "e72b3896-1c8b-4912-9844-3d078fb27341",
+            "from_node": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
+            "from_port": "exec_on_finished",
+            "to_node": "bd724095-a7a9-470a-9525-a78fbaf87b3a",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "cbd20310-377d-46d8-a43e-75f23285e6d9",
             "from_node": "bd724095-a7a9-470a-9525-a78fbaf87b3a",
-            "from_port": "on_true",
+            "from_port": "exec_out",
             "to_node": "d1d9a498-d8cc-4ca6-a020-6584cf7822e4",
-            "to_port": "data"
+            "to_port": "exec_in",
+            "is_exec": true
         }
     ],
     "sticky_notes": [
@@ -166,7 +141,7 @@
                 278.75,
                 197.49999999999997
             ],
-            "text": "loop with break\n",
+            "text": "Fixed loop with break\nNow uses exec_on_finished to check status AFTER loop completes.",
             "color": "#ffffcc"
         }
     ],
@@ -178,10 +153,10 @@
                 -55.62499999999994
             ],
             "size": [
-                1408.575,
+                1608.575,
                 708.125
             ],
-            "title": "Loop with IF",
+            "title": "Loop with IF (Corrected)",
             "color": "#444444"
         }
     ],

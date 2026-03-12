@@ -1,14 +1,14 @@
 Traceback (most recent call last):
-  File "G:\MyData\test_python\node_based_pipeline\node_based_app\src\ui\window.py", line 430, in load_workflow
-    scene.from_workflow_model(workflow_model)
-  File "G:\MyData\test_python\node_based_pipeline\node_based_app\src\ui\canvas\scene.py", line 132, in from_workflow_model
-    widget = self.add_node_by_name(node_model.node_id, QPointF(node_model.position[0], node_model.position[1]))
-  File "G:\MyData\test_python\node_based_pipeline\node_based_app\src\ui\canvas\scene.py", line 267, in add_node_by_name
-    node_widget = NodeWidget(node_definition)
-  File "G:\MyData\test_python\node_based_pipeline\node_based_app\src\ui\node_widget.py", line 27, in __init__
-    self._init_ui()
-  File "G:\MyData\test_python\node_based_pipeline\node_based_app\src\ui\node_widget.py", line 107, in _init_ui
-    self._auto_size(ports_max_y)
-  File "G:\MyData\test_python\node_based_pipeline\node_based_app\src\ui\node_widget.py", line 140, in _auto_size
-    w.setFixedWidth(self.width - 100)
-TypeError: setFixedWidth(self, w: int): argument 1 has unexpected type 'float'
+  File "G:\MyData\test_python\node_based_pipeline\node_based_app\src\ui\window.py", line 464, in load_workflow
+    workflow_model = WorkflowModel.model_validate_json(json_data)
+  File "C:\Users\Mahmoud\AppData\Roaming\Python\Python313\site-packages\pydantic\main.py", line 766, in model_validate_json
+    return cls.__pydantic_validator__.validate_json(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        json_data, strict=strict, extra=extra, context=context, by_alias=by_alias, by_name=by_name
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for WorkflowModel
+connections.6.id
+  Input should be a valid UUID, invalid character: expected an optional prefix of `urn:uuid:` followed by [0-9a-fA-F-], found `n` at 1 [type=uuid_parsing, input_value='new-exec-finished-conn', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/uuid_parsing

@@ -1,15 +1,32 @@
 {
-  "node_id": "example_list_append",
-  "name": "List Append",
-  "description": "Appends an item to a list.",
-  "category": "List",
-  "inputs": [
-    { "name": "list", "type": "list" },
-    { "name": "item", "type": "any" }
-  ],
-  "outputs": [
-    { "name": "result", "type": "list" }
-  ],
-  "icon_path": "icons/list.svg",
-  "python_code": "from src.nodes.base import BaseNode\n\nclass ListAppendNode(BaseNode):\n    name = \"List Append\"\n    \n    def __init__(self):\n        super().__init__()\n        self.icon_path = \"icons/list.svg\"\n        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"list\", \"list\")\n        self.add_input(\"item\", \"any\")\n        self.add_output(\"result\", \"list\")\n        # [AUTO-GENERATED-PORTS-END]\n        \n    async def execute(self, inputs):\n        lst = inputs.get('list', [])\n        item = inputs.get('item')\n        new_list = list(lst)\n        new_list.append(item)\n        return {'result': new_list}\n\ndef register_node():\n    return ListAppendNode\n"
+    "node_id": "example_list_append",
+    "name": "List Append",
+    "description": "Appends an item to a list.",
+    "category": "List",
+    "inputs": [
+        {
+            "name": "exec_in",
+            "type": "exec"
+        },
+        {
+            "name": "list",
+            "type": "list"
+        },
+        {
+            "name": "item",
+            "type": "any"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "exec_out",
+            "type": "exec"
+        },
+        {
+            "name": "result",
+            "type": "list"
+        }
+    ],
+    "icon_path": "icons/list.svg",
+    "python_code": "from src.nodes.base import BaseNode\n\nclass ListAppendNode(BaseNode):\n    name = \"List Append\"\n    \n    def __init__(self):\n        super().__init__()\n        self.icon_path = \"icons/list.svg\"\n        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"list\", \"list\")\n        self.add_input(\"item\", \"any\")\n        self.add_output(\"result\", \"list\")\n        # [AUTO-GENERATED-PORTS-END]\n        \n    async def execute(self, inputs):\n        lst = inputs.get('list', [])\n        item = inputs.get('item')\n        new_list = list(lst)\n        new_list.append(item)\n        await self.set_output(\"exec_out\", True)\n        return {'result': new_list}\n\ndef register_node():\n    return ListAppendNode\n"
 }
