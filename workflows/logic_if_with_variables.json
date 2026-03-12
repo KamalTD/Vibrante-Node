@@ -1,0 +1,210 @@
+{
+    "nodes": [
+        {
+            "instance_id": "ba0bf493-cc2b-4e07-bfe3-75da97315d23",
+            "node_id": "logical_gate",
+            "position": [
+                -86.16796875000023,
+                347.4023437499999
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "operation": "AND",
+                "a": true,
+                "b": true,
+                "result": true
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "0202dc65-cf43-466e-91e5-f301a19332ee",
+            "node_id": "variable_node",
+            "position": [
+                -483.2578125000001,
+                201.16015624999994
+            ],
+            "parameters": {
+                "type": "int",
+                "value": "1",
+                "out": 1
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "21fabe23-50c7-4edd-b95a-543d1f6d9d6d",
+            "node_id": "Set Variable",
+            "position": [
+                814.73828125,
+                274.4140625
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "name": "my_variable",
+                "value": "Logic Gate Result was True!",
+                "value_out": "Logic Gate Result was True!"
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "cffa9e1e-9137-4113-97d9-e0ef05008a3a",
+            "node_id": "if_condition",
+            "position": [
+                263.8320312499998,
+                349.8437499999999
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "condition": true,
+                "data": "Logic Gate Result was True!",
+                "exec_false": false,
+                "on_true": "Logic Gate Result was True!",
+                "on_false": null,
+                "result": true
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "6796fbe8-cd63-4024-9c15-20ff9ea9a631",
+            "node_id": "Set Variable",
+            "position": [
+                814.36328125,
+                506.6640625
+            ],
+            "parameters": {
+                "exec_in": false,
+                "exec_out": null,
+                "name": "my_variable",
+                "value": "Now you can see it is : False",
+                "value_out": null
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "1680607f-e10f-421f-8695-0c165ea880f5",
+            "node_id": "variable_node",
+            "position": [
+                -479.9335937500001,
+                454.7187499999999
+            ],
+            "parameters": {
+                "type": "int",
+                "value": "1",
+                "out": 1
+            },
+            "state": "idle"
+        }
+    ],
+    "connections": [
+        {
+            "id": "81af0ffa-797f-45cb-85b4-8abfb2d51aa6",
+            "from_node": "ba0bf493-cc2b-4e07-bfe3-75da97315d23",
+            "from_port": "result",
+            "to_node": "cffa9e1e-9137-4113-97d9-e0ef05008a3a",
+            "to_port": "condition",
+            "is_exec": false
+        },
+        {
+            "id": "d37862f0-d5c4-42d2-9672-1c7ebf121884",
+            "from_node": "ba0bf493-cc2b-4e07-bfe3-75da97315d23",
+            "from_port": "exec_out",
+            "to_node": "cffa9e1e-9137-4113-97d9-e0ef05008a3a",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "cdf90135-3ea2-42b0-8bc0-aa50d1c9cb98",
+            "from_node": "0202dc65-cf43-466e-91e5-f301a19332ee",
+            "from_port": "out",
+            "to_node": "ba0bf493-cc2b-4e07-bfe3-75da97315d23",
+            "to_port": "a",
+            "is_exec": false
+        },
+        {
+            "id": "c60f5389-c4a9-4c7b-8d0d-dd45ef730a53",
+            "from_node": "1680607f-e10f-421f-8695-0c165ea880f5",
+            "from_port": "out",
+            "to_node": "ba0bf493-cc2b-4e07-bfe3-75da97315d23",
+            "to_port": "b",
+            "is_exec": false
+        },
+        {
+            "id": "7e644edd-1422-4f66-9b40-101d04f4a984",
+            "from_node": "cffa9e1e-9137-4113-97d9-e0ef05008a3a",
+            "from_port": "exec_out",
+            "to_node": "21fabe23-50c7-4edd-b95a-543d1f6d9d6d",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "8364075f-f57a-48c3-a409-553c4390cda1",
+            "from_node": "cffa9e1e-9137-4113-97d9-e0ef05008a3a",
+            "from_port": "exec_false",
+            "to_node": "6796fbe8-cd63-4024-9c15-20ff9ea9a631",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "a82f32c8-8779-4b8d-8f3f-92d2907ec13e",
+            "from_node": "cffa9e1e-9137-4113-97d9-e0ef05008a3a",
+            "from_port": "on_true",
+            "to_node": "21fabe23-50c7-4edd-b95a-543d1f6d9d6d",
+            "to_port": "value",
+            "is_exec": false
+        },
+        {
+            "id": "ee8a0c96-e652-4cd9-adfa-49794f6436cf",
+            "from_node": "cffa9e1e-9137-4113-97d9-e0ef05008a3a",
+            "from_port": "on_false",
+            "to_node": "6796fbe8-cd63-4024-9c15-20ff9ea9a631",
+            "to_port": "value",
+            "is_exec": false
+        }
+    ],
+    "sticky_notes": [
+        {
+            "id": "0a33c6fe-1923-4d65-b2e7-bd2070154f95",
+            "position": [
+                583.6562499999998,
+                -5.234375
+            ],
+            "size": [
+                300.0,
+                100.0
+            ],
+            "text": "If Condition routes execution based on the gate result.",
+            "color": "#e6f3ff"
+        },
+        {
+            "id": "1c6ceb8e-1519-487b-bc69-34b341d0eb89",
+            "position": [
+                -152.0859375000001,
+                6.972656249999972
+            ],
+            "size": [
+                300.0,
+                100.0
+            ],
+            "text": "Logic Gate determines if the condition is True or False.",
+            "color": "#ffffcc"
+        }
+    ],
+    "backdrops": [
+        {
+            "id": "841d0799-b40a-4987-a144-5c44dc4035f1",
+            "position": [
+                -539.0,
+                -65.0
+            ],
+            "size": [
+                1773.9257812499998,
+                955.6640624999999
+            ],
+            "title": "Logic & Branching Example",
+            "color": "#333333"
+        }
+    ],
+    "metadata": {}
+}

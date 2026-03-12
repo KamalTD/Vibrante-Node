@@ -1,5 +1,7 @@
 from src.nodes.base import BaseNode, NodeRegistry
+from typing import Dict, Any
 import os
+import asyncio
 
 class FileLoaderNode(BaseNode):
     name = "File Loader"
@@ -46,7 +48,189 @@ class ConsoleSinkNode(BaseNode):
         print(f"SINK: {inputs.get('data')}")
         return {}
 
+class SequenceNode(BaseNode):
+    name = "Sequence"
+    category = "Flow"
+    description = "Sequences data-only nodes. Triggers 'exec_step' for every item in the sequence."
+    
+    def __init__(self):
+        # use_exec=False removes both default exec_in and exec_out
+        super().__init__(use_exec=False)
+        self.add_input("step_0", "any")
+        self.add_output("result", "any")
+        self.add_exec_output("exec_step") # Trigger for EACH step
+        self.add_exec_output("exec_out")  # Trigger when sequence is COMPLETE
+        self._step_count = 1
+        self.icon_path = "icons/list.svg"
+
+    def on_plug_sync(self, port_name, is_input, other_node, other_port_name):
+        if is_input and port_name.startswith("step_"):
+            # Only increment if we actually have a node being connected (not during restoration)
+            if not other_node: return
+            
+            idx = int(port_name.split("_")[1])
+            # If we plugged into the last step, add a new empty step
+            if idx == self._step_count - 1:
+                self.add_input(f"step_{self._step_count}", "any")
+                self._step_count += 1
+                self.rebuild_ports()
+
+    def on_unplug_sync(self, port_name, is_input):
+        if is_input and port_name.startswith("step_"):
+            # Shrink the list if multiple empty steps at the end
+            self._cleanup_steps()
+
+    def _cleanup_steps(self):
+        """Removes trailing empty ports, ensuring exactly one empty port remains at the end."""
+        changed = False
+        # Ensure we always keep at least step_0
+        while self._step_count > 1:
+            last_port = f"step_{self._step_count - 1}"
+            prev_port = f"step_{self._step_count - 2}"
+            
+            # If the last port is disconnected AND the one before it is ALSO disconnected,
+            # we can safely remove the last one. 
+            # This ensures we always have exactly ONE empty slot at the end.
+            if not self.is_port_connected(last_port, is_input=True) and \
+               not self.is_port_connected(prev_port, is_input=True):
+                if last_port in self.inputs:
+                    del self.inputs[last_port]
+                    if last_port in self.parameters:
+                        del self.parameters[last_port]
+                    self._step_count -= 1
+                    changed = True
+                else: break
+            else:
+                break
+        
+        if changed:
+            self.rebuild_ports()
+
+    def restore_from_parameters(self, parameters: Dict[str, Any]):
+        """Restores step_X ports from saved parameters."""
+        for key in parameters:
+            if key.startswith("step_"):
+                try:
+                    idx = int(key.split("_")[1])
+                    if idx >= self._step_count:
+                        for i in range(self._step_count, idx + 1):
+                            port_name = f"step_{i}"
+                            if port_name not in self.inputs:
+                                self.add_input(port_name, "any")
+                        self._step_count = idx + 1
+                except (ValueError, IndexError):
+                    continue
+
+    async def execute(self, inputs):
+        """
+        The engine pulls upstream data nodes in the order of self.inputs keys.
+        Since step_0 was added first, it will be executed first.
+        We stream the results out one by one.
+        """
+        last_val = None
+        # Get all step names sorted numerically just to be absolutely safe
+        steps = sorted([k for k in self.inputs.keys() if k.startswith("step_")], 
+                       key=lambda x: int(x.split("_")[1]))
+        
+        self.log_info(f"Starting sequence of {len(steps)} steps...")
+        
+        for step_name in steps:
+            if self.is_stopped(): break
+            
+            val = inputs.get(step_name)
+            if val is not None:
+                last_val = val
+                # STREAM: Update the output result port for EACH step
+                self.log_info(f"Triggering result for {step_name}: {val}")
+                await self.set_output("result", val)
+                
+                # TRIGGER: Force downstream full execution for this step
+                await self.set_output("exec_step", True)
+                
+                # Small sleep to allow downstream reactive updates to process
+                # Increased slightly for UI stability
+                await asyncio.sleep(0.05)
+
+        self.log_success("Sequence complete.")
+        return {"result": last_val}
+
+class SetVariableNode(BaseNode):
+    name = "Set Variable"
+    category = "Memory"
+    def __init__(self):
+        super().__init__(use_exec=True)
+        self.add_input("name", "string", widget_type="text")
+        self.add_input("value", "any")
+        self.add_output("value_out", "any")
+        self.icon_path = "icons/plus.svg"
+
+    async def execute(self, inputs):
+        var_name = inputs.get("name")
+        var_val = inputs.get("value")
+        if var_name:
+            BaseNode.memory[var_name] = var_val
+            self.log_success(f"Stored: {var_name} = {var_val}")
+        
+        await self.set_output("value_out", var_val)
+        await self.set_output("exec_out", True)
+        return {"value_out": var_val}
+
+class GetVariableNode(BaseNode):
+    name = "Get Variable"
+    category = "Memory"
+    def __init__(self):
+        super().__init__(use_exec=False)
+        self.add_input("name", "string", widget_type="text")
+        self.add_output("value", "any")
+        self.icon_path = "icons/hash.svg"
+
+    async def execute(self, inputs):
+        var_name = inputs.get("name")
+        var_val = BaseNode.memory.get(var_name)
+        self.log_info(f"Retrieved: {var_name} = {var_val}")
+        
+        await self.set_output("value", var_val)
+        return {"value": var_val}
+
+class TwoWaySwitchNode(BaseNode):
+    name = "Two Way Switch"
+    category = "Logic"
+    description = "Switches between input_1 and input_2 based on a condition."
+    
+    def __init__(self):
+        super().__init__(use_exec=True)
+        self.add_input("condition", "bool", widget_type="bool")
+        self.add_input("input_1", "any")
+        self.add_input("input_2", "any")
+        self.add_output("output", "any")
+        self.icon_path = "icons/scales.svg"
+
+    async def execute(self, inputs):
+        cond = bool(inputs.get("condition", False))
+        val1 = inputs.get("input_1")
+        val2 = inputs.get("input_2")
+        
+        result = val1 if cond else val2
+        
+        self.log_info(f"Switch: condition={cond}, result={result}")
+        await self.set_output("output", result)
+        await self.set_output("exec_out", True)
+        
+        return {"output": result}
+
+    async def on_parameter_changed(self, name, value):
+        if name in ["condition", "input_1", "input_2"]:
+            cond = bool(self.get_parameter("condition", False))
+            val1 = self.get_parameter("input_1")
+            val2 = self.get_parameter("input_2")
+            result = val1 if cond else val2
+            await self.set_output("output", result)
+
 def register_builtins():
     NodeRegistry.register(FileLoaderNode)
     NodeRegistry.register(DataProcessorNode)
     NodeRegistry.register(ConsoleSinkNode)
+    NodeRegistry.register(SequenceNode)
+    NodeRegistry.register(SetVariableNode)
+    NodeRegistry.register(GetVariableNode)
+    NodeRegistry.register(TwoWaySwitchNode)

@@ -274,10 +274,16 @@ class NodeScene(QGraphicsScene):
             model.nodes.append(node_model)
         for edge in self.edges:
             if edge.from_port and edge.to_port:
+                f_parent = edge.from_port.parentItem()
+                t_parent = edge.to_port.parentItem()
+                
+                if not f_parent or not t_parent:
+                    continue # Skip partially detached edges
+                    
                 conn_model = ConnectionModel(
-                    from_node=edge.from_port.parentItem().instance_id,
+                    from_node=f_parent.instance_id,
                     from_port=edge.from_port.port_definition.name,
-                    to_node=edge.to_port.parentItem().instance_id,
+                    to_node=t_parent.instance_id,
                     to_port=edge.to_port.port_definition.name,
                     is_exec=edge.from_port.port_type == "exec"
                 )
@@ -532,6 +538,8 @@ class NodeScene(QGraphicsScene):
                 lp = self.parent().log_panel
                 node_definition._on_log = lambda msg, level: lp.log(f"[{node_definition.name}] {msg}", level)
             node_widget = NodeWidget(node_definition)
+            node_definition._on_ports_changed = node_widget.rebuild_ports
+            node_definition._is_port_connected = node_widget.is_port_connected
             node_widget.setPos(pos)
             self.addItem(node_widget)
             self.nodes.append(node_widget)
