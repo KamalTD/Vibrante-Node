@@ -70,18 +70,18 @@ class NodeRegistry:
 
     @classmethod
     def register_definition(cls, definition: NodeDefinitionJSON) -> bool:
-        # 1. Normalize pins: Ensure at least 'exec_in' and 'exec_out' exist
+        # 1. Normalize pins: Ensure at least 'exec_in' and 'exec_out' exist if use_exec is True
         # But allow other 'exec' type pins as well.
-        
-        # Inputs
-        has_exec_in = any(p.name == "exec_in" for p in definition.inputs)
-        if not has_exec_in:
-            definition.inputs.insert(0, PortModel(name="exec_in", type="exec"))
-            
-        # Outputs
-        has_exec_out = any(p.name == "exec_out" for p in definition.outputs)
-        if not has_exec_out:
-            definition.outputs.insert(0, PortModel(name="exec_out", type="exec"))
+        if definition.use_exec:
+            # Inputs
+            has_exec_in = any(p.name == "exec_in" for p in definition.inputs)
+            if not has_exec_in:
+                definition.inputs.insert(0, PortModel(name="exec_in", type="exec"))
+                
+            # Outputs
+            has_exec_out = any(p.name == "exec_out" for p in definition.outputs)
+            if not has_exec_out:
+                definition.outputs.insert(0, PortModel(name="exec_out", type="exec"))
 
         cls._definitions[definition.node_id] = definition
         if not definition.python_code:
@@ -101,10 +101,14 @@ class NodeRegistry:
                 
                 class DynamicNode(BaseNode):
                     def __init__(self):
-                        super().__init__()
+                        super().__init__(use_exec=definition.use_exec)
                         for inp in definition.inputs:
+                            # Skip if already added by super().__init__() via auto-normalize
+                            if inp.name in self.inputs: continue
                             self.add_input(inp.name, inp.type, inp.widget_type, inp.options)
                         for out in definition.outputs:
+                            # Skip if already added by super().__init__()
+                            if out.name in self.outputs: continue
                             self.add_output(out.name, out.type)
                             
                     async def execute(self, inputs):

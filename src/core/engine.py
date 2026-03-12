@@ -93,16 +93,21 @@ class NetworkExecutor(QObject):
                     self.node_results[nid][name] = value
                     self.node_output.emit(nid, {name: value})
                     
-                    # 1. REACTIVE DATA PROPAGATION (Disabled during flow execution to prevent double-triggering)
+                    # 1. REACTIVE DATA PROPAGATION
                     is_flow_execution = len(exec_conns) > 0
                     for conn in self.graph_manager.connections:
                         if conn.from_node == nid and conn.from_port == name and not conn.is_exec:
                             target_instance = self.node_instances.get(conn.to_node)
                             if target_instance:
                                 target_instance.parameters[conn.to_port] = value
-                                # ONLY trigger reactive updates if we are in classic data-flow mode
-                                # In flow-mode, nodes should wait for their 'exec_in'
-                                if not is_flow_execution:
+                                
+                                # Check if target node has an exec_in pin
+                                target_has_exec_in = any(p.data_type == 'exec' for p in target_instance.inputs.values())
+                                
+                                # Trigger reactive updates if:
+                                # - We are in classic data-flow mode
+                                # - OR target node is a pure data node (no exec_in)
+                                if not is_flow_execution or not target_has_exec_in:
                                     await target_instance.on_parameter_changed(conn.to_port, value)
 
                     # 2. FLOW-BASED ROUTING
@@ -120,12 +125,27 @@ class NetworkExecutor(QObject):
         exec_conns = [c for c in self.graph_manager.connections if c.is_exec]
         
         if exec_conns:
-            has_exec_in = {c.to_node for c in exec_conns}
-            has_exec_out = {c.from_node for c in exec_conns}
-            entry_nodes = list(has_exec_out - has_exec_in)
+            # In flow mode, we start:
+            # 1. Any node that has an exec_out but no connected exec_in
+            # 2. Any pure data node (no exec pins at all) that has connections
             
-            if not entry_nodes and has_exec_out:
-                entry_nodes = [list(has_exec_out)[0]]
+            connected_nodes = {c.from_node for c in self.graph_manager.connections} | \
+                              {c.to_node for c in self.graph_manager.connections}
+            has_exec_in_conn = {c.to_node for c in exec_conns}
+            
+            entry_nodes = []
+            for node_id, instance in self.node_instances.items():
+                if node_id not in connected_nodes: continue
+                
+                has_exec_in_pin = any(p.data_type == 'exec' for p in instance.inputs.values())
+                has_exec_out_pin = any(p.data_type == 'exec' for p in instance.outputs.values())
+                
+                if not has_exec_in_pin:
+                    # Pure data provider or flow starter
+                    entry_nodes.append(node_id)
+                elif node_id not in has_exec_in_conn:
+                    # Flow node that isn't triggered by anything
+                    entry_nodes.append(node_id)
 
             if entry_nodes:
                 for start_node in entry_nodes:
@@ -152,12 +172,30 @@ class NetworkExecutor(QObject):
     async def _execute_flow(self, node_id: UUID):
         """Executes a single node. Flow continuation is handled EXCLUSIVELY by set_output calls."""
         if self._is_stopped: return
-        await self._run_single_node(node_id)
+        
+        await self._run_single_node_impl(node_id)
 
     async def _run_single_node(self, node_id: UUID) -> bool:
+        # This method is now redundant for internal calls but kept for external/reactive entry points
+        return await self._run_single_node_impl(node_id)
+
+    async def _run_single_node_impl(self, node_id: UUID) -> bool:
+        """Internal implementation of node execution without locking, to allow recursion for data pulling."""
         if self._is_stopped: return False
-        self.node_started.emit(node_id)
+        
         instance = self.node_instances[node_id]
+
+        # 1. PULL UPSTREAM DATA NODES
+        for conn in self.graph_manager.connections:
+            if conn.to_node == node_id and not conn.is_exec:
+                from_id = conn.from_node
+                from_inst = self.node_instances.get(from_id)
+                if from_inst:
+                    has_exec_in = any(p.data_type == 'exec' for p in from_inst.inputs.values())
+                    if not has_exec_in:
+                        await self._run_single_node_impl(from_id)
+
+        self.node_started.emit(node_id)
         
         # Reset all exec outputs to allow re-triggering in subsequent cycles
         for name, port in instance.outputs.items():

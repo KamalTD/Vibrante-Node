@@ -28,6 +28,7 @@ class NodeDefinitionJSON(BaseModel):
     description: str = ""
     category: str = "General"
     icon_path: Optional[str] = None
+    use_exec: bool = True
     inputs: List[PortModel] = Field(default_factory=list)
     outputs: List[PortModel] = Field(default_factory=list)
     python_code: str

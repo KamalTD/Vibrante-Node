@@ -14,7 +14,7 @@ class BaseNode(ABC):
     category: str = "General"
     icon_path: Optional[str] = None
 
-    def __init__(self):
+    def __init__(self, use_exec: bool = True):
         self.inputs: Dict[str, Port] = {}
         self.outputs: Dict[str, Port] = {}
         self.parameters: Dict[str, Any] = {}
@@ -23,9 +23,10 @@ class BaseNode(ABC):
         self._on_output = None # Hook for engine to capture intermediate outputs
         self._check_stopped = None # Hook for engine to check cancellation
         
-        # ALL NODES must have exactly one input and one output execution pin
-        self.add_exec_input("exec_in")
-        self.add_exec_output("exec_out")
+        if use_exec:
+            # DEFAULT pins if requested
+            self.add_exec_input("exec_in")
+            self.add_exec_output("exec_out")
 
     def is_stopped(self) -> bool:
         """Checks if the execution has been requested to stop."""
