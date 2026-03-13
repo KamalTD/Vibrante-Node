@@ -93,8 +93,8 @@
             "instance_id": "d1d9a498-d8cc-4ca6-a020-6584cf7822e4",
             "node_id": "console_print",
             "position": [
-                496.1750000000002,
-                393.17500000000007
+                113.17500000000018,
+                351.17500000000007
             ],
             "parameters": {
                 "exec_in": true,
@@ -103,30 +103,11 @@
                 "out": "6"
             },
             "state": "idle"
-        },
-        {
-            "instance_id": "bd724095-a7a9-470a-9525-a78fbaf87b3a",
-            "node_id": "if_condition",
-            "position": [
-                144.675,
-                392.425
-            ],
-            "parameters": {
-                "exec_in": true,
-                "exec_out": true,
-                "condition": true,
-                "data": 6,
-                "exec_false": false,
-                "on_true": 6,
-                "on_false": null,
-                "result": true
-            },
-            "state": "idle"
         }
     ],
     "connections": [
         {
-            "id": "b98998a9-67d2-44ff-bd11-f776ce63f74c",
+            "id": "91174391-309b-4538-94e6-039b5d6c45a3",
             "from_node": "8489813d-5136-4074-9f0e-36511a5b8221",
             "from_port": "indices",
             "to_node": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
@@ -134,7 +115,7 @@
             "is_exec": false
         },
         {
-            "id": "8dbe7db1-2cb7-4349-b1e0-ac5c280fcd55",
+            "id": "32badad9-80bf-4dcd-95bd-9781b2289836",
             "from_node": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
             "from_port": "current_index",
             "to_node": "f5290df0-1929-4c8c-beab-8e81a5bed3a4",
@@ -142,7 +123,7 @@
             "is_exec": false
         },
         {
-            "id": "f0ae4754-f2d8-4996-aafd-edae22389585",
+            "id": "fcaca1b0-d88a-4a5f-a993-242d9cc1c0ff",
             "from_node": "f5290df0-1929-4c8c-beab-8e81a5bed3a4",
             "from_port": "result",
             "to_node": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
@@ -150,15 +131,7 @@
             "is_exec": false
         },
         {
-            "id": "c5bd779e-2446-403c-a20a-41ebba0b6f01",
-            "from_node": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
-            "from_port": "broken",
-            "to_node": "bd724095-a7a9-470a-9525-a78fbaf87b3a",
-            "to_port": "condition",
-            "is_exec": false
-        },
-        {
-            "id": "f7f51612-5d3a-446d-b373-b5a5080f7512",
+            "id": "b54e8690-ad4e-4d96-a506-f47ff5c4fe98",
             "from_node": "8489813d-5136-4074-9f0e-36511a5b8221",
             "from_port": "exec_out",
             "to_node": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
@@ -166,7 +139,7 @@
             "is_exec": true
         },
         {
-            "id": "540ed355-a118-4ec3-93b4-eaa30dff705e",
+            "id": "08a49de8-2ebd-49ff-b131-86fcaae1375c",
             "from_node": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
             "from_port": "exec_out",
             "to_node": "f5290df0-1929-4c8c-beab-8e81a5bed3a4",
@@ -174,36 +147,20 @@
             "is_exec": true
         },
         {
-            "id": "11b66821-a765-4b24-961c-ec778d11bc77",
-            "from_node": "bd724095-a7a9-470a-9525-a78fbaf87b3a",
-            "from_port": "exec_out",
-            "to_node": "d1d9a498-d8cc-4ca6-a020-6584cf7822e4",
-            "to_port": "exec_in",
-            "is_exec": true
-        },
-        {
-            "id": "7342aa6d-8812-408d-93e6-524dbf206666",
-            "from_node": "bd724095-a7a9-470a-9525-a78fbaf87b3a",
-            "from_port": "on_true",
-            "to_node": "d1d9a498-d8cc-4ca6-a020-6584cf7822e4",
-            "to_port": "data",
-            "is_exec": false
-        },
-        {
-            "id": "a3961072-b501-44e1-8f2e-f31d354b13ec",
-            "from_node": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
-            "from_port": "current_index",
-            "to_node": "bd724095-a7a9-470a-9525-a78fbaf87b3a",
-            "to_port": "data",
-            "is_exec": false
-        },
-        {
-            "id": "7529dfe9-59d6-4af9-8c34-a88bfdeaeb5f",
+            "id": "49cf3c5f-9788-4046-8a1d-b9c014151c11",
             "from_node": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
             "from_port": "exec_on_finished",
-            "to_node": "bd724095-a7a9-470a-9525-a78fbaf87b3a",
+            "to_node": "d1d9a498-d8cc-4ca6-a020-6584cf7822e4",
             "to_port": "exec_in",
             "is_exec": true
+        },
+        {
+            "id": "1a57b3a9-1b98-4c7d-8a14-375b101297e5",
+            "from_node": "93628e1a-c7a2-4d2d-947b-7b79d2b4a1c5",
+            "from_port": "current_index",
+            "to_node": "d1d9a498-d8cc-4ca6-a020-6584cf7822e4",
+            "to_port": "data",
+            "is_exec": false
         }
     ],
     "sticky_notes": [

@@ -2,11 +2,12 @@ from abc import ABC, abstractmethod
 from typing import Dict, Any, List, Type, Optional
 
 class Port:
-    def __init__(self, name: str, data_type: str = "any", widget_type: str = None, options: List[str] = None):
+    def __init__(self, name: str, data_type: str = "any", widget_type: str = None, options: List[str] = None, default: Any = None):
         self.name = name
         self.data_type = data_type
         self.widget_type = widget_type
         self.options = options
+        self.default = default
 
 class BaseNode(ABC):
     name: str = "BaseNode"
@@ -58,9 +59,9 @@ class BaseNode(ABC):
                 await self._on_output(name, value)
 
     def clear_outputs(self):
-        """Resets all output parameters to None before a new execution."""
-        for name in self.outputs:
-            self.parameters[name] = None
+        """Resets all output parameters to their defaults before a new execution."""
+        for name, port in self.outputs.items():
+            self.parameters[name] = port.default
 
     def log_info(self, msg: str):
         if self._on_log: self._on_log(msg, "info")
@@ -74,20 +75,34 @@ class BaseNode(ABC):
         if self._on_log: self._on_log(msg, "error")
         else: print(f"ERROR: {msg}")
 
-    def add_input(self, name: str, data_type: str = "any", widget_type: str = None, options: List[str] = None):
-        self.inputs[name] = Port(name, data_type, widget_type, options)
+    def add_input(self, name: str, data_type: str = "any", widget_type: str = None, options: List[str] = None, default: Any = None):
+        # Provide sensible defaults instead of None for certain types
+        if default is None:
+            if data_type == "string": default = ""
+            elif data_type == "list": default = []
+            elif data_type == "bool": default = False
+            elif data_type in ["int", "float", "number"]: default = 0
+            
+        self.inputs[name] = Port(name, data_type, widget_type, options, default)
         # Always initialize parameter key to ensure it's accessible via .parameters.get()
         if name not in self.parameters:
-            self.parameters[name] = None
+            self.parameters[name] = default
 
     def add_exec_input(self, name: str = "exec_in"):
         self.add_input(name, data_type="exec")
 
-    def add_output(self, name: str, data_type: str = "any"):
-        self.outputs[name] = Port(name, data_type)
+    def add_output(self, name: str, data_type: str = "any", default: Any = None):
+        # Provide sensible defaults instead of None for certain types
+        if default is None:
+            if data_type == "string": default = ""
+            elif data_type == "list": default = []
+            elif data_type == "bool": default = False
+            elif data_type in ["int", "float", "number"]: default = 0
+
+        self.outputs[name] = Port(name, data_type, default=default)
         # ALSO initialize output name in parameters so other nodes can query its 'last known' or 'default' state
         if name not in self.parameters:
-            self.parameters[name] = None
+            self.parameters[name] = default
 
     def add_exec_output(self, name: str = "exec_out"):
         self.add_output(name, data_type="exec")

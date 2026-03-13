@@ -7,6 +7,7 @@ class PortModel(BaseModel):
     type: str = "any"
     widget_type: Optional[str] = None # 'text', 'int', 'float', 'bool', 'dropdown', 'slider', 'text_area'
     options: Optional[List[str]] = None # For dropdown
+    default: Optional[Any] = None
 
 class StickyNoteModel(BaseModel):
     id: UUID = Field(default_factory=uuid4)

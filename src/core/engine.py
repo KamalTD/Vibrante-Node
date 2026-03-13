@@ -5,6 +5,7 @@ from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
 from src.core.graph import GraphManager
 from src.core.registry import NodeRegistry
 from src.utils.runtime import SafeRuntime
+from src.nodes.base import BaseNode
 
 class NetworkExecutor(QObject):
     # Signals for UI feedback
@@ -97,9 +98,19 @@ class NetworkExecutor(QObject):
             instance.restore_from_parameters(node_model.parameters)
             
             # 2. SYNC PARAMETERS
+            # Ignore saved parameter values for ports that have incoming data connections,
+            # so they start with their default state for each run.
+            incoming_ports = {c.to_port for c in self._incoming_data_conns.get(node_id, [])}
+            
             for p_name, p_val in node_model.parameters.items():
                 if p_name in instance.parameters:
-                    instance.parameters[p_name] = p_val
+                    if p_name in incoming_ports:
+                        # Reset to port default if it will be driven by a connection
+                        port_obj = instance.inputs.get(p_name)
+                        default = getattr(port_obj, 'default', None) if port_obj else None
+                        instance.parameters[p_name] = default
+                    else:
+                        instance.parameters[p_name] = p_val
             
             instance.clear_outputs()
             self.node_instances[node_id] = instance
@@ -125,7 +136,9 @@ class NetworkExecutor(QObject):
                         if conn.from_node == nid and conn.from_port == name and not conn.is_exec:
                             target_instance = self.node_instances.get(conn.to_node)
                             if target_instance:
+                                # Sync both parameter and result cache
                                 target_instance.parameters[conn.to_port] = value
+                                self.node_results[conn.to_node][conn.to_port] = value
                                 
                                 # Check if target node is actually being driven by flow connections
                                 # If it has no incoming exec connections, it should be reactive.
@@ -148,59 +161,60 @@ class NetworkExecutor(QObject):
         # 2. IDENTIFY ENTRY NODES
         exec_conns = [c for c in self.graph_manager.connections if c.is_exec]
         
-        if exec_conns:
-            # In flow mode, we start:
-            # 1. Any node that has an exec_out but no connected exec_in
-            # 2. Any pure data node (no exec pins at all) that has connections
-            
-            connected_nodes = {c.from_node for c in self.graph_manager.connections} | \
-                              {c.to_node for c in self.graph_manager.connections}
-            has_exec_in_conn = {c.to_node for c in exec_conns}
-            
-            entry_nodes = []
-            for node_id, instance in self.node_instances.items():
-                if node_id not in connected_nodes: continue
+        try:
+            if exec_conns:
+                # In flow mode, we start:
+                # 1. Any node that has an exec_out but no connected exec_in
+                # 2. Any pure data node (no exec pins at all) that has connections
                 
-                has_exec_in_pin = any(p.data_type == 'exec' for p in instance.inputs.values())
-                has_exec_out_pin = any(p.data_type == 'exec' for p in instance.outputs.values())
+                connected_nodes = {c.from_node for c in self.graph_manager.connections} | \
+                                {c.to_node for c in self.graph_manager.connections}
+                has_exec_in_conn = {c.to_node for c in exec_conns}
                 
-                # Logic:
-                # 1. If it has no exec_in pin, it's a potential starter (data node or flow starter)
-                # 2. If it HAS an exec_in pin but NO connection to it, it's a flow starter
-                if not has_exec_in_pin:
-                    entry_nodes.append(node_id)
-                elif node_id not in has_exec_in_conn:
-                    entry_nodes.append(node_id)
+                entry_nodes = []
+                for node_id, instance in self.node_instances.items():
+                    if node_id not in connected_nodes: continue
+                    
+                    has_exec_in_pin = any(p.data_type == 'exec' for p in instance.inputs.values())
+                    has_exec_out_pin = any(p.data_type == 'exec' for p in instance.outputs.values())
+                    
+                    # Logic:
+                    # 1. If it has no exec_in pin, it's a potential starter (data node or flow starter)
+                    # 2. If it HAS an exec_in pin but NO connection to it, it's a flow starter
+                    if not has_exec_in_pin:
+                        entry_nodes.append(node_id)
+                    elif node_id not in has_exec_in_conn:
+                        entry_nodes.append(node_id)
 
-            if entry_nodes:
-                for start_node in entry_nodes:
-                    self._track_task(self._execute_flow(start_node))
+                if entry_nodes:
+                    for start_node in entry_nodes:
+                        self._track_task(self._execute_flow(start_node))
+                    
+                    # WAIT FOR ALL FLOWS TO FINISH
+                    while self._active_tasks and not self._is_stopped:
+                        await self._finished_event.wait()
+                        self._finished_event.clear()
+                        await asyncio.sleep(0.05)
+            else:
+                # CLASSIC DATA-FLOW
+                # Instead of layer-by-layer topological sort (which executes layers in parallel),
+                # we trigger the "Leaf Nodes" (nodes with no consumers) and let them pull
+                # their dependencies recursively. This ensures ordered pulling (e.g., for Sequence Node).
                 
-                # WAIT FOR ALL FLOWS TO FINISH
-                while self._active_tasks and not self._is_stopped:
-                    await self._finished_event.wait()
-                    self._finished_event.clear()
-                    await asyncio.sleep(0.05)
-        else:
-            # CLASSIC DATA-FLOW
-            # Instead of layer-by-layer topological sort (which executes layers in parallel),
-            # we trigger the "Leaf Nodes" (nodes with no consumers) and let them pull
-            # their dependencies recursively. This ensures ordered pulling (e.g., for Sequence Node).
-            
-            all_node_ids = set(self.node_instances.keys())
-            has_consumer = {c.from_node for c in self.graph_manager.connections if not c.is_exec}
-            leaf_nodes = [nid for nid in all_node_ids if nid not in has_consumer]
-            
-            # Filter to only connected nodes to avoid running orphaned nodes if unnecessary,
-            # but usually in classic data-flow we want to run everything that might be a starting point.
-            
-            try:
-                tasks = [self._run_single_node(nid) for nid in leaf_nodes]
-                await asyncio.gather(*tasks)
-            except Exception as e:
-                print(f"Classic execution failed: {e}")
-
-        self.execution_finished.emit(not self._is_stopped)
+                all_node_ids = set(self.node_instances.keys())
+                has_consumer = {c.from_node for c in self.graph_manager.connections if not c.is_exec}
+                leaf_nodes = [nid for nid in all_node_ids if nid not in has_consumer]
+                
+                # Filter to only connected nodes to avoid running orphaned nodes if unnecessary,
+                # but usually in classic data-flow we want to run everything that might be a starting point.
+                
+                try:
+                    tasks = [self._run_single_node(nid) for nid in leaf_nodes]
+                    await asyncio.gather(*tasks)
+                except Exception as e:
+                    print(f"Classic execution failed: {e}")
+        finally:
+            self.execution_finished.emit(not self._is_stopped)
 
     async def _execute_flow(self, node_id: UUID):
         """Executes a single node. Flow continuation is handled EXCLUSIVELY by set_output calls."""
@@ -241,9 +255,9 @@ class NetworkExecutor(QObject):
                         from_id = conn.from_node
                         from_inst = self.node_instances.get(from_id)
                         if from_inst:
-                            # Check if source node is pullable (no exec_in)
-                            has_exec_in = any(p.data_type == 'exec' for p in from_inst.inputs.values())
-                            if not has_exec_in:
+                            # Check if source node is pullable (either no exec_in, or it's not driven by flow)
+                            is_driven_by_flow = from_id in self._driven_by_flow
+                            if not is_driven_by_flow:
                                 await self._run_single_node_impl(from_id, is_data_pull=True)
 
             self.node_started.emit(node_id)

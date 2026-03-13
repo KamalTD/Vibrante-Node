@@ -3,7 +3,7 @@
     "name": "For Loop",
     "description": "Generates a sequence of numbers. Connect exec_out to start downstream processing.",
     "category": "Operations",
-    "icon_path": "icons/gear.svg",
+    "icon_path": "icons/list.svg",
     "inputs": [
         {
             "name": "exec_in",
@@ -12,31 +12,26 @@
         {
             "name": "start",
             "type": "int",
-            "widget_type": "int"
+            "widget_type": "int",
+            "default": 0
         },
         {
             "name": "end",
             "type": "int",
-            "widget_type": "int"
+            "widget_type": "int",
+            "default": 10
         },
         {
             "name": "step",
             "type": "int",
-            "widget_type": "int"
+            "widget_type": "int",
+            "default": 1
         }
     ],
     "outputs": [
         {
             "name": "exec_out",
             "type": "exec"
-        },
-        {
-            "name": "then",
-            "type": "exec"
-        },
-        {
-            "name": "loop_body",
-            "type": "any"
         },
         {
             "name": "current_index",
@@ -47,5 +42,5 @@
             "type": "list"
         }
     ],
-    "python_code": "import asyncio\nasync def execute(self, inputs):\n    start = int(inputs.get('start', 0))\n    end = int(inputs.get('end', 10))\n    step = int(inputs.get('step', 1))\n    \n    indices = list(range(start, end, step))\n    self.log_info(f\"Generated range: {start} to {end}\")\n    \n    # Trigger ONLY exec_out to start the loop\n    # Downstream Loop Body will trigger its own finished pin\n    await self.set_output('exec_out', True)\n    \n    return {'indices': indices, 'current_index': indices[-1] if indices else 0}"
+    "python_code": "async def execute(self, inputs):\n    # Robustly get integers with defaults to prevent NoneType errors\n    try: start = int(inputs.get('start', 0))\n    except: start = 0\n    \n    try: end = int(inputs.get('end', 10))\n    except: end = 10\n    \n    try: step = int(inputs.get('step', 1))\n    except: step = 1\n    \n    if step == 0: step = 1\n    \n    indices = list(range(start, end, step))\n    self.log_info(f'Generated {len(indices)} indices from {start} to {end}')\n    \n    await self.set_output('indices', indices)\n    \n    # Trigger ONLY exec_out to start the loop\n    # Downstream Loop Body will trigger its own finished pin\n    await self.set_output('exec_out', True)\n    \n    return {'indices': indices, 'current_index': indices[-1] if indices else 0}"
 }
