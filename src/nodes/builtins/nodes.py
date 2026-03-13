@@ -49,7 +49,7 @@ class ConsoleSinkNode(BaseNode):
         return {}
 
 class SequenceNode(BaseNode):
-    name = "Sequence"
+    name = "Sequencer"
     category = "Flow"
     description = "Sequences data-only nodes. Triggers 'exec_step' for every item in the sequence."
     
@@ -159,9 +159,9 @@ class SetVariableNode(BaseNode):
     category = "Memory"
     def __init__(self):
         super().__init__(use_exec=True)
-        self.add_input("name", "string", widget_type="text")
+        self.add_input("name", "string", widget_type="text", default="")
         self.add_input("value", "any")
-        self.add_output("value_out", "any")
+        self.add_output("value_out", "any", default="")
         self.icon_path = "icons/plus.svg"
 
     async def execute(self, inputs):
@@ -180,7 +180,7 @@ class GetVariableNode(BaseNode):
     category = "Memory"
     def __init__(self):
         super().__init__(use_exec=False)
-        self.add_input("name", "string", widget_type="text")
+        self.add_input("name", "string", widget_type="text", default="")
         self.add_output("value", "any")
         self.icon_path = "icons/hash.svg"
 
@@ -191,6 +191,44 @@ class GetVariableNode(BaseNode):
         
         await self.set_output("value", var_val)
         return {"value": var_val}
+
+    async def on_parameter_changed(self, name, value):
+        if name == "name":
+            var_val = BaseNode.memory.get(value)
+            await self.set_output("value", var_val)
+
+class ListAppendNode(BaseNode):
+    name = "List Append"
+    category = "Memory"
+    description = "Manages a list in shared memory. Appends items and outputs the full list."
+    
+    def __init__(self):
+        super().__init__(use_exec=True)
+        self.add_input("list_name", "string", widget_type="text")
+        self.add_input("item", "any")
+        self.add_output("current_list", "list")
+        self.icon_path = "icons/list.svg"
+
+    async def execute(self, inputs):
+        name = inputs.get("list_name")
+        item = inputs.get("item")
+        
+        if not name:
+            return {"current_list": []}
+            
+        # Initialize list if doesn't exist
+        if name not in BaseNode.memory or not isinstance(BaseNode.memory[name], list):
+            BaseNode.memory[name] = []
+            
+        if item is not None:
+            BaseNode.memory[name].append(item)
+            self.log_info(f"Appended to '{name}': {item}")
+            
+        full_list = BaseNode.memory[name]
+        await self.set_output("current_list", full_list)
+        await self.set_output("exec_out", True)
+        
+        return {"current_list": full_list}
 
 class TwoWaySwitchNode(BaseNode):
     name = "Two Way Switch"
@@ -226,6 +264,108 @@ class TwoWaySwitchNode(BaseNode):
             result = val1 if cond else val2
             await self.set_output("output", result)
 
+class ForEachNode(BaseNode):
+    name = "For Each"
+    category = "Flow"
+    description = "Iterates over a collection. Triggers 'each_item' for every item. Can be stopped via 'break_condition' or skipped via 'continue_condition'."
+    
+    def __init__(self):
+        super().__init__(use_exec=True)
+        # Rename default exec_out to finished for clarity
+        if "exec_out" in self.outputs:
+            del self.outputs["exec_out"]
+        
+        self.add_input("collection", "any")
+        self.add_input("break_condition", "bool", widget_type="bool")
+        self.add_input("continue_condition", "bool", widget_type="bool")
+        
+        self.add_exec_output("each_item") # Trigger for EACH item
+        self.add_exec_output("exec_skip") # Trigger if item is skipped
+        self.add_exec_output("exec_on_finished") # FINAL trigger when loop is over
+        
+        self.add_output("completed", "bool") # True if finished normally
+        self.add_output("broken", "bool")    # True if broken early
+        
+        self.add_output("current_item", "any")
+        self.add_output("current_index", "int")
+        self.add_output("indices", "list")
+        self.icon_path = "icons/list.svg"
+
+    async def execute(self, inputs):
+        # RESET conditions at start
+        self.parameters['break_condition'] = False
+        self.parameters['continue_condition'] = False
+        await self.set_output("completed", False)
+        await self.set_output("broken", False)
+
+        collection = inputs.get("collection")
+        if not collection:
+            self.log_info("Empty collection, skipping loop.")
+            await self.set_output("completed", True)
+            await self.set_output("exec_on_finished", True)
+            return {"indices": [], "completed": True, "broken": False}
+            
+        try:
+            items = list(collection)
+        except TypeError:
+            self.log_error(f"Input is not iterable: {type(collection)}")
+            await self.set_output("completed", True)
+            await self.set_output("exec_on_finished", True)
+            return {"indices": [], "completed": True, "broken": False}
+            
+        indices = list(range(len(items)))
+        await self.set_output("indices", indices)
+        
+        self.log_info(f"Starting loop over {len(items)} items...")
+        
+        is_broken = False
+        for i, item in enumerate(items):
+            if self.is_stopped(): break
+            
+            # Reset conditions for this specific iteration
+            self.parameters['continue_condition'] = False
+            # (Don't reset break_condition here, it might be set by global state)
+
+            # 1. Update data outputs
+            await self.set_output("current_item", item)
+            await self.set_output("current_index", i)
+            
+            # 2. Trigger iteration pin
+            await self.set_output("each_item", True)
+            
+            # 3. Yield to allow reactive updates from downstream to propagate back to our parameters
+            await asyncio.sleep(0.05)
+            
+            # 4. Check for continue (skip)
+            if bool(self.get_parameter("continue_condition", False)):
+                self.log_info(f"Skipping index {i} ({item})")
+                await self.set_output("exec_skip", True)
+                continue
+
+            # 5. Check for break
+            if bool(self.get_parameter("break_condition", False)):
+                self.log_info(f"Loop broken at index {i}")
+                is_broken = True
+                break
+            
+        if is_broken:
+            await self.set_output("broken", True)
+        else:
+            self.log_success("Loop complete.")
+            await self.set_output("completed", True)
+            
+        await self.set_output("exec_on_finished", True)
+        return {"indices": indices, "completed": not is_broken, "broken": is_broken}
+            
+        if is_broken:
+            await self.set_output("broken", True)
+        else:
+            self.log_success("Loop complete.")
+            await self.set_output("completed", True)
+            
+        await self.set_output("exec_on_finished", True)
+        return {"indices": indices, "completed": not is_broken, "broken": is_broken}
+
 def register_builtins():
     NodeRegistry.register(FileLoaderNode)
     NodeRegistry.register(DataProcessorNode)
@@ -234,3 +374,4 @@ def register_builtins():
     NodeRegistry.register(SetVariableNode)
     NodeRegistry.register(GetVariableNode)
     NodeRegistry.register(TwoWaySwitchNode)
+    NodeRegistry.register(ForEachNode)

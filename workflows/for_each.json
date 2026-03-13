@@ -1,0 +1,273 @@
+{
+    "nodes": [
+        {
+            "instance_id": "7a20cc14-24c8-413c-8927-23c5b148fdbe",
+            "node_id": "For Each",
+            "position": [
+                -167.73280900000015,
+                241.3704141249998
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "collection": "VIBRANTE",
+                "break_condition": true,
+                "continue_condition": true,
+                "each_item": true,
+                "exec_skip": true,
+                "exec_on_finished": true,
+                "completed": true,
+                "broken": false,
+                "current_item": "E",
+                "current_index": 7,
+                "indices": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7
+                ]
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "196eec43-2f52-4e7d-aa23-15371126f39a",
+            "node_id": "variable_node",
+            "position": [
+                -750.4490375000003,
+                273.5432281249999
+            ],
+            "parameters": {
+                "type": "string",
+                "value": "VIBRANTE",
+                "out": "VIBRANTE"
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "e28df995-853b-43a6-83d5-25f4159117ba",
+            "node_id": "compare",
+            "position": [
+                239.6134624999998,
+                -35.144271874999994
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "a": "V",
+                "operation": "==",
+                "b": "B",
+                "result": false
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "7bdf023d-4375-489c-bf1f-c0f41150598e",
+            "node_id": "string_concat",
+            "position": [
+                484.10779062500023,
+                436.65390624999964
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "str1": "E",
+                "str2": "       ",
+                "str_list": [],
+                "separator": " ",
+                "combined": "E T N A R B I V "
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "66b69766-8ee5-4161-a395-32e09c48ee0f",
+            "node_id": "Set Variable",
+            "position": [
+                203.76266210937501,
+                273.33002441406256
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "name": "word",
+                "value": "E T N A R B I V ",
+                "value_out": "T N A R B I V "
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "68a029d3-6f54-44cf-84f6-3653a43e9003",
+            "node_id": "Get Variable",
+            "position": [
+                -128.13163124999957,
+                596.8041187499998
+            ],
+            "parameters": {
+                "name": "word",
+                "value": null
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "8f0cf6f6-0eb9-431f-a290-0194fc0bb592",
+            "node_id": "console_print",
+            "position": [
+                847.769966132812,
+                435.17808437500025
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "data": "E T N A R B I V ",
+                "out": "E T N A R B I V "
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "f9b27c1a-04c0-49dd-bec4-1ffadf364d11",
+            "node_id": "variable_node",
+            "position": [
+                -120.79403320312527,
+                763.0667724609373
+            ],
+            "parameters": {
+                "type": "string",
+                "value": " ",
+                "out": " "
+            },
+            "state": "idle"
+        }
+    ],
+    "connections": [
+        {
+            "id": "ef3dfa3f-dce8-4a3d-87dd-8f6f77000eb5",
+            "from_node": "196eec43-2f52-4e7d-aa23-15371126f39a",
+            "from_port": "out",
+            "to_node": "7a20cc14-24c8-413c-8927-23c5b148fdbe",
+            "to_port": "collection",
+            "is_exec": false
+        },
+        {
+            "id": "9fdbdb65-da75-455c-944a-02ad0a1833ff",
+            "from_node": "f9b27c1a-04c0-49dd-bec4-1ffadf364d11",
+            "from_port": "out",
+            "to_node": "7bdf023d-4375-489c-bf1f-c0f41150598e",
+            "to_port": "separator",
+            "is_exec": false
+        },
+        {
+            "id": "b304ed11-3b08-44ab-9574-bbaca220310c",
+            "from_node": "66b69766-8ee5-4161-a395-32e09c48ee0f",
+            "from_port": "exec_out",
+            "to_node": "7bdf023d-4375-489c-bf1f-c0f41150598e",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "b4b1119e-835a-47ac-8ee1-65c7759aa410",
+            "from_node": "7bdf023d-4375-489c-bf1f-c0f41150598e",
+            "from_port": "exec_out",
+            "to_node": "8f0cf6f6-0eb9-431f-a290-0194fc0bb592",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "adc38cf3-8ad6-49a8-ac23-382d86cfb39f",
+            "from_node": "7bdf023d-4375-489c-bf1f-c0f41150598e",
+            "from_port": "combined",
+            "to_node": "66b69766-8ee5-4161-a395-32e09c48ee0f",
+            "to_port": "value",
+            "is_exec": false
+        },
+        {
+            "id": "3b014ad2-2585-483c-931e-66fcb30a43d2",
+            "from_node": "66b69766-8ee5-4161-a395-32e09c48ee0f",
+            "from_port": "value_out",
+            "to_node": "7bdf023d-4375-489c-bf1f-c0f41150598e",
+            "to_port": "str2",
+            "is_exec": false
+        },
+        {
+            "id": "1800e549-f464-4d45-a48e-fcfd226e8503",
+            "from_node": "7a20cc14-24c8-413c-8927-23c5b148fdbe",
+            "from_port": "each_item",
+            "to_node": "e28df995-853b-43a6-83d5-25f4159117ba",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "348d0e66-eda6-45c4-a2ef-448c1b288762",
+            "from_node": "7a20cc14-24c8-413c-8927-23c5b148fdbe",
+            "from_port": "current_item",
+            "to_node": "e28df995-853b-43a6-83d5-25f4159117ba",
+            "to_port": "a",
+            "is_exec": false
+        },
+        {
+            "id": "16e428f2-ebda-4a97-aa98-403ac46a8cbc",
+            "from_node": "7bdf023d-4375-489c-bf1f-c0f41150598e",
+            "from_port": "combined",
+            "to_node": "8f0cf6f6-0eb9-431f-a290-0194fc0bb592",
+            "to_port": "data",
+            "is_exec": false
+        },
+        {
+            "id": "af50a570-c6d7-44df-9b6f-53c825da8b24",
+            "from_node": "e28df995-853b-43a6-83d5-25f4159117ba",
+            "from_port": "result",
+            "to_node": "7a20cc14-24c8-413c-8927-23c5b148fdbe",
+            "to_port": "continue_condition",
+            "is_exec": false
+        },
+        {
+            "id": "ac34aa85-1ff4-4edf-b361-96da5cfc103f",
+            "from_node": "7a20cc14-24c8-413c-8927-23c5b148fdbe",
+            "from_port": "each_item",
+            "to_node": "66b69766-8ee5-4161-a395-32e09c48ee0f",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "99548cc2-c4cb-498b-86b9-5637ee94a338",
+            "from_node": "7a20cc14-24c8-413c-8927-23c5b148fdbe",
+            "from_port": "current_item",
+            "to_node": "7bdf023d-4375-489c-bf1f-c0f41150598e",
+            "to_port": "str1",
+            "is_exec": false
+        }
+    ],
+    "sticky_notes": [
+        {
+            "id": "9a8b7c6d-5e4f-3d2c-1b0a-9f8e7d6c5b4a",
+            "position": [
+                893.8449951171874,
+                691.7824951171875
+            ],
+            "size": [
+                350.0,
+                120.0
+            ],
+            "text": "### For Each Iteration Demo\nThis workflow demonstrates the 'For Each' node iterating over a string collection ('VIBRANTE'). Each character is passed sequentially to the Console Print node via the 'each_item' trigger.",
+            "color": "#e6f3ff"
+        }
+    ],
+    "backdrops": [
+        {
+            "id": "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d",
+            "position": [
+                -488.8990375000001,
+                -99.75677187500003
+            ],
+            "size": [
+                1957.8990375,
+                1074.7567718750001
+            ],
+            "title": "Iteration Logic",
+            "color": "#333333"
+        }
+    ],
+    "metadata": {}
+}

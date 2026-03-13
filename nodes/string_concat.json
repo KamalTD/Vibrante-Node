@@ -1,7 +1,7 @@
 {
     "node_id": "string_concat",
     "name": "String Concat",
-    "description": "Concatenates two strings with an optional separator.",
+    "description": "Concatenates two strings or joins a list of strings with an optional separator.",
     "category": "String",
     "icon_path": "icons/string.svg",
     "inputs": [
@@ -11,15 +11,25 @@
         },
         {
             "name": "str1",
-            "type": "string"
+            "type": "string",
+            "widget_type": "text",
+            "default": ""
         },
         {
             "name": "str2",
-            "type": "string"
+            "type": "string",
+            "widget_type": "text",
+            "default": ""
+        },
+        {
+            "name": "str_list",
+            "type": "list"
         },
         {
             "name": "separator",
-            "type": "string"
+            "type": "string",
+            "widget_type": "text",
+            "default": ""
         }
     ],
     "outputs": [
@@ -29,8 +39,9 @@
         },
         {
             "name": "combined",
-            "type": "string"
+            "type": "string",
+            "default": ""
         }
     ],
-    "python_code": "async def execute(self, inputs):\n    s1 = str(inputs.get('str1', ''))\n    s2 = str(inputs.get('str2', ''))\n    sep = str(inputs.get('separator', ' '))\n    \n    res = f'{s1}{sep}{s2}'\n    await self.set_output('combined', res)\n    await self.set_output('exec_out', True)\n    await self.set_output(\"exec_out\", True)\n    return {'combined': res}"
+    "python_code": "async def execute(self, inputs):\n    sep = str(inputs.get('separator', ''))\n    \n    # Priority 1: Join a list if provided\n    str_list = inputs.get('str_list')\n    if str_list and isinstance(str_list, list):\n        res = sep.join(str(x) if x is not None else '' for x in str_list)\n    else:\n        # Priority 2: Concat individual strings\n        raw_s1 = inputs.get('str1')\n        raw_s2 = inputs.get('str2')\n        s1 = str(raw_s1) if raw_s1 is not None else ''\n        s2 = str(raw_s2) if raw_s2 is not None else ''\n        res = f'{s1}{sep}{s2}'\n    \n    self.log_info(f'Combined string: {res}')\n    await self.set_output('combined', res)\n    await self.set_output('exec_out', True)\n    return {'combined': res}"
 }
