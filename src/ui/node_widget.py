@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QGraphicsItem, QGraphicsRectItem, QGraphicsTextItem,
 from PyQt5.QtCore import Qt, QRectF
 from PyQt5.QtGui import QColor, QPen, QBrush, QPixmap, QPainterPath
 from src.ui.port_widget import PortWidget
+from src.utils.runtime import AsyncRuntime
 from uuid import uuid4
 
 class NodeWidget(QGraphicsItem):
@@ -23,6 +24,7 @@ class NodeWidget(QGraphicsItem):
         self.param_widgets = {} # name -> proxy_widget
         self.status = "idle" # idle, running, success, failed
         self.is_dark = True
+        self._is_propagating = False # Recursion guard
         
         self._init_ui()
 
@@ -281,8 +283,13 @@ class NodeWidget(QGraphicsItem):
             if hasattr(p_model, 'options') and p_model.options:
                 w.addItems(p_model.options)
             val = self.node_definition.parameters.get(p_model.name)
+            # Use saved value if exists, otherwise fallback to definition default
             if val is not None:
                 w.setCurrentText(str(val))
+            elif hasattr(p_model, 'default') and p_model.default is not None:
+                w.setCurrentText(str(p_model.default))
+                # ALSO sync back to definition so it saves correctly
+                self.node_definition.parameters[p_model.name] = p_model.default
             w.currentTextChanged.connect(lambda val: self._update_param(p_model.name, val))
         elif p_model.widget_type == 'slider':
             w = QSlider(Qt.Horizontal)
@@ -322,6 +329,8 @@ class NodeWidget(QGraphicsItem):
 
     def set_parameter(self, name, value, propagate=True):
         """Programmatically set a parameter and update its UI widget."""
+        if self._is_propagating: return # Guard against cycles
+        
         # Type Conversion attempt based on port definition
         inputs = self.node_definition.inputs
         input_list = inputs if isinstance(inputs, list) else inputs.values()
@@ -375,17 +384,25 @@ class NodeWidget(QGraphicsItem):
                 w.blockSignals(False)
 
         # 2. Trigger node logic
-        self.node_definition.on_parameter_changed(name, target_value)
+        AsyncRuntime.run_coroutine(self.node_definition.on_parameter_changed(name, target_value))
         
         # 3. Push downstream
         if propagate:
-            self._propagate_all_outputs()
+            self._is_propagating = True
+            try:
+                self._propagate_all_outputs()
+            finally:
+                self._is_propagating = False
 
     def _update_param(self, name, value):
         """Internal handler for widget value changes."""
         self.node_definition.parameters[name] = value
-        self.node_definition.on_parameter_changed(name, value)
-        self._propagate_all_outputs()
+        AsyncRuntime.run_coroutine(self.node_definition.on_parameter_changed(name, value))
+        self._is_propagating = True
+        try:
+            self._propagate_all_outputs()
+        finally:
+            self._is_propagating = False
 
     def _propagate_all_outputs(self):
         """Pushes all current output port values to connected downstream nodes."""

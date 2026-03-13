@@ -1,0 +1,262 @@
+{
+    "nodes": [
+        {
+            "instance_id": "8d502cb8-dfc6-4d99-8c43-a863e606f451",
+            "node_id": "Set Variable",
+            "position": [
+                -344.56000000000006,
+                -61.24000000000001
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "name": "w",
+                "value": "v",
+                "value_out": "d"
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "b57ce269-9c2a-4739-8cd2-69966c8e8bdf",
+            "node_id": "variable_node",
+            "position": [
+                -622.0,
+                47.0
+            ],
+            "parameters": {
+                "type": "string",
+                "value": "d",
+                "out": "d"
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "455b0aa0-0c39-4992-8502-190c12d8316f",
+            "node_id": "Get Variable",
+            "position": [
+                581.3499999999999,
+                318.5
+            ],
+            "parameters": {
+                "name": "w",
+                "value": "d"
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "86e04526-acc0-43ef-946d-39d65284f24c",
+            "node_id": "console_print",
+            "position": [
+                1307.0,
+                -23.0
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "data": "vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+                "out": "vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "84d8c9d7-6241-46cf-ad32-9f56653c79d8",
+            "node_id": "string_concat",
+            "position": [
+                910.0,
+                -17.0
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "str1": "vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+                "str2": "d",
+                "str_list": null,
+                "separator": "",
+                "combined": "vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "9f56f652-3a44-44db-a5d0-e8c08c951fc8",
+            "node_id": "for_loop",
+            "position": [
+                -10.25,
+                5.25
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "start": 0,
+                "end": 10,
+                "step": 1,
+                "current_index": 9,
+                "indices": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9
+                ]
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "a76f6c8c-dbb2-4995-b3dc-42db2fc9894c",
+            "node_id": "loop_body",
+            "position": [
+                269.0,
+                14.0
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "indices": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9
+                ],
+                "operation": "Processing",
+                "delay": 1.0,
+                "break_condition": false,
+                "exec_on_finished": true,
+                "results": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9
+                ],
+                "current_index": 9,
+                "completed": true,
+                "broken": false
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "9c70b2d7-33ac-4aa0-96e0-972c17eb1bfe",
+            "node_id": "Set Variable",
+            "position": [
+                584.0,
+                114.0
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "name": "w",
+                "value": "vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+                "value_out": "vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+            },
+            "state": "idle"
+        }
+    ],
+    "connections": [
+        {
+            "id": "b6542b7c-f4fd-4097-9cd2-9f47c619334a",
+            "from_node": "b57ce269-9c2a-4739-8cd2-69966c8e8bdf",
+            "from_port": "out",
+            "to_node": "8d502cb8-dfc6-4d99-8c43-a863e606f451",
+            "to_port": "value",
+            "is_exec": false
+        },
+        {
+            "id": "2e8b5bf6-d453-4ccb-8cac-ae4443acb401",
+            "from_node": "455b0aa0-0c39-4992-8502-190c12d8316f",
+            "from_port": "value",
+            "to_node": "84d8c9d7-6241-46cf-ad32-9f56653c79d8",
+            "to_port": "str2",
+            "is_exec": false
+        },
+        {
+            "id": "f8e6734e-b7bc-41ed-859f-96b17127da0f",
+            "from_node": "9f56f652-3a44-44db-a5d0-e8c08c951fc8",
+            "from_port": "exec_out",
+            "to_node": "a76f6c8c-dbb2-4995-b3dc-42db2fc9894c",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "b45f5113-4ef3-44f1-9bc3-8bd5cc1d786a",
+            "from_node": "9f56f652-3a44-44db-a5d0-e8c08c951fc8",
+            "from_port": "indices",
+            "to_node": "a76f6c8c-dbb2-4995-b3dc-42db2fc9894c",
+            "to_port": "indices",
+            "is_exec": false
+        },
+        {
+            "id": "e9563537-3cd8-4bc7-9e6b-3992bd9a302a",
+            "from_node": "8d502cb8-dfc6-4d99-8c43-a863e606f451",
+            "from_port": "exec_out",
+            "to_node": "9f56f652-3a44-44db-a5d0-e8c08c951fc8",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "708ad728-4163-4eb1-8610-d63b012cc1f9",
+            "from_node": "9c70b2d7-33ac-4aa0-96e0-972c17eb1bfe",
+            "from_port": "exec_out",
+            "to_node": "84d8c9d7-6241-46cf-ad32-9f56653c79d8",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "6113449f-8d4a-418f-99d8-c4345d66cb8e",
+            "from_node": "9c70b2d7-33ac-4aa0-96e0-972c17eb1bfe",
+            "from_port": "value_out",
+            "to_node": "84d8c9d7-6241-46cf-ad32-9f56653c79d8",
+            "to_port": "str1",
+            "is_exec": false
+        },
+        {
+            "id": "4c77fb43-ac07-4ad5-975f-463e07f35748",
+            "from_node": "a76f6c8c-dbb2-4995-b3dc-42db2fc9894c",
+            "from_port": "exec_out",
+            "to_node": "9c70b2d7-33ac-4aa0-96e0-972c17eb1bfe",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "3e185fe6-61bd-4c62-8a3a-075a7cc5d79e",
+            "from_node": "84d8c9d7-6241-46cf-ad32-9f56653c79d8",
+            "from_port": "exec_out",
+            "to_node": "86e04526-acc0-43ef-946d-39d65284f24c",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "67d4c800-a49d-497e-8d86-6fdf8feb8012",
+            "from_node": "84d8c9d7-6241-46cf-ad32-9f56653c79d8",
+            "from_port": "combined",
+            "to_node": "86e04526-acc0-43ef-946d-39d65284f24c",
+            "to_port": "data",
+            "is_exec": false
+        },
+        {
+            "id": "966cd9bd-1026-4e74-8c36-84b24e9454ce",
+            "from_node": "84d8c9d7-6241-46cf-ad32-9f56653c79d8",
+            "from_port": "combined",
+            "to_node": "9c70b2d7-33ac-4aa0-96e0-972c17eb1bfe",
+            "to_port": "value",
+            "is_exec": false
+        }
+    ],
+    "sticky_notes": [],
+    "backdrops": [],
+    "metadata": {}
+}
