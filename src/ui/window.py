@@ -545,7 +545,7 @@ class MainWindow(QMainWindow):
         widget = self._find_node_widget(node_instance_id)
         if widget:
             for name, val in results.items():
-                widget.set_parameter(name, val, propagate=True)
+                widget.set_parameter(name, val, propagate=False)
                 
         name = widget.node_definition.name if widget else "Unknown"
         res_str = ", ".join([f"{k}: {v}" for k, v in results.items()])

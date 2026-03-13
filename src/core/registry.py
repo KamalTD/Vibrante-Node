@@ -32,7 +32,8 @@ class NodeRegistry:
     def register_builtins(cls):
         from src.nodes.builtins.nodes import (
             FileLoaderNode, DataProcessorNode, ConsoleSinkNode, 
-            SequenceNode, SetVariableNode, GetVariableNode, TwoWaySwitchNode
+            SequenceNode, SetVariableNode, GetVariableNode, 
+            TwoWaySwitchNode, ForEachNode, ListAppendNode
         )
         cls._register_builtin_class(FileLoaderNode)
         cls._register_builtin_class(DataProcessorNode)
@@ -41,19 +42,32 @@ class NodeRegistry:
         cls._register_builtin_class(SetVariableNode)
         cls._register_builtin_class(GetVariableNode)
         cls._register_builtin_class(TwoWaySwitchNode)
+        cls._register_builtin_class(ForEachNode)
+        cls._register_builtin_class(ListAppendNode)
 
     @classmethod
     def _register_builtin_class(cls, node_class: Type[BaseNode]):
         # Create a definition for builtins
         node_class.node_id = node_class.name # Set node_id
         instance = node_class()
+        
+        inputs = []
+        for p in instance.inputs.values():
+            default = p.default
+            if default is None:
+                if p.data_type == "string": default = ""
+                elif p.data_type == "list": default = []
+                elif p.data_type == "bool": default = False
+                elif p.data_type in ["int", "float", "number"]: default = 0
+            inputs.append(PortModel(name=p.name, type=p.data_type, widget_type=p.widget_type, options=p.options, default=default))
+
         definition = NodeDefinitionJSON(
             node_id=node_class.name,
             name=node_class.name,
             description=node_class.description,
             category=node_class.category,
             icon_path=node_class.icon_path,
-            inputs=[PortModel(name=p.name, type=p.data_type, widget_type=p.widget_type, options=p.options) for p in instance.inputs.values()],
+            inputs=inputs,
             outputs=[PortModel(name=p.name, type=p.data_type) for p in instance.outputs.values()],
             python_code="" # Not used for builtins
         )
@@ -112,7 +126,7 @@ class NodeRegistry:
                         for inp in definition.inputs:
                             # Skip if already added by super().__init__() via auto-normalize
                             if inp.name in self.inputs: continue
-                            self.add_input(inp.name, inp.type, inp.widget_type, inp.options)
+                            self.add_input(inp.name, inp.type, inp.widget_type, inp.options, inp.default)
                         for out in definition.outputs:
                             # Skip if already added by super().__init__()
                             if out.name in self.outputs: continue

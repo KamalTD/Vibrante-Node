@@ -10,10 +10,11 @@ class MockNode(BaseNode):
 @pytest.mark.asyncio
 async def test_sequence_node_init():
     node = SequenceNode()
-    # use_exec=False, so no exec pins
+    # use_exec=False removes default pins, but SequenceNode adds custom ones
     assert "exec_in" not in node.inputs
     assert "step_0" in node.inputs
-    assert "exec_out" not in node.outputs
+    assert "exec_step" in node.outputs
+    assert "exec_out" in node.outputs
     assert "result" in node.outputs
     assert node._step_count == 1
 
