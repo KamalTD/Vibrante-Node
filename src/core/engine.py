@@ -146,7 +146,7 @@ class NetworkExecutor(QObject):
                                 await target_instance.on_parameter_changed(conn.to_port, value)
 
                     # 2. FLOW-BASED ROUTING
-                    if value is True: # Strict check for execution pins
+                    if bool(value) is True: # Handle both True and truthy values for execution pins
                         node_inst = self.node_instances.get(nid)
                         port_def = node_inst.outputs.get(name) if node_inst else None
                         if port_def and getattr(port_def, 'data_type', 'any') == 'exec':
