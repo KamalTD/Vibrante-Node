@@ -322,40 +322,37 @@ class ForEachNode(BaseNode):
         for i, item in enumerate(items):
             if self.is_stopped(): break
             
-            # Reset conditions for this specific iteration
+            # Reset conditions for this specific iteration BEFORE updating data
             self.parameters['continue_condition'] = False
-            # (Don't reset break_condition here, it might be set by global state)
+            self.parameters['break_condition'] = False
 
-            # 1. Update data outputs
+            # 1. Update data outputs FIRST
+            # This allows reactive nodes to evaluate the NEW item before we trigger execution
             await self.set_output("current_item", item)
             await self.set_output("current_index", i)
             
-            # 2. Trigger iteration pin
-            await self.set_output("each_item", True)
+            # 2. Yield to allow reactive updates from downstream to propagate back to our parameters
+            await asyncio.sleep(0.1)
             
-            # 3. Yield to allow reactive updates from downstream to propagate back to our parameters
-            await asyncio.sleep(0.05)
-            
-            # 4. Check for continue (skip)
-            if bool(self.get_parameter("continue_condition", False)):
-                self.log_info(f"Skipping index {i} ({item})")
+            # 3. Check for PRE-EXECUTION continue (skip)
+            cont_cond = bool(self.get_parameter("continue_condition", False))
+            if cont_cond:
+                self.log_info(f"Skipping index {i} ({item}) - Pre-trigger")
                 await self.set_output("exec_skip", True)
                 continue
 
-            # 5. Check for break
+            # 4. Trigger iteration pin (Flow execution)
+            await self.set_output("each_item", True)
+            
+            # 5. Yield again to allow flow-based logic to potentially set conditions for the NEXT item
+            # or to check break_condition after this item's execution.
+            await asyncio.sleep(0.05)
+
+            # 6. Check for break
             if bool(self.get_parameter("break_condition", False)):
                 self.log_info(f"Loop broken at index {i}")
                 is_broken = True
                 break
-            
-        if is_broken:
-            await self.set_output("broken", True)
-        else:
-            self.log_success("Loop complete.")
-            await self.set_output("completed", True)
-            
-        await self.set_output("exec_on_finished", True)
-        return {"indices": indices, "completed": not is_broken, "broken": is_broken}
             
         if is_broken:
             await self.set_output("broken", True)
