@@ -7,6 +7,7 @@ from src.utils.highlighter import PythonHighlighter
 from src.core.registry import NodeRegistry
 from src.core.models import NodeDefinitionJSON, PortModel
 from src.ui.code_editor import CodeEditor
+from src.ui.gemini_chat import GeminiChatWidget
 
 AVAILABLE_WIDGETS = ["", "text", "text_area", "int", "float", "bool", "dropdown", "slider", "file"]
 AVAILABLE_TYPES = ["any", "int", "float", "string", "bool", "list", "dict"]
@@ -117,8 +118,14 @@ class NodeBuilderDialog(QDialog):
         self.code_edit.setPlainText(self._get_template("MyNode"))
         editor_layout.addWidget(self.code_edit)
         
+        # Gemini Panel
+        self.gemini_chat = GeminiChatWidget()
+        self.gemini_chat.get_context_callback = self.get_node_definition
+        self.gemini_chat.node_generated.connect(self._on_gemini_node_generated)
+        
         splitter.addWidget(config_widget)
         splitter.addWidget(editor_widget)
+        splitter.addWidget(self.gemini_chat)
         layout.addWidget(splitter)
         
         # Bottom Buttons
@@ -375,6 +382,24 @@ def register_node():
         finally:
             self._is_syncing = False
 
+    def _on_gemini_node_generated(self, node_def):
+        self._is_syncing = True
+        try:
+            self.name_edit.setText(node_def.get("node_id", ""))
+            self.desc_edit.setPlainText(node_def.get("description", ""))
+            self.category_combo.setCurrentText(node_def.get("category", "General"))
+            self.icon_edit.setText(node_def.get("icon_path", ""))
+            
+            # Map inputs and outputs to PortModel-like objects for _update_table
+            inputs = [PortModel(**p) if isinstance(p, dict) else p for p in node_def.get("inputs", [])]
+            outputs = [PortModel(**p) if isinstance(p, dict) else p for p in node_def.get("outputs", [])]
+            
+            self._update_table(self.inputs_table, inputs)
+            self._update_table(self.outputs_table, outputs)
+            self.code_edit.setPlainText(node_def.get("python_code", ""))
+        finally:
+            self._is_syncing = False
+
     def _add_row(self, table):
         table.blockSignals(True)
         row = table.rowCount()
@@ -493,3 +518,47 @@ def register_node():
                 self.code_edit.setPlainText(defn.python_code)
         finally:
             self._is_syncing = False
+
+    def get_node_definition(self) -> dict:
+        inputs = []
+        for r in range(self.inputs_table.rowCount()):
+            name_item = self.inputs_table.item(r, 0)
+            if not name_item: continue
+            name = name_item.text().strip()
+            if not name: continue
+            
+            type_combo = self.inputs_table.cellWidget(r, 1)
+            p_type = type_combo.currentText() if type_combo else "any"
+            
+            widget_combo = self.inputs_table.cellWidget(r, 2)
+            p_widget = widget_combo.currentText() if widget_combo else None
+            
+            p_options_str = self.inputs_table.item(r, 3).text() if self.inputs_table.item(r, 3) else ""
+            p_options = [o.strip() for o in p_options_str.split(",")] if p_options_str else None
+            
+            port_data = {"name": name, "type": p_type}
+            if p_widget: port_data["widget_type"] = p_widget
+            if p_options: port_data["options"] = p_options
+            inputs.append(port_data)
+            
+        outputs = []
+        for r in range(self.outputs_table.rowCount()):
+            name_item = self.outputs_table.item(r, 0)
+            if not name_item: continue
+            name = name_item.text().strip()
+            if not name: continue
+            
+            type_combo = self.outputs_table.cellWidget(r, 1)
+            p_type = type_combo.currentText() if type_combo else "any"
+            outputs.append({"name": name, "type": p_type})
+
+        return {
+            "node_id": self.name_edit.text().strip(),
+            "name": self.name_edit.text().strip(),
+            "description": self.desc_edit.toPlainText(),
+            "category": self.category_combo.currentText(),
+            "icon_path": self.icon_edit.text(),
+            "inputs": inputs,
+            "outputs": outputs,
+            "python_code": self.code_edit.toPlainText()
+        }
