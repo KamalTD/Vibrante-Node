@@ -3,3 +3,5 @@ pydantic
 toposort
 pytest
 pytest-qt
+google-generativeai
+pytest-asyncio

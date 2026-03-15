@@ -17,6 +17,8 @@ from src.core.registry import NodeRegistry
 from src.core.engine import NetworkExecutor
 from src.ui.node_widget import NodeWidget
 
+from src.ui.gemini_api_dialog import GeminiApiDialog
+
 class MainWindow(QMainWindow):
     def __init__(self):
         print("MainWindow init started")
@@ -221,6 +223,12 @@ class MainWindow(QMainWindow):
         help_menu.addAction(feature_list_act)
         
         help_menu.addSeparator()
+
+        gemini_act = QAction('Link to Gemini', self)
+        gemini_act.triggered.connect(self._link_to_gemini)
+        help_menu.addAction(gemini_act)
+        
+        help_menu.addSeparator()
         
         about_act = QAction('About Vibrante-Node', self)
         about_act.triggered.connect(self._show_about)
@@ -259,6 +267,12 @@ class MainWindow(QMainWindow):
             f"<p>Built with PyQt5, Asyncio, and ❤️</p>"
             f"<hr>"
             f"<p><small>{license_text}</small></p>")
+
+    def _link_to_gemini(self):
+        import webbrowser
+        webbrowser.open("https://aistudio.google.com/app/api-keys?project=gen-lang-client-0761136562")
+        dialog = GeminiApiDialog(self)
+        dialog.exec_()
 
     def _init_toolbar(self):
         toolbar = self.addToolBar("Main")
