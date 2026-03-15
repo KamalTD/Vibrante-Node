@@ -1,0 +1,151 @@
+{
+    "nodes": [
+        {
+            "instance_id": "47e3f134-c1cc-4e9e-a70e-ae3de5862d5f",
+            "node_id": "create_list",
+            "position": [
+                -372.1039999999999,
+                42.992000000000004
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "list_name": "",
+                "items": [
+                    5,
+                    6,
+                    7,
+                    8,
+                    9
+                ],
+                "current_list": [
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9
+                ],
+                "stored": false
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "b5c88a1c-7027-4e75-a07e-2bcf5044e6cf",
+            "node_id": "for_loop",
+            "position": [
+                -691.328,
+                39.360000000000014
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "start": 4,
+                "end": 10,
+                "step": 1,
+                "current_index": 9,
+                "indices": [
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9
+                ]
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "2c60eddb-ab28-4800-9053-0faa6af1ca3d",
+            "node_id": "console_print",
+            "position": [
+                309.3600000000001,
+                67.68
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "data": 6,
+                "out": "4"
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "e060d927-c61a-4b9c-9e2f-9dc4859736d0",
+            "node_id": "get_list_item",
+            "position": [
+                -47.0,
+                39.0
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "list_name": "",
+                "list": [
+                    5,
+                    6,
+                    7,
+                    8,
+                    9
+                ],
+                "index": 0,
+                "item": 4,
+                "success": true
+            },
+            "state": "idle"
+        }
+    ],
+    "connections": [
+        {
+            "id": "8e634659-070a-4383-bfbe-f6a301225d4d",
+            "from_node": "b5c88a1c-7027-4e75-a07e-2bcf5044e6cf",
+            "from_port": "indices",
+            "to_node": "47e3f134-c1cc-4e9e-a70e-ae3de5862d5f",
+            "to_port": "items",
+            "is_exec": false
+        },
+        {
+            "id": "527fe3ff-a6a1-4dfb-a21d-76153c679d2c",
+            "from_node": "b5c88a1c-7027-4e75-a07e-2bcf5044e6cf",
+            "from_port": "exec_out",
+            "to_node": "47e3f134-c1cc-4e9e-a70e-ae3de5862d5f",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "acea31c7-4db6-404a-b814-c8efd8f69e81",
+            "from_node": "47e3f134-c1cc-4e9e-a70e-ae3de5862d5f",
+            "from_port": "exec_out",
+            "to_node": "e060d927-c61a-4b9c-9e2f-9dc4859736d0",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "55ff946d-a231-405c-a219-581e5bdd99f6",
+            "from_node": "47e3f134-c1cc-4e9e-a70e-ae3de5862d5f",
+            "from_port": "current_list",
+            "to_node": "e060d927-c61a-4b9c-9e2f-9dc4859736d0",
+            "to_port": "list",
+            "is_exec": false
+        },
+        {
+            "id": "1088e8d6-a31d-4332-9557-ed76edb565da",
+            "from_node": "e060d927-c61a-4b9c-9e2f-9dc4859736d0",
+            "from_port": "exec_out",
+            "to_node": "2c60eddb-ab28-4800-9053-0faa6af1ca3d",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "2be113d8-daca-407c-ba8f-f09c76af0348",
+            "from_node": "e060d927-c61a-4b9c-9e2f-9dc4859736d0",
+            "from_port": "item",
+            "to_node": "2c60eddb-ab28-4800-9053-0faa6af1ca3d",
+            "to_port": "data",
+            "is_exec": false
+        }
+    ],
+    "sticky_notes": [],
+    "backdrops": [],
+    "metadata": {}
+}

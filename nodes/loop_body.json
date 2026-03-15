@@ -2,7 +2,7 @@
     "node_id": "loop_body",
     "name": "Loop Body",
     "description": "Executes logic for each index in a provided list. Triggers exec_out for each item, and exec_on_finished when done.",
-    "category": "Operations",
+    "category": "Flow",
     "icon_path": "icons/list.svg",
     "inputs": [
         {

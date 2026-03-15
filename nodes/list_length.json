@@ -1,0 +1,17 @@
+{
+    "node_id": "list_length",
+    "name": "List Length",
+    "description": "Returns the length of a list, either provided or stored under `list_name`.",
+    "category": "Data",
+    "icon_path": "icons/list.svg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "list_name", "type": "string", "widget_type": "text", "default": "" },
+        { "name": "list", "type": "list" }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "length", "type": "int" }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\n\nasync def execute(self, inputs):\n    name = inputs.get('list_name') or self.get_parameter('list_name', '')\n    provided = inputs.get('list')\n    if provided is None or provided == []:\n        lst = BaseNode.memory.get(name) if name else None\n    else:\n        lst = provided\n\n    length = 0\n    try:\n        if lst is not None:\n            length = len(lst)\n    except Exception as e:\n        self.log_info(f'Error computing length: {e}')\n        length = 0\n\n    await self.set_output('length', length)\n    await self.set_output('exec_out', True)\n    return {'length': length}"
+}
