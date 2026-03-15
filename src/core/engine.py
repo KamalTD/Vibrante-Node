@@ -140,12 +140,10 @@ class NetworkExecutor(QObject):
                                 target_instance.parameters[conn.to_port] = value
                                 self.node_results[conn.to_node][conn.to_port] = value
                                 
-                                # Check if target node is actually being driven by flow connections
-                                # If it has no incoming exec connections, it should be reactive.
-                                is_driven_by_flow = conn.to_node in self._driven_by_flow
-                                
-                                if not is_driven_by_flow:
-                                    await target_instance.on_parameter_changed(conn.to_port, value)
+                                # ALWAYS trigger on_parameter_changed for data connections.
+                                # This allows nodes (like For Each) to react to data changes
+                                # even if they are primarily driven by flow pins.
+                                await target_instance.on_parameter_changed(conn.to_port, value)
 
                     # 2. FLOW-BASED ROUTING
                     if value is True: # Strict check for execution pins
@@ -196,23 +194,29 @@ class NetworkExecutor(QObject):
                         self._finished_event.clear()
                         await asyncio.sleep(0.05)
             else:
-                # CLASSIC DATA-FLOW
-                # Instead of layer-by-layer topological sort (which executes layers in parallel),
-                # we trigger the "Leaf Nodes" (nodes with no consumers) and let them pull
-                # their dependencies recursively. This ensures ordered pulling (e.g., for Sequence Node).
+                # CLASSIC DATA-FLOW (Using Topological Sorting)
+                # Execute the graph layer by layer as mandated by GEMINI.md
+                layers = self.graph_manager.get_topological_sort()
                 
-                all_node_ids = set(self.node_instances.keys())
-                has_consumer = {c.from_node for c in self.graph_manager.connections if not c.is_exec}
-                leaf_nodes = [nid for nid in all_node_ids if nid not in has_consumer]
-                
-                # Filter to only connected nodes to avoid running orphaned nodes if unnecessary,
-                # but usually in classic data-flow we want to run everything that might be a starting point.
-                
-                try:
-                    tasks = [self._run_single_node(nid) for nid in leaf_nodes]
-                    await asyncio.gather(*tasks)
-                except Exception as e:
-                    print(f"Classic execution failed: {e}")
+                for layer in layers:
+                    if self._is_stopped: break
+                    
+                    # Track each node execution as a task so it can be cancelled
+                    tasks = [self._track_task(self._run_single_node(nid)) for nid in layer]
+                    # Filter out None if _track_task returned None due to stop
+                    tasks = [t for t in tasks if t is not None]
+                    
+                    if tasks:
+                        results = await asyncio.gather(*tasks, return_exceptions=True)
+                        
+                        # Check for errors or cancellation in layer
+                        for res in results:
+                            if isinstance(res, asyncio.CancelledError):
+                                self._is_stopped = True
+                                break
+                            if isinstance(res, Exception):
+                                print(f"Error in layer execution: {res}")
+
         finally:
             self.execution_finished.emit(not self._is_stopped)
 

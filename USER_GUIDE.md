@@ -30,6 +30,9 @@ Vibrante-Node uses a hybrid **Flow + Data** execution model:
 -   **Data Pulling**: Before a node executes, it automatically "pulls" the most recent values from all connected data nodes (e.g., Variable or Math nodes), even if they don't have execution pins.
 -   **Data-Only Nodes**: You can create nodes without `exec` pins (using the `use_exec: false` property in the Node Builder). these nodes are reactive—they update their outputs immediately when their inputs change and are "pulled" by downstream flow nodes.
 
+### 🧠 Topological Execution Engine
+For workflows without explicit execution wires (Data-Flow only), the engine uses **Topological Sorting** to determine the correct order of operations. This ensures that every node has its required data before it begins processing, effectively resolving dependencies layer by layer.
+
 ## 🔄 Working with Loops
 
 To iterate over data or repeat operations, use the **Loop** nodes:
