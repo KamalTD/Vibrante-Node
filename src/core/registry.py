@@ -123,6 +123,13 @@ class NodeRegistry:
                 class DynamicNode(BaseNode):
                     def __init__(self):
                         super().__init__(use_exec=definition.use_exec)
+                        # Set metadata on instance
+                        self.name = definition.name
+                        self.node_id = definition.node_id
+                        self.category = definition.category
+                        self.description = definition.description
+                        self.icon_path = definition.icon_path
+                        
                         for inp in definition.inputs:
                             # Skip if already added by super().__init__() via auto-normalize
                             if inp.name in self.inputs: continue
