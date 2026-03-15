@@ -7,6 +7,10 @@
     "use_exec": false,
     "inputs": [
         {
+            "name": "exec_in",
+            "type": "exec"
+        },
+        {
             "name": "type",
             "type": "string",
             "widget_type": "dropdown",
@@ -26,9 +30,13 @@
     ],
     "outputs": [
         {
+            "name": "exec_out",
+            "type": "exec"
+        },
+        {
             "name": "out",
             "type": "any"
         }
     ],
-    "python_code": "def _cast_value(self):\n    v_type = self.get_parameter('type', 'string')\n    val = self.get_parameter('value')\n    try:\n        if v_type == 'int': out = int(val) if val is not None else 0\n        elif v_type == 'float': out = float(val) if val is not None else 0.0\n        elif v_type == 'bool':\n            if isinstance(val, str): out = val.lower() in ['true', '1', 'yes']\n            else: out = bool(val)\n        else: out = str(val) if val is not None else ''\n        return out\n    except: return val\n\nasync def execute(self, inputs):\n    # For backward compatibility if called manually\n    out = self._cast_value()\n    await self.set_output('out', out)\n    return {'out': out}\n\nasync def on_parameter_changed(self, name, value):\n    if name in ['type', 'value']:\n        out = self._cast_value()\n        await self.set_output('out', out)"
+    "python_code": "def _cast_value(self):\n    v_type = self.get_parameter('type', 'string')\n    val = self.get_parameter('value')\n    try:\n        if v_type == 'int': out = int(val) if val is not None else 0\n        elif v_type == 'float': out = float(val) if val is not None else 0.0\n        elif v_type == 'bool':\n            if isinstance(val, str): out = val.lower() in ['true', '1', 'yes']\n            else: out = bool(val)\n        else: out = str(val) if val is not None else ''\n        return out\n    except: return val\n\nasync def execute(self, inputs):\n    # For backward compatibility if called manually\n    out = self._cast_value()\n    await self.set_output('out', out)\n    await self.set_output(\"exec_out\", True)\n    return {'out': out}\n\nasync def on_parameter_changed(self, name, value):\n    if name in ['type', 'value']:\n        out = self._cast_value()\n        await self.set_output('out', out)"
 }

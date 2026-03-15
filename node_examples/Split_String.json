@@ -1,0 +1,35 @@
+{
+    "node_id": "Split_String",
+    "name": "Split_String",
+    "description": "",
+    "category": "Control",
+    "icon_path": null,
+    "use_exec": true,
+    "inputs": [
+        {
+            "name": "exec_in",
+            "type": "exec"
+        },
+        {
+            "name": "Instring",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": null
+        }
+    ],
+    "outputs": [
+        {
+            "name": "exec_out",
+            "type": "exec"
+        },
+        {
+            "name": "string",
+            "type": "list",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\n\nclass Split_StringNode(BaseNode):\n    name = \"Split_String\"\n    \n    def __init__(self):\n        super().__init__()\n        self.icon_path = None        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"Instring\", \"string\", widget_type=\"text\")\n        self.add_output(\"string\", \"list\")\n        # [AUTO-GENERATED-PORTS-END]\n        \n    def on_plug_sync(self, port_name, is_input, other_node, other_port_name):\n        # Access the other node's port data using the specific other_port_name\n        data = other_node.get_parameter(other_port_name)\n        self.log_info(f\"Connected to {other_node.name} port '{other_port_name}'. Data: {data}\")\n\n    def on_unplug_sync(self, port_name, is_input):\n        self.log_info(f\"Disconnected {port_name}\")\n\n    async def on_plug(self, port_name, is_input, other_node, other_port_name):\n        pass\n\n    async def on_unplug(self, port_name, is_input):\n        pass\n\n    async def execute(self, inputs):\n        \"\"\"\n        Main execution logic for the node.\n        \n        :param inputs: A dictionary containing data from connected input ports and widgets.\n                       Key: Port Name (string), Value: Port Data (any).\n        :return: A dictionary containing data to be sent to output ports.\n                 Key: Port Name (string), Value: Port Data (any).\n        \"\"\"\n        in_ = inputs.get('Instring', '')\n        spl = in_.split(\" \")\n        \n        # Push data outputs BEFORE exec_out trigger to avoid race condition in engine\n        await self.set_output(\"string\", spl)\n        await self.set_output(\"exec_out\", True)\n        \n        return {\"string\": spl}\n\ndef register_node():\n    return Split_StringNode\n"
+}
