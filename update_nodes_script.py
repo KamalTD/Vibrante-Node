@@ -1,57 +1,82 @@
 import os
 import json
+import re
 
 def update_node(path):
-    with open(path, 'r', encoding='utf-8') as f:
-        data = json.load(f)
-        
-    # 1. Normalize Inputs
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+    except Exception as e:
+        print(f"Error reading {path}: {e}")
+        return
+
+    # 1. Normalize JSON Port Definitions
     inputs = data.get('inputs', [])
-    has_exec_in = False
     for p in inputs:
         if p.get('name') == 'exec_in':
             p['type'] = 'exec'
-            has_exec_in = True
-        elif p.get('type') == 'exec':
-            p['type'] = 'any'
-            
-    if not has_exec_in:
-        inputs.insert(0, {'name': 'exec_in', 'type': 'exec'})
-    data['inputs'] = inputs
     
-    # 2. Normalize Outputs
     outputs = data.get('outputs', [])
-    has_exec_out = False
     for p in outputs:
         if p.get('name') == 'exec_out':
             p['type'] = 'exec'
-            has_exec_out = True
-        elif p.get('type') == 'exec':
-            p['type'] = 'any'
-            
-    if not has_exec_out:
-        outputs.insert(0, {'name': 'exec_out', 'type': 'exec'})
-    data['outputs'] = outputs
     
-    # 3. Update Python Code logic
+    data['inputs'] = inputs
+    data['outputs'] = outputs
+
+    # 2. Update Python Code logic
     code = data.get('python_code', '')
-    if 'execute' in code:
-        if 'exec_out' not in code:
-            if 'return' in code:
-                # Add it before the final return in execute
-                lines = code.split('\n')
-                for i in range(len(lines) - 1, -1, -1):
+    if not code:
+        return
+
+    # Normalize __init__ port types if it's a class-based node
+    code = re.sub(r'self\.add_input\("exec_in",\s*["\']any["\']\)', 'self.add_input("exec_in", "exec")', code)
+    code = re.sub(r'self\.add_output\("exec_out",\s*["\']any["\']\)', 'self.add_output("exec_out", "exec")', code)
+
+    if 'def execute' in code:
+        # Check if exec_out is already being set
+        if not re.search(r'self\.set_output\([\'"]exec_out[\'"]', code):
+            # Split into lines to find the end of execute
+            lines = code.split('\n')
+            
+            # Find the start of execute to know the context
+            exec_start_idx = -1
+            for i, line in enumerate(lines):
+                if re.match(r'^\s*(async\s+)?def\s+execute\b', line):
+                    exec_start_idx = i
+                    break
+            
+            if exec_start_idx != -1:
+                # Find the LAST return or last line of the execute function
+                # We look for the next function definition or end of file
+                # to find the scope of execute.
+                
+                exec_indent = len(lines[exec_start_idx]) - len(lines[exec_start_idx].lstrip())
+                last_return_idx = -1
+                
+                for i in range(exec_start_idx + 1, len(lines)):
                     line = lines[i]
-                    if 'return' in line and not line.strip().startswith('#'):
-                        # Ensure we are in execute function if possible
-                        # This is naive but works for the current node structures
-                        indent = line[:line.find('return')]
-                        lines.insert(i, f'{indent}self.set_output("exec_out", True)')
-                        break
-                code = '\n'.join(lines)
-            else:
-                # Append to end
-                code += '\n    self.set_output("exec_out", True)'
+                    if line.strip() and not line.strip().startswith('#'):
+                        current_indent = len(line) - len(line.lstrip())
+                        if current_indent <= exec_indent and i > exec_start_idx + 1:
+                            # We exited the function scope
+                            break
+                        if 'return' in line:
+                            last_return_idx = i
+                
+                if last_return_idx != -1:
+                    indent = lines[last_return_idx][:lines[last_return_idx].find('return')]
+                    lines.insert(last_return_idx, f'{indent}await self.set_output("exec_out", True)')
+                    code = '\n'.join(lines)
+                else:
+                    # No return found, just append to end of function scope (simplistic)
+                    # For now, let's just append to the end if it's a simple execute
+                    if 'def register_node' not in code:
+                         code += '\n    await self.set_output("exec_out", True)'
+        else:
+            # Ensure existing calls use await and correct syntax
+            code = re.sub(r'(?<!await\s)self\.set_output\(([\'"])exec_out\1', r'await self.set_output(\1exec_out\1', code)
+            
         data['python_code'] = code
         
     with open(path, 'w', encoding='utf-8') as f:
