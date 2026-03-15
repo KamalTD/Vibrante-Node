@@ -30,5 +30,5 @@
         }
     ],
     "icon_path": "icons/dice.svg",
-    "python_code": "import random\nasync def execute(self, inputs):\n    mn_val = inputs.get('min')\n    mx_val = inputs.get('max')\n    \n    mn = float(mn_val) if mn_val is not None else 0.0\n    mx = float(mx_val) if mx_val is not None else 1.0\n    \n    res = random.uniform(mn, mx)\n    await self.set_output('value', res)\n    await self.set_output('exec_out', True)\n    await self.set_output(\"exec_out\", True)\n    return {'value': res}"
+    "python_code": "import random\nasync def execute(self, inputs):\n    mn_val = inputs.get('min')\n    mx_val = inputs.get('max')\n    \n    mn = float(mn_val) if mn_val is not None else 0.0\n    mx = float(mx_val) if mx_val is not None else 1.0\n    \n    res = random.uniform(mn, mx)\n    await self.set_output('value', res)\n    await self.set_output(\"exec_out\", True)\n    return {'value': res}"
 }

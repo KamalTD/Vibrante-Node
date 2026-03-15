@@ -1,0 +1,55 @@
+{
+    "node_id": "list_images_recursive",
+    "name": "list_images_recursive",
+    "description": "Scans a directory for image files (.jpg, .png, .webp, etc.) and returns a list of paths.",
+    "category": "File System",
+    "icon_path": "icons/folder.svg",
+    "use_exec": true,
+    "inputs": [
+        {
+            "name": "exec_in",
+            "type": "exec",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "folder_path",
+            "type": "string",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "recursive",
+            "type": "bool",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        }
+    ],
+    "outputs": [
+        {
+            "name": "exec_out",
+            "type": "exec",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "image_paths",
+            "type": "list",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "count",
+            "type": "int",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        }
+    ],
+    "python_code": "import os\nfrom pathlib import Path\nfrom src.nodes.base import BaseNode\n\nclass List_Images_RecursiveNode(BaseNode):\n    name = \"list_images_recursive\"\n\n    def __init__(self):\n        super().__init__()        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"exec_in\", \"exec\")\n        self.add_input(\"folder_path\", \"string\")\n        self.add_input(\"recursive\", \"bool\")\n        self.add_output(\"exec_out\", \"exec\")\n        self.add_output(\"image_paths\", \"list\")\n        self.add_output(\"count\", \"int\")\n        # [AUTO-GENERATED-PORTS-END]\n        # Execution Ports\n        self.add_exec_input(\"exec_in\")\n        self.add_exec_output(\"exec_out\")\n        \n        # Data Ports\n        self.add_input(\"folder_path\", \"string\", widget_type=\"string\")\n        self.add_input(\"recursive\", \"bool\", widget_type=\"checkbox\")\n        \n        self.add_output(\"image_paths\", \"list\")\n        self.add_output(\"count\", \"int\")\n\n    async def execute(self, inputs):\n        folder_path = inputs.get(\"folder_path\", \"\")\n        recursive = inputs.get(\"recursive\", True)\n        \n        self.log_info(f\"Scanning directory: {folder_path} (Recursive: {recursive})\")\n        \n        image_extensions = {'.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.tiff'}\n        found_images = []\n\n        if folder_path:\n            # Robust path handling for Windows drive roots\n            if len(folder_path) == 2 and folder_path[1] == \":\":\n                folder_path += \"/\"\n                \n            if os.path.isdir(folder_path):\n                path_obj = Path(folder_path)\n                # Use rglob (via **) for recursive search, glob for top-level only\n                pattern = \"**/*\" if recursive else \"*\"\n                \n                try:\n                    for file_path in path_obj.glob(pattern):\n                        if file_path.is_file() and file_path.suffix.lower() in image_extensions:\n                            found_images.append(str(file_path.absolute()))\n                except Exception as e:\n                    self.log_error(f\"Error scanning directory: {e}\")\n            else:\n                self.log_error(f\"Invalid directory: {folder_path}\")\n        else:\n            self.log_error(\"No folder path provided\")\n\n        self.log_success(f\"Found {len(found_images)} images\")\n        \n        # Push data outputs BEFORE exec_out trigger to avoid race condition in engine\n        await self.set_output(\"image_paths\", found_images)\n        await self.set_output(\"count\", len(found_images))\n        await self.set_output(\"exec_out\", True)\n        \n        return {\n            \"image_paths\": found_images,\n            \"count\": len(found_images)\n        }\n\ndef register_node():\n    return List_Images_RecursiveNode"
+}

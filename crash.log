@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "E:\AI\Vibrante-Node\source\src\main.py", line 21, in <module>
+    from src.ui.window import MainWindow
+  File "E:\AI\Vibrante-Node\source\src\ui\window.py", line 11, in <module>
+    from src.ui.node_builder import NodeBuilderDialog
+  File "E:\AI\Vibrante-Node\source\src\ui\node_builder.py", line 10, in <module>
+    from src.ui.gemini_chat import GeminiChatWidget
+  File "E:\AI\Vibrante-Node\source\src\ui\gemini_chat.py", line 6, in <module>
+    import google.generativeai as genai
+ModuleNotFoundError: No module named 'google'

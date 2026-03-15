@@ -1,0 +1,103 @@
+{
+    "nodes": [
+        {
+            "instance_id": "6b2ba5fa-5787-45ec-8fa1-2b08b1e4396c",
+            "node_id": "console_print",
+            "position": [
+                0.0,
+                0.0
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "data": [
+                    "E:\\ChatGPT Image Dec 1, 2025, 12_40_38 PM.png",
+                    "E:\\ChatGPT Image Dec 4, 2025, 03_34_08 AM.png",
+                    "E:\\ChatGPT Image Dec 4, 2025, 03_38_51 AM.png",
+                    "E:\\Image_fx.jpg",
+                    "E:\\Qwen3-235B-A22B-Thinking-2507.jpeg",
+                    "E:\\render-1768263758993.png"
+                ],
+                "out": ""
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "fe631af6-e485-407a-b233-df4f46452c6d",
+            "node_id": "list_images_recursive",
+            "position": [
+                -338.0,
+                -32.0
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "folder_path": "E:",
+                "recursive": false,
+                "image_paths": [
+                    "E:\\ChatGPT Image Dec 1, 2025, 12_40_38 PM.png",
+                    "E:\\ChatGPT Image Dec 4, 2025, 03_34_08 AM.png",
+                    "E:\\ChatGPT Image Dec 4, 2025, 03_38_51 AM.png",
+                    "E:\\Image_fx.jpg",
+                    "E:\\Qwen3-235B-A22B-Thinking-2507.jpeg",
+                    "E:\\render-1768263758993.png"
+                ],
+                "count": 6
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "bc12ef8f-48f4-4014-a752-775f1b34ad05",
+            "node_id": "variable_node",
+            "position": [
+                -622.0,
+                -54.0
+            ],
+            "parameters": {
+                "exec_in": null,
+                "type": "string",
+                "value": "E:/",
+                "exec_out": true,
+                "out": "E:/"
+            },
+            "state": "idle"
+        }
+    ],
+    "connections": [
+        {
+            "id": "ee0aa276-5dcb-49ef-9146-b8583e4fe8e7",
+            "from_node": "bc12ef8f-48f4-4014-a752-775f1b34ad05",
+            "from_port": "out",
+            "to_node": "fe631af6-e485-407a-b233-df4f46452c6d",
+            "to_port": "folder_path",
+            "is_exec": false
+        },
+        {
+            "id": "46c6fa98-67f9-4b4a-9713-b25e6c427d57",
+            "from_node": "fe631af6-e485-407a-b233-df4f46452c6d",
+            "from_port": "image_paths",
+            "to_node": "6b2ba5fa-5787-45ec-8fa1-2b08b1e4396c",
+            "to_port": "data",
+            "is_exec": false
+        },
+        {
+            "id": "2cc5259d-c6af-4929-a448-a342438bed32",
+            "from_node": "fe631af6-e485-407a-b233-df4f46452c6d",
+            "from_port": "exec_out",
+            "to_node": "6b2ba5fa-5787-45ec-8fa1-2b08b1e4396c",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "d540d373-92b5-47d1-befb-497416cef125",
+            "from_node": "bc12ef8f-48f4-4014-a752-775f1b34ad05",
+            "from_port": "exec_out",
+            "to_node": "fe631af6-e485-407a-b233-df4f46452c6d",
+            "to_port": "exec_in",
+            "is_exec": true
+        }
+    ],
+    "sticky_notes": [],
+    "backdrops": [],
+    "metadata": {}
+}

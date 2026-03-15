@@ -22,5 +22,5 @@
             "type": "exec"
         }
     ],
-    "python_code": "import asyncio\nasync def execute(self, inputs):\n    delay = float(inputs.get('delay', 1.0))\n    self.log_info(f\"Starting delay of {delay}s\")\n    await asyncio.sleep(delay)\n    self.log_success(\"Delay finished\")\n    await self.set_output('exec_out', True)\n    await self.set_output(\"exec_out\", True)\n    return {}"
+    "python_code": "import asyncio\nasync def execute(self, inputs):\n    delay = float(inputs.get('delay', 1.0))\n    self.log_info(f\"Starting delay of {delay}s\")\n    await asyncio.sleep(delay)\n    self.log_success(\"Delay finished\")\n    await self.set_output(\"exec_out\", True)\n    return {}"
 }
