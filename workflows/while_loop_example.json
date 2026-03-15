@@ -1,0 +1,184 @@
+{
+    "nodes": [
+        {
+            "instance_id": "11111111-1111-1111-1111-111111111111",
+            "node_id": "while_loop",
+            "position": [
+                -99.0,
+                71.0
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "condition": true,
+                "max_iterations": 100,
+                "current_index": 6,
+                "iterations": 6
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "55555555-5555-5555-5555-555555555555",
+            "node_id": "variable_node",
+            "position": [
+                187.0,
+                253.0
+            ],
+            "parameters": {
+                "exec_in": null,
+                "type": "string",
+                "value": "Now printing ::",
+                "exec_out": true,
+                "out": "Now printing ::"
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "66666666-6666-6666-6666-666666666666",
+            "node_id": "string_concat",
+            "position": [
+                460.0,
+                112.0
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "str1": "Now printing ::",
+                "str2": "6",
+                "str_list": [],
+                "separator": "",
+                "combined": "Now printing ::5"
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "77777777-7777-7777-7777-777777777777",
+            "node_id": "console_print",
+            "position": [
+                845.0,
+                106.0
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "data": "Now printing ::5",
+                "out": "Now printing ::5"
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "c53879ec-81f2-40f4-91c4-9d07d582be0a",
+            "node_id": "compare",
+            "position": [
+                -494.0,
+                209.0
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "a": 6,
+                "operation": "<",
+                "b": 5,
+                "result": false
+            },
+            "state": "idle"
+        }
+    ],
+    "connections": [
+        {
+            "id": "3a0a17bb-a835-4c5f-b1f0-06591f8642a8",
+            "from_node": "11111111-1111-1111-1111-111111111111",
+            "from_port": "current_index",
+            "to_node": "66666666-6666-6666-6666-666666666666",
+            "to_port": "str2",
+            "is_exec": false
+        },
+        {
+            "id": "8908a4ba-ef6b-48fd-a414-cc59a6de7d0a",
+            "from_node": "66666666-6666-6666-6666-666666666666",
+            "from_port": "exec_out",
+            "to_node": "77777777-7777-7777-7777-777777777777",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "6c30f290-94ef-4478-a138-b29db1c24739",
+            "from_node": "66666666-6666-6666-6666-666666666666",
+            "from_port": "combined",
+            "to_node": "77777777-7777-7777-7777-777777777777",
+            "to_port": "data",
+            "is_exec": false
+        },
+        {
+            "id": "4d5c25e9-cf3f-4dcb-be7b-feead90d62af",
+            "from_node": "55555555-5555-5555-5555-555555555555",
+            "from_port": "out",
+            "to_node": "66666666-6666-6666-6666-666666666666",
+            "to_port": "str1",
+            "is_exec": false
+        },
+        {
+            "id": "8eb50857-c7a3-4ee6-b238-02b307947039",
+            "from_node": "c53879ec-81f2-40f4-91c4-9d07d582be0a",
+            "from_port": "result",
+            "to_node": "11111111-1111-1111-1111-111111111111",
+            "to_port": "condition",
+            "is_exec": false
+        },
+        {
+            "id": "11451264-d414-48c2-a793-2ba12a582fae",
+            "from_node": "c53879ec-81f2-40f4-91c4-9d07d582be0a",
+            "from_port": "exec_out",
+            "to_node": "11111111-1111-1111-1111-111111111111",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "983b5b6f-f50b-4d17-b908-9d36079defa9",
+            "from_node": "11111111-1111-1111-1111-111111111111",
+            "from_port": "current_index",
+            "to_node": "c53879ec-81f2-40f4-91c4-9d07d582be0a",
+            "to_port": "a",
+            "is_exec": false
+        },
+        {
+            "id": "d6ae7506-8816-4f63-8a07-b1d4d8926149",
+            "from_node": "11111111-1111-1111-1111-111111111111",
+            "from_port": "exec_out",
+            "to_node": "66666666-6666-6666-6666-666666666666",
+            "to_port": "exec_in",
+            "is_exec": true
+        }
+    ],
+    "sticky_notes": [
+        {
+            "id": "99999999-9999-9999-9999-999999999999",
+            "position": [
+                468.75,
+                -104.0625
+            ],
+            "size": [
+                300.0,
+                150.0
+            ],
+            "text": "While Loop Example\n\nThis box groups the while-loop logic and helper nodes. Adjust `max_iterations` to avoid long runs.",
+            "color": "#ffffcc"
+        }
+    ],
+    "backdrops": [
+        {
+            "id": "88888888-8888-8888-8888-888888888888",
+            "position": [
+                -520.0,
+                -200.0
+            ],
+            "size": [
+                1653.0,
+                712.0
+            ],
+            "title": "While Loop Area",
+            "color": "#333333"
+        }
+    ],
+    "metadata": {}
+}

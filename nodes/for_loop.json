@@ -2,7 +2,7 @@
     "node_id": "for_loop",
     "name": "For Loop",
     "description": "Generates a sequence of numbers. Connect exec_out to start downstream processing.",
-    "category": "Operations",
+    "category": "Flow",
     "icon_path": "icons/list.svg",
     "inputs": [
         {

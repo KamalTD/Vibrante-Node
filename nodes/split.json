@@ -1,0 +1,17 @@
+{
+    "node_id": "string_split",
+    "name": "Split",
+    "description": "Splits a string into a list using a separator (default: split on whitespace).",
+    "category": "String",
+    "icon_path": "icons/string.svg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "text", "type": "string" },
+        { "name": "separator", "type": "string", "widget_type": "text", "default": "" }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "items", "type": "list" }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\n\nasync def execute(self, inputs):\n    text = inputs.get('text') or self.get_parameter('text', '')\n    sep = inputs.get('separator') if inputs.get('separator') is not None else self.get_parameter('separator', '')\n    try:\n        if sep:\n            items = str(text).split(sep)\n        else:\n            items = str(text).split()\n    except Exception as e:\n        self.log_info(f'Split error: {e}')\n        items = []\n\n    await self.set_output('items', items)\n    await self.set_output('exec_out', True)\n    return {'items': items}"
+}

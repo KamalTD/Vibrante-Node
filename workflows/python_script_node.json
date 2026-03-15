@@ -1,0 +1,89 @@
+{
+    "nodes": [
+        {
+            "instance_id": "3bce1507-51df-4a9c-9137-d1a3dd0a63f7",
+            "node_id": "python_script",
+            "position": [
+                -119.0,
+                -93.0
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "data": "star",
+                "return_result": true,
+                "result": null,
+                "python_code": "# Example user script:\n# Set `result` to transformed input data\nval = inputs.get('data')\nif isinstance(val, str):\n    result = val.upper()\nelse:\n    result = val"
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "c4eaa2d4-9275-4d6f-aa90-8045ac17ec7b",
+            "node_id": "variable_node",
+            "position": [
+                -490.0,
+                -95.0
+            ],
+            "parameters": {
+                "exec_in": null,
+                "type": "string",
+                "value": "start",
+                "exec_out": true,
+                "out": "start"
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "0471ac18-524c-4ffe-a3d9-bcadcf0fe109",
+            "node_id": "console_print",
+            "position": [
+                204.0,
+                -94.0
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "data": null,
+                "out": ""
+            },
+            "state": "idle"
+        }
+    ],
+    "connections": [
+        {
+            "id": "c49a123d-f6d0-4619-b17e-b32f7065a569",
+            "from_node": "c4eaa2d4-9275-4d6f-aa90-8045ac17ec7b",
+            "from_port": "out",
+            "to_node": "3bce1507-51df-4a9c-9137-d1a3dd0a63f7",
+            "to_port": "data",
+            "is_exec": false
+        },
+        {
+            "id": "96191d6b-b3ae-4a80-bd01-c4f3e30887fa",
+            "from_node": "c4eaa2d4-9275-4d6f-aa90-8045ac17ec7b",
+            "from_port": "exec_out",
+            "to_node": "3bce1507-51df-4a9c-9137-d1a3dd0a63f7",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "c9cc54a9-bdde-4479-b4b4-bd4a6b5939b7",
+            "from_node": "3bce1507-51df-4a9c-9137-d1a3dd0a63f7",
+            "from_port": "result",
+            "to_node": "0471ac18-524c-4ffe-a3d9-bcadcf0fe109",
+            "to_port": "data",
+            "is_exec": false
+        },
+        {
+            "id": "53b191b2-04d3-4514-8b57-e0469e296469",
+            "from_node": "3bce1507-51df-4a9c-9137-d1a3dd0a63f7",
+            "from_port": "exec_out",
+            "to_node": "0471ac18-524c-4ffe-a3d9-bcadcf0fe109",
+            "to_port": "exec_in",
+            "is_exec": true
+        }
+    ],
+    "sticky_notes": [],
+    "backdrops": [],
+    "metadata": {}
+}

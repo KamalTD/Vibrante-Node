@@ -363,6 +363,95 @@ class ForEachNode(BaseNode):
         await self.set_output("exec_on_finished", True)
         return {"indices": indices, "completed": not is_broken, "broken": is_broken}
 
+class WhileLoopNode(BaseNode):
+    name = "While Loop"
+    category = "Flow"
+    description = "Executes while `condition` is true. Triggers 'each_iteration' for every iteration. Can be stopped via 'break_condition' or skipped via 'continue_condition'."
+
+    def __init__(self):
+        super().__init__(use_exec=True)
+        # Remove default exec_out for clearer pins
+        if "exec_out" in self.outputs:
+            del self.outputs["exec_out"]
+
+        self.add_input("condition", "bool", widget_type="bool")
+        self.add_input("break_condition", "bool", widget_type="bool")
+        self.add_input("continue_condition", "bool", widget_type="bool")
+        self.add_input("max_iterations", "int", widget_type="int", default=1000)
+
+        self.add_exec_output("each_iteration")
+        self.add_exec_output("exec_skip")
+        self.add_exec_output("exec_on_finished")
+
+        self.add_output("completed", "bool")
+        self.add_output("broken", "bool")
+        self.add_output("current_index", "int")
+        self.icon_path = "icons/list.svg"
+
+    async def execute(self, inputs):
+        # Reset control flags
+        self.parameters['break_condition'] = False
+        self.parameters['continue_condition'] = False
+        await self.set_output("completed", False)
+        await self.set_output("broken", False)
+
+        try:
+            max_it = int(inputs.get("max_iterations", 1000))
+        except Exception:
+            max_it = 1000
+
+        # Initial condition: prefer parameter if present, else input
+        cond = bool(self.get_parameter("condition", inputs.get("condition", False)))
+
+        i = 0
+        is_broken = False
+
+        self.log_info(f"Starting while-loop with max_iterations={max_it}")
+
+        while cond and not self.is_stopped() and i < max_it:
+            # Reset iteration-level control flags
+            self.parameters['continue_condition'] = False
+            self.parameters['break_condition'] = False
+
+            # Publish current index first so downstream nodes can react
+            await self.set_output("current_index", i)
+
+            # Yield for reactive updates
+            await asyncio.sleep(0.1)
+
+            # Check for continue (skip this iteration)
+            if bool(self.get_parameter("continue_condition", False)):
+                self.log_info(f"Skipping iteration {i} - Pre-trigger")
+                await self.set_output("exec_skip", True)
+                i += 1
+                # Re-evaluate condition (allow downstream to change it via parameters)
+                cond = bool(self.get_parameter("condition", inputs.get("condition", False)))
+                continue
+
+            # Trigger iteration flow
+            await self.set_output("each_iteration", True)
+
+            # Small yield to allow flow-triggered nodes to run and potentially set break
+            await asyncio.sleep(0.05)
+
+            # Check for break
+            if bool(self.get_parameter("break_condition", False)):
+                self.log_info(f"Loop broken at iteration {i}")
+                is_broken = True
+                break
+
+            i += 1
+            # Re-evaluate condition for next loop
+            cond = bool(self.get_parameter("condition", inputs.get("condition", False)))
+
+        if is_broken:
+            await self.set_output("broken", True)
+        else:
+            await self.set_output("completed", True)
+
+        await self.set_output("exec_on_finished", True)
+        return {"completed": not is_broken, "broken": is_broken, "current_index": i}
+
 def register_builtins():
     NodeRegistry.register(FileLoaderNode)
     NodeRegistry.register(DataProcessorNode)
