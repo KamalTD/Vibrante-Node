@@ -1,0 +1,18 @@
+{
+    "node_id": "string_replace",
+    "name": "Replace",
+    "description": "Replaces occurrences of a substring with another string.",
+    "category": "String",
+    "icon_path": "icons/string.svg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "text", "type": "string" },
+        { "name": "old", "type": "string" },
+        { "name": "new", "type": "string" }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "result", "type": "string" }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\n\nasync def execute(self, inputs):\n    text = inputs.get('text') or self.get_parameter('text', '')\n    old = inputs.get('old') or self.get_parameter('old', '')\n    new = inputs.get('new') or self.get_parameter('new', '')\n    try:\n        res = str(text).replace(str(old), str(new))\n    except Exception as e:\n        self.log_info(f'Replace error: {e}')\n        res = str(text)\n\n    await self.set_output('result', res)\n    await self.set_output('exec_out', True)\n    return {'result': res}"
+}

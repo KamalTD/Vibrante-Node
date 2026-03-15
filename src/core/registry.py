@@ -33,7 +33,7 @@ class NodeRegistry:
         from src.nodes.builtins.nodes import (
             FileLoaderNode, DataProcessorNode, ConsoleSinkNode, 
             SequenceNode, SetVariableNode, GetVariableNode, 
-            TwoWaySwitchNode, ForEachNode, ListAppendNode
+            TwoWaySwitchNode, ForEachNode, ListAppendNode, WhileLoopNode
         )
         cls._register_builtin_class(FileLoaderNode)
         cls._register_builtin_class(DataProcessorNode)
@@ -43,6 +43,7 @@ class NodeRegistry:
         cls._register_builtin_class(GetVariableNode)
         cls._register_builtin_class(TwoWaySwitchNode)
         cls._register_builtin_class(ForEachNode)
+        cls._register_builtin_class(WhileLoopNode)
         cls._register_builtin_class(ListAppendNode)
 
     @classmethod

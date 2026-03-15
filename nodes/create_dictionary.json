@@ -1,0 +1,18 @@
+{
+    "node_id": "create_dictionary",
+    "name": "Create Dictionary",
+    "description": "Creates a dictionary from provided entries and optionally stores it under `dict_name`.",
+    "category": "Data",
+    "icon_path": "icons/dictionary.svg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "dict_name", "type": "string", "widget_type": "text", "default": "" },
+        { "name": "entries", "type": "dict" }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "current_dict", "type": "dict" },
+        { "name": "stored", "type": "bool" }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\n\nasync def execute(self, inputs):\n    name = inputs.get('dict_name') or self.get_parameter('dict_name', '')\n    entries = inputs.get('entries')\n    if entries is None:\n        entries = self.get_parameter('entries', {})\n    try:\n        d = dict(entries) if entries is not None else {}\n    except Exception:\n        d = {}\n\n    stored = False\n    if name:\n        BaseNode.memory[name] = d\n        stored = True\n        self.log_info(f'Stored dict {name} with {len(d)} entries')\n    else:\n        self.log_info(f'Created dict with {len(d)} entries (not stored)')\n\n    await self.set_output('current_dict', d)\n    await self.set_output('stored', stored)\n    await self.set_output('exec_out', True)\n    return {'current_dict': d, 'stored': stored}"
+}

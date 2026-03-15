@@ -1,0 +1,18 @@
+{
+    "node_id": "create_list",
+    "name": "Create List",
+    "description": "Initializes a list from provided items and optionally stores it in shared memory under `list_name`.",
+    "category": "Data",
+    "icon_path": "icons/list.svg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "list_name", "type": "string", "widget_type": "text", "default": "" },
+        { "name": "items", "type": "list" }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "current_list", "type": "list" },
+        { "name": "stored", "type": "bool" }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\n\nasync def execute(self, inputs):\n    name = inputs.get('list_name') or self.get_parameter('list_name', '')\n    items = inputs.get('items')\n    # If no explicit items, try instance parameter fallback\n    if items is None:\n        items = self.get_parameter('items', [])\n    try:\n        lst = list(items) if items is not None else []\n    except Exception:\n        lst = [items]\n\n    stored = False\n    if name:\n        BaseNode.memory[name] = lst\n        stored = True\n        self.log_info(f'Stored list {name} with {len(lst)} items')\n    else:\n        self.log_info(f'Created list with {len(lst)} items (not stored)')\n\n    await self.set_output('current_list', lst)\n    await self.set_output('stored', stored)\n    await self.set_output('exec_out', True)\n    return {'current_list': lst, 'stored': stored}"
+}

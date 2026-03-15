@@ -1,0 +1,20 @@
+{
+    "node_id": "set_dict_value",
+    "name": "Set Dict Value",
+    "description": "Sets a key/value pair in a dictionary (provided or stored under `dict_name`).",
+    "category": "Data",
+    "icon_path": "icons/dictionary.svg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "dict_name", "type": "string", "widget_type": "text", "default": "" },
+        { "name": "dict", "type": "dict" },
+        { "name": "key", "type": "string", "widget_type": "text" },
+        { "name": "value", "type": "any" }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "result_dict", "type": "dict" },
+        { "name": "success", "type": "bool" }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\n\nasync def execute(self, inputs):\n    name = inputs.get('dict_name') or self.get_parameter('dict_name', '')\n    provided = inputs.get('dict')\n    if provided is None or provided == {}:\n        d = BaseNode.memory.get(name) if name else {}\n    else:\n        d = dict(provided)\n\n    key = inputs.get('key')\n    val = inputs.get('value')\n    if key is None:\n        self.log_info('No key provided')\n        await self.set_output('result_dict', d)\n        await self.set_output('success', False)\n        await self.set_output('exec_out', True)\n        return {'result_dict': d, 'success': False}\n\n    try:\n        d[key] = val\n        success = True\n        if name:\n            BaseNode.memory[name] = d\n    except Exception as e:\n        self.log_info(f'Error setting dict value: {e}')\n        success = False\n\n    await self.set_output('result_dict', d)\n    await self.set_output('success', success)\n    await self.set_output('exec_out', True)\n    return {'result_dict': d, 'success': success}"
+}

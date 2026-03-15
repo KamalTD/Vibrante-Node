@@ -1,0 +1,276 @@
+{
+    "nodes": [
+        {
+            "instance_id": "aa11aa11-0000-0000-0000-aa11aa11aa11",
+            "node_id": "While Loop",
+            "position": [
+                -732.8125,
+                -23.4375
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": null,
+                "condition": true,
+                "break_condition": true,
+                "continue_condition": false,
+                "max_iterations": 10,
+                "each_iteration": true,
+                "exec_skip": null,
+                "exec_on_finished": true,
+                "completed": false,
+                "broken": true,
+                "current_index": 6
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "bb22bb22-0000-0000-0000-bb22bb22bb22",
+            "node_id": "example_random_float",
+            "position": [
+                -368.75,
+                -43.125
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "min": 0,
+                "max": 1.0,
+                "value": 0.9106818292739972
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "cc33cc33-0000-0000-0000-cc33cc33cc33",
+            "node_id": "compare",
+            "position": [
+                224.0,
+                27.0
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "a": 0,
+                "operation": ">=",
+                "b": 0.8,
+                "result": true
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "dd44dd44-0000-0000-0000-dd44dd44dd44",
+            "node_id": "variable_node",
+            "position": [
+                -689.0,
+                435.0
+            ],
+            "parameters": {
+                "exec_in": null,
+                "type": "float",
+                "value": 0.8,
+                "exec_out": true,
+                "out": 0.8
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "ee55ee55-0000-0000-0000-ee55ee55ee55",
+            "node_id": "math_multiply",
+            "position": [
+                -357.0,
+                311.0
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "a": 0.0,
+                "b": 0.5,
+                "result": 3.0
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "ff66ff66-0000-0000-0000-ff66ff66ff66",
+            "node_id": "delay_timer",
+            "position": [
+                -39.0,
+                275.0
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "delay": 0.0
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "11221122-0000-0000-0000-112211221122",
+            "node_id": "string_concat",
+            "position": [
+                592.0,
+                -98.0
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "str1": "Attempt:",
+                "str2": "0.8682649057261537",
+                "str_list": [],
+                "separator": " ",
+                "combined": "Attempt: 0.9106818292739972"
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "33443344-0000-0000-0000-334433443344",
+            "node_id": "console_print",
+            "position": [
+                941.0,
+                -93.0
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "data": "Attempt: 0.8682649057261537",
+                "out": "Attempt: 0.9106818292739972"
+            },
+            "state": "idle"
+        }
+    ],
+    "connections": [
+        {
+            "id": "9e5e72db-4805-460f-a83e-b7edcdf63933",
+            "from_node": "aa11aa11-0000-0000-0000-aa11aa11aa11",
+            "from_port": "each_iteration",
+            "to_node": "bb22bb22-0000-0000-0000-bb22bb22bb22",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "943ade48-ebd6-4f9c-a0e2-79d5c37da6da",
+            "from_node": "bb22bb22-0000-0000-0000-bb22bb22bb22",
+            "from_port": "value",
+            "to_node": "cc33cc33-0000-0000-0000-cc33cc33cc33",
+            "to_port": "a",
+            "is_exec": false
+        },
+        {
+            "id": "22e0d4d2-c555-49aa-94b1-eed554cf1863",
+            "from_node": "dd44dd44-0000-0000-0000-dd44dd44dd44",
+            "from_port": "out",
+            "to_node": "cc33cc33-0000-0000-0000-cc33cc33cc33",
+            "to_port": "b",
+            "is_exec": false
+        },
+        {
+            "id": "0d30c949-47b9-47c0-a6f5-5fd4d44069af",
+            "from_node": "cc33cc33-0000-0000-0000-cc33cc33cc33",
+            "from_port": "result",
+            "to_node": "aa11aa11-0000-0000-0000-aa11aa11aa11",
+            "to_port": "break_condition",
+            "is_exec": false
+        },
+        {
+            "id": "e8acccf9-938c-4309-91c3-13c478b35a49",
+            "from_node": "aa11aa11-0000-0000-0000-aa11aa11aa11",
+            "from_port": "current_index",
+            "to_node": "ee55ee55-0000-0000-0000-ee55ee55ee55",
+            "to_port": "a",
+            "is_exec": false
+        },
+        {
+            "id": "03a129b0-12a8-4958-ac7a-3c100ebb0db6",
+            "from_node": "ee55ee55-0000-0000-0000-ee55ee55ee55",
+            "from_port": "result",
+            "to_node": "ff66ff66-0000-0000-0000-ff66ff66ff66",
+            "to_port": "delay",
+            "is_exec": false
+        },
+        {
+            "id": "9bfc6f4a-1930-4758-b287-12b73033881d",
+            "from_node": "bb22bb22-0000-0000-0000-bb22bb22bb22",
+            "from_port": "exec_out",
+            "to_node": "ee55ee55-0000-0000-0000-ee55ee55ee55",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "ca3c4f61-20bb-439f-8f91-dd72286569d8",
+            "from_node": "ee55ee55-0000-0000-0000-ee55ee55ee55",
+            "from_port": "exec_out",
+            "to_node": "ff66ff66-0000-0000-0000-ff66ff66ff66",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "96052521-8fb9-4b05-9d4e-8fe33ab0c730",
+            "from_node": "bb22bb22-0000-0000-0000-bb22bb22bb22",
+            "from_port": "value",
+            "to_node": "11221122-0000-0000-0000-112211221122",
+            "to_port": "str2",
+            "is_exec": false
+        },
+        {
+            "id": "989d867f-070d-4f45-afeb-fcb34b2b917a",
+            "from_node": "bb22bb22-0000-0000-0000-bb22bb22bb22",
+            "from_port": "exec_out",
+            "to_node": "11221122-0000-0000-0000-112211221122",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "1a90d3aa-47a2-4743-9e99-fcaf477737cb",
+            "from_node": "11221122-0000-0000-0000-112211221122",
+            "from_port": "combined",
+            "to_node": "33443344-0000-0000-0000-334433443344",
+            "to_port": "data",
+            "is_exec": false
+        },
+        {
+            "id": "6981533e-5b48-484a-a8a4-bfb4b008f967",
+            "from_node": "11221122-0000-0000-0000-112211221122",
+            "from_port": "exec_out",
+            "to_node": "33443344-0000-0000-0000-334433443344",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "31d27c93-f8ef-4e84-8c8b-b6336099d3b5",
+            "from_node": "ff66ff66-0000-0000-0000-ff66ff66ff66",
+            "from_port": "exec_out",
+            "to_node": "cc33cc33-0000-0000-0000-cc33cc33cc33",
+            "to_port": "exec_in",
+            "is_exec": true
+        }
+    ],
+    "sticky_notes": [
+        {
+            "id": "99009900-0000-0000-0000-990099009900",
+            "position": [
+                526.2187499999999,
+                266.8437499999999
+            ],
+            "size": [
+                420.0,
+                160.0
+            ],
+            "text": "Retry Simulation:\nUses a while-loop to retry an unreliable operation (random success) until success or max attempts. Delay increases with attempt number.",
+            "color": "#ffffcc"
+        }
+    ],
+    "backdrops": [
+        {
+            "id": "88008800-0000-0000-0000-880088008800",
+            "position": [
+                -760.0,
+                -200.0
+            ],
+            "size": [
+                1943.5937499999998,
+                893.3593749999999
+            ],
+            "title": "Retry Loop (Example)",
+            "color": "#333333"
+        }
+    ],
+    "metadata": {}
+}

@@ -103,14 +103,17 @@ class NetworkExecutor(QObject):
             incoming_ports = {c.to_port for c in self._incoming_data_conns.get(node_id, [])}
             
             for p_name, p_val in node_model.parameters.items():
-                if p_name in instance.parameters:
-                    if p_name in incoming_ports:
-                        # Reset to port default if it will be driven by a connection
-                        port_obj = instance.inputs.get(p_name)
-                        default = getattr(port_obj, 'default', None) if port_obj else None
-                        instance.parameters[p_name] = default
-                    else:
-                        instance.parameters[p_name] = p_val
+                # If this port will be driven by an incoming data connection, reset to its port default
+                if p_name in incoming_ports:
+                    port_obj = instance.inputs.get(p_name)
+                    default = getattr(port_obj, 'default', None) if port_obj else None
+                    instance.parameters[p_name] = default
+                else:
+                    # Copy saved workflow parameter into the instance even if the node
+                    # didn't predefine that parameter (e.g. `python_code`). This ensures
+                    # dynamic/runtime-only parameters saved in workflows are available
+                    # during execution.
+                    instance.parameters[p_name] = p_val
             
             instance.clear_outputs()
             self.node_instances[node_id] = instance
