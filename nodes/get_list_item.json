@@ -1,0 +1,19 @@
+{
+    "node_id": "get_list_item",
+    "name": "Get List Item",
+    "description": "Retrieves an item from a list by index. Can read from a named stored list or from an input list.",
+    "category": "Data",
+    "icon_path": "icons/list.svg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "list_name", "type": "string", "widget_type": "text", "default": "" },
+        { "name": "list", "type": "list" },
+        { "name": "index", "type": "int", "widget_type": "int", "default": 0 }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "item", "type": "any" },
+        { "name": "success", "type": "bool" }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\n\nasync def execute(self, inputs):\n    name = inputs.get('list_name') or self.get_parameter('list_name', '')\n    provided = inputs.get('list')\n    if provided is None or provided == []:\n        lst = BaseNode.memory.get(name) if name else None\n    else:\n        lst = provided\n\n    idx = inputs.get('index')\n    if idx is None:\n        idx = self.get_parameter('index', 0)\n    try:\n        i = int(idx)\n    except Exception:\n        i = 0\n\n    item = None\n    success = False\n    try:\n        if lst is not None:\n            item = lst[i]\n            success = True\n        else:\n            self.log_info('No list available to get item from')\n    except Exception as e:\n        self.log_info(f'Index error: {e}')\n        item = None\n        success = False\n\n    await self.set_output('item', item)\n    await self.set_output('success', success)\n    await self.set_output('exec_out', True)\n    return {'item': item, 'success': success}"
+}

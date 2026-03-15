@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QGraphicsItem, QGraphicsRectItem, QGraphicsTextItem,
 from PyQt5.QtCore import Qt, QRectF
 from PyQt5.QtGui import QColor, QPen, QBrush, QPixmap, QPainterPath
 from src.ui.port_widget import PortWidget
+from src.ui.script_editor import ScriptEditorDialog
 from src.utils.runtime import AsyncRuntime
 from uuid import uuid4
 
@@ -142,6 +143,21 @@ class NodeWidget(QGraphicsItem):
             if hasattr(p_model, 'widget_type') and p_model.widget_type:
                 if p_model.name not in self.param_widgets:
                     self._create_param_widget(p_model)
+
+        # If this is a python_script node, add an "Edit Script" button proxy
+        try:
+            if getattr(self.node_definition, 'node_id', None) == 'python_script' and '_script_btn' not in self.param_widgets:
+                proxy = QGraphicsProxyWidget(self)
+                container = QWidget()
+                lay = QVBoxLayout(container)
+                lay.setContentsMargins(0, 0, 0, 0)
+                btn = QPushButton('Edit Script')
+                btn.clicked.connect(self._open_script_editor)
+                lay.addWidget(btn)
+                proxy.setWidget(container)
+                self.param_widgets['_script_btn'] = proxy
+        except Exception:
+            pass
 
         # 5. Calculate Dynamic Height
         proxies = list(self.param_widgets.values())
@@ -448,6 +464,21 @@ class NodeWidget(QGraphicsItem):
                        edge.to_port in self.output_widgets:
                         edge.update_path()
         return super().itemChange(change, value)
+
+    def _open_script_editor(self):
+        try:
+            # Find a parent QWidget if possible
+            parent = None
+            if self.scene() and self.scene().views():
+                parent = self.scene().views()[0]
+            current_code = self.node_definition.parameters.get('python_code', '')
+            dlg = ScriptEditorDialog(parent=parent, initial_code=current_code)
+            if dlg.exec_() == dlg.Accepted:
+                code = dlg.get_code()
+                # Save into node parameters so runtime execute will use it
+                self.node_definition.parameters['python_code'] = code
+        except Exception:
+            pass
 
     def paint(self, painter, option, widget):
         from src.utils.color_manager import ColorManager

@@ -1,0 +1,17 @@
+{
+    "node_id": "python_script",
+    "name": "Python Script",
+    "description": "Executes user-provided Python code with access to `inputs` and `params`. The script should assign the output to a variable named `result`.",
+    "category": "Scripting",
+    "icon_path": "icons/python.svg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "data", "type": "any" },
+        { "name": "return_result", "type": "bool", "widget_type": "bool", "default": true }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "result", "type": "any" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    src = self.get_parameter('python_code', '')\n    # Allow user to control whether to return result via input/widget 'return_result'\n    try:\n        return_flag = inputs.get('return_result')\n        if return_flag is None:\n            return_flag = self.get_parameter('return_result', True)\n    except Exception:\n        return_flag = True\n\n    # Provide inputs and params to the script in its local namespace\n    local_ns = {'inputs': inputs, 'params': self.parameters}\n    try:\n        exec(src, {'__builtins__': __builtins__}, local_ns)\n        res = local_ns.get('result', None)\n    except Exception as e:\n        # Log and continue\n        try:\n            self.log_info(f'Python script error: {e}')\n        except Exception:\n            pass\n        res = None\n\n    if return_flag:\n        await self.set_output('result', res)\n    await self.set_output('exec_out', True)\n    return {'result': res} if return_flag else {}"
+}

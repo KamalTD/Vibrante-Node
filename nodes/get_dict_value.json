@@ -1,0 +1,19 @@
+{
+    "node_id": "get_dict_value",
+    "name": "Get Dict Value",
+    "description": "Gets a value by key from a dictionary (provided or stored under `dict_name`).",
+    "category": "Data",
+    "icon_path": "icons/dictionary.svg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "dict_name", "type": "string", "widget_type": "text", "default": "" },
+        { "name": "dict", "type": "dict" },
+        { "name": "key", "type": "string", "widget_type": "text" }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "value", "type": "any" },
+        { "name": "found", "type": "bool" }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\n\nasync def execute(self, inputs):\n    name = inputs.get('dict_name') or self.get_parameter('dict_name', '')\n    provided = inputs.get('dict')\n    if provided is None or provided == {}:\n        d = BaseNode.memory.get(name) if name else None\n    else:\n        d = provided\n\n    key = inputs.get('key')\n    if key is None:\n        key = self.get_parameter('key', '')\n\n    value = None\n    found = False\n    try:\n        if d is not None and key in d:\n            value = d.get(key)\n            found = True\n        else:\n            self.log_info('Key not found or no dict available')\n    except Exception as e:\n        self.log_info(f'Error getting dict value: {e}')\n        value = None\n        found = False\n\n    await self.set_output('value', value)\n    await self.set_output('found', found)\n    await self.set_output('exec_out', True)\n    return {'value': value, 'found': found}"
+}
