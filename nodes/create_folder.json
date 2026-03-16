@@ -3,7 +3,7 @@
     "name": "Create Folder",
     "description": "Create a folder (and parents) at the specified path.",
     "category": "File",
-    "icon_path": "icons/folder.svg",
+    "icon_path": "icons/folder-plus.svg",
     "inputs": [
         { "name": "exec_in", "type": "exec" },
         { "name": "path", "type": "string", "widget_type": "text", "default": "" },

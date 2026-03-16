@@ -3,7 +3,7 @@
     "name": "If Condition",
     "description": "Routes execution and data based on a condition. Triggers exec_out if True, exec_false if False.",
     "category": "Logic",
-    "icon_path": "icons/scales.svg",
+    "icon_path": "icons/logic.svg",
     "inputs": [
         {
             "name": "exec_in",

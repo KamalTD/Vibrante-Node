@@ -3,7 +3,7 @@
     "name": "Append File",
     "description": "Append text to a file (creates if missing).",
     "category": "File",
-    "icon_path": "icons/folder.svg",
+    "icon_path": "icons/file-plus.svg",
     "inputs": [
         { "name": "exec_in", "type": "exec" },
         { "name": "path", "type": "string", "widget_type": "text", "default": "" },

@@ -3,7 +3,7 @@
     "name": "Subtract",
     "description": "Subtract two numbers (a - b).",
     "category": "Math",
-    "icon_path": "icons/math.svg",
+    "icon_path": "icons/minus.svg",
     "inputs": [
         { "name": "exec_in", "type": "exec" },
         { "name": "a", "type": "number", "widget_type": "float", "default": 0 },

@@ -3,7 +3,7 @@
     "name": "String Length",
     "description": "Returns the length of the provided text.",
     "category": "String",
-    "icon_path": "icons/string.svg",
+    "icon_path": "icons/hash.svg",
     "inputs": [
         { "name": "exec_in", "type": "exec" },
         { "name": "text", "type": "string" }

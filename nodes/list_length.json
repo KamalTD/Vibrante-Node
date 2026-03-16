@@ -3,7 +3,7 @@
     "name": "List Length",
     "description": "Returns the length of a list, either provided or stored under `list_name`.",
     "category": "Data",
-    "icon_path": "icons/list.svg",
+    "icon_path": "icons/hash.svg",
     "inputs": [
         { "name": "exec_in", "type": "exec" },
         { "name": "list_name", "type": "string", "widget_type": "text", "default": "" },
