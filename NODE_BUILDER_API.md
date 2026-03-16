@@ -95,3 +95,13 @@ async def execute(self, inputs):
 - **Safely Access Data**: Use `self.get_parameter(name)` or `self[name]` to avoid KeyErrors.
 - **Logging**: Use `self.log_info("message")`, `log_success`, or `log_error` to communicate with the user via the Event Log.
 - **Widget Control**: Use `self.set_parameter(name, value)` to programmatically update UI widgets from within your code.
+
+---
+
+## 🆕 Scripted Nodes & Gemini Assistance
+
+- **`python_code` parameter**: Nodes created via the Node Builder may include a `python_code` parameter which contains the node's execute/on_parameter_changed logic as text. When the workflow is loaded, the engine compiles this `python_code` into a dynamic node class. Ensure your `python_code` defines an `execute(self, inputs)` function or assigns to `result` when using the `python_script` node.
+
+- **In-UI Script Editor**: For nodes that expose `python_code` (e.g., `python_script`), use the `Edit Script` button to open the code editor. Changes are saved into the node's parameter map so they persist with the workflow.
+
+- **Gemini Support**: The Node Builder can optionally use Gemini to suggest code snippets and prompt templates while authoring node logic. Gemini integration is provided as a helper — always review generated code for correctness and safety before executing in production.
