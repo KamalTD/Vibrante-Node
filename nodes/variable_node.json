@@ -3,7 +3,7 @@
     "name": "Variable",
     "description": "Holds a single value of a specific type.",
     "category": "Data",
-    "icon_path": "icons/data.svg",
+    "icon_path": "icons/variable.svg",
     "use_exec": false,
     "inputs": [
         {

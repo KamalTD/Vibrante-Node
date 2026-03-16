@@ -3,7 +3,7 @@
     "name": "Loop Body",
     "description": "Executes logic for each index in a provided list. Triggers exec_out for each item, and exec_on_finished when done.",
     "category": "Flow",
-    "icon_path": "icons/list.svg",
+    "icon_path": "icons/chevron-right.svg",
     "inputs": [
         {
             "name": "exec_in",

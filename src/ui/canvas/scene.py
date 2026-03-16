@@ -513,6 +513,15 @@ class NodeScene(QGraphicsScene):
         
         menu.addSeparator()
         
+        # Search Nodes option (Tab shortcut)
+        search_act = QAction("Search Nodes...  (Tab)", self.parent())
+        def show_search():
+            view = self.views()[0] if self.views() else None
+            if view and hasattr(view, 'show_node_search_popup'):
+                view.show_node_search_popup(pos)
+        search_act.triggered.connect(show_search)
+        menu.addAction(search_act)
+        
         # Nodes Submenu
         node_menu = menu.addMenu("Add Node")
         for node_id in NodeRegistry.list_node_ids():
