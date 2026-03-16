@@ -98,9 +98,15 @@ class LibraryPanel(QDockWidget):
             
             for node_id, icon in sorted(nodes):
                 node_item = QTreeWidgetItem(cat_item)
-                node_item.setText(0, node_id)
+                # Display the human-friendly name when available, and show description as tooltip
+                defn = NodeRegistry.get_definition(node_id)
+                # Normalize display name to Title Case for consistency
+                display_name = defn.name.title() if defn and getattr(defn, 'name', None) else node_id.title()
+                node_item.setText(0, display_name)
                 node_item.setIcon(0, icon)
                 node_item.setData(0, Qt.UserRole, node_id)
+                if defn and getattr(defn, 'description', None):
+                    node_item.setToolTip(0, defn.description)
 
     def _on_item_double_clicked(self, item, column):
         node_id = item.data(0, Qt.UserRole)

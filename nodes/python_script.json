@@ -3,7 +3,7 @@
     "name": "Python Script",
     "description": "Executes user-provided Python code with access to `inputs` and `params`. The script should assign the output to a variable named `result`.",
     "category": "Scripting",
-    "icon_path": "icons/python.svg",
+    "icon_path": "icons/terminal.svg",
     "inputs": [
         { "name": "exec_in", "type": "exec" },
         { "name": "data", "type": "any" },

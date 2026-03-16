@@ -3,7 +3,7 @@
     "name": "Set Dict Value",
     "description": "Sets a key/value pair in a dictionary (provided or stored under `dict_name`).",
     "category": "Data",
-    "icon_path": "icons/dictionary.svg",
+    "icon_path": "icons/data.svg",
     "inputs": [
         { "name": "exec_in", "type": "exec" },
         { "name": "dict_name", "type": "string", "widget_type": "text", "default": "" },
