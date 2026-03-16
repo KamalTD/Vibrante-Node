@@ -65,7 +65,26 @@ Vibrante-Node allows you to create your own nodes with custom Python logic:
 You can switch between **Dark** and **Light** modes at any time using the **Themes** menu. Themes apply globally.
 
 ## 🪵 Troubleshooting
+-
+## 🆕 Scripting Node & Node Builder Gemini
 
+- **Python Script Node (`python_script`)**: Place the node on the canvas and click the `Edit Script` button to author Python code. The script executes with access to a local `inputs` dictionary containing current input values and `params` for node parameters. Assign your output to `result` to publish it to the node's `result` output port.
+
+- **Example script**:
+```python
+# Example: upper-case input
+val = inputs.get('data')
+if isinstance(val, str):
+    result = val.upper()
+else:
+    result = val
+```
+
+- **Saved Workflows**: The editor writes the script into the node's saved `python_code` parameter. The engine applies saved parameters at run-time so scripts persist across sessions.
+
+- **Gemini Assistance in Node Builder**: When creating node logic in the Node Builder you can enable Gemini assistance to generate starter code, prompt templates, or example snippets. Gemini integration is optional and configurable in the app settings; it is intended to speed up authoring but always validate generated code before running.
+
+## 🪵 Troubleshooting
 -   **Node is Red**: The node failed during execution. Check the **Event Log** for the error.
 -   **Widgets are Disabled**: This is normal! Widgets are disabled when they are receiving data from another node via a wire.
 -   **Crashes**: If the app closes, check `crash.log` in the project folder for details.
