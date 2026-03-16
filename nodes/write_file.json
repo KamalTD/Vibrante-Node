@@ -3,7 +3,7 @@
     "name": "Write File",
     "description": "Write text to a file (overwrites).",
     "category": "File",
-    "icon_path": "icons/file.svg",
+    "icon_path": "icons/folder.svg",
     "inputs": [
         { "name": "exec_in", "type": "exec" },
         { "name": "path", "type": "string", "widget_type": "text", "default": "" },
