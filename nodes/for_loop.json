@@ -3,7 +3,7 @@
     "name": "For Loop",
     "description": "Generates a sequence of numbers. Connect exec_out to start downstream processing.",
     "category": "Flow",
-    "icon_path": "icons/list.svg",
+    "icon_path": "icons/repeat.svg",
     "inputs": [
         {
             "name": "exec_in",

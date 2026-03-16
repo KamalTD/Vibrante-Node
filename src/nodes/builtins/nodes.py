@@ -6,11 +6,11 @@ import asyncio
 class FileLoaderNode(BaseNode):
     name = "File Loader"
     category = "IO"
+    icon_path = "icons/file-input.svg"
     def __init__(self):
         super().__init__()
         self.add_input("file_path", "string", widget_type="file")
         self.add_output("file_data", "string")
-        self.icon_path = "icons/folder.svg"
 
     async def execute(self, inputs):
         path = inputs.get("file_path")
@@ -27,11 +27,11 @@ class FileLoaderNode(BaseNode):
 class DataProcessorNode(BaseNode):
     name = "Data Processor"
     category = "General"
+    icon_path = "icons/gear.svg"
     def __init__(self):
         super().__init__()
         self.add_input("data_in")
         self.add_output("data_out")
-        self.icon_path = "icons/gear.svg"
 
     async def execute(self, inputs):
         return {"data_out": f"Processed: {inputs.get('data_in')}"}
@@ -39,10 +39,10 @@ class DataProcessorNode(BaseNode):
 class ConsoleSinkNode(BaseNode):
     name = "Console Sink"
     category = "IO"
+    icon_path = "icons/terminal.svg"
     def __init__(self):
         super().__init__()
         self.add_input("data")
-        self.icon_path = "icons/terminal.svg"
 
     async def execute(self, inputs):
         print(f"SINK: {inputs.get('data')}")
@@ -52,6 +52,7 @@ class SequenceNode(BaseNode):
     name = "Sequencer"
     category = "Flow"
     description = "Sequences data-only nodes. Triggers 'exec_step' for every item in the sequence."
+    icon_path = "icons/list.svg"
     
     def __init__(self):
         # use_exec=False removes both default exec_in and exec_out
@@ -61,7 +62,6 @@ class SequenceNode(BaseNode):
         self.add_exec_output("exec_step") # Trigger for EACH step
         self.add_exec_output("exec_out")  # Trigger when sequence is COMPLETE
         self._step_count = 1
-        self.icon_path = "icons/list.svg"
 
     def on_plug_sync(self, port_name, is_input, other_node, other_port_name):
         if is_input and port_name.startswith("step_"):
@@ -157,12 +157,12 @@ class SequenceNode(BaseNode):
 class SetVariableNode(BaseNode):
     name = "Set Variable"
     category = "Memory"
+    icon_path = "icons/variable-set.svg"
     def __init__(self):
         super().__init__(use_exec=True)
         self.add_input("name", "string", widget_type="text", default="")
         self.add_input("value", "any")
         self.add_output("value_out", "any", default="")
-        self.icon_path = "icons/plus.svg"
 
     async def execute(self, inputs):
         var_name = inputs.get("name")
@@ -178,11 +178,11 @@ class SetVariableNode(BaseNode):
 class GetVariableNode(BaseNode):
     name = "Get Variable"
     category = "Memory"
+    icon_path = "icons/variable-get.svg"
     def __init__(self):
         super().__init__(use_exec=False)
         self.add_input("name", "string", widget_type="text", default="")
         self.add_output("value", "any")
-        self.icon_path = "icons/hash.svg"
 
     async def execute(self, inputs):
         var_name = inputs.get("name")
@@ -201,13 +201,13 @@ class ListAppendNode(BaseNode):
     name = "List Append"
     category = "Memory"
     description = "Manages a list in shared memory. Appends items and outputs the full list."
+    icon_path = "icons/list-plus.svg"
     
     def __init__(self):
         super().__init__(use_exec=True)
         self.add_input("list_name", "string", widget_type="text")
         self.add_input("item", "any")
         self.add_output("current_list", "list")
-        self.icon_path = "icons/list.svg"
 
     async def execute(self, inputs):
         name = inputs.get("list_name")
@@ -234,6 +234,7 @@ class TwoWaySwitchNode(BaseNode):
     name = "Two Way Switch"
     category = "Logic"
     description = "Switches between input_1 and input_2 based on a condition."
+    icon_path = "icons/shuffle.svg"
     
     def __init__(self):
         super().__init__(use_exec=True)
@@ -241,7 +242,6 @@ class TwoWaySwitchNode(BaseNode):
         self.add_input("input_1", "any")
         self.add_input("input_2", "any")
         self.add_output("output", "any")
-        self.icon_path = "icons/scales.svg"
 
     async def execute(self, inputs):
         cond = bool(inputs.get("condition", False))
@@ -268,6 +268,7 @@ class ForEachNode(BaseNode):
     name = "For Each"
     category = "Flow"
     description = "Iterates over a collection. Triggers 'each_item' for every item. Can be stopped via 'break_condition' or skipped via 'continue_condition'."
+    icon_path = "icons/repeat.svg"
     
     def __init__(self):
         super().__init__(use_exec=True)
@@ -289,7 +290,6 @@ class ForEachNode(BaseNode):
         self.add_output("current_item", "any")
         self.add_output("current_index", "int")
         self.add_output("indices", "list")
-        self.icon_path = "icons/list.svg"
 
     async def execute(self, inputs):
         # RESET conditions at start
@@ -367,6 +367,7 @@ class WhileLoopNode(BaseNode):
     name = "While Loop"
     category = "Flow"
     description = "Executes while `condition` is true. Triggers 'each_iteration' for every iteration. Can be stopped via 'break_condition' or skipped via 'continue_condition'."
+    icon_path = "icons/repeat.svg"
 
     def __init__(self):
         super().__init__(use_exec=True)
@@ -386,7 +387,6 @@ class WhileLoopNode(BaseNode):
         self.add_output("completed", "bool")
         self.add_output("broken", "bool")
         self.add_output("current_index", "int")
-        self.icon_path = "icons/list.svg"
 
     async def execute(self, inputs):
         # Reset control flags

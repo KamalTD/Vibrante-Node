@@ -3,7 +3,7 @@
     "name": "Uppercase",
     "description": "Converts text to uppercase.",
     "category": "String",
-    "icon_path": "icons/string.svg",
+    "icon_path": "icons/uppercase.svg",
     "inputs": [
         { "name": "exec_in", "type": "exec" },
         { "name": "text", "type": "string" }

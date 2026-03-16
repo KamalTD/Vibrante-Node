@@ -3,7 +3,7 @@
     "name": "Lowercase",
     "description": "Converts text to lowercase.",
     "category": "String",
-    "icon_path": "icons/string.svg",
+    "icon_path": "icons/uppercase.svg",
     "inputs": [
         { "name": "exec_in", "type": "exec" },
         { "name": "text", "type": "string" }

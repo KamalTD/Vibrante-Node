@@ -3,7 +3,7 @@
     "name": "Create List",
     "description": "Initializes a list from provided items and optionally stores it in shared memory under `list_name`.",
     "category": "Data",
-    "icon_path": "icons/list.svg",
+    "icon_path": "icons/list-plus.svg",
     "inputs": [
         { "name": "exec_in", "type": "exec" },
         { "name": "list_name", "type": "string", "widget_type": "text", "default": "" },

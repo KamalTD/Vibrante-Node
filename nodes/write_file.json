@@ -1,0 +1,18 @@
+{
+    "node_id": "file_write",
+    "name": "Write File",
+    "description": "Write text to a file (overwrites).",
+    "category": "File",
+    "icon_path": "icons/file-text.svg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "path", "type": "string", "widget_type": "text", "default": "" },
+        { "name": "content", "type": "string", "widget_type": "text_area", "default": "" },
+        { "name": "encoding", "type": "string", "widget_type": "text", "default": "utf-8" }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "result", "type": "bool" }
+    ],
+    "python_code": "import os\nfrom pathlib import Path\n\nasync def execute(self, inputs):\n    p = inputs.get('path') or self.get_parameter('path', '')\n    content = inputs.get('content') if inputs.get('content') is not None else self.get_parameter('content', '')\n    encoding = inputs.get('encoding') or self.get_parameter('encoding', 'utf-8')\n    try:\n        if not p:\n            try: self.log_info('Write File: path is empty')\n            except Exception: pass\n            res = False\n        else:\n            path = Path(p)\n            path.parent.mkdir(parents=True, exist_ok=True)\n            with path.open('w', encoding=encoding) as f:\n                f.write(str(content))\n            res = True\n    except Exception as e:\n        try: self.log_info(f'Write File error: {e}')\n        except Exception: pass\n        res = False\n\n    await self.set_output('result', res)\n    await self.set_output('exec_out', True)\n    return {'result': res}"
+}

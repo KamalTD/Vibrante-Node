@@ -3,7 +3,7 @@
     "name": "While Loop",
     "description": "Triggers `exec_out` repeatedly while `condition` is true. Respects `max_iterations` to avoid infinite loops.",
     "category": "Flow",
-    "icon_path": "icons/list.svg",
+    "icon_path": "icons/repeat.svg",
     "inputs": [
         { "name": "exec_in", "type": "exec" },
         { "name": "condition", "type": "bool", "widget_type": "bool", "default": false },
