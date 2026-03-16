@@ -1,0 +1,17 @@
+{
+    "node_id": "math_add",
+    "name": "Add",
+    "description": "Add two numbers (a + b).",
+    "category": "Math",
+    "icon_path": "icons/math.svg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "a", "type": "number", "widget_type": "float", "default": 0 },
+        { "name": "b", "type": "number", "widget_type": "float", "default": 0 }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "result", "type": "number" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    a = inputs.get('a') if inputs.get('a') is not None else self.get_parameter('a', 0)\n    b = inputs.get('b') if inputs.get('b') is not None else self.get_parameter('b', 0)\n    try:\n        res = (float(a) if a is not None else 0.0) + (float(b) if b is not None else 0.0)\n    except Exception as e:\n        try: self.log_info(f'Add error: {e}')\n        except Exception: pass\n        res = None\n\n    await self.set_output('result', res)\n    await self.set_output('exec_out', True)\n    return {'result': res}"
+}
