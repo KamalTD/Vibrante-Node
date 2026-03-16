@@ -39,7 +39,7 @@
         },
         {
             "name": "exec_on_finished",
-            "type": "any"
+            "type": "exec"
         },
         {
             "name": "results",
