@@ -119,6 +119,19 @@ Detailed documentation is available for both users and developers:
 ├── tests/              # Unit and integration tests
 ├── workflows/          # Saved pipeline files (.json)
 └── DOCUMENTATION.md    # Detailed technical documentation
+
+---
+
+## 🆕 New in this branch
+
+- **Python Script Node**: Add node `python_script` which runs user-provided Python held in the node's `python_code` parameter. Use the in-UI "Edit Script" button on the node to author and save scripts.
+- **While Loop Node**: Added `WhileLoopNode` (builtin) and `while_loop` JSON example workflows to support loop-based control flow within the graph.
+- **Utility Nodes**: Several list/dictionary/string helper nodes were added (`create_list`, `get_list_item`, `list_length`, `create_dictionary`, `get_dict_value`, `set_dict_value`, `concat`, `split`, `replace`, `lowercase`, `uppercase`, `string_length`).
+- **Engine Fix**: Runtime now applies workflow-saved parameters (such as `python_code`) to node instances before execution so authored scripts run when loading saved workflows.
+
+Branch: `feature/python-script-while-loop-nodes` — pushed to remote `origin`.
+
+If you want this change reflected in other branches or published docs, I can open a PR or update additional files.
 ```
 
 ---
