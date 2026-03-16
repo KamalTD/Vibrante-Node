@@ -1,0 +1,17 @@
+{
+    "node_id": "list_directory",
+    "name": "List Directory",
+    "description": "List files and folders in a directory.",
+    "category": "File",
+    "icon_path": "icons/folder.svg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "path", "type": "string", "widget_type": "text", "default": "." },
+        { "name": "recursive", "type": "bool", "widget_type": "bool", "default": false }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "result", "type": "list" }
+    ],
+    "python_code": "import os\nfrom pathlib import Path\n\nasync def execute(self, inputs):\n    p = inputs.get('path') or self.get_parameter('path', '.')\n    recursive = inputs.get('recursive') if inputs.get('recursive') is not None else self.get_parameter('recursive', False)\n    try:\n        path = Path(p)\n        items = []\n        if recursive:\n            for root, dirs, files in os.walk(path):\n                for d in dirs:\n                    items.append(str(Path(root) / d))\n                for f in files:\n                    items.append(str(Path(root) / f))\n        else:\n            if path.exists():\n                for entry in path.iterdir():\n                    items.append(str(entry))\n        res = items\n    except Exception as e:\n        try: self.log_info(f'List Directory error: {e}')\n        except Exception: pass\n        res = []\n\n    await self.set_output('result', res)\n    await self.set_output('exec_out', True)\n    return {'result': res}"
+}
