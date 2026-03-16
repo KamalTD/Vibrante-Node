@@ -3,6 +3,7 @@
     "name": "Random Float",
     "description": "Generates a random float between min and max.",
     "category": "Math",
+    "icon_path": "icons/dice.svg",
     "inputs": [
         {
             "name": "exec_in",

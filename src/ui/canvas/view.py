@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene
-from PyQt5.QtCore import Qt, QPoint
+from PyQt5.QtCore import Qt, QPoint, QPointF, QEvent
 from PyQt5.QtGui import QPainter, QWheelEvent, QMouseEvent, QKeyEvent
+from src.ui.canvas.node_search_popup import NodeSearchPopup
 
 class NodeView(QGraphicsView):
     def __init__(self, scene: QGraphicsScene, parent=None):
@@ -13,10 +14,27 @@ class NodeView(QGraphicsView):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setDragMode(QGraphicsView.RubberBandDrag)
         
+        # Enable focus and prevent Tab from being used for navigation
+        self.setFocusPolicy(Qt.StrongFocus)
+        
         self._is_panning = False
         self._last_pan_pos = QPoint()
+        self._search_popup = None
+        self._last_mouse_scene_pos = QPointF(0, 0)
+
+    def event(self, event):
+        """Override to catch Tab key before it's used for focus navigation."""
+        if event.type() == QEvent.KeyPress:
+            key_event = event
+            if key_event.key() == Qt.Key_Tab:
+                self.show_node_search_popup()
+                return True
+        return super().event(event)
 
     def mousePressEvent(self, event: QMouseEvent):
+        # Ensure view has focus for keyboard shortcuts
+        self.setFocus()
+        
         if event.button() == Qt.MiddleButton or (event.button() == Qt.LeftButton and event.modifiers() == Qt.AltModifier):
             self._start_pan(event.pos())
             event.accept()
@@ -24,6 +42,9 @@ class NodeView(QGraphicsView):
             super().mousePressEvent(event)
 
     def mouseMoveEvent(self, event: QMouseEvent):
+        # Track mouse position for spawning nodes
+        self._last_mouse_scene_pos = self.mapToScene(event.pos())
+        
         if self._is_panning:
             # Manually pan the view by shifting scrollbars
             delta = event.pos() - self._last_pan_pos
@@ -117,3 +138,35 @@ class NodeView(QGraphicsView):
             event.accept()
         else:
             super().wheelEvent(event)
+
+    def show_node_search_popup(self, pos=None):
+        """Show the node search popup at the current mouse position."""
+        scene = self.scene()
+        if not scene:
+            return
+        
+        # Get spawn position in scene coordinates
+        if pos is None:
+            spawn_pos = self._last_mouse_scene_pos
+        else:
+            spawn_pos = pos
+        
+        # Create and show the popup
+        popup = NodeSearchPopup(self)
+        
+        # Apply theme based on scene background
+        is_dark = scene.backgroundBrush().color().lightness() < 128
+        popup.apply_theme(is_dark)
+        
+        # Connect selection signal
+        def on_node_selected(node_id):
+            scene.push_history()
+            scene.add_node_by_name(node_id, spawn_pos)
+        
+        popup.node_selected.connect(on_node_selected)
+        
+        # Position popup near the cursor
+        cursor_pos = self.mapFromGlobal(self.cursor().pos())
+        popup_pos = self.mapToGlobal(cursor_pos)
+        popup.move(popup_pos)
+        popup.exec_()

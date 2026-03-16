@@ -1,0 +1,17 @@
+{
+    "node_id": "create_folder",
+    "name": "Create Folder",
+    "description": "Create a folder (and parents) at the specified path.",
+    "category": "File",
+    "icon_path": "icons/folder-plus.svg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "path", "type": "string", "widget_type": "text", "default": "" },
+        { "name": "exist_ok", "type": "bool", "widget_type": "bool", "default": true }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "result", "type": "bool" }
+    ],
+    "python_code": "from pathlib import Path\n\nasync def execute(self, inputs):\n    p = inputs.get('path') or self.get_parameter('path', '')\n    exist_ok = inputs.get('exist_ok') if inputs.get('exist_ok') is not None else self.get_parameter('exist_ok', True)\n    try:\n        if not p:\n            try: self.log_info('Create Folder: path is empty')\n            except Exception: pass\n            res = False\n        else:\n            path = Path(p)\n            path.mkdir(parents=True, exist_ok=bool(exist_ok))\n            res = True\n    except Exception as e:\n        try: self.log_info(f'Create Folder error: {e}')\n        except Exception: pass\n        res = False\n\n    await self.set_output('result', res)\n    await self.set_output('exec_out', True)\n    return {'result': res}"
+}

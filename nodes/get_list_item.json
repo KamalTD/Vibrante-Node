@@ -3,7 +3,7 @@
     "name": "Get List Item",
     "description": "Retrieves an item from a list by index. Can read from a named stored list or from an input list.",
     "category": "Data",
-    "icon_path": "icons/list.svg",
+    "icon_path": "icons/list-check.svg",
     "inputs": [
         { "name": "exec_in", "type": "exec" },
         { "name": "list_name", "type": "string", "widget_type": "text", "default": "" },
