@@ -1,10 +1,4 @@
 Traceback (most recent call last):
-  File "G:\MyData\test_python\node_based_pipeline\node_based_app\src\main.py", line 21, in <module>
-    from src.ui.window import MainWindow
-  File "G:\MyData\test_python\node_based_pipeline\node_based_app\src\ui\window.py", line 11, in <module>
-    from src.ui.node_builder import NodeBuilderDialog
-  File "G:\MyData\test_python\node_based_pipeline\node_based_app\src\ui\node_builder.py", line 10, in <module>
-    from src.ui.gemini_chat import GeminiChatWidget
-  File "G:\MyData\test_python\node_based_pipeline\node_based_app\src\ui\gemini_chat.py", line 6, in <module>
-    import google.generativeai as genai
-ModuleNotFoundError: No module named 'google'
+  File "E:\AI\Vibrante-Node\source\src\ui\code_editor.py", line 14, in paintEvent
+    def paintEvent(self, event):
+KeyboardInterrupt
