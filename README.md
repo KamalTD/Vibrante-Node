@@ -12,11 +12,11 @@ The project focuses on flexibility, extensibility, and developer productivity, m
 
 ## 📸 Screenshots
 
-![ForEach loop workflow with Node Library, Event Log, and Scripting Console](shots/04.PNG)
-![While Loop workflow with iterative control flow](shots/05.PNG)
-![Node Builder with Gemini Node Architect integration](shots/06.PNG)
-![OBJ to Maya converter pipeline - Dark Theme](shots/07.PNG)
-![OBJ to Maya converter pipeline - Light Theme](shots/08.PNG)
+![Vibrante-Node UI 1](shots/04.PNG)
+![Vibrante-Node UI 2](shots/05.PNG)
+![Vibrante-Node UI 3](shots/06.PNG)
+![Vibrante-Node UI 4](shots/07.PNG)
+![Vibrante-Node UI 5](shots/08.PNG)
 
 ---
 
