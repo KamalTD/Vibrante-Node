@@ -139,6 +139,18 @@ class MainWindow(QMainWindow):
         load_action.triggered.connect(self.load_workflow)
         file_menu.addAction(load_action)
 
+        file_menu.addSeparator()
+
+        export_python_action = QAction('Export Workflow as &Python...', self)
+        export_python_action.setShortcut('Ctrl+Shift+E')
+        export_python_action.triggered.connect(self._export_as_python)
+        file_menu.addAction(export_python_action)
+
+        import_python_action = QAction('&Import Python as Workflow...', self)
+        import_python_action.setShortcut('Ctrl+Shift+I')
+        import_python_action.triggered.connect(self._import_from_python)
+        file_menu.addAction(import_python_action)
+
         # Edit Menu
         edit_menu = menubar.addMenu('&Edit')
         
@@ -483,6 +495,29 @@ class MainWindow(QMainWindow):
             scene.from_workflow_model(workflow_model)
             scene.file_path = file_path # Track path for smart save
             self.log_panel.log(f"Workflow loaded: {file_path}", "info")
+
+    def _export_as_python(self):
+        scene = self.get_current_scene()
+        if not scene:
+            return
+        workflow_model = scene.to_workflow_model()
+        if not workflow_model.nodes:
+            QMessageBox.information(self, "Export", "No nodes in the current workflow.")
+            return
+        from src.ui.export_python_dialog import ExportPythonDialog
+        dialog = ExportPythonDialog(workflow_model, self)
+        dialog.exec_()
+
+    def _import_from_python(self):
+        from src.ui.import_python_dialog import ImportPythonDialog
+        dialog = ImportPythonDialog(self)
+        if dialog.exec_():
+            workflow_model = dialog.get_workflow_model()
+            if workflow_model:
+                view = self.add_new_workflow("Imported from Python")
+                scene = view.scene()
+                scene.from_workflow_model(workflow_model)
+                self.log_panel.log("Workflow imported from Python code.", "success")
 
     def execute_pipeline(self):
         if self._is_executing:
