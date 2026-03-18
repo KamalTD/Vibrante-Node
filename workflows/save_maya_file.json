@@ -1,0 +1,79 @@
+{
+    "nodes": [
+        {
+            "instance_id": "945b721f-73d1-4cc4-8fb1-f036414058ec",
+            "node_id": "obj_to_maya_converter",
+            "position": [
+                0.0,
+                1.0
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "obj_path": "",
+                "maya_bin_dir": "",
+                "maya_path": ""
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "acb73ab0-3606-470e-a468-eacc7b0a9609",
+            "node_id": "message_node",
+            "position": [
+                -426.24999999999994,
+                -36.250000000000014
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "msg": "C:/Users/Mahmoud/Documents/mesh.obj",
+                "out": "C:/Users/Mahmoud/Documents/mesh.obj"
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "6ae6319c-e4cf-457f-82b5-c853ad6f0406",
+            "node_id": "message_node",
+            "position": [
+                -372.49999999999994,
+                129.99999999999994
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "msg": "C:/Program Files/Autodesk/Maya2020/bin",
+                "out": "C:/Program Files/Autodesk/Maya2020/bin"
+            },
+            "state": "idle"
+        }
+    ],
+    "connections": [
+        {
+            "id": "6b9313b5-40d1-4785-aaed-b52e7ef63dcc",
+            "from_node": "acb73ab0-3606-470e-a468-eacc7b0a9609",
+            "from_port": "out",
+            "to_node": "945b721f-73d1-4cc4-8fb1-f036414058ec",
+            "to_port": "obj_path",
+            "is_exec": false
+        },
+        {
+            "id": "48b9332d-afc3-4e5d-a0d0-92b31c97b149",
+            "from_node": "acb73ab0-3606-470e-a468-eacc7b0a9609",
+            "from_port": "exec_out",
+            "to_node": "945b721f-73d1-4cc4-8fb1-f036414058ec",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "5d3d918b-eb9a-44e8-95bd-642ba60fafac",
+            "from_node": "6ae6319c-e4cf-457f-82b5-c853ad6f0406",
+            "from_port": "out",
+            "to_node": "945b721f-73d1-4cc4-8fb1-f036414058ec",
+            "to_port": "maya_bin_dir",
+            "is_exec": false
+        }
+    ],
+    "sticky_notes": [],
+    "backdrops": [],
+    "metadata": {}
+}
