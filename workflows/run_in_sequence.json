@@ -1,24 +1,6 @@
 {
     "nodes": [
         {
-            "instance_id": "da40bd3b-2498-4ef6-b9ac-b4c5a5947052",
-            "node_id": "Sequence",
-            "position": [
-                14.999999999999986,
-                82.50000000000001
-            ],
-            "parameters": {
-                "step_0": "Step 01",
-                "result": "Step 03",
-                "exec_step": true,
-                "exec_out": null,
-                "step_1": "Step 02",
-                "step_2": "Step 03",
-                "step_3": null
-            },
-            "state": "idle"
-        },
-        {
             "instance_id": "97f9dffe-4b3f-43c5-bebf-5c89d8f8a581",
             "node_id": "variable_node",
             "position": [
@@ -26,8 +8,10 @@
                 -78.0
             ],
             "parameters": {
+                "exec_in": null,
                 "type": "string",
                 "value": "Step 01",
+                "exec_out": null,
                 "out": "Step 01"
             },
             "state": "idle"
@@ -40,8 +24,10 @@
                 162.0
             ],
             "parameters": {
+                "exec_in": null,
                 "type": "string",
                 "value": "Step 02",
+                "exec_out": null,
                 "out": "Step 02"
             },
             "state": "idle"
@@ -54,8 +40,10 @@
                 402.0
             ],
             "parameters": {
+                "exec_in": null,
                 "type": "string",
                 "value": "Step 03",
+                "exec_out": null,
                 "out": "Step 03"
             },
             "state": "idle"
@@ -71,47 +59,65 @@
                 "exec_in": true,
                 "exec_out": true,
                 "data": "Step 03",
-                "out": "Step 01"
+                "out": "Step 03"
+            },
+            "state": "idle"
+        },
+        {
+            "instance_id": "34b688f7-53ef-4d05-a922-8c97dc1432a6",
+            "node_id": "Sequencer",
+            "position": [
+                7.0,
+                97.0
+            ],
+            "parameters": {
+                "step_0": "Step 01",
+                "result": null,
+                "exec_step": null,
+                "exec_out": null,
+                "step_1": "Step 02",
+                "step_2": "Step 03",
+                "step_3": null
             },
             "state": "idle"
         }
     ],
     "connections": [
         {
-            "id": "98358225-01c9-4d92-b730-ad76cdf16671",
+            "id": "647dbcbe-e2d7-405e-b5f5-170a15009ff9",
             "from_node": "97f9dffe-4b3f-43c5-bebf-5c89d8f8a581",
             "from_port": "out",
-            "to_node": "da40bd3b-2498-4ef6-b9ac-b4c5a5947052",
+            "to_node": "34b688f7-53ef-4d05-a922-8c97dc1432a6",
             "to_port": "step_0",
             "is_exec": false
         },
         {
-            "id": "10c8e9e6-21ed-4008-9747-73f0e41e33bd",
+            "id": "1f7670d3-4e73-460e-85f7-6bc59a879620",
             "from_node": "c2aefd3b-156b-4827-9c4a-3db3416c690a",
             "from_port": "out",
-            "to_node": "da40bd3b-2498-4ef6-b9ac-b4c5a5947052",
+            "to_node": "34b688f7-53ef-4d05-a922-8c97dc1432a6",
             "to_port": "step_1",
             "is_exec": false
         },
         {
-            "id": "bd0193b6-0982-422c-addb-9844b6db6f2f",
+            "id": "9933ac16-f840-444e-85ee-d74ada1af922",
             "from_node": "55abf23e-60fb-4702-a853-8645f55f53ed",
             "from_port": "out",
-            "to_node": "da40bd3b-2498-4ef6-b9ac-b4c5a5947052",
+            "to_node": "34b688f7-53ef-4d05-a922-8c97dc1432a6",
             "to_port": "step_2",
             "is_exec": false
         },
         {
-            "id": "93d1ad2c-d13e-48e5-bb82-53171475a06f",
-            "from_node": "da40bd3b-2498-4ef6-b9ac-b4c5a5947052",
+            "id": "03f53050-ca5a-4ab4-8d36-ce17378bda85",
+            "from_node": "34b688f7-53ef-4d05-a922-8c97dc1432a6",
             "from_port": "result",
             "to_node": "728f1563-b59c-4c4c-bd8a-a6a69b701528",
             "to_port": "data",
             "is_exec": false
         },
         {
-            "id": "2d324bbb-ca55-4014-ba1c-c19ecb78d673",
-            "from_node": "da40bd3b-2498-4ef6-b9ac-b4c5a5947052",
+            "id": "252d0ee2-04b0-4583-b6d1-caf5603698dd",
+            "from_node": "34b688f7-53ef-4d05-a922-8c97dc1432a6",
             "from_port": "exec_step",
             "to_node": "728f1563-b59c-4c4c-bd8a-a6a69b701528",
             "to_port": "exec_in",
