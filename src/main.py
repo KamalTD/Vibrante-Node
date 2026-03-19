@@ -1,4 +1,6 @@
-from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QApplication, QSplashScreen, QProgressBar
+from PyQt5.QtGui import QPixmap, QColor, QFont, QPainter
+from PyQt5.QtCore import Qt, QTimer
 import sys
 import os
 
@@ -18,15 +20,108 @@ def exception_hook(exctype, value, tb):
 
 sys.excepthook = exception_hook
 
-from src.ui.window import MainWindow
-...
+
+class SplashScreen(QSplashScreen):
+    VERSION = "v1.1.0"
+    COPYRIGHT = "\u00a9 2026 Mahmoud Kamal - KamalTD"
+
+    def __init__(self):
+        splash_path = os.path.join(os.path.dirname(__file__), '..', 'splash.png')
+        pixmap = QPixmap(splash_path)
+        # Scale to a reasonable splash size while keeping aspect ratio
+        pixmap = pixmap.scaled(800, 500, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+
+        # Paint version and copyright onto the pixmap
+        painter = QPainter(pixmap)
+        painter.setRenderHint(QPainter.TextAntialiasing)
+
+        # Version - top right
+        version_font = QFont("Segoe UI", 11, QFont.Bold)
+        painter.setFont(version_font)
+        painter.setPen(QColor(200, 200, 200, 200))
+        painter.drawText(
+            pixmap.rect().adjusted(0, 12, -16, 0),
+            Qt.AlignTop | Qt.AlignRight,
+            self.VERSION
+        )
+
+        # Copyright - bottom left
+        copyright_font = QFont("Segoe UI", 8)
+        painter.setFont(copyright_font)
+        painter.setPen(QColor(180, 180, 180, 180))
+        painter.drawText(
+            pixmap.rect().adjusted(12, 0, 0, -16),
+            Qt.AlignBottom | Qt.AlignLeft,
+            self.COPYRIGHT
+        )
+
+        painter.end()
+
+        super().__init__(pixmap, Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint)
+
+        # Add a progress bar at the bottom of the splash
+        self.progress_bar = QProgressBar(self)
+        bar_height = 6
+        self.progress_bar.setGeometry(0, pixmap.height() - bar_height, pixmap.width(), bar_height)
+        self.progress_bar.setTextVisible(False)
+        self.progress_bar.setStyleSheet("""
+            QProgressBar {
+                background-color: rgba(0, 0, 0, 100);
+                border: none;
+            }
+            QProgressBar::chunk {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                    stop:0 #b44aff, stop:1 #00d4ff);
+            }
+        """)
+        self.progress_bar.setValue(0)
+
+        # Message font
+        self._msg_font = QFont("Segoe UI", 9)
+
+    def showMessage(self, message, progress=0):
+        self.progress_bar.setValue(progress)
+        super().showMessage(
+            message,
+            Qt.AlignBottom | Qt.AlignHCenter,
+            QColor(200, 200, 200)
+        )
+        QApplication.processEvents()
+
+
 def main():
     print("Starting QApplication...")
     app = QApplication(sys.argv)
+
+    # Show splash screen
+    splash = SplashScreen()
+    splash.show()
+    QApplication.processEvents()
+
+    splash.showMessage("Loading modules...", 10)
+
+    from src.ui.window import MainWindow
+
+    splash.showMessage("Initializing application...", 40)
+
     print("Initializing MainWindow...")
     window = MainWindow()
+
+    splash.showMessage("Preparing workspace...", 70)
+    QApplication.processEvents()
+
+    splash.showMessage("Almost ready...", 90)
+    QApplication.processEvents()
+
     print("Showing MainWindow...")
     window.show()
+
+    splash.showMessage("Welcome to Vibrante-Node!", 100)
+    QApplication.processEvents()
+
+    # Close splash after a brief moment so the user sees 100%
+    QTimer.singleShot(500, splash.close)
+
     print("Entering Event Loop...")
     sys.exit(app.exec_())
 
