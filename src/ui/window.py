@@ -271,7 +271,7 @@ class MainWindow(QMainWindow):
         )
         
         QMessageBox.about(self, "About Vibrante-Node",
-            f"<h3>Vibrante-Node v1.0</h3>"
+            f"<h3>Vibrante-Node v1.1.0</h3>"
             f"<p>{description}</p>"
             f"<hr>"
             f"<p><b>Copyright &copy; 2026 Mahmoud Kamal - KamalTD</b></p>"
