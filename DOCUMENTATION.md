@@ -7,20 +7,35 @@ This document provides an exhaustive reference for the Vibrante-Node platform, c
 ## 🚀 1. Core Application Architecture
 
 ### 🔹 Professional Python Code Editor
-The Node Builder features a fully-integrated, professional-grade source code editor:
+The Node Builder and Export Python dialog feature a fully-integrated, professional-grade source code editor:
 - **Intelligent Syntax Highlighting**: Dracula-inspired theme for keywords, builtins, and multi-line strings.
 - **Auto-Indentation & Linting**: Automatic 4-space indent after colons (`:`) and instant syntax error detection with gutter highlighting.
 - **IntelliSense**: Rich completion suggestions for Python keywords and common node methods.
 - **Bracket Matching & Auto-Closing**: Instant feedback for `()`, `[]`, and `{}`.
 
+### 🔹 IDE-Style Export Dialog (v1.1.0)
+The "Export Workflow as Python" dialog provides a full development environment:
+- **Editable code** with the same CodeEditor used in the Node Builder.
+- **Code execution** via `QProcess` with real-time stdout/stderr streaming.
+- **AI-powered error fixing** using Google Gemini with accept/reject workflow.
+- **Dracula-themed** toolbar, editor, output panel, and status bar.
+- **Status bar** with cursor position (Ln/Col) and execution status.
+
 ### 🔹 High-Performance Execution Engine
 - **Asynchronous Execution**: Uses a background `asyncio` loop to keep the UI responsive.
 - **Topological Sorting**: Automatically determines execution order for data-only graphs.
-- **Hybrid Flow + Data Model (v1.0.5)**: 
+- **Hybrid Flow + Data Model (v1.0.5)**:
     - **Flow-Based Routing**: Execution follows `exec` pins sequentially.
     - **Recursive Data Pulling**: Before any node executes, it recursively triggers upstream data-only nodes to ensure all inputs are current.
     - **Re-entrant Execution**: Fixed deadlocks in `NetworkExecutor` to allow nested flow calls (essential for Loops).
 - **Recursive Data Propagation**: A live system that pushes parameter changes through the entire node chain instantly as the user interacts with the UI.
+- **Zero-Delay Loop Execution (v1.1.0)**: All artificial `asyncio.sleep()` delays removed from ForEach, WhileLoop, and Sequence nodes.
+- **Indexed Connection Lookups (v1.1.0)**: O(1) pre-calculated dict lookups replace O(N) connection scans in the output handler.
+- **Cached Widget Resolution (v1.1.0)**: Node widget lookups use a dict cache during execution instead of linear scans.
+
+### 🔹 Event Log System
+- **Filtered Logging**: Filter by node name, level (Errors, Warnings, Info, Execution, Outputs).
+- **Silent Mode (v1.1.0)**: Toggle to suppress all non-error messages with zero processing overhead for maximum execution speed.
 
 ### 🔹 Advanced Connection System
 - **Bidirectional Dragging**: Start wires from either input or output ports.
@@ -97,20 +112,35 @@ This document provides an exhaustive reference for the Vibrante-Node platform, c
 ## 🚀 1. Core Application Architecture
 
 ### 🔹 Professional Python Code Editor
-The Node Builder features a fully-integrated, professional-grade source code editor:
+The Node Builder and Export Python dialog feature a fully-integrated, professional-grade source code editor:
 - **Intelligent Syntax Highlighting**: Dracula-inspired theme for keywords, builtins, and multi-line strings.
 - **Auto-Indentation & Linting**: Automatic 4-space indent after colons (`:`) and instant syntax error detection with gutter highlighting.
 - **IntelliSense**: Rich completion suggestions for Python keywords and common node methods.
 - **Bracket Matching & Auto-Closing**: Instant feedback for `()`, `[]`, and `{}`.
 
+### 🔹 IDE-Style Export Dialog (v1.1.0)
+The "Export Workflow as Python" dialog provides a full development environment:
+- **Editable code** with the same CodeEditor used in the Node Builder.
+- **Code execution** via `QProcess` with real-time stdout/stderr streaming.
+- **AI-powered error fixing** using Google Gemini with accept/reject workflow.
+- **Dracula-themed** toolbar, editor, output panel, and status bar.
+- **Status bar** with cursor position (Ln/Col) and execution status.
+
 ### 🔹 High-Performance Execution Engine
 - **Asynchronous Execution**: Uses a background `asyncio` loop to keep the UI responsive.
 - **Topological Sorting**: Automatically determines execution order for data-only graphs.
-- **Hybrid Flow + Data Model (v1.0.5)**: 
+- **Hybrid Flow + Data Model (v1.0.5)**:
     - **Flow-Based Routing**: Execution follows `exec` pins sequentially.
     - **Recursive Data Pulling**: Before any node executes, it recursively triggers upstream data-only nodes to ensure all inputs are current.
     - **Re-entrant Execution**: Fixed deadlocks in `NetworkExecutor` to allow nested flow calls (essential for Loops).
 - **Recursive Data Propagation**: A live system that pushes parameter changes through the entire node chain instantly as the user interacts with the UI.
+- **Zero-Delay Loop Execution (v1.1.0)**: All artificial `asyncio.sleep()` delays removed from ForEach, WhileLoop, and Sequence nodes.
+- **Indexed Connection Lookups (v1.1.0)**: O(1) pre-calculated dict lookups replace O(N) connection scans in the output handler.
+- **Cached Widget Resolution (v1.1.0)**: Node widget lookups use a dict cache during execution instead of linear scans.
+
+### 🔹 Event Log System
+- **Filtered Logging**: Filter by node name, level (Errors, Warnings, Info, Execution, Outputs).
+- **Silent Mode (v1.1.0)**: Toggle to suppress all non-error messages with zero processing overhead for maximum execution speed.
 
 ### 🔹 Advanced Connection System
 - **Bidirectional Dragging**: Start wires from either input or output ports.
