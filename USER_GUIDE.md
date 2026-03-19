@@ -64,9 +64,25 @@ Vibrante-Node allows you to create your own nodes with custom Python logic:
 
 You can switch between **Dark** and **Light** modes at any time using the **Themes** menu. Themes apply globally.
 
+## 🖥️ Python Code Editor (Export)
+
+Export your workflow as Python and edit, run, and debug it in a professional IDE-style editor:
+
+1.  **Export**: Go to **File > Export Workflow as Python** (or `Ctrl+Shift+E`).
+2.  **Edit**: The generated code is fully editable with syntax highlighting, auto-completion, bracket matching, and live syntax linting.
+3.  **Run**: Press **F5** or click the **Run** button. See stdout/stderr output in real-time in the **Output** panel.
+4.  **Stop**: Click **Stop** to kill a running script.
+5.  **Fix with AI**: If your code has errors, click **Fix with AI** to send the code and error to Google Gemini. Review the suggested fix and accept or reject it.
+6.  **Save**: Press `Ctrl+S` to save the script to a `.py` file.
+
+## 🔇 Event Log Silent Mode
+
+The Event Log supports a **Silent Mode** toggle in the filter bar:
+-   When enabled, only **Errors** and **Warnings** are shown. Info, Execution, and Output messages are suppressed.
+-   Silent mode also skips all internal log processing for filtered messages, reducing overhead during execution.
+-   Toggle it on for faster execution when you only need to see errors.
+
 ## 🪵 Troubleshooting
--
-## 🆕 Scripting Node & Node Builder Gemini
 
 - **Python Script Node (`python_script`)**: Place the node on the canvas and click the `Edit Script` button to author Python code. The script executes with access to a local `inputs` dictionary containing current input values and `params` for node parameters. Assign your output to `result` to publish it to the node's `result` output port.
 

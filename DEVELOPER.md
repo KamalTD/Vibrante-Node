@@ -15,7 +15,8 @@ Vibrante-Node follows a modular architecture separated into three main layers:
 2.  **UI Layer (`src/ui/`)**: Handles the visual representation.
     -   `canvas/`: Custom `QGraphicsScene` and `QGraphicsView` for the node workspace.
     -   `node_widget.py`: The visual representation of a node on the canvas.
-    -   `code_editor.py`: The professional source code editor used in the Node Builder.
+    -   `code_editor.py`: The professional source code editor used in the Node Builder and Export dialog.
+    -   `export_python_dialog.py`: IDE-style dialog for viewing, editing, running, and AI-fixing exported Python code.
 
 3.  **Nodes Layer (`src/nodes/`)**: Defines the node logic.
     -   `base.py`: The abstract base class `BaseNode` that all nodes must inherit from.
@@ -60,3 +61,17 @@ Themes are applied globally using `QApplication.instance().setStyleSheet()`. Cus
 - **Engine Parameter Application**: The `NetworkExecutor` now copies workflow-saved parameters into instantiated node objects before execution. This ensures node-specific runtime-only parameters (for example `python_code` on a `python_script` node) are available when the engine runs.
 
 - **Gemini Integration Hook**: The Node Builder exposes hooks to Gemini for code assistance and snippet generation. See `src/ui/gemini_chat.py` for how the UI interacts with Gemini and how to configure API keys or local endpoints. Treat generated code as untrusted until reviewed — Gemini is intended to accelerate authoring rather than replace code review.
+
+## 🆕 v1.1.0 — Engine Optimizations & New Features
+
+### Execution Performance
+- **Zero-delay loop execution**: All `asyncio.sleep()` calls with non-zero delays in `ForEachNode`, `WhileLoopNode`, `SequenceNode`, and the engine poll loop have been replaced with `asyncio.sleep(0)`. This yields control to the event loop without introducing artificial latency.
+- **Indexed outgoing connections**: `NetworkExecutor` now pre-calculates `_outgoing_data_conns` and `_outgoing_exec_conns` dictionaries at execution start, keyed by `(node_id, port_name)`. The `set_output` handler uses O(1) dict lookups instead of O(N) scans over all connections.
+- **Widget cache**: `_find_node_widget` in `window.py` builds a dict cache at execution start and invalidates it when execution finishes, replacing O(N) linear scans per signal handler call.
+- **Signal handler short-circuits**: `_on_node_started`, `_on_node_output`, and `_on_node_log` skip string formatting and log emission when the Event Log's silent mode is active.
+
+### Export Python Dialog
+- `export_python_dialog.py` was rewritten from a 74-line read-only preview to a ~300-line IDE dialog using `CodeEditor`, `PythonHighlighter`, `QProcess` for code execution, and `GeminiFixWorker` (background thread) for AI-powered error fixing. The dialog has its own hardcoded Dracula stylesheet independent of the global theme.
+
+### Event Log
+- Added `Silent Mode` checkbox to `LogPanel`. When active, the `_handle_log` fast-path returns immediately for non-error/warning messages, skipping regex extraction, entry creation, and UI updates.

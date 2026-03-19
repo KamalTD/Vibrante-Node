@@ -22,6 +22,22 @@ The project focuses on flexibility, extensibility, and developer productivity, m
 
 ## 🌟 Latest Enhancements
 
+### 🖥️ Professional Python Code Editor (v1.1.0)
+The "Export Workflow as Python" dialog is now a full IDE-style code editor:
+- **Editable Code**: Full `CodeEditor` with line numbers, syntax highlighting, bracket matching, auto-completion, and live linting.
+- **Run & Debug**: Execute scripts directly with real-time stdout/stderr output and a Stop button.
+- **AI-Powered Fix**: Send errors to Google Gemini for automatic code correction with accept/reject workflow.
+- **Dracula Theme**: Consistent dark-themed toolbar, editor, output panel, and status bar.
+
+### 🔇 Event Log Silent Mode (v1.1.0)
+- **Silent Mode toggle** on the Event Log filter bar suppresses Info, Execution, and Output messages — showing only Errors and Warnings.
+- **Zero-overhead filtering**: Silent mode skips all log processing (regex, object creation, UI updates) for maximum execution speed.
+
+### ⚡ Execution Engine Optimizations (v1.1.0)
+- **Removed artificial delays**: Loop nodes (ForEach, WhileLoop, Sequence) no longer sleep between iterations — up to 150x faster for large loops.
+- **Indexed connection lookups**: O(1) dict lookups replace O(N) scans on every `set_output` call.
+- **Cached widget lookups**: Node widget resolution uses a dict cache instead of linear scan during execution.
+
 ### ⚡ Refined Flow Engine (v1.0.5)
 The execution engine has been significantly upgraded for power and reliability:
 - **Loop Execution Fixed:** Resolved a critical deadlock in `NetworkExecutor`, enabling smooth, nested flow processing for `For Loop` and `Loop Body` nodes.
@@ -119,20 +135,14 @@ Detailed documentation is available for both users and developers:
 ├── tests/              # Unit and integration tests
 ├── workflows/          # Saved pipeline files (.json)
 └── DOCUMENTATION.md    # Detailed technical documentation
+```
 
 ---
 
-## 🆕 New in this branch
+## 📋 Release History
 
-- **Python Script Node**: Add node `python_script` which runs user-provided Python held in the node's `python_code` parameter. Use the in-UI "Edit Script" button on the node to author and save scripts.
-- **While Loop Node**: Added `WhileLoopNode` (builtin) and `while_loop` JSON example workflows to support loop-based control flow within the graph.
-- **Utility Nodes**: Several list/dictionary/string helper nodes were added (`create_list`, `get_list_item`, `list_length`, `create_dictionary`, `get_dict_value`, `set_dict_value`, `concat`, `split`, `replace`, `lowercase`, `uppercase`, `string_length`).
-- **Engine Fix**: Runtime now applies workflow-saved parameters (such as `python_code`) to node instances before execution so authored scripts run when loading saved workflows.
-
-Branch: `feature/python-script-while-loop-nodes` — pushed to remote `origin`.
-
-If you want this change reflected in other branches or published docs, I can open a PR or update additional files.
-```
+- **[v1.1.0](RELEASE_v1.1.0.md)** — Professional Code Editor, Execution Optimizations, Event Log Silent Mode
+- **[v1.0.5](RELEASE_v1.0.5.md)** — Loop Execution & Flow Engine Refactor
 
 ---
 
