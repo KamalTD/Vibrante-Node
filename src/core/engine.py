@@ -28,7 +28,9 @@ class NetworkExecutor(QObject):
         self._finished_event = asyncio.Event()
         
         # Pre-calculated lookup maps
-        self._incoming_data_conns: Dict[UUID, List[Any]] = {} 
+        self._incoming_data_conns: Dict[UUID, List[Any]] = {}
+        self._outgoing_data_conns: Dict[tuple, List[Any]] = {}  # (node_id, port_name) -> [conn]
+        self._outgoing_exec_conns: Dict[tuple, List[Any]] = {}  # (node_id, port_name) -> [conn]
         self._driven_by_flow: Set[UUID] = set()
 
     def stop(self):
@@ -64,12 +66,17 @@ class NetworkExecutor(QObject):
         
         # 1. PRE-CALCULATE LOOKUP MAPS
         self._incoming_data_conns = {}
+        self._outgoing_data_conns = {}
+        self._outgoing_exec_conns = {}
         self._driven_by_flow = set()
         for conn in self.graph_manager.connections:
+            key = (conn.from_node, conn.from_port)
             if conn.is_exec:
                 self._driven_by_flow.add(conn.to_node)
+                self._outgoing_exec_conns.setdefault(key, []).append(conn)
             else:
                 self._incoming_data_conns.setdefault(conn.to_node, []).append(conn)
+                self._outgoing_data_conns.setdefault(key, []).append(conn)
 
         # 2. PREPARE ALL NODES
         self.node_results = {}
@@ -128,34 +135,26 @@ class NetworkExecutor(QObject):
             def create_output_handler(nid):
                 async def handler(name, value):
                     if self._is_stopped: return
-                    
+
                     # Store result immediately
                     self.node_results[nid][name] = value
                     self.node_output.emit(nid, {name: value})
-                    
-                    # 1. REACTIVE DATA PROPAGATION
-                    # exec_conns is defined below, but Python closures will find it
-                    for conn in self.graph_manager.connections:
-                        if conn.from_node == nid and conn.from_port == name and not conn.is_exec:
-                            target_instance = self.node_instances.get(conn.to_node)
-                            if target_instance:
-                                # Sync both parameter and result cache
-                                target_instance.parameters[conn.to_port] = value
-                                self.node_results[conn.to_node][conn.to_port] = value
-                                
-                                # ALWAYS trigger on_parameter_changed for data connections.
-                                # This allows nodes (like For Each) to react to data changes
-                                # even if they are primarily driven by flow pins.
-                                await target_instance.on_parameter_changed(conn.to_port, value)
 
-                    # 2. FLOW-BASED ROUTING
-                    if bool(value) is True: # Handle both True and truthy values for execution pins
+                    # 1. REACTIVE DATA PROPAGATION (indexed lookup)
+                    for conn in self._outgoing_data_conns.get((nid, name), []):
+                        target_instance = self.node_instances.get(conn.to_node)
+                        if target_instance:
+                            target_instance.parameters[conn.to_port] = value
+                            self.node_results[conn.to_node][conn.to_port] = value
+                            await target_instance.on_parameter_changed(conn.to_port, value)
+
+                    # 2. FLOW-BASED ROUTING (indexed lookup)
+                    if bool(value) is True:
                         node_inst = self.node_instances.get(nid)
                         port_def = node_inst.outputs.get(name) if node_inst else None
                         if port_def and getattr(port_def, 'data_type', 'any') == 'exec':
-                            for conn in self.graph_manager.connections:
-                                if conn.from_node == nid and conn.from_port == name and conn.is_exec:
-                                    await self._execute_flow(conn.to_node)
+                            for conn in self._outgoing_exec_conns.get((nid, name), []):
+                                await self._execute_flow(conn.to_node)
                 return handler
             instance._on_output = create_output_handler(node_id)
 
@@ -195,7 +194,7 @@ class NetworkExecutor(QObject):
                     while self._active_tasks and not self._is_stopped:
                         await self._finished_event.wait()
                         self._finished_event.clear()
-                        await asyncio.sleep(0.05)
+                        await asyncio.sleep(0)
             else:
                 # CLASSIC DATA-FLOW (Using Topological Sorting)
                 # Execute the graph layer by layer as mandated by GEMINI.md
