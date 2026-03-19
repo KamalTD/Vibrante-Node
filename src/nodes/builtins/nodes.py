@@ -146,10 +146,9 @@ class SequenceNode(BaseNode):
                 
                 # TRIGGER: Force downstream full execution for this step
                 await self.set_output("exec_step", True)
-                
-                # Small sleep to allow downstream reactive updates to process
-                # Increased slightly for UI stability
-                await asyncio.sleep(0.05)
+
+                # Minimal yield to allow downstream reactive updates to process
+                await asyncio.sleep(0)
 
         self.log_success("Sequence complete.")
         return {"result": last_val}
@@ -332,7 +331,7 @@ class ForEachNode(BaseNode):
             await self.set_output("current_index", i)
             
             # 2. Yield to allow reactive updates from downstream to propagate back to our parameters
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(0)
             
             # 3. Check for PRE-EXECUTION continue (skip)
             cont_cond = bool(self.get_parameter("continue_condition", False))
@@ -346,7 +345,7 @@ class ForEachNode(BaseNode):
             
             # 5. Yield again to allow flow-based logic to potentially set conditions for the NEXT item
             # or to check break_condition after this item's execution.
-            await asyncio.sleep(0.05)
+            await asyncio.sleep(0)
 
             # 6. Check for break
             if bool(self.get_parameter("break_condition", False)):
@@ -417,7 +416,7 @@ class WhileLoopNode(BaseNode):
             await self.set_output("current_index", i)
 
             # Yield for reactive updates
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(0)
 
             # Check for continue (skip this iteration)
             if bool(self.get_parameter("continue_condition", False)):
@@ -432,7 +431,7 @@ class WhileLoopNode(BaseNode):
             await self.set_output("each_iteration", True)
 
             # Small yield to allow flow-triggered nodes to run and potentially set break
-            await asyncio.sleep(0.05)
+            await asyncio.sleep(0)
 
             # Check for break
             if bool(self.get_parameter("break_condition", False)):

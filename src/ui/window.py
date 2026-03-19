@@ -534,7 +534,12 @@ class MainWindow(QMainWindow):
         self.status_label.setText("Running...")
         tab_name = self.tabs.tabText(self.tabs.currentIndex())
         self.log_panel.log(f"Starting execution for [{tab_name}]...", "execution")
-        
+
+        # Build node widget cache for fast lookup during execution
+        self._node_widget_cache = {}
+        for widget in scene.nodes:
+            self._node_widget_cache[widget.instance_id] = widget
+
         workflow_model = scene.to_workflow_model()
         
         from src.core.graph import GraphManager
@@ -568,6 +573,7 @@ class MainWindow(QMainWindow):
 
     def _on_execution_finished(self, success):
         self._is_executing = False
+        self._node_widget_cache = None
         self.execute_btn.setEnabled(True)
         self.stop_btn.setEnabled(False)
         self.status_label.setText("Ready")
@@ -586,21 +592,23 @@ class MainWindow(QMainWindow):
 
     def _on_node_started(self, node_instance_id):
         widget = self._find_node_widget(node_instance_id)
-        name = widget.node_definition.name if widget else "Unknown"
-        self.log_panel.log(f"Node '{name}' started", "execution")
-        if widget: widget.set_status("running")
+        if widget:
+            widget.set_status("running")
+            if not self.log_panel.silent_mode.isChecked():
+                self.log_panel.log(f"Node '{widget.node_definition.name}' started", "execution")
 
     def _on_node_output(self, node_instance_id, results):
         widget = self._find_node_widget(node_instance_id)
         if widget:
             for name, val in results.items():
                 widget.set_parameter(name, val, propagate=False)
-                
-        name = widget.node_definition.name if widget else "Unknown"
-        res_str = ", ".join([f"{k}: {v}" for k, v in results.items()])
-        self.log_panel.log(f"Node '{name}' output -> {res_str}", "success")
+            if not self.log_panel.silent_mode.isChecked():
+                res_str = ", ".join([f"{k}: {v}" for k, v in results.items()])
+                self.log_panel.log(f"Node '{widget.node_definition.name}' output -> {res_str}", "success")
 
     def _on_node_log(self, node_instance_id, message, level):
+        if self.log_panel.silent_mode.isChecked() and level not in ("error", "warning"):
+            return
         widget = self._find_node_widget(node_instance_id)
         name = widget.node_definition.name if widget else "Unknown"
         self.log_panel.log(f"[{name}] {message}", level)
@@ -616,12 +624,14 @@ class MainWindow(QMainWindow):
         QMessageBox.critical(self, "Execution Error", f"Node {name} failed:\n{error_msg}")
 
     def _find_node_widget(self, instance_id):
-        scene = self.get_current_scene()
-        if not scene: return None
-        for widget in scene.nodes:
-            if widget.instance_id == instance_id:
-                return widget
-        return None
+        # Build lookup cache on first call per execution
+        if not hasattr(self, '_node_widget_cache') or self._node_widget_cache is None:
+            self._node_widget_cache = {}
+            scene = self.get_current_scene()
+            if scene:
+                for widget in scene.nodes:
+                    self._node_widget_cache[widget.instance_id] = widget
+        return self._node_widget_cache.get(instance_id)
 
     def _copy_selection(self):
         scene = self.get_current_scene()
