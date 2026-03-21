@@ -11,15 +11,61 @@ QMessageBox = QtWidgets.QMessageBox
 QStyle = QtWidgets.QStyle
 QLineEdit = QtWidgets.QLineEdit
 Qt = QtCore.Qt
+QPoint = QtCore.QPoint
 QSize = QtCore.QSize
 QByteArray = QtCore.QByteArray
 QIcon = QtGui.QIcon
 QPixmap = QtGui.QPixmap
 QPainter = QtGui.QPainter
+QDrag = QtGui.QDrag
+QMimeData = QtCore.QMimeData
 QSvgRenderer = QtSvg.QSvgRenderer if QtSvg else None
 from src.core.registry import NodeRegistry
 import os
 import re
+
+class DraggableTreeWidget(QTreeWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setDragEnabled(True)
+        self._drag_start_pos = None
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self._drag_start_pos = event.pos()
+        super().mousePressEvent(event)
+
+    def mouseMoveEvent(self, event):
+        if not (event.buttons() & Qt.LeftButton):
+            return
+        if not self._drag_start_pos:
+            return
+        if (event.pos() - self._drag_start_pos).manhattanLength() < QtWidgets.QApplication.startDragDistance():
+            return
+
+        item = self.itemAt(self._drag_start_pos)
+        if not item:
+            return
+
+        node_id = item.data(0, Qt.UserRole)
+        if not node_id:
+            return
+
+        # Start Drag
+        drag = QDrag(self)
+        mime_data = QMimeData()
+        mime_data.setText(node_id)
+        mime_data.setData("application/x-node-id", QByteArray(node_id.encode("utf-8")))
+        drag.setMimeData(mime_data)
+
+        # Set a ghost icon for the drag
+        icon = item.icon(0)
+        if not icon.isNull():
+            pixmap = icon.pixmap(32, 32)
+            drag.setPixmap(pixmap)
+            drag.setHotSpot(QPoint(16, 16))
+
+        drag.exec_(Qt.CopyAction)
 
 class LibraryPanel(QDockWidget):
     # Signals
@@ -42,7 +88,7 @@ class LibraryPanel(QDockWidget):
         self.layout.addWidget(self.search_bar)
         
         # Tree Widget for Categories
-        self.tree_widget = QTreeWidget()
+        self.tree_widget = DraggableTreeWidget()
         self.tree_widget.setHeaderHidden(True)
         self.tree_widget.setIconSize(QSize(24, 24))
         self.tree_widget.setContextMenuPolicy(Qt.CustomContextMenu)

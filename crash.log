@@ -1,9 +1,5 @@
 Traceback (most recent call last):
-  File "G:\MyData\test_python\node_based_pipeline\node_based_app\src\main.py", line 168, in <module>
-    main()
-  File "G:\MyData\test_python\node_based_pipeline\node_based_app\src\main.py", line 142, in main
-    from src.ui.window import MainWindow
-  File "G:\MyData\test_python\node_based_pipeline\node_based_app\src\ui\window.py", line 9, in <module>
-    QAction = QtWidgets.QAction
-              ^^^^^^^^^^^^^^^^^
-AttributeError: module 'PySide6.QtWidgets' has no attribute 'QAction'
+  File "G:\MyData\test_python\node_based_pipeline\node_based_app\src\ui\library_panel.py", line 65, in mouseMoveEvent
+    drag.setHotSpot(QPoint(16, 16))
+                    ^^^^^^
+NameError: name 'QPoint' is not defined

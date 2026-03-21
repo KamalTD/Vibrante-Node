@@ -23,6 +23,9 @@ class NodeView(QGraphicsView):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setDragMode(QGraphicsView.RubberBandDrag)
         
+        # Enable Drops
+        self.setAcceptDrops(True)
+        
         # Enable focus and prevent Tab from being used for navigation
         self.setFocusPolicy(Qt.StrongFocus)
         
@@ -30,6 +33,39 @@ class NodeView(QGraphicsView):
         self._last_pan_pos = QPoint()
         self._search_popup = None
         self._last_mouse_scene_pos = QPointF(0, 0)
+
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasFormat("application/x-node-id") or event.mimeData().hasText():
+            event.acceptProposedAction()
+        else:
+            super().dragEnterEvent(event)
+
+    def dragMoveEvent(self, event):
+        if event.mimeData().hasFormat("application/x-node-id") or event.mimeData().hasText():
+            event.acceptProposedAction()
+        else:
+            super().dragMoveEvent(event)
+
+    def dropEvent(self, event):
+        mime = event.mimeData()
+        node_id = None
+        
+        if mime.hasFormat("application/x-node-id"):
+            node_id = bytes(mime.data("application/x-node-id")).decode("utf-8")
+        elif mime.hasText():
+            node_id = mime.text()
+            
+        if node_id:
+            scene = self.scene()
+            if scene:
+                scene.push_history()
+                # Map drop position to scene coordinates
+                pos = self.mapToScene(event.pos())
+                scene.add_node_by_name(node_id, pos)
+                event.acceptProposedAction()
+                return
+                
+        super().dropEvent(event)
 
     def event(self, event):
         """Override to catch Tab key before it's used for focus navigation."""
