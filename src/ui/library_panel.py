@@ -11,6 +11,7 @@ QMessageBox = QtWidgets.QMessageBox
 QStyle = QtWidgets.QStyle
 QLineEdit = QtWidgets.QLineEdit
 Qt = QtCore.Qt
+QPoint = QtCore.QPoint
 QSize = QtCore.QSize
 QByteArray = QtCore.QByteArray
 QIcon = QtGui.QIcon
