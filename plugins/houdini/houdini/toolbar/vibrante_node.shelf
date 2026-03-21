@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <shelfDocument>
+  <!-- This file contains definitions of shelves, toolbars, and tools.
+ It should not be hand-edited when it is being used by the application.
+ Note, that two definitions of the same element are not allowed in
+ a single file. -->
+
   <toolshelf name="vibrante_node_shelf" label="Vibrante-Node">
     <memberTool name="vibrante_launch_tool"/>
     <memberTool name="vibrante_launch_context_tool"/>
     <memberTool name="vibrante_launch_inprocess_tool"/>
   </toolshelf>
 
-  <tool name="vibrante_launch_tool" label="Launch Vibrante-Node" icon="icons/vibrante-node-icon.png">
+  <tool name="vibrante_launch_tool" label="Launch Vibrante-Node" icon="$VIBRANTE_NODE_APP/icons/vibrante-node-icon.png">
     <helpText><![CDATA[
 Launch the Vibrante-Node Pipeline Editor as a separate process.
 The hou module will be importable in Vibrante-Node via PYTHONPATH.
@@ -23,7 +28,7 @@ vibrante_node_houdini.launch()
 ]]></script>
   </tool>
 
-  <tool name="vibrante_launch_context_tool" label="Launch with HIP Context" icon="icons/vibrante-node-icon.png">
+  <tool name="vibrante_launch_context_tool" label="Launch with HIP Context" icon="$VIBRANTE_NODE_APP/icons/vibrante-node-icon.png">
     <helpText><![CDATA[
 Launch Vibrante-Node as a separate process with the current HIP file context.
 Passes HIP file path and Houdini version info as environment variables.
@@ -39,7 +44,7 @@ vibrante_node_houdini.launch_with_context()
 ]]></script>
   </tool>
 
-  <tool name="vibrante_launch_inprocess_tool" label="Launch with Live HIP" icon="icons/vibrante-node-icon.png">
+  <tool name="vibrante_launch_inprocess_tool" label="Launch with Live HIP" icon="$VIBRANTE_NODE_APP/icons/vibrante-node-icon.png">
     <helpText><![CDATA[
 Launch Vibrante-Node with live HIP context.
 Passes current HIP file path and Houdini version info.
