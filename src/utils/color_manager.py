@@ -1,5 +1,6 @@
 import hashlib
-from PyQt5.QtGui import QColor
+from src.utils.qt_compat import QtGui
+QColor = QtGui.QColor
 
 class ColorManager:
     _category_colors = {}

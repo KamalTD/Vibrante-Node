@@ -1,7 +1,14 @@
-from PyQt5.QtWidgets import QGraphicsScene, QGraphicsItem, QMenu, QAction
-from PyQt5.QtCore import Qt, QPointF
-from PyQt5.QtGui import QColor, QPen
+from src.utils.qt_compat import QtWidgets, QtCore, QtGui, exec_dialog
 import asyncio
+
+QGraphicsScene = QtWidgets.QGraphicsScene
+QGraphicsItem = QtWidgets.QGraphicsItem
+QMenu = QtWidgets.QMenu
+QAction = QtWidgets.QAction
+Qt = QtCore.Qt
+QPointF = QtCore.QPointF
+QColor = QtGui.QColor
+QPen = QtGui.QPen
 from src.core.registry import NodeRegistry
 from src.ui.node_widget import NodeWidget
 from src.ui.canvas.edge import Edge
@@ -532,7 +539,7 @@ class NodeScene(QGraphicsScene):
             action.triggered.connect(spawn_node)
             node_menu.addAction(action)
             
-        if not menu.isEmpty(): menu.exec_(event.screenPos())
+        if not menu.isEmpty(): exec_dialog(menu, event.screenPos())
         else: super().contextMenuEvent(event)
 
     def add_node_by_name(self, node_id, pos):

@@ -1,8 +1,22 @@
-from PyQt5.QtWidgets import QDockWidget, QWidget, QVBoxLayout, QPushButton, QMessageBox, QTabWidget, QHBoxLayout, QTextEdit, QLineEdit, QLabel, QSplitter
-from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QColor, QTextCursor
+from src.utils.qt_compat import QtWidgets, QtCore, QtGui
 from src.ui.code_editor import CodeEditor
 from src.core.registry import NodeRegistry
+
+QDockWidget = QtWidgets.QDockWidget
+QWidget = QtWidgets.QWidget
+QVBoxLayout = QtWidgets.QVBoxLayout
+QPushButton = QtWidgets.QPushButton
+QMessageBox = QtWidgets.QMessageBox
+QTabWidget = QtWidgets.QTabWidget
+QHBoxLayout = QtWidgets.QHBoxLayout
+QTextEdit = QtWidgets.QTextEdit
+QLineEdit = QtWidgets.QLineEdit
+QLabel = QtWidgets.QLabel
+QSplitter = QtWidgets.QSplitter
+Qt = QtCore.Qt
+QTimer = QtCore.QTimer
+QColor = QtGui.QColor
+QTextCursor = QtGui.QTextCursor
 import traceback
 import sys
 import subprocess

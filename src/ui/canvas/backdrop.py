@@ -1,7 +1,16 @@
-from PyQt5.QtWidgets import QGraphicsRectItem, QGraphicsTextItem, QGraphicsItem
-from PyQt5.QtCore import Qt, QRectF, QPointF
-from PyQt5.QtGui import QColor, QPen, QBrush, QCursor
+from src.utils.qt_compat import QtWidgets, QtCore, QtGui
 from uuid import uuid4
+
+QGraphicsRectItem = QtWidgets.QGraphicsRectItem
+QGraphicsTextItem = QtWidgets.QGraphicsTextItem
+QGraphicsItem = QtWidgets.QGraphicsItem
+Qt = QtCore.Qt
+QRectF = QtCore.QRectF
+QPointF = QtCore.QPointF
+QColor = QtGui.QColor
+QPen = QtGui.QPen
+QBrush = QtGui.QBrush
+QCursor = QtGui.QCursor
 
 class Backdrop(QGraphicsRectItem):
     def __init__(self, title="Network Box", pos=(0, 0), size=(400, 300), color="#444444", instance_id=None):

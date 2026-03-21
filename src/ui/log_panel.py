@@ -1,8 +1,24 @@
-from PyQt5.QtWidgets import (QDockWidget, QTextEdit, QWidget, QVBoxLayout, QPushButton, 
-                             QHBoxLayout, QToolBar, QAction, QStyle, QLineEdit, QCheckBox,
-                             QLabel, QFrame, QComboBox)
-from PyQt5.QtGui import QTextCursor, QTextCharFormat, QColor, QFont
-from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
+from src.utils.qt_compat import QtWidgets, QtGui, QtCore, Signal, Slot
+
+QDockWidget = QtWidgets.QDockWidget
+QTextEdit = QtWidgets.QTextEdit
+QWidget = QtWidgets.QWidget
+QVBoxLayout = QtWidgets.QVBoxLayout
+QPushButton = QtWidgets.QPushButton
+QHBoxLayout = QtWidgets.QHBoxLayout
+QToolBar = QtWidgets.QToolBar
+QAction = QtWidgets.QAction
+QStyle = QtWidgets.QStyle
+QLineEdit = QtWidgets.QLineEdit
+QCheckBox = QtWidgets.QCheckBox
+QLabel = QtWidgets.QLabel
+QFrame = QtWidgets.QFrame
+QComboBox = QtWidgets.QComboBox
+QTextCursor = QtGui.QTextCursor
+QTextCharFormat = QtGui.QTextCharFormat
+QColor = QtGui.QColor
+QFont = QtGui.QFont
+Qt = QtCore.Qt
 from dataclasses import dataclass
 from typing import Optional
 import re
@@ -17,7 +33,7 @@ class LogEntry:
 
 class LogPanel(QDockWidget):
     # Signal to allow thread-safe logging from background threads
-    log_signal = pyqtSignal(str, str)
+    log_signal = Signal(str, str)
 
     def __init__(self, parent=None):
         super().__init__("Event Log", parent)
@@ -192,7 +208,7 @@ class LogPanel(QDockWidget):
         else:
             return "info"
 
-    @pyqtSlot(str, str)
+    @Slot(str, str)
     def _handle_log(self, message: str, level: str):
         """Store entry and update display."""
         # Silent mode fast path: skip all processing for non-error/warning messages

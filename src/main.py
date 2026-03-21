@@ -1,14 +1,53 @@
-from PyQt5.QtWidgets import QApplication, QSplashScreen, QProgressBar
-from PyQt5.QtGui import QPixmap, QColor, QFont, QPainter
-from PyQt5.QtCore import Qt, QTimer
 import sys
 import os
 
 # Add the project root to sys.path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+# Process PYTHONPATH: add entries to sys.path for external library access
+def _apply_pythonpath():
+    pythonpath = os.environ.get('PYTHONPATH', '')
+    if pythonpath:
+        for p in pythonpath.split(os.pathsep):
+            p = p.strip()
+            if p and os.path.isdir(p) and p not in sys.path:
+                sys.path.insert(0, p)
+                print(f"Added to sys.path: {p}")
+
+# Register Houdini DLL directories so `import hou` works on Windows.
+# Python 3.8+ no longer uses PATH for DLL resolution; os.add_dll_directory()
+# must be called explicitly for each directory containing required DLLs.
+def _register_houdini_dlls():
+    hfs = os.environ.get('HFS', '')
+    if not hfs:
+        return
+    dll_dirs = [
+        os.path.join(hfs, 'bin'),
+        os.path.join(hfs, 'custom', 'houdini', 'dsolib'),
+    ]
+    for d in dll_dirs:
+        if os.path.isdir(d):
+            try:
+                os.add_dll_directory(d)
+                print(f"Registered DLL directory: {d}")
+            except OSError:
+                pass
+
+_apply_pythonpath()
+_register_houdini_dlls()
+
+from src.utils.qt_compat import QtWidgets, QtGui, QtCore, exec_app
+QApplication = QtWidgets.QApplication
+QSplashScreen = QtWidgets.QSplashScreen
+QProgressBar = QtWidgets.QProgressBar
+QPixmap = QtGui.QPixmap
+QColor = QtGui.QColor
+QFont = QtGui.QFont
+QPainter = QtGui.QPainter
+Qt = QtCore.Qt
+QTimer = QtCore.QTimer
+
 import traceback
-import os
 
 def exception_hook(exctype, value, tb):
     """Global function to catch unhandled exceptions."""
@@ -123,7 +162,7 @@ def main():
     QTimer.singleShot(500, splash.close)
 
     print("Entering Event Loop...")
-    sys.exit(app.exec_())
+    sys.exit(exec_app(app))
 
 if __name__ == "__main__":
     main()

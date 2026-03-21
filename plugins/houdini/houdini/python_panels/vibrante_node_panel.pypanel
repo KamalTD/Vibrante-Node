@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pythonPanelDocument>
+  <interface name="vibrante_node_panel" label="Vibrante-Node" icon="MISC_python"
+             help_url="">
+    <script><![CDATA[
+from hutil.Qt import QtWidgets, QtCore
+
+def onCreateInterface():
+    """Called by Houdini to create the panel widget."""
+    widget = QtWidgets.QWidget()
+    layout = QtWidgets.QVBoxLayout(widget)
+    layout.setContentsMargins(8, 8, 8, 8)
+
+    # Title
+    title = QtWidgets.QLabel("<h3>Vibrante-Node Pipeline Editor</h3>")
+    layout.addWidget(title)
+
+    # Status info
+    import vibrante_node_houdini
+    app_root = vibrante_node_houdini.get_app_root()
+    hou_python = vibrante_node_houdini.get_houdini_python_path()
+
+    status_text = "<b>Installation:</b> {}<br>".format(
+        app_root if app_root else "<font color='red'>NOT FOUND</font>"
+    )
+    status_text += "<b>Houdini Python:</b> {}<br>".format(
+        hou_python if hou_python else "<font color='orange'>Not detected</font>"
+    )
+    status_text += "<b>Mode:</b> Direct hou import (Python 3.11)<br>"
+
+    status = QtWidgets.QLabel(status_text)
+    status.setWordWrap(True)
+    layout.addWidget(status)
+
+    layout.addSpacing(10)
+
+    # In-Process launch button (primary / recommended)
+    inprocess_btn = QtWidgets.QPushButton("Launch In-Process (Live Session)")
+    inprocess_btn.setMinimumHeight(36)
+    inprocess_btn.setStyleSheet(
+        "QPushButton { background-color: #bd93f9; color: black; font-weight: bold; "
+        "border-radius: 4px; } QPushButton:hover { background-color: #caa4ff; }"
+    )
+    inprocess_btn.clicked.connect(lambda: vibrante_node_houdini.launch_inprocess())
+    layout.addWidget(inprocess_btn)
+
+    layout.addSpacing(4)
+
+    # Launch button (standalone)
+    launch_btn = QtWidgets.QPushButton("Launch Vibrante-Node (Standalone)")
+    launch_btn.setMinimumHeight(30)
+    launch_btn.setStyleSheet(
+        "QPushButton { background-color: #50fa7b; color: black; font-weight: bold; "
+        "border-radius: 4px; } QPushButton:hover { background-color: #69ff94; }"
+    )
+    launch_btn.clicked.connect(lambda: vibrante_node_houdini.launch())
+    layout.addWidget(launch_btn)
+
+    # Launch with context button
+    ctx_btn = QtWidgets.QPushButton("Launch with HIP Context")
+    ctx_btn.setMinimumHeight(30)
+    ctx_btn.setStyleSheet(
+        "QPushButton { background-color: #ffb86c; color: black; "
+        "border-radius: 4px; } QPushButton:hover { background-color: #ffc988; }"
+    )
+    ctx_btn.clicked.connect(lambda: vibrante_node_houdini.launch_with_context())
+    layout.addWidget(ctx_btn)
+
+    layout.addSpacing(10)
+
+    # Folder buttons row
+    folder_layout = QtWidgets.QHBoxLayout()
+
+    scripts_btn = QtWidgets.QPushButton("Scripts Folder")
+    scripts_btn.clicked.connect(lambda: vibrante_node_houdini.open_houdini_scripts_folder())
+    folder_layout.addWidget(scripts_btn)
+
+    nodes_btn = QtWidgets.QPushButton("Nodes Folder")
+    nodes_btn.clicked.connect(lambda: vibrante_node_houdini.open_houdini_nodes_folder())
+    folder_layout.addWidget(nodes_btn)
+
+    layout.addLayout(folder_layout)
+
+    layout.addStretch()
+
+    # Copyright
+    copyright_label = QtWidgets.QLabel(
+        "<small>Copyright 2026 Mahmoud Kamal - KamalTD</small>"
+    )
+    copyright_label.setAlignment(QtCore.Qt.AlignCenter)
+    layout.addWidget(copyright_label)
+
+    return widget
+]]></script>
+  </interface>
+</pythonPanelDocument>

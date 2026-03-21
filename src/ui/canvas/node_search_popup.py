@@ -1,14 +1,23 @@
-from PyQt5.QtWidgets import (QDialog, QVBoxLayout, QLineEdit, QListWidget, 
-                             QListWidgetItem, QHBoxLayout, QLabel, QFrame)
-from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QKeyEvent, QFont
+from src.utils.qt_compat import QtWidgets, QtCore, QtGui, Signal
 from src.core.registry import NodeRegistry
+
+QDialog = QtWidgets.QDialog
+QVBoxLayout = QtWidgets.QVBoxLayout
+QLineEdit = QtWidgets.QLineEdit
+QListWidget = QtWidgets.QListWidget
+QListWidgetItem = QtWidgets.QListWidgetItem
+QHBoxLayout = QtWidgets.QHBoxLayout
+QLabel = QtWidgets.QLabel
+QFrame = QtWidgets.QFrame
+Qt = QtCore.Qt
+QKeyEvent = QtGui.QKeyEvent
+QFont = QtGui.QFont
 
 
 class NodeSearchPopup(QDialog):
     """A searchable popup menu for quickly adding nodes."""
     
-    node_selected = pyqtSignal(str)  # Emits node_id when user selects a node
+    node_selected = Signal(str)  # Emits node_id when user selects a node
     
     def __init__(self, parent=None):
         super().__init__(parent)

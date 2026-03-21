@@ -1,12 +1,22 @@
 import json
 import threading
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QTextEdit, QLineEdit, QPushButton, QLabel, QMessageBox, QHBoxLayout
-from PyQt5.QtCore import pyqtSignal, Qt
+from src.utils.qt_compat import QtWidgets, QtCore, Signal, invoke_method
+
+QWidget = QtWidgets.QWidget
+QVBoxLayout = QtWidgets.QVBoxLayout
+QTextEdit = QtWidgets.QTextEdit
+QLineEdit = QtWidgets.QLineEdit
+QPushButton = QtWidgets.QPushButton
+QLabel = QtWidgets.QLabel
+QMessageBox = QtWidgets.QMessageBox
+QHBoxLayout = QtWidgets.QHBoxLayout
+
+Qt = QtCore.Qt
 from src.utils.config_manager import config
 import google.generativeai as genai
 
 class GeminiChatWidget(QWidget):
-    node_generated = pyqtSignal(dict) # Signal emitted when Gemini generates a node definition
+    node_generated = Signal(dict) # Signal emitted when Gemini generates a node definition
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -148,10 +158,8 @@ class GeminiChatWidget(QWidget):
             self._enable_input()
 
     def _append_to_chat(self, text):
-        from PyQt5.QtCore import QMetaObject, Q_ARG
-        QMetaObject.invokeMethod(self.chat_display, "append", Qt.QueuedConnection, Q_ARG(str, f"<b>Gemini:</b> {text}"))
+        invoke_method(self.chat_display, "append", Qt.QueuedConnection, f"<b>Gemini:</b> {text}")
 
     def _enable_input(self):
-        from PyQt5.QtCore import QMetaObject, Q_ARG
-        QMetaObject.invokeMethod(self.chat_input, "setEnabled", Qt.QueuedConnection, Q_ARG(bool, True))
-        QMetaObject.invokeMethod(self.send_btn, "setEnabled", Qt.QueuedConnection, Q_ARG(bool, True))
+        invoke_method(self.chat_input, "setEnabled", Qt.QueuedConnection, True)
+        invoke_method(self.send_btn, "setEnabled", Qt.QueuedConnection, True)

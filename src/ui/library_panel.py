@@ -1,17 +1,31 @@
-from PyQt5.QtWidgets import QDockWidget, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget, QMenu, QAction, QMessageBox, QStyle, QLineEdit
-from PyQt5.QtCore import Qt, pyqtSignal, QSize, QByteArray
-from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtSvg import QSvgRenderer
-from PyQt5.QtGui import QPainter
+from src.utils.qt_compat import QtWidgets, QtCore, QtGui, QtSvg, Signal, exec_dialog
+
+QDockWidget = QtWidgets.QDockWidget
+QTreeWidget = QtWidgets.QTreeWidget
+QTreeWidgetItem = QtWidgets.QTreeWidgetItem
+QVBoxLayout = QtWidgets.QVBoxLayout
+QWidget = QtWidgets.QWidget
+QMenu = QtWidgets.QMenu
+QAction = QtWidgets.QAction
+QMessageBox = QtWidgets.QMessageBox
+QStyle = QtWidgets.QStyle
+QLineEdit = QtWidgets.QLineEdit
+Qt = QtCore.Qt
+QSize = QtCore.QSize
+QByteArray = QtCore.QByteArray
+QIcon = QtGui.QIcon
+QPixmap = QtGui.QPixmap
+QPainter = QtGui.QPainter
+QSvgRenderer = QtSvg.QSvgRenderer if QtSvg else None
 from src.core.registry import NodeRegistry
 import os
 import re
 
 class LibraryPanel(QDockWidget):
     # Signals
-    node_selected = pyqtSignal(str) # node_id
-    edit_requested = pyqtSignal(str) # node_id
-    delete_requested = pyqtSignal(str) # node_id
+    node_selected = Signal(str) # node_id
+    edit_requested = Signal(str) # node_id
+    delete_requested = Signal(str) # node_id
 
     def __init__(self, parent=None):
         super().__init__("Node Library", parent)
@@ -43,6 +57,8 @@ class LibraryPanel(QDockWidget):
 
     def _load_svg_icon_with_color(self, svg_path, color):
         """Load an SVG file and replace stroke color, return QIcon."""
+        if QSvgRenderer is None:
+            return None
         try:
             with open(svg_path, 'r', encoding='utf-8') as f:
                 svg_content = f.read()
@@ -179,4 +195,5 @@ class LibraryPanel(QDockWidget):
         delete_action.triggered.connect(lambda: self.delete_requested.emit(node_id))
         menu.addAction(delete_action)
         
-        menu.exec_(self.tree_widget.mapToGlobal(pos))
+        _exec_menu = getattr(menu, 'exec', menu.exec_)
+        _exec_menu(self.tree_widget.mapToGlobal(pos))
