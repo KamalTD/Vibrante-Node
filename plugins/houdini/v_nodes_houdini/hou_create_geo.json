@@ -1,0 +1,19 @@
+{
+    "node_id": "hou_create_geo",
+    "name": "Hou Create Geometry",
+    "description": "Create a Geometry (geo) object node in /obj and optionally add an inner SOP node (e.g. box, sphere, grid, torus, tube).",
+    "category": "Houdini",
+    "icon_path": "icons/database.svg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "geo_name", "type": "string", "widget_type": "text", "default": "my_geo" },
+        { "name": "sop_type", "type": "string", "widget_type": "dropdown", "options": ["box", "sphere", "grid", "torus", "tube", "circle", "line", "none"], "default": "box" },
+        { "name": "display", "type": "bool", "widget_type": "bool", "default": true }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "geo_path", "type": "string" },
+        { "name": "sop_path", "type": "string" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    from src.utils.hou_bridge import get_bridge\n\n    geo_name = inputs.get('geo_name') or self.get_parameter('geo_name', 'my_geo')\n    sop_type = inputs.get('sop_type') or self.get_parameter('sop_type', 'box')\n    display = inputs.get('display')\n    if display is None:\n        display = self.get_parameter('display', True)\n\n    try:\n        bridge = get_bridge()\n        # Create the geo container\n        geo = bridge.create_node('/obj', 'geo', geo_name)\n        geo_path = geo['path']\n        self.log_info(f'Created geometry: {geo_path}')\n\n        sop_path = ''\n        if sop_type and sop_type != 'none':\n            # Delete the default file1 node that Houdini creates inside the geo\n            try:\n                bridge.delete_node(geo_path + '/file1')\n            except Exception:\n                pass\n            # Create the SOP node\n            sop = bridge.create_node(geo_path, sop_type)\n            sop_path = sop['path']\n            if display:\n                bridge.set_display_flag(sop_path, True)\n                bridge.set_render_flag(sop_path, True)\n            self.log_info(f'Created SOP: {sop_path}')\n\n        await self.set_output('geo_path', geo_path)\n        await self.set_output('sop_path', sop_path)\n    except Exception as e:\n        self.log_error(f'Failed to create geometry: {e}')\n        await self.set_output('geo_path', '')\n        await self.set_output('sop_path', '')\n\n    await self.set_output('exec_out', True)\n    return {}"
+}

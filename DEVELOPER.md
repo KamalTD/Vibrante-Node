@@ -75,3 +75,46 @@ Themes are applied globally using `QApplication.instance().setStyleSheet()`. Cus
 
 ### Event Log
 - Added `Silent Mode` checkbox to `LogPanel`. When active, the `_handle_log` fast-path returns immediately for non-error/warning messages, skipping regex extraction, entry creation, and UI updates.
+
+## 🆕 v1.1.5 — Houdini Live Integration & App Icon
+
+### SideFX Houdini Integration
+
+A full DCC integration with SideFX Houdini FX was added using a **Live Command Bridge** architecture:
+
+#### Architecture
+- **Command Server** (`plugins/houdini/houdini/scripts/python/vibrante_hou_server.py`): A JSON-RPC server that runs inside Houdini's Python process on `127.0.0.1:18811`. All scene-modifying commands are dispatched to Houdini's main thread via `hdefereval.executeDeferred()` to ensure thread safety. The server implements 22 commands (see DOCUMENTATION.md for the full table).
+- **Bridge Client** (`src/utils/hou_bridge.py`): `HouBridge` class provides a high-level Python API for communicating with the command server. Accessed via the `get_bridge()` singleton. `is_available()` performs a ping health check.
+- **All launch modes use subprocess**: In-process mode was removed entirely to avoid Houdini Signal 11 segfaults caused by Qt binding conflicts. `launch_inprocess()` now delegates to `launch()` (subprocess).
+
+#### Houdini Node Definitions
+19 JSON-defined nodes in `plugins/houdini/v_nodes_houdini/`, all validated against the pydantic `NodeDefinitionJSON` model. Each node's `python_code` calls the appropriate `bridge.*` method from `src/utils/hou_bridge.py`.
+
+Nodes: `hou_create_node`, `hou_create_geo`, `hou_delete_node`, `hou_set_parm`, `hou_get_parm`, `hou_set_parms`, `hou_connect_nodes`, `hou_cook`, `hou_run_code`, `hou_scene_info`, `hou_node_info`, `hou_list_children`, `hou_node_exists`, `hou_set_display_flag`, `hou_set_expression`, `hou_set_keyframe`, `hou_set_frame`, `hou_save_hip`, `hou_layout_children`.
+
+#### Plugin Structure
+```
+plugins/houdini/
+├── houdini/                        # Copied to Houdini user prefs
+│   ├── toolbar/vibrante.shelf      # Shelf tool definition
+│   ├── mainmenu/vibrante.xml       # Menu bar integration
+│   └── scripts/python/
+│       ├── vibrante_node_houdini.py  # Main entry (launch, setup_env)
+│       ├── vibrante_hou_server.py    # JSON-RPC command server
+│       └── env/                      # Bundled venv (pydantic, etc.)
+├── v_nodes_houdini/                # 19 Houdini node JSON definitions
+└── v_scripts_houdini/              # Example scripts
+```
+
+#### Qt Compatibility
+- `src/utils/qt_compat.py` provides a unified import layer for `QPolygonF`, `QPointF`, and other types across PyQt5 and PySide2.
+- PySide6 support was removed. PySide2 is still used only for type references — all actual UI runs under PyQt5 in subprocess mode.
+
+### Application Icon
+- Custom icon (`icons/vibrante-node-icon.png`) set via `app.setWindowIcon()` in `src/main.py`. Visible in taskbar, title bar, and window switcher.
+
+### Example Houdini Scripts
+Located in `plugins/houdini/v_scripts_houdini/`:
+- `hou_scene_info.py` — Query the live Houdini scene via the bridge.
+- `hou_create_box_demo.py` — Create a Geometry container with a Box SOP.
+- `hou_list_scene_nodes.py` — List all children under `/obj`.

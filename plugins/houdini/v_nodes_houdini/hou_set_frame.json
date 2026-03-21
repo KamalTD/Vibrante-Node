@@ -1,0 +1,16 @@
+{
+    "node_id": "hou_set_frame",
+    "name": "Hou Set Frame",
+    "description": "Set the current frame in Houdini's timeline.",
+    "category": "Houdini",
+    "icon_path": "icons/chevron-right.svg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "frame", "type": "float", "widget_type": "float", "default": 1 }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "frame", "type": "float" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    from src.utils.hou_bridge import get_bridge\n\n    frame = inputs.get('frame')\n    if frame is None:\n        frame = self.get_parameter('frame', 1)\n\n    try:\n        bridge = get_bridge()\n        result = bridge.set_frame(float(frame))\n        actual = result.get('frame', frame)\n        self.log_info(f'Set frame: {actual}')\n        await self.set_output('frame', actual)\n    except Exception as e:\n        self.log_error(f'Failed to set frame: {e}')\n        await self.set_output('frame', 0)\n\n    await self.set_output('exec_out', True)\n    return {}"
+}

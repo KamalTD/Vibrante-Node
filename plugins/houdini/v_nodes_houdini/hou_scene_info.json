@@ -1,0 +1,20 @@
+{
+    "node_id": "hou_scene_info",
+    "name": "Hou Scene Info",
+    "description": "Get information about the current Houdini scene: HIP file, version, FPS, frame range, and current frame.",
+    "category": "Houdini",
+    "icon_path": "icons/data.svg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "hip_file", "type": "string" },
+        { "name": "hip_name", "type": "string" },
+        { "name": "version", "type": "string" },
+        { "name": "fps", "type": "float" },
+        { "name": "frame", "type": "float" },
+        { "name": "info", "type": "any" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    from src.utils.hou_bridge import get_bridge\n\n    try:\n        bridge = get_bridge()\n        info = bridge.scene_info()\n        self.log_info(f'Scene: {info[\"hip_name\"]} | Houdini {info[\"houdini_version\"]} | Frame {info[\"frame\"]}')\n        await self.set_output('hip_file', info.get('hip_file', ''))\n        await self.set_output('hip_name', info.get('hip_name', ''))\n        await self.set_output('version', info.get('houdini_version', ''))\n        await self.set_output('fps', info.get('fps', 24.0))\n        await self.set_output('frame', info.get('frame', 1.0))\n        await self.set_output('info', info)\n    except Exception as e:\n        self.log_error(f'Failed to get scene info: {e}')\n        await self.set_output('hip_file', '')\n        await self.set_output('hip_name', '')\n        await self.set_output('version', '')\n        await self.set_output('fps', 0)\n        await self.set_output('frame', 0)\n        await self.set_output('info', {})\n\n    await self.set_output('exec_out', True)\n    return {}"
+}

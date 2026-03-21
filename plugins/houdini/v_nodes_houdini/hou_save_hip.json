@@ -1,0 +1,16 @@
+{
+    "node_id": "hou_save_hip",
+    "name": "Hou Save HIP",
+    "description": "Save the current Houdini HIP file. Optionally specify a new file path (Save As).",
+    "category": "Houdini",
+    "icon_path": "icons/file-plus.svg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "file_path", "type": "string", "widget_type": "text", "default": "" }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "saved_path", "type": "string" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    from src.utils.hou_bridge import get_bridge\n\n    path = inputs.get('file_path') or self.get_parameter('file_path', '')\n\n    try:\n        bridge = get_bridge()\n        result = bridge.save_hip(path)\n        saved = result.get('saved', '')\n        self.log_info(f'Saved HIP: {saved}')\n        await self.set_output('saved_path', saved)\n    except Exception as e:\n        self.log_error(f'Failed to save HIP: {e}')\n        await self.set_output('saved_path', '')\n\n    await self.set_output('exec_out', True)\n    return {}"
+}

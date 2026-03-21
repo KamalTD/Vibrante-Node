@@ -1,0 +1,17 @@
+{
+    "node_id": "hou_get_parm",
+    "name": "Hou Get Parameter",
+    "description": "Read a parameter value from a Houdini node.",
+    "category": "Houdini",
+    "icon_path": "icons/variable-get.svg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "node_path", "type": "string", "widget_type": "text", "default": "" },
+        { "name": "parm_name", "type": "string", "widget_type": "text", "default": "" }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "value", "type": "any" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    from src.utils.hou_bridge import get_bridge\n\n    node_path = inputs.get('node_path') or self.get_parameter('node_path', '')\n    parm_name = inputs.get('parm_name') or self.get_parameter('parm_name', '')\n\n    if not node_path or not parm_name:\n        self.log_error('Node path and parameter name are required')\n        await self.set_output('value', None)\n        await self.set_output('exec_out', True)\n        return {'value': None}\n\n    try:\n        bridge = get_bridge()\n        result = bridge.get_parm(node_path, parm_name)\n        val = result['value']\n        self.log_info(f'{node_path}/{parm_name} = {val}')\n        await self.set_output('value', val)\n    except Exception as e:\n        self.log_error(f'Failed to get parameter: {e}')\n        await self.set_output('value', None)\n\n    await self.set_output('exec_out', True)\n    return {'value': self.get_parameter('value', None)}"
+}

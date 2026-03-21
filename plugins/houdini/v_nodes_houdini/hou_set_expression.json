@@ -1,0 +1,19 @@
+{
+    "node_id": "hou_set_expression",
+    "name": "Hou Set Expression",
+    "description": "Set a parameter expression on a Houdini node. Supports HScript and Python expression languages.",
+    "category": "Houdini",
+    "icon_path": "icons/code.svg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "node_path", "type": "string", "widget_type": "text", "default": "" },
+        { "name": "parm_name", "type": "string", "widget_type": "text", "default": "" },
+        { "name": "expression", "type": "string", "widget_type": "text", "default": "" },
+        { "name": "language", "type": "string", "widget_type": "dropdown", "options": ["hscript", "python"], "default": "hscript" }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "success", "type": "bool" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    from src.utils.hou_bridge import get_bridge\n\n    node_path = inputs.get('node_path') or self.get_parameter('node_path', '')\n    parm_name = inputs.get('parm_name') or self.get_parameter('parm_name', '')\n    expression = inputs.get('expression') or self.get_parameter('expression', '')\n    language = inputs.get('language') or self.get_parameter('language', 'hscript')\n\n    if not node_path or not parm_name or not expression:\n        self.log_error('Node path, parameter name, and expression are required')\n        await self.set_output('success', False)\n        await self.set_output('exec_out', True)\n        return {'success': False}\n\n    try:\n        bridge = get_bridge()\n        bridge.set_expression(node_path, parm_name, expression, language)\n        self.log_info(f'Set expression on {node_path}/{parm_name}: {expression} ({language})')\n        await self.set_output('success', True)\n    except Exception as e:\n        self.log_error(f'Failed to set expression: {e}')\n        await self.set_output('success', False)\n\n    await self.set_output('exec_out', True)\n    return {'success': self.get_parameter('success', False)}"
+}

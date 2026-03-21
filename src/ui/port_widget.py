@@ -68,9 +68,8 @@ class PortWidget(QGraphicsEllipseItem):
             painter.setPen(self.pen())
             
             # Draw a triangle (arrow head)
-            poly = QPolygonF()
             r = self.radius
-            poly << QPointF(-r, -r) << QPointF(r, 0) << QPointF(-r, r)
+            poly = QPolygonF([QPointF(-r, -r), QPointF(r, 0), QPointF(-r, r)])
             painter.drawPolygon(poly)
         else:
             super().paint(painter, option, widget)

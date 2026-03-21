@@ -1,0 +1,16 @@
+{
+    "node_id": "hou_delete_node",
+    "name": "Hou Delete Node",
+    "description": "Delete a node from the live Houdini session by its path.",
+    "category": "Houdini",
+    "icon_path": "icons/minus.svg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "node_path", "type": "string", "widget_type": "text", "default": "" }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "success", "type": "bool" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    from src.utils.hou_bridge import get_bridge\n\n    path = inputs.get('node_path') or self.get_parameter('node_path', '')\n    if not path:\n        self.log_error('No node path specified')\n        await self.set_output('success', False)\n        await self.set_output('exec_out', True)\n        return {'success': False}\n\n    try:\n        bridge = get_bridge()\n        bridge.delete_node(path)\n        self.log_info(f'Deleted Houdini node: {path}')\n        await self.set_output('success', True)\n    except Exception as e:\n        self.log_error(f'Failed to delete node: {e}')\n        await self.set_output('success', False)\n\n    await self.set_output('exec_out', True)\n    return {'success': self.get_parameter('success', False)}"
+}

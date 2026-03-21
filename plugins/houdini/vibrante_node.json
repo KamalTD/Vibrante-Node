@@ -2,13 +2,10 @@
     "recommends": "houdini_version >= '20.5'",
     "env": [
         {
-            "VIBRANTE_NODE_APP": "G:/MyData/test_python/node_based_pipeline/node_based_app"
+            "VIBRANTE_NODE_APP": "<VIBRANTE NODE DIR>"
         },
         {
-            "VIBRANTE_PYTHON_EXE": "C:/Python311/python311.exe"
-        },
-        {
-            "PYTHONPATH": "$PYTHONPATH;$VIBRANTE_NODE_APP/plugins/houdini/houdini/scripts/python/env/Lib/site-packages"
+            "VIBRANTE_PYTHON_EXE": "<PYTHON EXE PATH>"
         }
     ],
     "path": "$VIBRANTE_NODE_APP/plugins/houdini/houdini"
