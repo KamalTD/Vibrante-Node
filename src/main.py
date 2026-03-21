@@ -61,7 +61,7 @@ sys.excepthook = exception_hook
 
 
 class SplashScreen(QSplashScreen):
-    VERSION = "v1.1.0"
+    VERSION = "v1.1.5"
     COPYRIGHT = "\u00a9 2026 Mahmoud Kamal - KamalTD"
 
     def __init__(self):
@@ -131,6 +131,11 @@ class SplashScreen(QSplashScreen):
 def main():
     print("Starting QApplication...")
     app = QApplication(sys.argv)
+
+    # Set application icon
+    icon_path = os.path.join(os.path.dirname(__file__), '..', 'icons', 'vibrante-node-icon.png')
+    if os.path.isfile(icon_path):
+        app.setWindowIcon(QtGui.QIcon(icon_path))
 
     # Show splash screen
     splash = SplashScreen()

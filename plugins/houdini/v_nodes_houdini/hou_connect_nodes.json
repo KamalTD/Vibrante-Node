@@ -1,0 +1,19 @@
+{
+    "node_id": "hou_connect_nodes",
+    "name": "Hou Connect Nodes",
+    "description": "Connect the output of one Houdini node to the input of another.",
+    "category": "Houdini",
+    "icon_path": "icons/git-branch.svg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "from_node", "type": "string", "widget_type": "text", "default": "" },
+        { "name": "to_node", "type": "string", "widget_type": "text", "default": "" },
+        { "name": "output_index", "type": "int", "widget_type": "int", "default": 0 },
+        { "name": "input_index", "type": "int", "widget_type": "int", "default": 0 }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "success", "type": "bool" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    from src.utils.hou_bridge import get_bridge\n\n    from_node = inputs.get('from_node') or self.get_parameter('from_node', '')\n    to_node = inputs.get('to_node') or self.get_parameter('to_node', '')\n    output_idx = inputs.get('output_index')\n    if output_idx is None:\n        output_idx = self.get_parameter('output_index', 0)\n    input_idx = inputs.get('input_index')\n    if input_idx is None:\n        input_idx = self.get_parameter('input_index', 0)\n\n    if not from_node or not to_node:\n        self.log_error('Both from_node and to_node paths are required')\n        await self.set_output('success', False)\n        await self.set_output('exec_out', True)\n        return {'success': False}\n\n    try:\n        bridge = get_bridge()\n        bridge.connect_nodes(from_node, to_node, int(output_idx), int(input_idx))\n        self.log_info(f'Connected {from_node}[{output_idx}] -> {to_node}[{input_idx}]')\n        await self.set_output('success', True)\n    except Exception as e:\n        self.log_error(f'Failed to connect nodes: {e}')\n        await self.set_output('success', False)\n\n    await self.set_output('exec_out', True)\n    return {'success': self.get_parameter('success', False)}"
+}

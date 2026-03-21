@@ -17,13 +17,21 @@ import os
 import sys
 
 # Detect which Qt binding is available.
-# Priority: PySide2 (Houdini) -> PySide6 -> PyQt5
+# Priority: PySide2 (Houdini in-process only) -> PyQt5 (standalone/subprocess)
 QT_BINDING = None
 
-# If running inside Houdini, prefer PySide2 via hutil.Qt
-_in_houdini = "HIP" in os.environ or "HOUDINI_PATH" in os.environ
+# Only use PySide2 when truly running inside Houdini's own Python process.
+# The subprocess mode (launched from Houdini) should use PyQt5 because
+# PySide2 is not available and PySide6 has incompatible API changes.
+_in_houdini_process = (
+    os.environ.get("VIBRANTE_HOUDINI_MODE") == "direct"
+    or (
+        "HIP" in os.environ
+        and os.environ.get("VIBRANTE_HOUDINI_MODE") != "subprocess"
+    )
+)
 
-if _in_houdini:
+if _in_houdini_process:
     try:
         from PySide2 import QtWidgets, QtCore, QtGui
         from PySide2.QtCore import Signal, Slot
@@ -33,16 +41,7 @@ if _in_houdini:
             QtSvg = None
         QT_BINDING = "PySide2"
     except ImportError:
-        try:
-            from PySide6 import QtWidgets, QtCore, QtGui
-            from PySide6.QtCore import Signal, Slot
-            try:
-                from PySide6 import QtSvg
-            except ImportError:
-                QtSvg = None
-            QT_BINDING = "PySide6"
-        except ImportError:
-            pass
+        pass  # PySide2 not available — fall through to PyQt5
 
 if QT_BINDING is None:
     try:
@@ -56,7 +55,7 @@ if QT_BINDING is None:
     except ImportError:
         raise ImportError(
             "No Qt binding found. Install PyQt5 (`pip install PyQt5`) "
-            "or run inside Houdini (PySide2/PySide6)."
+            "or run inside Houdini (PySide2)."
         )
 
 

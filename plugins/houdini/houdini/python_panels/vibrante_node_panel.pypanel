@@ -35,7 +35,7 @@ def onCreateInterface():
     layout.addSpacing(10)
 
     # In-Process launch button (primary / recommended)
-    inprocess_btn = QtWidgets.QPushButton("Launch In-Process (Live Session)")
+    inprocess_btn = QtWidgets.QPushButton("Launch with Live HIP Context")
     inprocess_btn.setMinimumHeight(36)
     inprocess_btn.setStyleSheet(
         "QPushButton { background-color: #bd93f9; color: black; font-weight: bold; "

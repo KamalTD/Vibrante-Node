@@ -1,0 +1,16 @@
+{
+    "node_id": "hou_node_exists",
+    "name": "Hou Node Exists",
+    "description": "Check if a node exists at the specified path in the Houdini scene.",
+    "category": "Houdini",
+    "icon_path": "icons/database-search.svg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "node_path", "type": "string", "widget_type": "text", "default": "" }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "exists", "type": "bool" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    from src.utils.hou_bridge import get_bridge\n\n    path = inputs.get('node_path') or self.get_parameter('node_path', '')\n    if not path:\n        await self.set_output('exists', False)\n        await self.set_output('exec_out', True)\n        return {'exists': False}\n\n    try:\n        bridge = get_bridge()\n        result = bridge.node_exists(path)\n        exists = result.get('exists', False)\n        self.log_info(f'{path} exists: {exists}')\n        await self.set_output('exists', exists)\n    except Exception as e:\n        self.log_error(f'Failed to check node: {e}')\n        await self.set_output('exists', False)\n\n    await self.set_output('exec_out', True)\n    return {'exists': self.get_parameter('exists', False)}"
+}

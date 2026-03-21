@@ -1,0 +1,17 @@
+{
+    "node_id": "hou_set_display_flag",
+    "name": "Hou Set Display Flag",
+    "description": "Set or clear the display flag on a Houdini node.",
+    "category": "Houdini",
+    "icon_path": "icons/check.svg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "node_path", "type": "string", "widget_type": "text", "default": "" },
+        { "name": "on", "type": "bool", "widget_type": "bool", "default": true }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "success", "type": "bool" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    from src.utils.hou_bridge import get_bridge\n\n    path = inputs.get('node_path') or self.get_parameter('node_path', '')\n    on = inputs.get('on')\n    if on is None:\n        on = self.get_parameter('on', True)\n\n    if not path:\n        self.log_error('No node path specified')\n        await self.set_output('success', False)\n        await self.set_output('exec_out', True)\n        return {'success': False}\n\n    try:\n        bridge = get_bridge()\n        bridge.set_display_flag(path, bool(on))\n        self.log_info(f'Display flag on {path}: {on}')\n        await self.set_output('success', True)\n    except Exception as e:\n        self.log_error(f'Failed to set display flag: {e}')\n        await self.set_output('success', False)\n\n    await self.set_output('exec_out', True)\n    return {'success': self.get_parameter('success', False)}"
+}

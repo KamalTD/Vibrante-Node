@@ -82,6 +82,41 @@ The Event Log supports a **Silent Mode** toggle in the filter bar:
 -   Silent mode also skips all internal log processing for filtered messages, reducing overhead during execution.
 -   Toggle it on for faster execution when you only need to see errors.
 
+## 🔥 SideFX Houdini Integration (v1.1.5)
+
+Vibrante-Node can control a live SideFX Houdini session directly from your workflows.
+
+### Setting Up the Houdini Plugin
+
+1. Copy the `plugins/houdini/houdini/` folder into your Houdini user preferences directory (e.g., `C:\Users\<you>\Documents\houdini20.5\` on Windows or `~/houdini20.5/` on Linux/Mac).
+2. Restart Houdini — you'll see a **Vibrante** shelf tab and a **Vibrante** menu in the menu bar.
+3. Click the **Launch Vibrante-Node** button on the shelf to start the app with the command server running automatically.
+
+### Using Houdini Nodes
+
+Once the command server is running inside Houdini, the **Houdini** category appears in the Node Library with 19 nodes:
+
+- **Scene Operations**: Query scene info, save .hip files, set timeline frame/range.
+- **Node Operations**: Create, delete, cook, layout, connect nodes. Set display/render flags.
+- **Parameter Operations**: Get/set single or multiple parameters, set expressions/keyframes.
+- **Code Execution**: Run arbitrary Python code inside Houdini's Python interpreter.
+
+### Example Workflow: Create a Box in Houdini
+
+1. Add a **Hou Create Geo** node — set the name to `my_box`.
+2. Add a **Hou Create Node** — set parent to `/obj/my_box`, type to `box`, name to `box1`.
+3. Add a **Hou Set Parm** node — set node to `/obj/my_box/box1`, parm to `sizex`, value to `3`.
+4. Connect the exec flow pins and press **Play**.
+
+### Houdini Example Scripts
+
+Pre-built scripts in `plugins/houdini/v_scripts_houdini/`:
+- **`hou_scene_info.py`** — Query the current Houdini scene.
+- **`hou_create_box_demo.py`** — Create a Geometry container with a Box SOP.
+- **`hou_list_scene_nodes.py`** — List all children under `/obj`.
+
+---
+
 ## 🪵 Troubleshooting
 
 - **Python Script Node (`python_script`)**: Place the node on the canvas and click the `Edit Script` button to author Python code. The script executes with access to a local `inputs` dictionary containing current input values and `params` for node parameters. Assign your output to `result` to publish it to the node's `result` output port.

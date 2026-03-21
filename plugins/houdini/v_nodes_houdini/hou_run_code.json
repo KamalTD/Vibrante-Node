@@ -1,0 +1,16 @@
+{
+    "node_id": "hou_run_code",
+    "name": "Hou Run Python",
+    "description": "Execute Python code in the live Houdini session. The code has access to the 'hou' module. Assign to 'result' to pass a value back.",
+    "category": "Houdini",
+    "icon_path": "icons/code.svg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "code", "type": "string", "widget_type": "text_area", "default": "# Access Houdini via the 'hou' module\n# Assign to 'result' to return a value\nresult = hou.applicationVersionString()" }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "result", "type": "any" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    from src.utils.hou_bridge import get_bridge\n\n    code = inputs.get('code') or self.get_parameter('code', '')\n    if not code:\n        self.log_error('No code provided')\n        await self.set_output('result', None)\n        await self.set_output('exec_out', True)\n        return {'result': None}\n\n    try:\n        bridge = get_bridge()\n        resp = bridge.run_code(code)\n        val = resp.get('result')\n        self.log_info(f'Houdini code result: {val}')\n        await self.set_output('result', val)\n    except Exception as e:\n        self.log_error(f'Houdini code error: {e}')\n        await self.set_output('result', None)\n\n    await self.set_output('exec_out', True)\n    return {'result': self.get_parameter('result', None)}"
+}

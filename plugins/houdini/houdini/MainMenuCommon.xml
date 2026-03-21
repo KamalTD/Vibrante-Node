@@ -5,7 +5,7 @@
       <label>Vibrante-Node</label>
 
       <scriptItem id="vibrante_launch_inprocess">
-        <label>Launch In-Process (Live Session)</label>
+        <label>Launch with Live HIP Context</label>
         <scriptCode><![CDATA[
 import vibrante_node_houdini
 vibrante_node_houdini.launch_inprocess()

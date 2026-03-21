@@ -5,11 +5,13 @@ Provides functions to launch and integrate Vibrante-Node Pipeline Editor
 with SideFX Houdini. This module is automatically importable inside Houdini
 when the Vibrante-Node package is installed.
 
-Architecture (Direct hou import):
-    Since Python 3.11 is shared between Houdini 20.5 and the system install,
-    Vibrante-Node can import the hou module directly without an RPyC bridge.
-    The setup_env() function adds Houdini's Python libs and $HFS/bin to the
-    environment so that `import hou` works in the Vibrante-Node subprocess.
+Architecture (Command Server + Subprocess):
+    Vibrante-Node runs as a subprocess with PyQt5 for its UI.  A JSON-RPC
+    command server (vibrante_hou_server) runs inside Houdini's Python
+    process.  Houdini-specific nodes in Vibrante-Node send commands over
+    a TCP socket to the server, which executes them on Houdini's main
+    thread via hdefereval.  This allows Vibrante-Node workflows to
+    create nodes, set parameters, and manipulate the live Houdini scene.
 
 Functions:
     launch()                      - Launch Vibrante-Node with Houdini Python on PYTHONPATH
@@ -182,8 +184,10 @@ def setup_env(hip_file="", extra_env=None):
         else:
             env["v_nodes_dir"] = hou_nodes
 
-    # 4. Mark that we are running in Houdini integration mode (direct hou import)
-    env["VIBRANTE_HOUDINI_MODE"] = "direct"
+    # 4. Mark that we are running in Houdini integration mode (subprocess)
+    # Note: "subprocess" (not "direct") tells qt_compat.py to use PyQt5,
+    # since PySide2 is only available inside Houdini's own process.
+    env["VIBRANTE_HOUDINI_MODE"] = "subprocess"
 
     # 5. HIP Context
     if hip_file:
@@ -385,15 +389,39 @@ def _test_pyqt5(python_exe):
         return False
 
 
+def _ensure_command_server():
+    """Start the Houdini command server if not already running.
+
+    The command server allows the Vibrante-Node subprocess to send
+    commands back to the live Houdini session (create nodes, set
+    parameters, etc.).
+
+    Returns:
+        int or None: Port number the server is listening on, or None.
+    """
+    try:
+        import vibrante_hou_server
+        if vibrante_hou_server.is_running():
+            return vibrante_hou_server.get_port()
+        return vibrante_hou_server.start()
+    except ImportError:
+        print("[Vibrante-Node] Warning: vibrante_hou_server module not found")
+        return None
+    except Exception as e:
+        print(f"[Vibrante-Node] Warning: Failed to start command server: {e}")
+        return None
+
+
 def launch(extra_env=None):
     """Launch Vibrante-Node as a subprocess with Houdini Python on PYTHONPATH.
 
     The application is started as an independent process. Closing Houdini
     will NOT close Vibrante-Node and vice-versa.
 
-    Architecture: Vibrante-Node uses direct `import hou` (no RPyC server needed).
-    The hou module is available because Houdini's Python libs and $HFS/bin are
-    added to PYTHONPATH and PATH respectively.
+    Architecture: Vibrante-Node runs as a subprocess with PyQt5.  A JSON-RPC
+    command server (vibrante_hou_server) runs inside Houdini so that
+    Houdini-specific nodes in Vibrante-Node can create/modify nodes in the
+    live Houdini session.
 
     Args:
         extra_env: Additional environment variables to pass
@@ -414,6 +442,11 @@ def launch(extra_env=None):
 
     env = setup_env(extra_env=extra_env)
 
+    # Start the Houdini command server so Vibrante-Node can talk back
+    port = _ensure_command_server()
+    if port:
+        env["VIBRANTE_HOU_PORT"] = str(port)
+
     # Find system Python with PyQt5 (Houdini's Python doesn't have PyQt5)
     python_exe = _find_system_python()
     if not python_exe:
@@ -429,7 +462,7 @@ def launch(extra_env=None):
     print(f"[Vibrante-Node] Python: {python_exe}")
     print(f"[Vibrante-Node] PYTHONPATH: {env.get('PYTHONPATH', '')}")
     print(f"[Vibrante-Node] HFS: {env.get('HFS', '(not set)')}")
-    print(f"[Vibrante-Node] Mode: direct hou import (no RPyC)")
+    print(f"[Vibrante-Node] Command server port: {port or '(not started)'}")
     print(f"[Vibrante-Node] PATH (first 3): {os.pathsep.join(env.get('PATH', '').split(os.pathsep)[:3])}")
 
     try:
@@ -467,82 +500,24 @@ def launch_with_context():
 
 
 def launch_inprocess():
-    """Launch Vibrante-Node inside Houdini's Python process (PySide2 UI).
+    """Launch Vibrante-Node as a subprocess with live HIP context.
 
-    This runs the full Vibrante-Node application inside Houdini, using
-    Houdini's PySide2 for the UI instead of PyQt5. The hou module is
-    available directly with live session access (no .hip save needed).
+    Originally this ran the UI inside Houdini's Python process using PySide2,
+    but that causes segfaults due to metaclass incompatibilities between
+    PySide2 (Houdini's Qt binding) and the PyQt5-based widget classes in
+    Vibrante-Node.
+
+    This now launches as a standalone subprocess (like launch_with_context)
+    while passing all HIP context environment variables so Houdini scripts
+    in Vibrante-Node can still access the current scene.
 
     Call from Houdini's Python Shell:
         import vibrante_node_houdini
         vibrante_node_houdini.launch_inprocess()
     """
-    app_root = get_app_root()
-    if not app_root:
-        _show_error(
-            "Cannot find Vibrante-Node installation.\n\n"
-            "Please set VIBRANTE_NODE_APP in vibrante_node.json\n"
-            "to the correct path."
-        )
-        return
-
-    # Add app root to sys.path so imports work
-    if app_root not in sys.path:
-        sys.path.insert(0, app_root)
-
-    # Set environment variables for Houdini integration
-    os.environ["VIBRANTE_NODE_APP"] = app_root
-    os.environ["VIBRANTE_HOUDINI_MODE"] = "direct"
-
-    # Add Houdini scripts and nodes dirs
-    hou_scripts = _get_houdini_scripts_dir()
-    if hou_scripts:
-        existing = os.environ.get("v_scripts_path", "")
-        if existing:
-            os.environ["v_scripts_path"] = existing + os.pathsep + hou_scripts
-        else:
-            os.environ["v_scripts_path"] = hou_scripts
-
-    hou_nodes = _get_houdini_nodes_dir()
-    if hou_nodes:
-        existing = os.environ.get("v_nodes_dir", "")
-        if existing:
-            os.environ["v_nodes_dir"] = existing + os.pathsep + hou_nodes
-        else:
-            os.environ["v_nodes_dir"] = hou_nodes
-
-    # Set HIP context
-    try:
-        import hou
-        hip_file = hou.hipFile.path()
-        os.environ["VIBRANTE_HIP_FILE"] = hip_file
-        os.environ["VIBRANTE_HIP_NAME"] = os.path.splitext(os.path.basename(hip_file))[0]
-        os.environ["VIBRANTE_HOUDINI_VERSION"] = ".".join(str(x) for x in hou.applicationVersion())
-        os.environ["VIBRANTE_HOUDINI_BUILD"] = str(hou.applicationVersionString())
-    except ImportError:
-        pass
-
-    print(f"[Vibrante-Node] Launching in-process from: {app_root}")
-    print(f"[Vibrante-Node] Mode: in-process (PySide2, live hou session)")
-
-    try:
-        from src.ui.window import MainWindow
-
-        # Use Houdini's existing QApplication (don't create a new one)
-        from PySide2 import QtWidgets
-        app = QtWidgets.QApplication.instance()
-        if app is None:
-            # This shouldn't happen inside Houdini, but just in case
-            app = QtWidgets.QApplication(sys.argv)
-
-        window = MainWindow()
-        window.setWindowTitle("Vibrante-Node [Houdini Live Session]")
-        window.show()
-
-        _show_status("Vibrante-Node launched in-process")
-
-    except Exception as e:
-        _show_error(f"Failed to launch Vibrante-Node in-process:\n{str(e)}")
+    print("[Vibrante-Node] Launching with HIP context (subprocess mode)...")
+    launch_with_context()
+    _show_status("Vibrante-Node launched with HIP context")
 
 
 def open_houdini_scripts_folder():
@@ -602,12 +577,13 @@ def show_about():
         f"System Python:       {sys_python or '(not found)'}\n\n"
         "Architecture:\n"
         "  Vibrante-Node runs in system Python 3.11 (with PyQt5).\n"
-        "  Houdini nodes use direct `import hou` to access Houdini's API.\n"
-        "  No RPyC server or pythonrc.py startup is required.\n"
-        "  The hou module is available via PYTHONPATH and $HFS/bin on PATH.\n\n"
+        "  A JSON-RPC command server runs inside Houdini (port 18811).\n"
+        "  Houdini nodes in Vibrante-Node send commands to the server\n"
+        "  to create/modify nodes in the live Houdini session.\n\n"
         "Environment Variables:\n"
         "  VIBRANTE_NODE_APP    - Path to Vibrante-Node installation\n"
         "  VIBRANTE_PYTHON_EXE  - Override system Python path\n"
+        "  VIBRANTE_HOU_PORT    - Command server port (default: 18811)\n"
         "  VIBRANTE_HIP_FILE    - Current HIP file (set by Launch with Context)\n\n"
         "Copyright 2026 Mahmoud Kamal - KamalTD\n"
     )

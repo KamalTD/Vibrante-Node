@@ -39,11 +39,11 @@ vibrante_node_houdini.launch_with_context()
 ]]></script>
   </tool>
 
-  <tool name="vibrante_launch_inprocess_tool" label="Launch In-Process (Live)" icon="MISC_python">
+  <tool name="vibrante_launch_inprocess_tool" label="Launch with Live HIP" icon="MISC_python">
     <helpText><![CDATA[
-Launch Vibrante-Node inside Houdini's Python process.
-Uses PySide2 for the UI and has direct live access to the current
-Houdini session. Nodes modify the scene directly without saving .hip files.
+Launch Vibrante-Node with live HIP context.
+Passes current HIP file path and Houdini version info.
+The hou module is importable in Vibrante-Node via PYTHONPATH.
 ]]></helpText>
     <toolMenuContext name="viewer">
       <contextNetType>OBJ</contextNetType>

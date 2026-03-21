@@ -22,7 +22,17 @@ The project focuses on flexibility, extensibility, and developer productivity, m
 
 ## 🌟 Latest Enhancements
 
-### 🖥️ Professional Python Code Editor (v1.1.0)
+### � SideFX Houdini Integration (v1.1.5)
+Full two-way integration with SideFX Houdini via a live command bridge:
+- **19 Houdini Nodes**: Create Node, Create Geometry, Set Parameter, Get Parameter, Connect Nodes, Run Python, Scene Info, Node Info, List Children, Cook Node, Set Display/Render Flag, Save HIP, Set Expression, Set Keyframe, Set Frame, Layout Children, Node Exists, and more.
+- **Live Command Server**: A JSON-RPC command server runs inside Houdini, allowing Vibrante-Node to create, modify, and query nodes in the live Houdini session in real-time.
+- **Bridge Client**: Transparent socket-based communication — Houdini nodes in Vibrante-Node talk to the running Houdini session seamlessly.
+- **Houdini Shelf & Menus**: Dedicated shelf tools, main menu entries, and Python panel for launching Vibrante-Node from Houdini.
+- **Environment Auto-Configuration**: Automatic detection of Houdini Python paths, DLL directories, and version information.
+- **Houdini Example Scripts**: Ready-to-run scripts for querying scene info, creating geometry, and listing nodes.
+- **Application Icon**: Custom Vibrante-Node icon displayed in the window title bar and taskbar.
+
+### �🖥️ Professional Python Code Editor (v1.1.0)
 The "Export Workflow as Python" dialog is now a full IDE-style code editor:
 - **Editable Code**: Full `CodeEditor` with line numbers, syntax highlighting, bracket matching, auto-completion, and live linting.
 - **Run & Debug**: Execute scripts directly with real-time stdout/stderr output and a Stop button.
@@ -124,13 +134,18 @@ Detailed documentation is available for both users and developers:
 
 ```text
 ├── examples/           # Automation scripts and custom node examples
-├── icons/              # UI icons (SVG format)
+├── icons/              # UI icons (SVG/PNG format)
 ├── nodes/              # Primary JSON definitions for custom nodes
 ├── node_examples/      # Pre-built node library for quick reference
+├── plugins/            # DCC integrations
+│   └── houdini/        # SideFX Houdini plugin
+│       ├── houdini/    # Houdini package files (menus, shelf, scripts)
+│       ├── v_nodes_houdini/  # Houdini-specific node definitions
+│       └── v_scripts_houdini/# Houdini-specific example scripts
 ├── src/                # Application source code
 │   ├── core/           # Engine, Registry, and Graph management
 │   ├── ui/             # PyQt5 components (Canvas, Panels, Node Widgets)
-│   ├── utils/          # Theming, Runtime, and Threading helpers
+│   ├── utils/          # Theming, Runtime, Qt compat, Houdini bridge
 │   └── main.py         # Application entry point
 ├── tests/              # Unit and integration tests
 ├── workflows/          # Saved pipeline files (.json)
@@ -141,6 +156,7 @@ Detailed documentation is available for both users and developers:
 
 ## 📋 Release History
 
+- **[v1.1.5](RELEASE_v1.1.5.md)** — Houdini Live Integration, Command Bridge, 19 Houdini Nodes, App Icon
 - **[v1.1.0](RELEASE_v1.1.0.md)** — Professional Code Editor, Execution Optimizations, Event Log Silent Mode
 - **[v1.0.5](RELEASE_v1.0.5.md)** — Loop Execution & Flow Engine Refactor
 
