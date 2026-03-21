@@ -77,6 +77,78 @@ class Backdrop(QGraphicsRectItem):
         self.resizing = False
         super().mouseReleaseEvent(event)
 
+    def contextMenuEvent(self, event):
+        menu = QtWidgets.QMenu()
+        
+        fit_act = menu.addAction("Fit to Contained Nodes")
+        fit_act.triggered.connect(self.fit_to_nodes)
+        
+        select_act = menu.addAction("Select Contained Nodes")
+        select_act.triggered.connect(self.select_contained_nodes)
+        
+        menu.addSeparator()
+        
+        delete_act = menu.addAction("Delete Network Box")
+        def delete_self():
+            if self.scene():
+                # NodeScene handles the actual removal from its internal lists if we use its logic,
+                # but for simple UI triggered delete, we can just send a Delete key event to the scene
+                # or call scene method.
+                self.setSelected(True)
+                from src.utils.qt_compat import QtGui
+                QKeyEvent = QtGui.QKeyEvent
+                QEvent = QtCore.QEvent
+                ev = QKeyEvent(QEvent.KeyPress, Qt.Key_Delete, Qt.NoModifier)
+                self.scene().keyPressEvent(ev)
+        delete_act.triggered.connect(delete_self)
+        
+        menu.exec_(event.screenPos())
+
+    def fit_to_nodes(self):
+        """Resizes the backdrop to fit all nodes currently inside or partially inside it."""
+        if not self.scene(): return
+        
+        contained_items = []
+        from src.ui.node_widget import NodeWidget
+        from src.ui.canvas.sticky_note import StickyNote
+        
+        # Find all nodes/notes in the scene that overlap with this backdrop
+        for item in self.scene().items():
+            if item == self: continue
+            if isinstance(item, (NodeWidget, StickyNote)):
+                if self.sceneBoundingRect().intersects(item.sceneBoundingRect()):
+                    contained_items.append(item)
+        
+        if not contained_items:
+            return
+            
+        # Calculate new bounding rect
+        rect = contained_items[0].sceneBoundingRect()
+        for item in contained_items[1:]:
+            rect = rect.united(item.sceneBoundingRect())
+            
+        # Add padding
+        padding = 40
+        new_pos = QtCore.QPointF(rect.x() - padding, rect.y() - padding - 20)
+        new_size = (rect.width() + padding*2, rect.height() + padding*2 + 20)
+        
+        self.prepareGeometryChange()
+        self.setPos(new_pos)
+        self.setRect(0, 0, new_size[0], new_size[1])
+
+    def select_contained_nodes(self):
+        if not self.scene(): return
+        self.scene().clearSelection()
+        
+        from src.ui.node_widget import NodeWidget
+        from src.ui.canvas.sticky_note import StickyNote
+        
+        bounds = self.sceneBoundingRect()
+        for item in self.scene().items():
+            if isinstance(item, (NodeWidget, StickyNote)):
+                if bounds.contains(item.sceneBoundingRect().center()):
+                    item.setSelected(True)
+
     def paint(self, painter, option, widget):
         # Draw background
         painter.setPen(self.pen())

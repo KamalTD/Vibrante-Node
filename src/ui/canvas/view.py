@@ -126,6 +126,26 @@ class NodeView(QGraphicsView):
             # Actual pan starts on mouse press + space
         elif event.key() == Qt.Key_F:
             self.focus_on_selection()
+        elif event.key() == Qt.Key_G and event.modifiers() == Qt.ControlModifier:
+            # Wrap in Backdrop
+            scene = self.scene()
+            if scene:
+                from src.ui.node_widget import NodeWidget
+                selected_nodes = [i for i in scene.selectedItems() if isinstance(i, NodeWidget)]
+                if selected_nodes:
+                    # Trigger the wrap logic
+                    # We can either duplicate the logic or call a method on scene
+                    if hasattr(scene, '_wrap_selection_in_backdrop'):
+                        scene._wrap_selection_in_backdrop()
+                    else:
+                        # Fallback to direct implementation if method doesn't exist yet
+                        rect = selected_nodes[0].sceneBoundingRect()
+                        for node in selected_nodes[1:]:
+                            rect = rect.united(node.sceneBoundingRect())
+                        padding = 40
+                        box_pos = (rect.x() - padding, rect.y() - padding - 20)
+                        box_size = (rect.width() + padding*2, rect.height() + padding*2 + 20)
+                        scene.add_backdrop(title="Grouped Nodes", pos=box_pos, size=box_size)
         super().keyPressEvent(event)
 
     def focus_on_selection(self):
