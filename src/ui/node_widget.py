@@ -1,6 +1,30 @@
-from PyQt5.QtWidgets import QGraphicsItem, QGraphicsRectItem, QGraphicsTextItem, QGraphicsProxyWidget, QLineEdit, QSpinBox, QDoubleSpinBox, QCheckBox, QLabel, QComboBox, QSlider, QTextEdit, QWidget, QHBoxLayout, QPushButton, QVBoxLayout
-from PyQt5.QtCore import Qt, QRectF
-from PyQt5.QtGui import QColor, QPen, QBrush, QPixmap, QPainterPath
+from src.utils.qt_compat import QtWidgets, QtCore, QtGui, exec_dialog
+
+QGraphicsItem = QtWidgets.QGraphicsItem
+QGraphicsRectItem = QtWidgets.QGraphicsRectItem
+QGraphicsTextItem = QtWidgets.QGraphicsTextItem
+QGraphicsProxyWidget = QtWidgets.QGraphicsProxyWidget
+QLineEdit = QtWidgets.QLineEdit
+QSpinBox = QtWidgets.QSpinBox
+QDoubleSpinBox = QtWidgets.QDoubleSpinBox
+QCheckBox = QtWidgets.QCheckBox
+QLabel = QtWidgets.QLabel
+QComboBox = QtWidgets.QComboBox
+QSlider = QtWidgets.QSlider
+QTextEdit = QtWidgets.QTextEdit
+QWidget = QtWidgets.QWidget
+QHBoxLayout = QtWidgets.QHBoxLayout
+QPushButton = QtWidgets.QPushButton
+QVBoxLayout = QtWidgets.QVBoxLayout
+
+Qt = QtCore.Qt
+QRectF = QtCore.QRectF
+
+QColor = QtGui.QColor
+QPen = QtGui.QPen
+QBrush = QtGui.QBrush
+QPixmap = QtGui.QPixmap
+QPainterPath = QtGui.QPainterPath
 from src.ui.port_widget import PortWidget
 from src.ui.script_editor import ScriptEditorDialog
 from src.utils.runtime import AsyncRuntime
@@ -53,7 +77,6 @@ class NodeWidget(QGraphicsItem):
             if param_label:
                 param_label.setStyleSheet(f"color: {label_color}; font-size: 9px; font-weight: bold; background: transparent;")
             
-            from PyQt5.QtWidgets import QLineEdit, QSpinBox, QDoubleSpinBox, QCheckBox, QComboBox, QSlider, QTextEdit
             for w in container.findChildren((QLineEdit, QSpinBox, QDoubleSpinBox, QCheckBox, QComboBox, QSlider, QTextEdit)):
                 w.setStyleSheet(f"background-color: {bg_color}; color: {text_color_name}; border: 1px solid {border_color};")
         
@@ -249,7 +272,7 @@ class NodeWidget(QGraphicsItem):
                     child.setEnabled(not is_connected)
 
     def _get_port_font(self):
-        from PyQt5.QtGui import QFont
+        QFont = QtGui.QFont
         f = QFont("Arial", 8)
         return f
 
@@ -324,7 +347,7 @@ class NodeWidget(QGraphicsItem):
             btn = QPushButton("...")
             btn.setFixedWidth(25)
             def select_file():
-                from PyQt5.QtWidgets import QFileDialog
+                QFileDialog = QtWidgets.QFileDialog
                 curr = self.scene().views()[0] if self.scene() and self.scene().views() else None
                 path, _ = QFileDialog.getOpenFileName(curr, "Select File")
                 if path:
@@ -379,7 +402,6 @@ class NodeWidget(QGraphicsItem):
         if name in self.param_widgets:
             proxy = self.param_widgets[name]
             container = proxy.widget()
-            from PyQt5.QtWidgets import QLineEdit, QSpinBox, QDoubleSpinBox, QCheckBox, QComboBox, QSlider, QTextEdit
             w = container.findChild(QLineEdit) or container.findChild(QSpinBox) or \
                 container.findChild(QDoubleSpinBox) or container.findChild(QCheckBox) or \
                 container.findChild(QComboBox) or container.findChild(QSlider) or \
@@ -473,7 +495,7 @@ class NodeWidget(QGraphicsItem):
                 parent = self.scene().views()[0]
             current_code = self.node_definition.parameters.get('python_code', '')
             dlg = ScriptEditorDialog(parent=parent, initial_code=current_code)
-            if dlg.exec_() == dlg.Accepted:
+            if exec_dialog(dlg) == dlg.Accepted:
                 code = dlg.get_code()
                 # Save into node parameters so runtime execute will use it
                 self.node_definition.parameters['python_code'] = code

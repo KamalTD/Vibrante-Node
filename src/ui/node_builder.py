@@ -1,5 +1,23 @@
-from PyQt5.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QLineEdit, QTextEdit, QTableWidget, QTableWidgetItem, QPlainTextEdit, QPushButton, QLabel, QSplitter, QWidget, QMessageBox, QFileDialog, QComboBox
-from PyQt5.QtCore import Qt, QTimer
+from src.utils.qt_compat import QtWidgets, QtCore, QtGui
+
+QDialog = QtWidgets.QDialog
+QVBoxLayout = QtWidgets.QVBoxLayout
+QHBoxLayout = QtWidgets.QHBoxLayout
+QLineEdit = QtWidgets.QLineEdit
+QTextEdit = QtWidgets.QTextEdit
+QTableWidget = QtWidgets.QTableWidget
+QTableWidgetItem = QtWidgets.QTableWidgetItem
+QPlainTextEdit = QtWidgets.QPlainTextEdit
+QPushButton = QtWidgets.QPushButton
+QLabel = QtWidgets.QLabel
+QSplitter = QtWidgets.QSplitter
+QWidget = QtWidgets.QWidget
+QMessageBox = QtWidgets.QMessageBox
+QFileDialog = QtWidgets.QFileDialog
+QComboBox = QtWidgets.QComboBox
+
+Qt = QtCore.Qt
+QTimer = QtCore.QTimer
 import os
 import ast
 from src.core.loader import ScriptLoader
@@ -56,7 +74,8 @@ class NodeBuilderDialog(QDialog):
 
         config_layout.addWidget(QLabel("Category:"))
         from src.utils.color_manager import ColorManager
-        from PyQt5.QtGui import QPixmap, QIcon
+        QPixmap = QtGui.QPixmap
+        QIcon = QtGui.QIcon
         self.category_combo = QComboBox()
         self.category_combo.setEditable(True)
         

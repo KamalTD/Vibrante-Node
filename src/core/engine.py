@@ -1,7 +1,8 @@
 import asyncio
 from typing import Dict, Any, List, Set, Optional
 from uuid import UUID
-from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
+from src.utils.qt_compat import QtCore, Signal, Slot
+QObject = QtCore.QObject
 from src.core.graph import GraphManager
 from src.core.registry import NodeRegistry
 from src.utils.runtime import SafeRuntime
@@ -9,12 +10,12 @@ from src.nodes.base import BaseNode
 
 class NetworkExecutor(QObject):
     # Signals for UI feedback
-    node_started = pyqtSignal(UUID)
-    node_finished = pyqtSignal(UUID, str) # node_id, status ('success' or 'failed')
-    node_error = pyqtSignal(UUID, str)    # node_id, error_message
-    node_output = pyqtSignal(UUID, dict)  # node_id, output_data
-    node_log = pyqtSignal(UUID, str, str) # node_id, message, level
-    execution_finished = pyqtSignal(bool) # success
+    node_started = Signal(object)
+    node_finished = Signal(object, str) # node_id, status ('success' or 'failed')
+    node_error = Signal(object, str)    # node_id, error_message
+    node_output = Signal(object, dict)  # node_id, output_data
+    node_log = Signal(object, str, str) # node_id, message, level
+    execution_finished = Signal(bool) # success
 
     def __init__(self, graph_manager: GraphManager):
         super().__init__()

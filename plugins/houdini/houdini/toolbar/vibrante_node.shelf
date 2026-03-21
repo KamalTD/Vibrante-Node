@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<shelfDocument>
+  <toolshelf name="vibrante_node_shelf" label="Vibrante-Node">
+    <memberTool name="vibrante_launch_tool"/>
+    <memberTool name="vibrante_launch_context_tool"/>
+    <memberTool name="vibrante_launch_inprocess_tool"/>
+  </toolshelf>
+
+  <tool name="vibrante_launch_tool" label="Launch Vibrante-Node" icon="MISC_python">
+    <helpText><![CDATA[
+Launch the Vibrante-Node Pipeline Editor as a separate process.
+The hou module will be importable in Vibrante-Node via PYTHONPATH.
+Saves scenes as .hip files (standalone mode).
+]]></helpText>
+    <toolMenuContext name="viewer">
+      <contextNetType>OBJ</contextNetType>
+      <contextNetType>SOP</contextNetType>
+      <contextNetType>DOP</contextNetType>
+    </toolMenuContext>
+    <script scriptType="python"><![CDATA[
+import vibrante_node_houdini
+vibrante_node_houdini.launch()
+]]></script>
+  </tool>
+
+  <tool name="vibrante_launch_context_tool" label="Launch with HIP Context" icon="MISC_python">
+    <helpText><![CDATA[
+Launch Vibrante-Node as a separate process with the current HIP file context.
+Passes HIP file path and Houdini version info as environment variables.
+]]></helpText>
+    <toolMenuContext name="viewer">
+      <contextNetType>OBJ</contextNetType>
+      <contextNetType>SOP</contextNetType>
+      <contextNetType>DOP</contextNetType>
+    </toolMenuContext>
+    <script scriptType="python"><![CDATA[
+import vibrante_node_houdini
+vibrante_node_houdini.launch_with_context()
+]]></script>
+  </tool>
+
+  <tool name="vibrante_launch_inprocess_tool" label="Launch In-Process (Live)" icon="MISC_python">
+    <helpText><![CDATA[
+Launch Vibrante-Node inside Houdini's Python process.
+Uses PySide2 for the UI and has direct live access to the current
+Houdini session. Nodes modify the scene directly without saving .hip files.
+]]></helpText>
+    <toolMenuContext name="viewer">
+      <contextNetType>OBJ</contextNetType>
+      <contextNetType>SOP</contextNetType>
+      <contextNetType>DOP</contextNetType>
+    </toolMenuContext>
+    <script scriptType="python"><![CDATA[
+import vibrante_node_houdini
+vibrante_node_houdini.launch_inprocess()
+]]></script>
+  </tool>
+</shelfDocument>

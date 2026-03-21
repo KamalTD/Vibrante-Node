@@ -1,7 +1,15 @@
-from PyQt5.QtWidgets import QGraphicsRectItem, QGraphicsTextItem, QGraphicsItem
-from PyQt5.QtCore import Qt, QRectF
-from PyQt5.QtGui import QColor, QPen, QBrush, QFont
+from src.utils.qt_compat import QtWidgets, QtCore, QtGui
 from uuid import uuid4
+
+QGraphicsRectItem = QtWidgets.QGraphicsRectItem
+QGraphicsTextItem = QtWidgets.QGraphicsTextItem
+QGraphicsItem = QtWidgets.QGraphicsItem
+Qt = QtCore.Qt
+QRectF = QtCore.QRectF
+QColor = QtGui.QColor
+QPen = QtGui.QPen
+QBrush = QtGui.QBrush
+QFont = QtGui.QFont
 
 class StickyNote(QGraphicsRectItem):
     def __init__(self, text="New Note", pos=(0, 0), size=(200, 150), color="#ffffcc", instance_id=None):

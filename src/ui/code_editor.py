@@ -1,6 +1,19 @@
-from PyQt5.QtWidgets import QPlainTextEdit, QWidget, QTextEdit, QCompleter
-from PyQt5.QtCore import Qt, QRect, QSize, pyqtSignal, QStringListModel
-from PyQt5.QtGui import QColor, QPainter, QTextFormat, QFont, QCursor, QTextCursor
+from src.utils.qt_compat import QtWidgets, QtCore, QtGui, Signal
+
+QPlainTextEdit = QtWidgets.QPlainTextEdit
+QWidget = QtWidgets.QWidget
+QTextEdit = QtWidgets.QTextEdit
+QCompleter = QtWidgets.QCompleter
+Qt = QtCore.Qt
+QRect = QtCore.QRect
+QSize = QtCore.QSize
+QStringListModel = QtCore.QStringListModel
+QColor = QtGui.QColor
+QPainter = QtGui.QPainter
+QTextFormat = QtGui.QTextFormat
+QFont = QtGui.QFont
+QCursor = QtGui.QCursor
+QTextCursor = QtGui.QTextCursor
 import ast
 
 class LineNumberArea(QWidget):

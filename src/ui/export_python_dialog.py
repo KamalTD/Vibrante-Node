@@ -5,13 +5,31 @@ import ast
 import tempfile
 import threading
 
-from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QPlainTextEdit, QPushButton,
-    QLabel, QFileDialog, QMessageBox, QApplication, QSplitter,
-    QWidget, QToolBar, QAction, QStatusBar, QStyle
-)
-from PyQt5.QtGui import QFont, QColor, QTextCursor, QTextCharFormat
-from PyQt5.QtCore import Qt, QProcess, pyqtSignal, pyqtSlot
+from src.utils.qt_compat import QtWidgets, QtGui, QtCore, Signal, Slot
+
+QDialog = QtWidgets.QDialog
+QVBoxLayout = QtWidgets.QVBoxLayout
+QHBoxLayout = QtWidgets.QHBoxLayout
+QPlainTextEdit = QtWidgets.QPlainTextEdit
+QPushButton = QtWidgets.QPushButton
+QLabel = QtWidgets.QLabel
+QFileDialog = QtWidgets.QFileDialog
+QMessageBox = QtWidgets.QMessageBox
+QApplication = QtWidgets.QApplication
+QSplitter = QtWidgets.QSplitter
+QWidget = QtWidgets.QWidget
+QToolBar = QtWidgets.QToolBar
+QAction = QtWidgets.QAction
+QStatusBar = QtWidgets.QStatusBar
+QStyle = QtWidgets.QStyle
+
+QFont = QtGui.QFont
+QColor = QtGui.QColor
+QTextCursor = QtGui.QTextCursor
+QTextCharFormat = QtGui.QTextCharFormat
+
+Qt = QtCore.Qt
+QProcess = QtCore.QProcess
 
 from src.core.models import WorkflowModel
 from src.ui.code_editor import CodeEditor
@@ -64,7 +82,7 @@ class GeminiFixWorker(threading.Thread):
 class ExportPythonDialog(QDialog):
     """Professional IDE-like dialog for viewing, editing, running, and AI-fixing exported Python code."""
 
-    _ai_result_signal = pyqtSignal(str, str)
+    _ai_result_signal = Signal(str, str)
 
     def __init__(self, workflow_model: WorkflowModel, parent=None):
         super().__init__(parent)
@@ -216,7 +234,7 @@ class ExportPythonDialog(QDialog):
             spacer.sizePolicy().horizontalPolicy(),
             spacer.sizePolicy().verticalPolicy()
         )
-        from PyQt5.QtWidgets import QSizePolicy
+        QSizePolicy = QtWidgets.QSizePolicy
         spacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         toolbar.addWidget(spacer)
 
@@ -339,14 +357,14 @@ class ExportPythonDialog(QDialog):
             self._process.kill()
             self._append_output("\n>>> Process killed by user.\n", color="#ff5555")
 
-    @pyqtSlot()
+    @Slot()
     def _on_stdout_ready(self):
         if self._process is None:
             return
         data = self._process.readAllStandardOutput().data().decode('utf-8', errors='replace')
         self._append_output(data)
 
-    @pyqtSlot()
+    @Slot()
     def _on_stderr_ready(self):
         if self._process is None:
             return
@@ -354,7 +372,7 @@ class ExportPythonDialog(QDialog):
         self._last_error_output += data
         self._append_output(data, color="#ff5555")
 
-    @pyqtSlot(int, 'QProcess::ExitStatus')
+    @Slot(int, object)
     def _on_process_finished(self, exit_code, exit_status):
         status_text = "finished successfully" if exit_code == 0 else f"exited with code {exit_code}"
         color = "#50fa7b" if exit_code == 0 else "#ff5555"
@@ -365,7 +383,7 @@ class ExportPythonDialog(QDialog):
         self._process = None
         self._update_button_states()
 
-    @pyqtSlot('QProcess::ProcessError')
+    @Slot(object)
     def _on_process_error(self, error):
         error_map = {
             QProcess.FailedToStart: "Failed to start Python interpreter",
@@ -439,7 +457,7 @@ class ExportPythonDialog(QDialog):
     def _on_ai_fix_result(self, fixed_code, error_msg):
         self._ai_result_signal.emit(fixed_code, error_msg)
 
-    @pyqtSlot(str, str)
+    @Slot(str, str)
     def _handle_ai_result(self, fixed_code, error_msg):
         self.ai_fix_action.setEnabled(True)
         self._status_message.setText("Ready")

@@ -8,7 +8,8 @@ which returns a WorkflowModel JSON that can be loaded into the scene.
 import json
 import re
 import threading
-from PyQt5.QtCore import QObject, pyqtSignal
+from src.utils.qt_compat import QtCore, Signal
+QObject = QtCore.QObject
 import google.generativeai as genai
 from src.utils.config_manager import config
 from src.core.models import WorkflowModel
@@ -71,8 +72,8 @@ recreates the script's logic using the available nodes.
 
 
 class PythonToWorkflowConverter(QObject):
-    conversion_finished = pyqtSignal(object, str)  # (WorkflowModel or None, error_message)
-    status_update = pyqtSignal(str)
+    conversion_finished = Signal(object, str)  # (WorkflowModel or None, error_message)
+    status_update = Signal(str)
 
     def __init__(self):
         super().__init__()

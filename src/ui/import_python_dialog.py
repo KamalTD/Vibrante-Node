@@ -1,10 +1,17 @@
-from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QPlainTextEdit, QPushButton,
-    QLabel, QFileDialog, QMessageBox, QProgressBar
-)
-from PyQt5.QtGui import QFont
+from src.utils.qt_compat import QtWidgets, QtGui
 from src.utils.config_manager import config
 from src.utils.highlighter import PythonHighlighter
+
+QDialog = QtWidgets.QDialog
+QVBoxLayout = QtWidgets.QVBoxLayout
+QHBoxLayout = QtWidgets.QHBoxLayout
+QPlainTextEdit = QtWidgets.QPlainTextEdit
+QPushButton = QtWidgets.QPushButton
+QLabel = QtWidgets.QLabel
+QFileDialog = QtWidgets.QFileDialog
+QMessageBox = QtWidgets.QMessageBox
+QProgressBar = QtWidgets.QProgressBar
+QFont = QtGui.QFont
 
 
 class ImportPythonDialog(QDialog):

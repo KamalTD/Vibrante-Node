@@ -1,7 +1,9 @@
 import pytest
 import asyncio
 from unittest.mock import MagicMock, AsyncMock
-from PyQt5.QtCore import Qt, QPointF
+from src.utils.qt_compat import QtCore, QtGui
+Qt = QtCore.Qt
+QPointF = QtCore.QPointF
 from src.ui.canvas.scene import NodeScene
 from src.nodes.base import BaseNode
 from src.core.registry import NodeRegistry
@@ -41,8 +43,8 @@ async def test_plug_unplug_flow(scene, qtbot):
     
     # 2. Test Unplug via edge deletion
     edge.setSelected(True)
-    from PyQt5.QtGui import QKeyEvent
-    from PyQt5.QtCore import QEvent
+    QKeyEvent = QtGui.QKeyEvent
+    QEvent = QtCore.QEvent
     event = QKeyEvent(QEvent.KeyPress, Qt.Key_Delete, Qt.NoModifier)
     scene.keyPressEvent(event)
     

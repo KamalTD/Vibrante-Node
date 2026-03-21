@@ -1,7 +1,16 @@
-from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene
-from PyQt5.QtCore import Qt, QPoint, QPointF, QEvent
-from PyQt5.QtGui import QPainter, QWheelEvent, QMouseEvent, QKeyEvent
+from src.utils.qt_compat import QtWidgets, QtCore, QtGui, exec_dialog
 from src.ui.canvas.node_search_popup import NodeSearchPopup
+
+QGraphicsView = QtWidgets.QGraphicsView
+QGraphicsScene = QtWidgets.QGraphicsScene
+Qt = QtCore.Qt
+QPoint = QtCore.QPoint
+QPointF = QtCore.QPointF
+QEvent = QtCore.QEvent
+QPainter = QtGui.QPainter
+QWheelEvent = QtGui.QWheelEvent
+QMouseEvent = QtGui.QMouseEvent
+QKeyEvent = QtGui.QKeyEvent
 
 class NodeView(QGraphicsView):
     def __init__(self, scene: QGraphicsScene, parent=None):
@@ -169,4 +178,4 @@ class NodeView(QGraphicsView):
         cursor_pos = self.mapFromGlobal(self.cursor().pos())
         popup_pos = self.mapToGlobal(cursor_pos)
         popup.move(popup_pos)
-        popup.exec_()
+        exec_dialog(popup)

@@ -3,9 +3,25 @@ import os
 import shutil
 import asyncio
 import threading
-from PyQt5.QtWidgets import QMainWindow, QAction, QFileDialog, QVBoxLayout, QWidget, QGraphicsView, QGraphicsScene, QToolBar, QMessageBox, QDockWidget, QMenu, QStyle, QTabWidget, QStatusBar, QLabel
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QCursor
+from src.utils.qt_compat import QtWidgets, QtCore, QtGui, exec_dialog
+
+QMainWindow = QtWidgets.QMainWindow
+QAction = QtWidgets.QAction
+QFileDialog = QtWidgets.QFileDialog
+QVBoxLayout = QtWidgets.QVBoxLayout
+QWidget = QtWidgets.QWidget
+QGraphicsView = QtWidgets.QGraphicsView
+QGraphicsScene = QtWidgets.QGraphicsScene
+QToolBar = QtWidgets.QToolBar
+QMessageBox = QtWidgets.QMessageBox
+QDockWidget = QtWidgets.QDockWidget
+QMenu = QtWidgets.QMenu
+QStyle = QtWidgets.QStyle
+QTabWidget = QtWidgets.QTabWidget
+QStatusBar = QtWidgets.QStatusBar
+QLabel = QtWidgets.QLabel
+Qt = QtCore.Qt
+QCursor = QtGui.QCursor
 from src.ui.canvas.scene import NodeScene
 from src.ui.canvas.view import NodeView
 from src.ui.node_builder import NodeBuilderDialog
@@ -32,7 +48,7 @@ class MainWindow(QMainWindow):
 
         # Initialize Registry
         self.nodes_dir = os.path.abspath(os.path.join(os.getcwd(), 'nodes'))
-        NodeRegistry.load_all(self.nodes_dir)
+        NodeRegistry.load_all_with_extras(self.nodes_dir)
 
         # Setup Tab Widget
         self.tabs = QTabWidget()
@@ -51,6 +67,9 @@ class MainWindow(QMainWindow):
         
         self.scripting_console = ScriptingConsole(self)
         self.addDockWidget(Qt.BottomDockWidgetArea, self.scripting_console)
+
+        # Enrich autocomplete with PYTHONPATH module names
+        self._enrich_autocomplete_from_pythonpath()
         
         # Connect Library Signals
         self.library_panel.node_selected.connect(self._on_node_selected)
@@ -211,6 +230,9 @@ class MainWindow(QMainWindow):
         light_act.triggered.connect(self._apply_light_theme)
         theme_menu.addAction(light_act)
 
+        # Scripts Menu
+        self._init_scripts_menu(menubar)
+
         # Help Menu
         help_menu = menubar.addMenu('&Help')
         
@@ -233,7 +255,11 @@ class MainWindow(QMainWindow):
         feature_list_act = QAction('Technical Feature List', self)
         feature_list_act.triggered.connect(lambda: self._open_doc("DOCUMENTATION.md"))
         help_menu.addAction(feature_list_act)
-        
+
+        env_vars_act = QAction('Environment Variables', self)
+        env_vars_act.triggered.connect(self._show_env_vars_help)
+        help_menu.addAction(env_vars_act)
+
         help_menu.addSeparator()
 
         gemini_act = QAction('Link to Gemini', self)
@@ -253,6 +279,176 @@ class MainWindow(QMainWindow):
             webbrowser.open(path)
         else:
             QMessageBox.critical(self, "Error", f"Documentation file not found: {filename}")
+
+    def _init_scripts_menu(self, menubar):
+        """Build the Scripts menu from v_scripts/ and v_scripts_path directories."""
+        self.scripts_menu = menubar.addMenu('&Scripts')
+        self._populate_scripts_menu()
+
+    def _get_script_dirs(self):
+        """Collect all script directories (default + env var)."""
+        script_dirs = []
+
+        # Default: v_scripts/ in the app folder
+        self._default_scripts_dir = os.path.abspath(os.path.join(os.getcwd(), 'v_scripts'))
+        if not os.path.exists(self._default_scripts_dir):
+            os.makedirs(self._default_scripts_dir)
+        script_dirs.append(self._default_scripts_dir)
+
+        # Extra directories from v_scripts_path env var
+        extra_paths = os.environ.get('v_scripts_path', '')
+        if extra_paths:
+            for p in extra_paths.split(os.pathsep):
+                p = p.strip()
+                if p and os.path.isdir(p) and p not in script_dirs:
+                    script_dirs.append(p)
+
+        return script_dirs
+
+    def _populate_scripts_menu(self):
+        """Scan script directories and populate the Scripts menu."""
+        self.scripts_menu.clear()
+
+        script_dirs = self._get_script_dirs()
+
+        # Scan for .py files
+        scripts_found = []
+        for dir_path in script_dirs:
+            if not os.path.isdir(dir_path):
+                continue
+            for filename in sorted(os.listdir(dir_path)):
+                if filename.endswith('.py'):
+                    full_path = os.path.join(dir_path, filename)
+                    scripts_found.append((filename, full_path))
+
+        if not scripts_found:
+            no_scripts_action = QAction('(No scripts found)', self)
+            no_scripts_action.setEnabled(False)
+            self.scripts_menu.addAction(no_scripts_action)
+        else:
+            for name, path in scripts_found:
+                action = QAction(name, self)
+                action.setToolTip(path)
+                action.triggered.connect(lambda checked, p=path: self._run_user_script(p))
+                self.scripts_menu.addAction(action)
+
+        self.scripts_menu.addSeparator()
+
+        refresh_action = QAction('Refresh Scripts', self)
+        refresh_action.triggered.connect(self._populate_scripts_menu)
+        self.scripts_menu.addAction(refresh_action)
+
+        open_folder_action = QAction('Open Scripts Folder', self)
+        open_folder_action.triggered.connect(self._open_scripts_folder)
+        self.scripts_menu.addAction(open_folder_action)
+
+    def _open_scripts_folder(self):
+        """Open the default scripts folder in the file manager."""
+        import subprocess
+        folder = getattr(self, '_default_scripts_dir', os.path.abspath(os.path.join(os.getcwd(), 'v_scripts')))
+        if sys.platform == 'win32':
+            os.startfile(folder)
+        elif sys.platform == 'darwin':
+            subprocess.Popen(['open', folder])
+        else:
+            subprocess.Popen(['xdg-open', folder])
+
+    def _run_user_script(self, script_path):
+        """Execute a user script in the scripting console context."""
+        try:
+            with open(script_path, 'r', encoding='utf-8') as f:
+                script_code = f.read()
+
+            context = {
+                "app": self,
+                "scene": self.get_current_scene(),
+                "registry": NodeRegistry,
+                "print": self.scripting_console.console_print,
+            }
+
+            exec(script_code, context)
+            self.log_panel.log(f"Script '{os.path.basename(script_path)}' executed successfully.", "success")
+        except Exception:
+            import traceback
+            error_msg = traceback.format_exc()
+            self.log_panel.log(f"Script Error in '{os.path.basename(script_path)}':\n{error_msg}", "error")
+            QMessageBox.critical(self, "Script Error", f"Error running script:\n{error_msg}")
+
+    def _enrich_autocomplete_from_pythonpath(self):
+        """Scan PYTHONPATH directories for top-level module/package names
+        and add them to the scripting console's autocomplete."""
+        extra_words = set()
+        pythonpath = os.environ.get('PYTHONPATH', '')
+        if pythonpath:
+            for p in pythonpath.split(os.pathsep):
+                p = p.strip()
+                if not p or not os.path.isdir(p):
+                    continue
+                for entry in os.listdir(p):
+                    full = os.path.join(p, entry)
+                    # Python packages (directories with __init__.py)
+                    if os.path.isdir(full) and os.path.exists(os.path.join(full, '__init__.py')):
+                        extra_words.add(entry)
+                    # Python modules (.py files)
+                    elif entry.endswith('.py') and entry != '__init__.py':
+                        extra_words.add(entry[:-3])
+                    # Compiled extensions (.pyd on Windows, .so on Unix)
+                    elif entry.endswith(('.pyd', '.so')):
+                        mod_name = entry.split('.')[0]
+                        extra_words.add(mod_name)
+
+        if extra_words:
+            existing = [
+                "app", "scene", "registry", "print",
+                "add_node_by_name", "connect_nodes", "find_node_by_name", "set_parameter",
+                "NodeWidget", "Edge", "NodeRegistry", "execute"
+            ]
+            combined = sorted(set(existing) | extra_words)
+            self.scripting_console.editor.set_completer_list(combined)
+
+    def _show_env_vars_help(self):
+        current_nodes_dir = os.environ.get('v_nodes_dir', '(not set)')
+        current_scripts_path = os.environ.get('v_scripts_path', '(not set)')
+        current_pythonpath = os.environ.get('PYTHONPATH', '(not set)')
+
+        QMessageBox.information(self, "Environment Variables",
+            "<h3>Environment Variables</h3>"
+            "<p>Vibrante-Node supports the following environment variables to extend "
+            "the application with external resources. All variables support multiple "
+            "paths separated by <code>;</code> (Windows) or <code>:</code> (Linux/macOS).</p>"
+            "<hr>"
+            "<h4>v_nodes_dir</h4>"
+            "<p>Append extra directories containing node definition JSON files. "
+            "Nodes found in these paths will be loaded into the Library panel alongside built-in nodes.</p>"
+            "<p><b>Example (Windows):</b><br>"
+            "<code>set v_nodes_dir=C:\\my_nodes;D:\\shared_nodes</code></p>"
+            "<p><b>Example (PowerShell):</b><br>"
+            "<code>$env:v_nodes_dir = \"C:\\my_nodes;D:\\shared_nodes\"</code></p>"
+            "<hr>"
+            "<h4>v_scripts_path</h4>"
+            "<p>Append extra directories containing Python scripts. Scripts found in these paths "
+            "will appear in the <b>Scripts</b> menu. "
+            "By default, the <code>v_scripts/</code> folder in the app directory is always included.</p>"
+            "<p><b>Example (Windows):</b><br>"
+            "<code>set v_scripts_path=%v_scripts_path%;C:\\my_scripts</code></p>"
+            "<p><b>Example (PowerShell):</b><br>"
+            "<code>$env:v_scripts_path = \"$env:v_scripts_path;C:\\my_scripts\"</code></p>"
+            "<hr>"
+            "<h4>PYTHONPATH</h4>"
+            "<p>Append extra directories containing Python libraries/packages. "
+            "These paths are added to <code>sys.path</code> at startup, making external libraries "
+            "available for <code>import</code> in node scripts and the scripting console. "
+            "Discovered module names are also added to the code editor autocomplete.</p>"
+            "<p><b>Example (Windows):</b><br>"
+            "<code>set PYTHONPATH=%PYTHONPATH%;C:\\my_libs</code></p>"
+            "<p><b>Example (PowerShell):</b><br>"
+            "<code>$env:PYTHONPATH = \"$env:PYTHONPATH;C:\\my_libs\"</code></p>"
+            "<hr>"
+            "<h4>Current Values</h4>"
+            f"<p><b>v_nodes_dir:</b> <code>{current_nodes_dir}</code></p>"
+            f"<p><b>v_scripts_path:</b> <code>{current_scripts_path}</code></p>"
+            f"<p><b>PYTHONPATH:</b> <code>{current_pythonpath}</code></p>"
+        )
 
     def _show_about(self):
         description = (
@@ -284,7 +480,7 @@ class MainWindow(QMainWindow):
         import webbrowser
         webbrowser.open("https://aistudio.google.com/app/api-keys?project=gen-lang-client-0761136562")
         dialog = GeminiApiDialog(self)
-        dialog.exec_()
+        exec_dialog(dialog)
 
     def _init_toolbar(self):
         toolbar = self.addToolBar("Main")
@@ -344,14 +540,14 @@ class MainWindow(QMainWindow):
     def _delete_selected(self):
         scene = self.get_current_scene()
         if not scene: return
-        from PyQt5.QtGui import QKeyEvent
-        from PyQt5.QtCore import QEvent
+        QKeyEvent = QtGui.QKeyEvent
+        QEvent = QtCore.QEvent
         event = QKeyEvent(QEvent.KeyPress, Qt.Key_Delete, Qt.NoModifier)
         scene.keyPressEvent(event)
 
     def _apply_dark_theme(self):
         self._is_dark_theme = True
-        from PyQt5.QtWidgets import QApplication
+        QApplication = QtWidgets.QApplication
         app = QApplication.instance()
         app.setStyleSheet("""
             QMainWindow, QDialog { background-color: #2b2b2b; color: #ffffff; }
@@ -386,7 +582,7 @@ class MainWindow(QMainWindow):
 
     def _apply_light_theme(self):
         self._is_dark_theme = False
-        from PyQt5.QtWidgets import QApplication
+        QApplication = QtWidgets.QApplication
         app = QApplication.instance()
         app.setStyleSheet("") # Reset to default
         if hasattr(self, 'library_panel'):
@@ -409,7 +605,7 @@ class MainWindow(QMainWindow):
 
     def _on_edit_requested(self, node_id):
         dialog = NodeBuilderDialog(self, editing_node_id=node_id)
-        if dialog.exec_():
+        if exec_dialog(dialog):
             self.library_panel.refresh()
 
     def _on_delete_requested(self, node_id):
@@ -426,7 +622,7 @@ class MainWindow(QMainWindow):
 
     def open_node_builder(self):
         dialog = NodeBuilderDialog(self)
-        if dialog.exec_():
+        if exec_dialog(dialog):
             self.library_panel.refresh()
 
     def load_node_json(self):
@@ -506,12 +702,12 @@ class MainWindow(QMainWindow):
             return
         from src.ui.export_python_dialog import ExportPythonDialog
         dialog = ExportPythonDialog(workflow_model, self)
-        dialog.exec_()
+        exec_dialog(dialog)
 
     def _import_from_python(self):
         from src.ui.import_python_dialog import ImportPythonDialog
         dialog = ImportPythonDialog(self)
-        if dialog.exec_():
+        if exec_dialog(dialog):
             workflow_model = dialog.get_workflow_model()
             if workflow_model:
                 view = self.add_new_workflow("Imported from Python")
@@ -581,7 +777,7 @@ class MainWindow(QMainWindow):
         self.log_panel.log(f"Execution finished {status}.", "info" if success else "warning")
 
         # After a short delay, reset all nodes to 'idle' to clear status colors
-        from PyQt5.QtCore import QTimer
+        QTimer = QtCore.QTimer
         QTimer.singleShot(2000, self._reset_node_statuses)
 
     def _reset_node_statuses(self):

@@ -1,6 +1,15 @@
-from PyQt5.QtWidgets import QGraphicsEllipseItem, QGraphicsItem
-from PyQt5.QtCore import Qt, QPointF, QRectF
-from PyQt5.QtGui import QColor, QBrush, QPen, QPolygonF, QPainter
+from src.utils.qt_compat import QtWidgets, QtCore, QtGui
+
+QGraphicsEllipseItem = QtWidgets.QGraphicsEllipseItem
+QGraphicsItem = QtWidgets.QGraphicsItem
+Qt = QtCore.Qt
+QPointF = QtCore.QPointF
+QRectF = QtCore.QRectF
+QColor = QtGui.QColor
+QBrush = QtGui.QBrush
+QPen = QtGui.QPen
+QPolygonF = QtGui.QPolygonF
+QPainter = QtGui.QPainter
 
 class PortWidget(QGraphicsEllipseItem):
     # Map data types to colors
