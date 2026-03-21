@@ -55,14 +55,28 @@ class Backdrop(QGraphicsRectItem):
                pos.y() > self.rect().height() - self.resize_handle_size
 
     def mousePressEvent(self, event):
+        # 1. Title item interaction
         if self.title_item.boundingRect().contains(event.pos()):
-            pass
+            super().mousePressEvent(event)
+            return
             
+        # 2. Resize handle interaction
         if event.button() == Qt.LeftButton and self._is_on_handle(event.pos()):
             self.resizing = True
             event.accept()
-        else:
+            return
+            
+        # 3. Header interaction (Move & Select)
+        if event.pos().y() < 35:
+            self.setFlag(QGraphicsItem.ItemIsMovable, True)
             super().mousePressEvent(event)
+        else:
+            # 4. Body interaction (Select, but allow RubberBand selection through to the View)
+            self.setFlag(QGraphicsItem.ItemIsMovable, False)
+            self.setSelected(True)
+            # By ignoring the event, we allow the QGraphicsView to receive it 
+            # and start its RubberBandDrag logic if the user drags.
+            event.ignore()
 
     def mouseMoveEvent(self, event):
         if self.resizing:
