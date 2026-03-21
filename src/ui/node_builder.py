@@ -26,6 +26,7 @@ from src.core.registry import NodeRegistry
 from src.core.models import NodeDefinitionJSON, PortModel
 from src.ui.code_editor import CodeEditor
 from src.ui.gemini_chat import GeminiChatWidget
+from src.utils.hou_bridge import get_bridge, is_available
 
 AVAILABLE_WIDGETS = ["", "text", "text_area", "int", "float", "bool", "dropdown", "slider", "file"]
 AVAILABLE_TYPES = ["any", "int", "float", "string", "bool", "list", "dict"]
@@ -51,6 +52,7 @@ class NodeBuilderDialog(QDialog):
         self.inputs_table.itemChanged.connect(self._on_table_changed)
         self.outputs_table.itemChanged.connect(self._on_table_changed)
         self.name_edit.textChanged.connect(self._on_metadata_changed)
+        self.category_combo.currentTextChanged.connect(self._on_category_changed)
 
         if self.editing_node_id:
             self._load_existing_node()
@@ -161,6 +163,21 @@ class NodeBuilderDialog(QDialog):
         button_layout.addWidget(self.save_btn)
         button_layout.addWidget(self.cancel_btn)
         layout.addLayout(button_layout)
+
+    def _on_category_changed(self, category):
+        if category == "Houdini":
+            self._fetch_houdini_completions()
+
+    def _fetch_houdini_completions(self):
+        if is_available():
+            try:
+                bridge = get_bridge()
+                completions = bridge.get_completions()
+                # Also get common sub-modules
+                completions += ["hipFile", "node", "ui", "playbar", "fps", "frame", "setFrame"]
+                self.code_edit.append_completer_list(completions)
+            except Exception:
+                pass
 
     def _select_icon(self):
         path, _ = QFileDialog.getOpenFileName(self, "Select Icon", "", "Images (*.png *.jpg *.svg)")

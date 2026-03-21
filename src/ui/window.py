@@ -478,7 +478,7 @@ class MainWindow(QMainWindow):
 
     def _link_to_gemini(self):
         import webbrowser
-        webbrowser.open("https://aistudio.google.com/app/api-keys?project=gen-lang-client-0761136562")
+        webbrowser.open("https://aistudio.google.com/app/")
         dialog = GeminiApiDialog(self)
         exec_dialog(dialog)
 

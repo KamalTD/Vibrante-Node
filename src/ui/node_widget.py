@@ -294,9 +294,23 @@ class NodeWidget(QGraphicsItem):
             w.setText(str(val) if val is not None else "")
             w.textChanged.connect(lambda val: self._update_param(p_model.name, val))
         elif p_model.widget_type == 'text_area':
-            w = QTextEdit()
-            w.setAcceptRichText(False)
-            w.setMaximumHeight(60)
+            from src.ui.code_editor import CodeEditor
+            w = CodeEditor()
+            # HACK: Disable line numbers for small widget
+            w.lineNumberArea.hide()
+            w.setViewportMargins(0, 0, 0, 0)
+            w.setMaximumHeight(80)
+            w.setMinimumWidth(150)
+            
+            # Fetch Houdini completions if this is a Houdini node
+            if self.node_definition.category == "Houdini":
+                from src.utils.hou_bridge import is_available, get_bridge
+                if is_available():
+                    try:
+                        bridge = get_bridge()
+                        w.append_completer_list(bridge.get_completions())
+                    except: pass
+
             val = self.node_definition.parameters.get(p_model.name)
             w.setPlainText(str(val) if val is not None else "")
             w.textChanged.connect(lambda: self._update_param(p_model.name, w.toPlainText()))

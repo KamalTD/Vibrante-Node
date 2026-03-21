@@ -11,6 +11,7 @@ env/
 .claude/
 .gemini/
 .specify/
+tutorials/
 
 # Testing
 .pytest_cache/
