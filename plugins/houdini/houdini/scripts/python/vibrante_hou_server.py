@@ -272,6 +272,56 @@ def _cmd_set_playback_range(params):
     return {"start": start, "end": end}
 
 
+def _cmd_get_completions(params):
+    """Fetch available members of the hou module for auto-complete."""
+    prefix = params.get("prefix", "")
+    try:
+        if "." in prefix:
+            # Handle nested members like hou.node.
+            parts = prefix.split(".")
+            obj = hou
+            for p in parts[:-1]:
+                if not p: continue
+                obj = getattr(obj, p)
+            members = dir(obj)
+        else:
+            members = dir(hou)
+        
+        # Filter and ensure JSON serializable
+        return [m for m in members if not m.startswith("__")]
+    except Exception as e:
+        return {"error": str(e), "members": []}
+
+
+def _cmd_call(params):
+    """Call an arbitrary Houdini API method dynamically."""
+    path = params["path"] # e.g. "node", "hipFile.save"
+    args = params.get("args", [])
+    kwargs = params.get("kwargs", {})
+    
+    try:
+        parts = path.split(".")
+        func = hou
+        for p in parts:
+            func = getattr(func, p)
+            
+        result = func(*args, **kwargs)
+        
+        # Handle some common Houdini return types that aren't JSON-serializable
+        if hasattr(result, "path") and callable(result.path): # It's a Node
+            return {"type": "node", "path": result.path()}
+        if hasattr(result, "eval") and callable(result.eval): # It's a Parm
+            return {"type": "parm", "value": result.eval()}
+            
+        try:
+            json.dumps(result)
+            return result
+        except (TypeError, ValueError):
+            return str(result)
+    except Exception as e:
+        raise RuntimeError(f"Dynamic call failed: {e}")
+
+
 # ---------------------------------------------------------------------------
 # Dispatch table
 # ---------------------------------------------------------------------------
@@ -299,6 +349,8 @@ _COMMANDS = {
     "set_keyframe":       _cmd_set_keyframe,
     "set_frame":          _cmd_set_frame,
     "set_playback_range": _cmd_set_playback_range,
+    "get_completions":    _cmd_get_completions,
+    "call":               _cmd_call,
 }
 
 
@@ -345,7 +397,8 @@ def _handle_client(conn, addr):
                     try:
                         box["result"] = h(p)
                     except Exception as exc:
-                        box["error"] = f"{type(exc).__name__}: {exc}"
+                        import traceback
+                        box["error"] = f"{type(exc).__name__}: {exc}\n{traceback.format_exc()}"
                     box["done"] = True
                     evt.set()
 

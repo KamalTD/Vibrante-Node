@@ -265,6 +265,13 @@ class CodeEditor(QPlainTextEdit):
     def set_completer_list(self, words):
         self.completer.setModel(QStringListModel(words, self.completer))
 
+    def append_completer_list(self, words):
+        model = self.completer.model()
+        if isinstance(model, QStringListModel):
+            current_words = model.stringList()
+            new_words = sorted(list(set(current_words) | set(words)))
+            model.setStringList(new_words)
+
     def wheelEvent(self, event):
         if event.modifiers() == Qt.ControlModifier:
             if event.angleDelta().y() > 0: self.base_font_size += 1

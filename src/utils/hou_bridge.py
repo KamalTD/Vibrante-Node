@@ -181,6 +181,19 @@ class HouBridge:
         """Set the playback frame range."""
         return self._send("set_playback_range", {"start": start, "end": end})
 
+    def get_completions(self, prefix=""):
+        """Fetch auto-complete suggestions from Houdini."""
+        return self._send("get_completions", {"prefix": prefix})
+
+    def call(self, path, *args, **kwargs):
+        """Call any Houdini API method dynamically.
+        
+        Example: bridge.call("node", "/obj").call("createNode", "geo")
+        Wait, better to just pass the full path:
+        bridge.call("node('/obj').createNode", "geo")
+        """
+        return self._send("call", {"path": path, "args": args, "kwargs": kwargs})
+
 
 # ---------------------------------------------------------------------------
 # Module-level singleton
