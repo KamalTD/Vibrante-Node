@@ -141,8 +141,6 @@ class WorkflowToPythonConverter:
         
         if node.node_id == "if_condition" and not is_bypassed:
             lines.extend(self._emit_if(node_id, indent))
-        elif node.node_id in ("for_loop",) and not is_bypassed:
-            lines.extend(self._emit_for_loop(node_id, indent))
         elif node.node_id == "For Each" and not is_bypassed:
             lines.extend(self._emit_for_each(node_id, indent))
         elif node.node_id in ("While Loop", "while_loop") and not is_bypassed:
@@ -151,10 +149,13 @@ class WorkflowToPythonConverter:
             lines.extend(self._emit_loop_body(node_id, indent))
         else:
             # Regular node or BYPASSED control flow node
+            # Note: for_loop is now handled as a data dependency for loop_body
             lines.extend(self._emit_node(node_id, indent))
-            # Follow exec_out
+            
+            # Follow ALL exec outputs
+            # Standard chain pins
             for conn in self.exec_conns_from.get(node_id, []):
-                if conn.from_port == "exec_out":
+                if conn.from_port in ("exec_out", "exec_false", "exec_on_finished", "then", "exit"):
                     lines.extend(self._follow_exec_chain(conn.to_node, indent))
 
         return lines
@@ -165,7 +166,9 @@ class WorkflowToPythonConverter:
             src = conn.from_node
             if src not in self._emitted and src in self.nodes:
                 # Only auto-emit if the source is NOT driven by exec flow
-                if src not in {c.to_node for c in self.connections if c.is_exec}:
+                # Exception: for_loop is always emitted as a dependency if needed
+                is_driven_by_exec = any(c.to_node == src for c in self.connections if c.is_exec)
+                if not is_driven_by_exec or self.nodes[src].node_id == "for_loop":
                     self._resolve_data_deps(src, indent, lines)
                     lines.extend(self._emit_node(src, indent))
 
@@ -187,11 +190,9 @@ class WorkflowToPythonConverter:
             lines = [f"{prefix}# Node {node.node_id} is bypassed"]
             
             # Find first data input
-            # We don't have easy access to PortDefinitions here, 
-            # so we look at data connections or params
             first_input_val = "None"
             for p_name in node.parameters:
-                if p_name not in ('exec_in', 'exec_out', 'exec_false', 'exec_on_finished'):
+                if p_name not in ('exec_in', 'exec_out', 'exec_false', 'exec_on_finished', 'then', 'exit'):
                     first_input_val = self._inp(node_id, p_name)
                     break
             
@@ -210,9 +211,13 @@ class WorkflowToPythonConverter:
     def _emit_node_impl(self, node_id: UUID, node: NodeInstanceModel, prefix: str) -> List[str]:
         nid = node.node_id
 
-        # ── Math ──
-        if nid == "math_add":
-            return [f"{prefix}{self._var(node_id, 'result')} = float({self._inp(node_id, 'a')}) + float({self._inp(node_id, 'b')})"]
+        # ── Flow ──
+        if nid == "for_loop":
+            # Just generate the indices list
+            start = self._inp(node_id, 'start')
+            end = self._inp(node_id, 'end')
+            step = self._inp(node_id, 'step')
+            return [f"{prefix}{self._var(node_id, 'indices')} = list(range(int({start}), int({end}), int({step})))"]
         if nid == "add_integers":
             return [f"{prefix}{self._var(node_id, 'result')} = int({self._inp(node_id, 'a')}) + int({self._inp(node_id, 'b')})"]
         if nid == "math_subtract":
