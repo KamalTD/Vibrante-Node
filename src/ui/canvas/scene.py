@@ -486,6 +486,28 @@ class NodeScene(QGraphicsScene):
             copy_act.triggered.connect(self.copy_selection)
             menu.addAction(copy_act)
             
+            # BYPASS Options
+            any_bypassed = any(n.bypassed for n in selected_nodes)
+            any_not_bypassed = any(not n.bypassed for n in selected_nodes)
+            
+            if any_not_bypassed:
+                bypass_act = QAction("Bypass Selected Nodes", self.parent())
+                def do_bypass():
+                    self.push_history()
+                    for n in selected_nodes: n.set_bypassed(True)
+                bypass_act.triggered.connect(do_bypass)
+                menu.addAction(bypass_act)
+                
+            if any_bypassed:
+                unbypass_act = QAction("Unbypass Selected Nodes", self.parent())
+                def do_unbypass():
+                    self.push_history()
+                    for n in selected_nodes: n.set_bypassed(False)
+                unbypass_act.triggered.connect(do_unbypass)
+                menu.addAction(unbypass_act)
+
+            menu.addSeparator()
+            
             wrap_act = QAction(f"Wrap {len(selected_nodes)} Nodes in Box", self.parent())
             def wrap_selection():
                 self.push_history()

@@ -52,6 +52,7 @@ class NodeWidget(QGraphicsItem):
         self.bypassed = False
         self._is_propagating = False # Recursion guard
         
+        self.setToolTip("Bypass Node (Ctrl+B)")
         self._init_ui()
 
     def apply_theme(self, is_dark=True):
