@@ -179,6 +179,27 @@ class WorkflowToPythonConverter:
             return []
 
         prefix = "    " * indent
+        
+        # Bypass support: map outputs to first input
+        if getattr(node, 'bypassed', False):
+            lines = [f"{prefix}# Node {node.node_id} is bypassed"]
+            
+            # Find first data input
+            # We don't have easy access to PortDefinitions here, 
+            # so we look at data connections or params
+            first_input_val = "None"
+            for p_name in node.parameters:
+                if p_name not in ('exec_in', 'exec_out', 'exec_false', 'exec_on_finished'):
+                    first_input_val = self._inp(node_id, p_name)
+                    break
+            
+            # Assign to all outputs that are used
+            for conn in self.data_conns_from.get(node_id, []):
+                var = self._var(node_id, conn.from_port)
+                lines.append(f"{prefix}{var} = {first_input_val}")
+                
+            return lines
+
         try:
             return self._emit_node_impl(node_id, node, prefix)
         except Exception as e:
