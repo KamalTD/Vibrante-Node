@@ -294,12 +294,19 @@ class LogPanel(QDockWidget):
         self.log_area.clear()
 
     def _toggle_silent_mode(self, state):
-        """Toggle silent mode: when active, disable and uncheck Info, Execution, Outputs."""
+        """Toggle silent mode: when active, disable and uncheck Info, Execution, Outputs.
+           When deactivated, re-enable and re-check them.
+        """
         is_silent = state == Qt.Checked
         if is_silent:
             self.filter_info.setChecked(False)
             self.filter_exec.setChecked(False)
             self.filter_output.setChecked(False)
+        else:
+            self.filter_info.setChecked(True)
+            self.filter_exec.setChecked(True)
+            self.filter_output.setChecked(True)
+
         self.filter_info.setEnabled(not is_silent)
         self.filter_exec.setEnabled(not is_silent)
         self.filter_output.setEnabled(not is_silent)

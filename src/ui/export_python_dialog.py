@@ -372,7 +372,7 @@ class ExportPythonDialog(QDialog):
         self._last_error_output += data
         self._append_output(data, color="#ff5555")
 
-    @Slot(int, object)
+    @Slot(int, QProcess.ExitStatus)
     def _on_process_finished(self, exit_code, exit_status):
         status_text = "finished successfully" if exit_code == 0 else f"exited with code {exit_code}"
         color = "#50fa7b" if exit_code == 0 else "#ff5555"
@@ -383,7 +383,7 @@ class ExportPythonDialog(QDialog):
         self._process = None
         self._update_button_states()
 
-    @Slot(object)
+    @Slot(QProcess.ProcessError)
     def _on_process_error(self, error):
         error_map = {
             QProcess.FailedToStart: "Failed to start Python interpreter",
