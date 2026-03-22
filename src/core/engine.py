@@ -252,6 +252,8 @@ class NetworkExecutor(QObject):
         
         try:
             instance = self.node_instances[node_id]
+            node_model = self.graph_manager.nodes.get(node_id)
+            is_bypassed = getattr(node_model, 'bypassed', False)
 
             # 1. PULL UPSTREAM DATA NODES (In Port Order)
             incoming = self._incoming_data_conns.get(node_id, [])
@@ -282,6 +284,35 @@ class NetworkExecutor(QObject):
                     instance.parameters[conn.to_port] = val
                     await instance.on_parameter_changed(conn.to_port, val)
             
+            if is_bypassed:
+                # BYPASS LOGIC: 
+                # 1. Flow nodes: Trigger ALL exec outputs
+                # 2. Data nodes: Pass first input to all outputs
+                self.node_log.emit(node_id, "Node is bypassed. Passing through.", "info")
+                
+                bypass_results = {}
+                
+                # Identify first data input for passthrough
+                first_data_input_val = None
+                for p_name, p_def in instance.inputs.items():
+                    if p_def.data_type != 'exec':
+                        first_data_input_val = instance.get_parameter(p_name)
+                        break
+                
+                for p_name, p_def in instance.outputs.items():
+                    if p_def.data_type == 'exec':
+                        # Trigger flow
+                        await instance.set_output(p_name, True)
+                    else:
+                        # Passthrough data
+                        bypass_results[p_name] = first_data_input_val
+                        await instance.set_output(p_name, first_data_input_val)
+                
+                self._executed_nodes.add(node_id)
+                self.node_results[node_id].update(bypass_results)
+                self.node_finished.emit(node_id, "success")
+                return True
+
             inputs = instance.parameters.copy()
             success, result, error = await SafeRuntime.run_node_safe(instance.execute, inputs)
             

@@ -276,7 +276,8 @@ class NodeScene(QGraphicsScene):
                 instance_id=node_widget.instance_id,
                 node_id=getattr(node_widget.node_definition, 'node_id', node_widget.node_definition.name),
                 position=(node_widget.pos().x(), node_widget.pos().y()),
-                parameters=node_widget.node_definition.parameters.copy()
+                parameters=node_widget.node_definition.parameters.copy(),
+                bypassed=node_widget.bypassed
             )
             model.nodes.append(node_model)
         for edge in self.edges:
@@ -325,6 +326,7 @@ class NodeScene(QGraphicsScene):
             widget = self.add_node_by_name(node_model.node_id, QPointF(node_model.position[0], node_model.position[1]))
             if widget:
                 widget.instance_id = node_model.instance_id
+                widget.set_bypassed(node_model.bypassed)
                 # SYNC: Apply parameters to UI widgets and node definition
                 for p_name, p_val in node_model.parameters.items():
                     widget.set_parameter(p_name, p_val, propagate=False)
