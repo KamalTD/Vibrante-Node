@@ -526,12 +526,14 @@ class MainWindow(QMainWindow):
         
         # Run Workflow
         self.execute_btn = QAction(self.style().standardIcon(QStyle.SP_MediaPlay), "Run Workflow", self)
+        self.execute_btn.setShortcut("F5")
         self.execute_btn.setToolTip("Execute the active pipeline (F5)")
         self.execute_btn.triggered.connect(self.execute_pipeline)
         toolbar.addAction(self.execute_btn)
 
         # Stop Workflow
         self.stop_btn = QAction(self.style().standardIcon(QStyle.SP_MediaStop), "Stop Workflow", self)
+        self.stop_btn.setShortcut("Shift+F5")
         self.stop_btn.setToolTip("Stop the active pipeline (Shift+F5)")
         self.stop_btn.triggered.connect(self.stop_execution)
         self.stop_btn.setEnabled(False)
