@@ -40,6 +40,7 @@ class NodeInstanceModel(BaseModel):
     position: Tuple[float, float]
     parameters: Dict[str, Any] = Field(default_factory=dict)
     state: str = "idle"
+    bypassed: bool = False
 
 class ConnectionModel(BaseModel):
     id: UUID = Field(default_factory=uuid4)

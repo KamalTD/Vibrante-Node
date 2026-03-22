@@ -49,8 +49,10 @@ class NodeWidget(QGraphicsItem):
         self.param_widgets = {} # name -> proxy_widget
         self.status = "idle" # idle, running, success, failed
         self.is_dark = True
+        self.bypassed = False
         self._is_propagating = False # Recursion guard
         
+        self.setToolTip("Bypass Node (Ctrl+B)")
         self._init_ui()
 
     def apply_theme(self, is_dark=True):
@@ -223,7 +225,7 @@ class NodeWidget(QGraphicsItem):
         min_width = 220
         content_width = 0
         if hasattr(self, 'title_text') and self.title_text:
-            content_width = max(content_width, self.title_text.boundingRect().width() + 40)
+            content_width = max(content_width, self.title_text.boundingRect().width() + 60) # Extra for bypass btn
         for proxy in self.param_widgets.values():
             w = proxy.widget()
             if w:
@@ -235,6 +237,9 @@ class NodeWidget(QGraphicsItem):
             content_width = max(content_width, w_row + 20)
         self.width = max(min_width, content_width)
         
+        # Bypass Button Position (Top Right)
+        self.bypass_rect = QRectF(self.width - 30, 5, 25, 25)
+
         # 2. Vertical Centering for params
         body_top = ports_bottom_y + 10
         body_bottom = self.height - 10
@@ -475,6 +480,14 @@ class NodeWidget(QGraphicsItem):
         self.status = status
         self.update()
 
+    def set_bypassed(self, bypassed: bool):
+        if self.bypassed == bypassed:
+            return
+        self.bypassed = bypassed
+        if self.scene():
+            self.scene().push_history()
+        self.update()
+
     def is_port_connected(self, port_name, is_input):
         """Checks if a port has any active connections in the scene."""
         if not self.scene(): return False
@@ -517,6 +530,11 @@ class NodeWidget(QGraphicsItem):
             pass
 
     def paint(self, painter, option, widget):
+        if self.bypassed:
+            painter.setOpacity(0.4)
+        else:
+            painter.setOpacity(1.0)
+
         from src.utils.color_manager import ColorManager
         base_color = QColor(40, 40, 40) if self.is_dark else QColor(220, 220, 220)
         if self.status == "running": base_color = QColor(100, 100, 0)
@@ -551,6 +569,21 @@ class NodeWidget(QGraphicsItem):
         painter.setPen(QPen(QColor(30, 30, 30), 1))
         painter.drawLine(0, 35, int(self.width), 35)
 
+        # 3. DRAW BYPASS BUTTON (B)
+        painter.save()
+        if self.bypassed:
+            painter.setBrush(QBrush(QColor(255, 165, 0))) # Orange when bypassed
+            painter.setPen(QPen(Qt.black, 1))
+        else:
+            painter.setBrush(QBrush(QColor(60, 60, 60)))
+            painter.setPen(QPen(QColor(200, 200, 200), 1))
+            
+        painter.drawRoundedRect(self.bypass_rect, 4, 4)
+        painter.setPen(QPen(Qt.white if not self.bypassed else Qt.black))
+        painter.setFont(QtGui.QFont("Arial", 10, QtGui.QFont.Bold))
+        painter.drawText(self.bypass_rect, Qt.AlignCenter, "B")
+        painter.restore()
+
         if hasattr(self.node_definition, 'icon_path') and self.node_definition.icon_path:
             pixmap = QPixmap(self.node_definition.icon_path)
             if not pixmap.isNull():
@@ -563,3 +596,10 @@ class NodeWidget(QGraphicsItem):
             painter.setPen(QPen(QColor(255, 165, 0), 2))
             painter.setBrush(Qt.NoBrush)
             painter.drawRoundedRect(self.boundingRect(), 10, 10)
+
+    def mousePressEvent(self, event):
+        if self.bypass_rect.contains(event.pos()):
+            self.set_bypassed(not self.bypassed)
+            event.accept()
+            return
+        super().mousePressEvent(event)

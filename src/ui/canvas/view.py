@@ -126,6 +126,18 @@ class NodeView(QGraphicsView):
             # Actual pan starts on mouse press + space
         elif event.key() == Qt.Key_F:
             self.focus_on_selection()
+        elif event.key() == Qt.Key_B and event.modifiers() == Qt.ControlModifier:
+            # Toggle Bypass on selection
+            scene = self.scene()
+            if scene:
+                from src.ui.node_widget import NodeWidget
+                selected_nodes = [i for i in scene.selectedItems() if isinstance(i, NodeWidget)]
+                if selected_nodes:
+                    scene.push_history()
+                    # If any are NOT bypassed, bypass them all. Otherwise, unbypass all.
+                    any_not_bypassed = any(not n.bypassed for n in selected_nodes)
+                    for node in selected_nodes:
+                        node.set_bypassed(any_not_bypassed)
         elif event.key() == Qt.Key_G and event.modifiers() == Qt.ControlModifier:
             # Wrap in Backdrop
             scene = self.scene()
