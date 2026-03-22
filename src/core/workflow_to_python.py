@@ -136,19 +136,21 @@ class WorkflowToPythonConverter:
         # First resolve any upstream data-only dependencies
         self._resolve_data_deps(node_id, indent, lines)
 
-        # Control flow nodes get special treatment
-        if node.node_id == "if_condition":
+        # Control flow nodes get special treatment (unless bypassed)
+        is_bypassed = getattr(node, 'bypassed', False)
+        
+        if node.node_id == "if_condition" and not is_bypassed:
             lines.extend(self._emit_if(node_id, indent))
-        elif node.node_id in ("for_loop",):
+        elif node.node_id in ("for_loop",) and not is_bypassed:
             lines.extend(self._emit_for_loop(node_id, indent))
-        elif node.node_id == "For Each":
+        elif node.node_id == "For Each" and not is_bypassed:
             lines.extend(self._emit_for_each(node_id, indent))
-        elif node.node_id in ("While Loop", "while_loop"):
+        elif node.node_id in ("While Loop", "while_loop") and not is_bypassed:
             lines.extend(self._emit_while(node_id, indent))
-        elif node.node_id == "loop_body":
+        elif node.node_id == "loop_body" and not is_bypassed:
             lines.extend(self._emit_loop_body(node_id, indent))
         else:
-            # Regular node
+            # Regular node or BYPASSED control flow node
             lines.extend(self._emit_node(node_id, indent))
             # Follow exec_out
             for conn in self.exec_conns_from.get(node_id, []):
