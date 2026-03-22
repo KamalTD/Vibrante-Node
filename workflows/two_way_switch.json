@@ -45,7 +45,7 @@
                 "exec_in": null,
                 "type": "string",
                 "value": "Green",
-                "exec_out": null,
+                "exec_out": true,
                 "out": "Green"
             },
             "state": "idle"
@@ -54,14 +54,14 @@
             "instance_id": "6e15160b-4886-4a6a-91ff-934ed6bfeec2",
             "node_id": "variable_node",
             "position": [
-                -439.265625,
-                458.5312499999999
+                -307.265625,
+                209.5312499999999
             ],
             "parameters": {
                 "exec_in": null,
                 "type": "string",
                 "value": "Red",
-                "exec_out": null,
+                "exec_out": true,
                 "out": "Red"
             },
             "state": "idle"
@@ -109,7 +109,7 @@
                 "exec_in": null,
                 "type": "string",
                 "value": "White",
-                "exec_out": null,
+                "exec_out": true,
                 "out": "White"
             },
             "state": "idle"
@@ -157,7 +157,7 @@
                 "exec_in": null,
                 "type": "string",
                 "value": "Black",
-                "exec_out": null,
+                "exec_out": true,
                 "out": "Black"
             },
             "state": "idle"
@@ -171,8 +171,8 @@
             ],
             "parameters": {
                 "step_0": "Green",
-                "result": null,
-                "exec_step": null,
+                "result": "White",
+                "exec_step": true,
                 "exec_out": null,
                 "step_1": "White",
                 "step_2": null
@@ -182,7 +182,7 @@
     ],
     "connections": [
         {
-            "id": "09b0b874-1d36-451b-bf7a-362b329c3120",
+            "id": "84656983-9fc5-4f5d-89eb-e7a698f4a07b",
             "from_node": "e2e44093-66af-4af2-88f7-d193e12c7f25",
             "from_port": "result",
             "to_node": "27481429-23b6-4709-82b1-5a449a376b24",
@@ -190,7 +190,7 @@
             "is_exec": false
         },
         {
-            "id": "29789c53-8dda-4951-a6b7-825759f5dd4a",
+            "id": "fc992b50-f75d-48c8-a671-396f07b99566",
             "from_node": "27481429-23b6-4709-82b1-5a449a376b24",
             "from_port": "output",
             "to_node": "4825d336-1e9b-499d-bf88-86ea587679a8",
@@ -198,7 +198,7 @@
             "is_exec": false
         },
         {
-            "id": "9a2fc3c5-7a53-498f-ae83-425c5bfabc1a",
+            "id": "abc31ef9-23d5-41ba-abc4-78d08c1c43c7",
             "from_node": "8dc927dd-fddd-48e4-84b8-3f882f84b558",
             "from_port": "out",
             "to_node": "27481429-23b6-4709-82b1-5a449a376b24",
@@ -206,7 +206,7 @@
             "is_exec": false
         },
         {
-            "id": "13a3c81e-df5f-482d-b9c1-76b44b023d21",
+            "id": "8ab34af2-5a57-40bf-b9b6-d4027ef69555",
             "from_node": "6e15160b-4886-4a6a-91ff-934ed6bfeec2",
             "from_port": "out",
             "to_node": "27481429-23b6-4709-82b1-5a449a376b24",
@@ -214,7 +214,7 @@
             "is_exec": false
         },
         {
-            "id": "bc534213-6949-4a7c-b6a6-db94de9b2e40",
+            "id": "e726c6c3-31d9-475f-8bfb-c1129cf801fe",
             "from_node": "27481429-23b6-4709-82b1-5a449a376b24",
             "from_port": "exec_out",
             "to_node": "4825d336-1e9b-499d-bf88-86ea587679a8",
@@ -222,7 +222,7 @@
             "is_exec": true
         },
         {
-            "id": "9ed31d6d-5602-4df2-812e-706d51378a01",
+            "id": "67efc21c-193e-4700-915b-24b915d1bfc1",
             "from_node": "e2e44093-66af-4af2-88f7-d193e12c7f25",
             "from_port": "exec_out",
             "to_node": "27481429-23b6-4709-82b1-5a449a376b24",
@@ -230,7 +230,7 @@
             "is_exec": true
         },
         {
-            "id": "e68c6c02-eefe-46fd-a7d4-a7ff280fe911",
+            "id": "b01cc639-12f1-487e-92d5-24fb95473b37",
             "from_node": "7426d028-aa18-4435-bfde-c4e97ddec314",
             "from_port": "result",
             "to_node": "645d5149-69c0-45a2-9a0d-04304a255fac",
@@ -238,7 +238,7 @@
             "is_exec": false
         },
         {
-            "id": "01594886-a30f-4aca-8cf4-1f3833dba56a",
+            "id": "3d6a5f41-07a2-4565-8395-390a71a2d70e",
             "from_node": "614d9cc2-5860-4f6e-a542-f53216fc933a",
             "from_port": "out",
             "to_node": "645d5149-69c0-45a2-9a0d-04304a255fac",
@@ -246,7 +246,7 @@
             "is_exec": false
         },
         {
-            "id": "27708159-c507-4991-b539-1e48b198e875",
+            "id": "2cb169f9-e0b8-4595-ac09-85c927d951b8",
             "from_node": "b374a511-1d1a-4ddc-8a64-e47ceb44424c",
             "from_port": "out",
             "to_node": "645d5149-69c0-45a2-9a0d-04304a255fac",
@@ -254,7 +254,7 @@
             "is_exec": false
         },
         {
-            "id": "cb5a35e5-95e9-4c2f-95d0-5d8ca1f0c721",
+            "id": "af644c5d-6d65-42c4-94af-b99c5023d124",
             "from_node": "645d5149-69c0-45a2-9a0d-04304a255fac",
             "from_port": "exec_out",
             "to_node": "ecfd9028-5154-44be-9b6c-0b59b95a4728",
@@ -262,7 +262,7 @@
             "is_exec": true
         },
         {
-            "id": "3dc0b30a-a6e1-4f22-a624-cfe00550087a",
+            "id": "f4b38521-934b-4b8f-a973-df2c11279fa4",
             "from_node": "7426d028-aa18-4435-bfde-c4e97ddec314",
             "from_port": "exec_out",
             "to_node": "645d5149-69c0-45a2-9a0d-04304a255fac",
@@ -270,7 +270,7 @@
             "is_exec": true
         },
         {
-            "id": "ad97c3b8-49b4-4eaa-8fc2-5116cb153ffb",
+            "id": "69fc2e10-67a3-4b82-aff2-bc5b2f302769",
             "from_node": "645d5149-69c0-45a2-9a0d-04304a255fac",
             "from_port": "output",
             "to_node": "ecfd9028-5154-44be-9b6c-0b59b95a4728",
@@ -278,7 +278,7 @@
             "is_exec": false
         },
         {
-            "id": "8d07c92a-f775-42aa-b595-c54374464298",
+            "id": "21c45081-fa96-4098-9311-e7fa41b76d46",
             "from_node": "4825d336-1e9b-499d-bf88-86ea587679a8",
             "from_port": "out",
             "to_node": "b5d4278b-8651-4bf1-90f0-da58e4a03e00",
@@ -286,7 +286,7 @@
             "is_exec": false
         },
         {
-            "id": "1055f358-c09a-40f2-99fe-c23a21f0b5f2",
+            "id": "34c70a5f-d224-4f0c-b400-4fe8068f75a9",
             "from_node": "ecfd9028-5154-44be-9b6c-0b59b95a4728",
             "from_port": "out",
             "to_node": "b5d4278b-8651-4bf1-90f0-da58e4a03e00",
