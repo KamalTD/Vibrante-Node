@@ -76,7 +76,7 @@ Themes are applied globally using `QApplication.instance().setStyleSheet()`. Cus
 ### Event Log
 - Added `Silent Mode` checkbox to `LogPanel`. When active, the `_handle_log` fast-path returns immediately for non-error/warning messages, skipping regex extraction, entry creation, and UI updates.
 
-## 🆕 v1.1.5 — Houdini Live Integration & App Icon
+## 🆕 v1.2.0 — Houdini Dynamic API & App Icon
 
 ### SideFX Houdini Integration
 
@@ -113,8 +113,26 @@ plugins/houdini/
 ### Application Icon
 - Custom icon (`icons/vibrante-node-icon.png`) set via `app.setWindowIcon()` in `src/main.py`. Visible in taskbar, title bar, and window switcher.
 
-### Example Houdini Scripts
-Located in `plugins/houdini/v_scripts_houdini/`:
-- `hou_scene_info.py` — Query the live Houdini scene via the bridge.
-- `hou_create_box_demo.py` — Create a Geometry container with a Box SOP.
-- `hou_list_scene_nodes.py` — List all children under `/obj`.
+## 🆕 v1.2.0 — Dynamic API, UI Polish & Bypassing
+
+### SideFX Houdini Dynamic API
+The Houdini integration was expanded to support arbitrary API calls:
+- **Dynamic Call Dispatcher**: A new `call` command was added to `vibrante_hou_server.py`. It uses recursion to traverse the `hou` module and execute any method with provided `*args` and `**kwargs`.
+- **IntelliSense Server**: The `get_completions` command provides a list of available members for any `hou` object, enabling real-time auto-complete in the Node Builder.
+- **Enhanced Tracebacks**: The server now captures full Python tracebacks from Houdini and returns them to Vibrante-Node for easier debugging of DCC-side scripts.
+
+### Node Bypassing Implementation
+- **Data Model**: `NodeInstanceModel` now includes a `bypassed: bool` field.
+- **Engine Logic**: In `NetworkExecutor._run_single_node_impl`, bypassed nodes skip `execute()`. Instead, they identify the first non-exec input and map its value to all non-exec outputs. All `exec` output pins are triggered to maintain flow.
+- **UI Component**: `NodeWidget` features a new `bypass_rect` in the header. `mousePressEvent` toggles the state, and `paint()` applies a 0.4 opacity effect to the entire item when bypassed.
+
+### UI & UX Refinement
+- **Drag and Drop**: Implemented `DraggableTreeWidget` (subclass of `QTreeWidget`) in `library_panel.py` to initiate `QDrag` operations. `NodeView` implements `dropEvent` to spawn nodes at scene coordinates.
+- **Port Animations**: `PortWidget` uses `QVariantAnimation` to smoothly transition `scale_factor` between 1.0 and 1.5 during hover events.
+- **Connection Snapping**: `NodeScene.mouseMoveEvent` performs a proximity search for `PortWidget` items. If a compatible port is within 35 pixels, the `active_edge` endpoint is snapped to the port center and a hover animation is triggered on the target.
+
+### Python Export Engine (v2)
+`WorkflowToPythonConverter` was refactored for better logical mapping:
+- **Bypass Support**: Bypassed nodes are emitted as pass-through comments, mapping outputs to the first input variable.
+- **Generic Exec Branching**: The recursion logic now automatically follows ALL execution pins (e.g., `exec_false`, `then`, `on_finished`) if they are not explicitly handled by specialized control-flow emitters.
+- **Loop Logic Refactor**: `for_loop` is now treated as a data-provider node (generating a range list) while `loop_body` handles the actual Python `for` loop, eliminating redundant nesting.

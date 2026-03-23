@@ -22,17 +22,39 @@ The project focuses on flexibility, extensibility, and developer productivity, m
 
 ## 🌟 Latest Enhancements
 
-### � SideFX Houdini Integration (v1.1.5)
+### 🔥 SideFX Houdini Integration (v1.2.0)
 Full two-way integration with SideFX Houdini via a live command bridge:
-- **19 Houdini Nodes**: Create Node, Create Geometry, Set Parameter, Get Parameter, Connect Nodes, Run Python, Scene Info, Node Info, List Children, Cook Node, Set Display/Render Flag, Save HIP, Set Expression, Set Keyframe, Set Frame, Layout Children, Node Exists, and more.
-- **Live Command Server**: A JSON-RPC command server runs inside Houdini, allowing Vibrante-Node to create, modify, and query nodes in the live Houdini session in real-time.
-- **Bridge Client**: Transparent socket-based communication — Houdini nodes in Vibrante-Node talk to the running Houdini session seamlessly.
-- **Houdini Shelf & Menus**: Dedicated shelf tools, main menu entries, and Python panel for launching Vibrante-Node from Houdini.
-- **Environment Auto-Configuration**: Automatic detection of Houdini Python paths, DLL directories, and version information.
-- **Houdini Example Scripts**: Ready-to-run scripts for querying scene info, creating geometry, and listing nodes.
-- **Application Icon**: Custom Vibrante-Node icon displayed in the window title bar and taskbar.
+- **Dynamic API Support**: Call ANY Houdini Python API method directly through the bridge. No longer limited to fixed command sets.
+- **IntelliSense for Houdini**: Real-time auto-completion for `hou` module members in the Node Builder and node parameter widgets.
+- **19+ Houdini Nodes**: Including a flexible "Hou Run Python" node with auto-complete.
+- **Improved Error Handling**: Full tracebacks from Houdini are captured and displayed in the application console.
+- **Live Command Server**: A JSON-RPC command server runs inside Houdini, allowing real-time scene manipulation.
 
-### �🖥️ Professional Python Code Editor (v1.1.0)
+### 🖱️ UI/UX & Workflow Enhancements (v1.2.0)
+- **Drag & Drop**: Seamlessly drag nodes from the library directly onto the canvas.
+- **Enhanced Network Boxes (Backdrops)**:
+    - **Fit to Nodes**: Automatically resize a backdrop to wrap all overlapping nodes.
+    - **Select Contained**: Instantly select all nodes inside a network box.
+    - **Restricted Move**: Move backdrops via the header area to allow standard rubber-band selection within the box body.
+- **Animated Ports**: Ports now scale up smoothly on hover and feature a "snap" effect when dragging wires near them.
+- **New Power-User Shortcuts**:
+    - `F5` / `Shift+F5`: Run or Stop the active workflow.
+    - `Ctrl+G`: Wrap selected nodes in a new Network Box.
+    - `Ctrl+B`: Toggle Bypass state for all selected nodes.
+
+### 🚫 Node Bypassing (v1.2.0)
+- **Visual Bypass**: Click the "B" button in the node header or press `Ctrl+B` to disable a node without deleting it.
+- **Smart Passthrough**: Bypassed nodes automatically pass their first data input to all outputs and propagate execution flow correctly.
+- **Persistence**: Bypass state is saved into and restored from workflow files.
+
+### 🐍 Refined Python Export (v1.2.0)
+The "Export Workflow as Python" engine has been significantly improved:
+- **Bypass Support**: Bypassed nodes are correctly handled in the exported script as pass-through comments.
+- **Branching Logic**: Full support for all execution pins, including `exec_false` and `exec_on_finished`.
+- **Nested Loop Fixes**: Resolved issues where certain flow patterns generated redundant nested loops.
+
+### 🖥️ Professional Python Code Editor (v1.1.0)
+
 The "Export Workflow as Python" dialog is now a full IDE-style code editor:
 - **Editable Code**: Full `CodeEditor` with line numbers, syntax highlighting, bracket matching, auto-completion, and live linting.
 - **Run & Debug**: Execute scripts directly with real-time stdout/stderr output and a Stop button.
@@ -156,6 +178,7 @@ Detailed documentation is available for both users and developers:
 
 ## 📋 Release History
 
+- **v1.2.0 (Latest)** — Dynamic Houdini API, Node Bypassing, UI/UX Polish (Drag & Drop, Snapping, Shortcuts)
 - **[v1.1.5](RELEASE_v1.1.5.md)** — Houdini Live Integration, Command Bridge, 19 Houdini Nodes, App Icon
 - **[v1.1.0](RELEASE_v1.1.0.md)** — Professional Code Editor, Execution Optimizations, Event Log Silent Mode
 - **[v1.0.5](RELEASE_v1.0.5.md)** — Loop Execution & Flow Engine Refactor
