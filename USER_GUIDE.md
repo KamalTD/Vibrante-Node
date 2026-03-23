@@ -105,9 +105,16 @@ Vibrante-Node can control a live SideFX Houdini session directly from your workf
 
 ### Setting Up the Houdini Plugin
 
-1. Copy the `plugins/houdini/houdini/` folder into your Houdini user preferences directory (e.g., `C:\Users\<you>\Documents\houdini20.5\` on Windows or `~/houdini20.5/` on Linux/Mac).
-2. Restart Houdini — you'll see a **Vibrante** shelf tab and a **Vibrante** menu in the menu bar.
-3. Click the **Launch Vibrante-Node** button on the shelf to start the app with the command server running automatically.
+1. Locate the `plugins/houdini/vibrante_node.json` file in the project folder.
+2. Edit the JSON file and replace the placeholders:
+    - Change `<VIBRANTE NODE DIR>` to the absolute path of your Vibrante-Node folder.
+    - Change `<PYTHON EXE PATH>` to the absolute path of your Python executable (e.g., `C:\Python310\python.exe`).
+3. Copy the modified `vibrante_node.json` file into your Houdini **packages** directory:
+    - **Windows**: `C:\Users\<USER_NAME>\Documents\houdini20.5\packages\`
+    - **Linux/Mac**: `~/houdini20.5/packages/`
+    *(Note: If the `packages` folder doesn't exist, create it.)*
+4. Restart Houdini. You will now see a **Vibrante_Node** menu in the main menu bar and a **Vibrante** shelf tab.
+5. Click the **Launch Vibrante-Node** button on the shelf to start the app.
 
 ### Using Houdini Nodes
 
