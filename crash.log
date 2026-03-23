@@ -1,4 +1,5 @@
 Traceback (most recent call last):
-  File "G:\MyData\test_python\node_based_pipeline\node_based_app\src\ui\export_python_dialog.py", line 348, in _run_code
-    self._process.finished.connect(self._on_process_finished)
-TypeError: decorated slot has no signature compatible with finished(int,QProcess::ExitStatus)
+  File "G:\MyData\test_python\node_based_pipeline\node_based_app\src\ui\canvas\scene.py", line 464, in mouseReleaseEvent
+    to_p = old_edge.to_p
+           ^^^^^^^^^^^^^
+AttributeError: 'Edge' object has no attribute 'to_p'

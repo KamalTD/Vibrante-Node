@@ -34,6 +34,9 @@ class NodeScene(QGraphicsScene):
         self.backdrops = []
         self.active_edge = None
         self.file_path = None
+        
+        # Snap target state
+        self._snapped_port = None
 
         self.history = []
         self.redo_stack = []
@@ -398,7 +401,42 @@ class NodeScene(QGraphicsScene):
 
     def mouseMoveEvent(self, event):
         if self.active_edge:
-            self.active_edge.set_end_pos(event.scenePos())
+            pos = event.scenePos()
+            
+            # SNAP LOGIC
+            snap_radius = 35
+            nearest_port = None
+            min_dist = snap_radius
+            
+            # Find nearest compatible port
+            for item in self.items(QtCore.QRectF(pos.x() - snap_radius, pos.y() - snap_radius, snap_radius*2, snap_radius*2)):
+                if isinstance(item, PortWidget):
+                    # Compatibility check
+                    if item.parentItem() != self.active_edge.from_port.parentItem() and \
+                       item.is_input != self.active_edge.from_port.is_input:
+                        
+                        dist = (item.scenePos() - pos).manhattanLength()
+                        if dist < min_dist:
+                            min_dist = dist
+                            nearest_port = item
+            
+            if nearest_port:
+                # Snap to port center
+                self.active_edge.set_end_pos(nearest_port.scenePos())
+                
+                # Trigger animation on the target port
+                if self._snapped_port != nearest_port:
+                    if self._snapped_port: 
+                        self._snapped_port.hoverLeaveEvent(None)
+                    self._snapped_port = nearest_port
+                    self._snapped_port.hoverEnterEvent(None)
+            else:
+                # No snap, follow mouse
+                self.active_edge.set_end_pos(pos)
+                if self._snapped_port:
+                    self._snapped_port.hoverLeaveEvent(None)
+                    self._snapped_port = None
+                    
             event.accept()
         else:
             super().mouseMoveEvent(event)
@@ -407,7 +445,12 @@ class NodeScene(QGraphicsScene):
         if self.active_edge and event.button() == Qt.LeftButton:
             view = self.views()[0] if self.views() else None
             transform = view.transform() if view else None
-            item = self.itemAt(event.scenePos(), transform) if transform else self.itemAt(event.scenePos())
+            
+            # Use the snapped port if it exists, otherwise check under mouse
+            item = self._snapped_port
+            if not item:
+                item = self.itemAt(event.scenePos(), transform) if transform else self.itemAt(event.scenePos())
+            
             if isinstance(item, PortWidget):
                 if item != self.active_edge.from_port and \
                    item.parentItem() != self.active_edge.from_port.parentItem() and \
@@ -436,6 +479,12 @@ class NodeScene(QGraphicsScene):
             else:
                 self.removeItem(self.active_edge)
                 self.active_edge = None
+            
+            # Reset snapped state
+            if self._snapped_port:
+                self._snapped_port.hoverLeaveEvent(None)
+                self._snapped_port = None
+                
             event.accept()
         else:
             super().mouseReleaseEvent(event)
