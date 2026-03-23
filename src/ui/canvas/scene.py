@@ -34,6 +34,9 @@ class NodeScene(QGraphicsScene):
         self.backdrops = []
         self.active_edge = None
         self.file_path = None
+        
+        # Snap target state
+        self._snapped_port = None
 
         self.history = []
         self.redo_stack = []

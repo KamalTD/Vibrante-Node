@@ -34,6 +34,10 @@ class PortWidget(QGraphicsEllipseItem):
         self.radius = 6
         self.setRect(-self.radius, -self.radius, self.radius * 2, self.radius * 2)
         
+        # Animation state
+        self.scale_factor = 1.0
+        self._hover_anim = None
+        
         # Determine if it's an execution port
         data_type = "any"
         if hasattr(self.port_definition, "type"):
@@ -60,10 +64,40 @@ class PortWidget(QGraphicsEllipseItem):
         
         # Tooltip showing name and type
         self.setToolTip(f"{self.port_definition.name}\nType: {data_type}")
+
+    def hoverEnterEvent(self, event):
+        self._animate_scale(1.5)
+        super().hoverEnterEvent(event)
+
+    def hoverLeaveEvent(self, event):
+        self._animate_scale(1.0)
+        super().hoverLeaveEvent(event)
+
+    def _animate_scale(self, target):
+        if self._hover_anim and self._hover_anim.state() == QtCore.QAbstractAnimation.Running:
+            self._hover_anim.stop()
+            
+        self._hover_anim = QtCore.QVariantAnimation()
+        self._hover_anim.setDuration(150)
+        self._hover_anim.setStartValue(self.scale_factor)
+        self._hover_anim.setEndValue(target)
+        self._hover_anim.setEasingCurve(QtCore.QEasingCurve.OutBack)
+        
+        def update_val(val):
+            self.scale_factor = val
+            self.update()
+            
+        self._hover_anim.valueChanged.connect(update_val)
+        self._hover_anim.start()
         
     def paint(self, painter, option, widget):
+        painter.save()
+        painter.setRenderHint(QPainter.Antialiasing)
+        
+        # Apply Hover Scale
+        painter.scale(self.scale_factor, self.scale_factor)
+        
         if self.port_type == "exec":
-            painter.setRenderHint(QPainter.Antialiasing)
             painter.setBrush(self.brush())
             painter.setPen(self.pen())
             
@@ -72,7 +106,11 @@ class PortWidget(QGraphicsEllipseItem):
             poly = QPolygonF([QPointF(-r, -r), QPointF(r, 0), QPointF(-r, r)])
             painter.drawPolygon(poly)
         else:
-            super().paint(painter, option, widget)
+            painter.setBrush(self.brush())
+            painter.setPen(self.pen())
+            painter.drawEllipse(self.rect())
+            
+        painter.restore()
 
     def get_scene_pos(self) -> QPointF:
         return self.scenePos()
