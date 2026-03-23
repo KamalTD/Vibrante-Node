@@ -461,7 +461,7 @@ class NodeScene(QGraphicsScene):
                     old_edge = next((e for e in self.edges if e.to_port == target_input), None)
                     if old_edge:
                         from_p = old_edge.from_port
-                        to_p = old_edge.to_p
+                        to_p = old_edge.to_port
                         self.removeItem(old_edge)
                         self.edges.remove(old_edge)
                         self._trigger_unplug(from_p, to_p)
