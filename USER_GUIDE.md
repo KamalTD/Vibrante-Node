@@ -4,23 +4,40 @@ Welcome to Vibrante-Node! This guide will help you get started with building and
 
 ## 🕹️ Interface Basics
 
--   **Node Library (Left)**: Browse and search for nodes. Drag-and-drop or double-click to add them to the canvas.
+-   **Node Library (Left)**: Browse and search for nodes. **Drag-and-drop** or double-click to add them to the canvas.
 -   **Main Canvas (Center)**: Your workspace.
-    -   **Pan**: Middle-mouse button drag.
+    -   **Pan**: Middle-mouse button drag or `Space + Left Drag`.
     -   **Zoom**: Mouse wheel.
-    -   **Focus**: Press `F` to focus on selected nodes or the center of the graph.
-    -   **Copy/Paste**: Press `Ctrl+C` to copy selected nodes and `Ctrl+V` to paste them at the cursor position.
+    -   **Focus**: Press `F` to focus on selected nodes.
+    -   **Copy/Paste**: Press `Ctrl+C` / `Ctrl+V`.
+    -   **Bypass**: Press `Ctrl+B` to toggle bypass on selected nodes.
+    -   **Group**: Press `Ctrl+G` to wrap selected nodes in a Network Box (Backdrop).
     -   **Delete**: Select an item and press the `Delete` key.
 -   **Event Log (Bottom)**: Real-time feedback on execution, outputs, and connection events.
 
 ## 🔗 Building a Workflow
 
-1.  **Add Nodes**: Use the library or right-click on the canvas to add nodes.
-2.  **Connect Ports**: Click and drag from an **Output Port** (right side) to an **Input Port** (left side).
-    -   *Live Sync*: When you connect two nodes, the data from the source is instantly pushed to the destination.
-3.  **Configure Data**: Interact with widgets (text boxes, sliders, etc.) directly on the node.
-    -   *Reactive Flow*: Destination widgets are disabled when connected but will **update live** as you change the source node's values.
-4.  **Run**: Click the **Play** icon in the toolbar or press `F5`.
+1.  **Add Nodes**: Drag from the library or right-click on the canvas.
+2.  **Connect Ports**: Click and drag from an **Output Port** to an **Input Port**.
+    -   **Snapping**: Wires will automatically snap to compatible ports when dragged nearby.
+    -   **Animations**: Ports scale up on hover to show they are ready for connection.
+3.  **Configure Data**: Interact with widgets directly on the node.
+4.  **Run**: Click the **Play** icon, press **F5**, or use the scripting console.
+
+## 🚫 Bypassing Nodes (v1.2.0)
+
+You can temporarily disable nodes without removing them from your workflow:
+-   **Toggle**: Click the **"B" button** in the top-right corner of any node, or press `Ctrl+B` with nodes selected.
+-   **Behavior**: Bypassed nodes turn semi-transparent. They skip their internal logic and instead pass the data from their **first input** directly to all outputs. Execution flow (`exec`) continues through the node normally.
+
+## 📦 Network Boxes (Backdrops)
+
+Organize your graph using Network Boxes:
+-   **Create**: Right-click > Add Network Box, or select nodes and press `Ctrl+G`.
+-   **Interact**: Move the box by dragging its **Title Bar**. Dragging the body allows you to use rubber-band selection for nodes inside.
+-   **Context Menu**: Right-click a box to:
+    -   **Fit to Contained Nodes**: Automatically resize the box to wrap all overlapping nodes.
+    -   **Select Contained Nodes**: Select everything inside the box.
 
 ## ⚙️ Advanced Execution Flow (v1.0.5+)
 
@@ -82,7 +99,7 @@ The Event Log supports a **Silent Mode** toggle in the filter bar:
 -   Silent mode also skips all internal log processing for filtered messages, reducing overhead during execution.
 -   Toggle it on for faster execution when you only need to see errors.
 
-## 🔥 SideFX Houdini Integration (v1.1.5)
+## 🔥 SideFX Houdini Integration (v1.2.0)
 
 Vibrante-Node can control a live SideFX Houdini session directly from your workflows.
 

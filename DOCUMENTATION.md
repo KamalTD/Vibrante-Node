@@ -36,14 +36,26 @@ The "Export Workflow as Python" dialog provides a full development environment:
 ### 🔹 Event Log System
 - **Filtered Logging**: Filter by node name, level (Errors, Warnings, Info, Execution, Outputs).
 - **Silent Mode (v1.1.0)**: Toggle to suppress all non-error messages with zero processing overhead for maximum execution speed.
+- **Auto-Restore (v1.2.0)**: Disabling Silent Mode automatically re-enables previously filtered message categories (Info, Exec, Output).
 
 ### 🔹 Advanced Connection System
 - **Bidirectional Dragging**: Start wires from either input or output ports.
 - **Single-Input Enforcement**: Automatically replaces old wires when a new one is connected to an input port.
 - **Redrag-to-Disconnect**: Seamlessly move existing wires by dragging them away from ports.
+- **Animated Snapping (v1.2.0)**: Ports feature smooth scaling animations on hover and a "magnetic" snap effect when wires are dragged within 35 pixels.
 
-### 🔹 Application Icon (v1.1.5)
-- Custom application icon (`icons/vibrante-node-icon.png`) displayed in the taskbar, title bar, and splash screen.
+### 🔹 Keyboard Shortcuts (v1.2.0)
+| Shortcut | Action |
+| :--- | :--- |
+| `F5` | Run active workflow |
+| `Shift + F5` | Stop workflow execution |
+| `F` | Focus on selection |
+| `Tab` | Open Quick Search popup |
+| `Ctrl + C` / `Ctrl + V` | Copy / Paste nodes |
+| `Ctrl + G` | Wrap selected nodes in a Network Box (Backdrop) |
+| `Ctrl + B` | Toggle Bypass on selected nodes |
+| `Delete` | Remove selected items |
+| `Space + Drag` | Pan the canvas (Left Mouse) |
 
 ---
 
@@ -143,7 +155,7 @@ if node:
 
 ---
 
-## 🔥 4. SideFX Houdini Integration (v1.1.5)
+## 🔥 4. SideFX Houdini Integration (v1.2.0)
 
 Vibrante-Node provides a deep integration with SideFX Houdini FX via a **Live Command Bridge** architecture. This allows you to control a live Houdini session from within Vibrante-Node workflows.
 
@@ -183,6 +195,8 @@ The server supports the following JSON-RPC commands:
 | `set_keyframe` | Set a keyframe on a parameter |
 | `set_frame` | Set the current timeline frame |
 | `set_playback_range` | Set the timeline frame range |
+| `call` | Execute ANY Houdini API method dynamically (`path`, `args`, `kwargs`) |
+| `get_completions` | Fetch auto-complete suggestions for `hou` members |
 
 ### 🔹 Bridge Client API
 
@@ -254,7 +268,7 @@ Located in `plugins/houdini/v_scripts_houdini/`:
 - **Crash Protection**: A global exception hook captures unhandled errors and generates a `crash.log` file for instant debugging.
 - **Robust Persistence**: Full workflow states (positions, parameters, and connections) are serialized as clean, portable JSON.
 - **Name Sanitization**: Automated slug generation for custom nodes to ensure filesystem and class compatibility.
-- **Qt Compatibility Layer** (v1.1.5): A unified `src/utils/qt_compat.py` module handles differences between PyQt5 and PySide2 for cross-environment support.
+- **Qt Compatibility Layer** (v1.2.0): A unified `src/utils/qt_compat.py` module handles differences between PyQt5 and PySide2 for cross-environment support.
 
 ---
 
