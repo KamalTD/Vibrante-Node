@@ -445,7 +445,12 @@ class NodeScene(QGraphicsScene):
         if self.active_edge and event.button() == Qt.LeftButton:
             view = self.views()[0] if self.views() else None
             transform = view.transform() if view else None
-            item = self.itemAt(event.scenePos(), transform) if transform else self.itemAt(event.scenePos())
+            
+            # Use the snapped port if it exists, otherwise check under mouse
+            item = self._snapped_port
+            if not item:
+                item = self.itemAt(event.scenePos(), transform) if transform else self.itemAt(event.scenePos())
+            
             if isinstance(item, PortWidget):
                 if item != self.active_edge.from_port and \
                    item.parentItem() != self.active_edge.from_port.parentItem() and \
@@ -456,7 +461,7 @@ class NodeScene(QGraphicsScene):
                     old_edge = next((e for e in self.edges if e.to_port == target_input), None)
                     if old_edge:
                         from_p = old_edge.from_port
-                        to_p = old_edge.to_port
+                        to_p = old_edge.to_p
                         self.removeItem(old_edge)
                         self.edges.remove(old_edge)
                         self._trigger_unplug(from_p, to_p)
@@ -474,6 +479,12 @@ class NodeScene(QGraphicsScene):
             else:
                 self.removeItem(self.active_edge)
                 self.active_edge = None
+            
+            # Reset snapped state
+            if self._snapped_port:
+                self._snapped_port.hoverLeaveEvent(None)
+                self._snapped_port = None
+                
             event.accept()
         else:
             super().mouseReleaseEvent(event)
