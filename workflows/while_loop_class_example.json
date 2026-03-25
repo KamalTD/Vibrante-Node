@@ -4,8 +4,8 @@
             "instance_id": "aaaaaaaa-0000-0000-0000-aaaaaaaaaaaa",
             "node_id": "While Loop",
             "position": [
-                -400.0,
-                0.0
+                -388.75,
+                -56.25
             ],
             "parameters": {
                 "exec_in": null,
@@ -21,31 +21,33 @@
                 "broken": true,
                 "current_index": 6
             },
-            "state": "idle"
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "bbbbbbbb-0000-0000-0000-bbbbbbbbbbbb",
             "node_id": "compare",
             "position": [
-                280.0,
+                288.75,
                 -102.0
             ],
             "parameters": {
-                "exec_in": null,
+                "exec_in": true,
                 "exec_out": true,
-                "a": 0,
+                "a": 6,
                 "operation": ">",
                 "b": 5,
                 "result": true
             },
-            "state": "idle"
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "cccccccc-0000-0000-0000-cccccccccccc",
             "node_id": "variable_node",
             "position": [
-                -43.0,
-                -137.0
+                -353.0,
+                421.75
             ],
             "parameters": {
                 "exec_in": null,
@@ -54,7 +56,8 @@
                 "exec_out": true,
                 "out": 5
             },
-            "state": "idle"
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "dddddddd-0000-0000-0000-dddddddddddd",
@@ -70,7 +73,8 @@
                 "exec_out": true,
                 "out": true
             },
-            "state": "idle"
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "eeeeeeee-0000-0000-0000-eeeeeeeeeeee",
@@ -83,12 +87,13 @@
                 "exec_in": true,
                 "exec_out": true,
                 "str1": "Now printing ::",
-                "str2": "0",
+                "str2": "6",
                 "str_list": [],
                 "separator": "",
                 "combined": "Now printing ::6"
             },
-            "state": "idle"
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "ffffffff-0000-0000-0000-ffffffffffff",
@@ -100,15 +105,16 @@
             "parameters": {
                 "exec_in": true,
                 "exec_out": true,
-                "data": "Now printing ::0",
+                "data": "Now printing ::6",
                 "out": "Now printing ::6"
             },
-            "state": "idle"
+            "state": "idle",
+            "bypassed": false
         }
     ],
     "connections": [
         {
-            "id": "b9c3b851-878f-4a0a-8520-1a59d4ec10e4",
+            "id": "b14aed11-28c9-4ddc-b326-57ef610018e7",
             "from_node": "aaaaaaaa-0000-0000-0000-aaaaaaaaaaaa",
             "from_port": "current_index",
             "to_node": "bbbbbbbb-0000-0000-0000-bbbbbbbbbbbb",
@@ -116,7 +122,7 @@
             "is_exec": false
         },
         {
-            "id": "4ef845bb-e3a7-42b1-a9a0-722fac261607",
+            "id": "22245db9-e9e3-4f34-8fa6-a643b7fb95ed",
             "from_node": "cccccccc-0000-0000-0000-cccccccccccc",
             "from_port": "out",
             "to_node": "bbbbbbbb-0000-0000-0000-bbbbbbbbbbbb",
@@ -124,7 +130,7 @@
             "is_exec": false
         },
         {
-            "id": "1806058b-9edd-4001-a900-c8f6db0420eb",
+            "id": "06e17233-f10d-4b28-b6ff-bf5d4a2759be",
             "from_node": "dddddddd-0000-0000-0000-dddddddddddd",
             "from_port": "out",
             "to_node": "aaaaaaaa-0000-0000-0000-aaaaaaaaaaaa",
@@ -132,7 +138,7 @@
             "is_exec": false
         },
         {
-            "id": "fddc562f-4873-487a-8bf7-91d89df7b3c2",
+            "id": "4598b8f6-4210-43c6-865a-12aad4a58bb0",
             "from_node": "aaaaaaaa-0000-0000-0000-aaaaaaaaaaaa",
             "from_port": "each_iteration",
             "to_node": "eeeeeeee-0000-0000-0000-eeeeeeeeeeee",
@@ -140,7 +146,7 @@
             "is_exec": true
         },
         {
-            "id": "0f79e88c-0f81-44f7-ba09-71d7e46aa316",
+            "id": "73d53a78-4570-4aa7-82a1-e28fd11563e6",
             "from_node": "aaaaaaaa-0000-0000-0000-aaaaaaaaaaaa",
             "from_port": "current_index",
             "to_node": "eeeeeeee-0000-0000-0000-eeeeeeeeeeee",
@@ -148,7 +154,7 @@
             "is_exec": false
         },
         {
-            "id": "1a0c1840-a1f1-4aee-b3e8-9fe5f9f852c3",
+            "id": "9a8173bd-0044-41a2-bf87-1b20f01f77c6",
             "from_node": "eeeeeeee-0000-0000-0000-eeeeeeeeeeee",
             "from_port": "exec_out",
             "to_node": "ffffffff-0000-0000-0000-ffffffffffff",
@@ -156,7 +162,7 @@
             "is_exec": true
         },
         {
-            "id": "4a7c1623-515a-4a36-8274-e55ab7adf16a",
+            "id": "ae9e9292-5aa4-4e25-acbb-5677480559f2",
             "from_node": "eeeeeeee-0000-0000-0000-eeeeeeeeeeee",
             "from_port": "combined",
             "to_node": "ffffffff-0000-0000-0000-ffffffffffff",
@@ -164,12 +170,20 @@
             "is_exec": false
         },
         {
-            "id": "6eee52a2-4d4c-4314-9fbf-acaea2772733",
+            "id": "526bf926-5b9c-41c4-a5a9-7b1248a0c12f",
             "from_node": "bbbbbbbb-0000-0000-0000-bbbbbbbbbbbb",
             "from_port": "result",
             "to_node": "aaaaaaaa-0000-0000-0000-aaaaaaaaaaaa",
             "to_port": "break_condition",
             "is_exec": false
+        },
+        {
+            "id": "fadc7855-bb78-4cdd-bc27-ef97a2761216",
+            "from_node": "aaaaaaaa-0000-0000-0000-aaaaaaaaaaaa",
+            "from_port": "each_iteration",
+            "to_node": "bbbbbbbb-0000-0000-0000-bbbbbbbbbbbb",
+            "to_port": "exec_in",
+            "is_exec": true
         }
     ],
     "sticky_notes": [],
