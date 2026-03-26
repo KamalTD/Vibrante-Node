@@ -444,6 +444,11 @@ class WorkflowToPythonConverter:
         else:
             lines.append(f"{prefix}    pass")
 
+        # Check break condition
+        break_cond = self._inp(node_id, 'break_condition')
+        if break_cond != "False":
+            lines.append(f"{prefix}    if {break_cond}: break")
+
         # exec_on_finished follows after the loop
         finished_targets = [c.to_node for c in self.exec_conns_from.get(node_id, []) if c.from_port == "exec_on_finished"]
         for t in finished_targets:
@@ -461,12 +466,22 @@ class WorkflowToPythonConverter:
 
         lines = [f"{prefix}for {index_var}, {item_var} in enumerate({collection} or []):"]
 
+        # Check continue_condition
+        cont_cond = self._inp(node_id, 'continue_condition')
+        if cont_cond != "False":
+            lines.append(f"{prefix}    if {cont_cond}: continue")
+
         body_targets = [c.to_node for c in self.exec_conns_from.get(node_id, []) if c.from_port == "each_item"]
         if body_targets:
             for t in body_targets:
                 lines.extend(self._follow_exec_chain(t, indent + 1))
         else:
             lines.append(f"{prefix}    pass")
+
+        # Check break condition
+        break_cond = self._inp(node_id, 'break_condition')
+        if break_cond != "False":
+            lines.append(f"{prefix}    if {break_cond}: break")
 
         # exec_on_finished follows after the loop
         finished_targets = [c.to_node for c in self.exec_conns_from.get(node_id, []) if c.from_port == "exec_on_finished"]
@@ -480,14 +495,23 @@ class WorkflowToPythonConverter:
         prefix = "    " * indent
         node = self.nodes[node_id]
 
-        max_iter = node.parameters.get("max_iterations", 100)
+        max_iter = self._inp(node_id, 'max_iterations')
         index_var = self._var(node_id, 'current_index')
-        cond_var = self._var(node_id, '_condition')
 
         lines = [
             f"{prefix}{index_var} = 0",
-            f"{prefix}while {index_var} < {max_iter}:",
+            f"{prefix}while {index_var} < int({max_iter}):",
         ]
+
+        # Inner checks
+        cond = self._inp(node_id, 'condition')
+        lines.append(f"{prefix}    if not {cond}: break")
+
+        cont_cond = self._inp(node_id, 'continue_condition')
+        if cont_cond != "False":
+            lines.append(f"{prefix}    if {cont_cond}:")
+            lines.append(f"{prefix}        {index_var} += 1")
+            lines.append(f"{prefix}        continue")
 
         # Body targets from each_iteration exec
         body_targets = [c.to_node for c in self.exec_conns_from.get(node_id, []) if c.from_port in ("each_iteration", "exec_out")]
@@ -496,6 +520,11 @@ class WorkflowToPythonConverter:
                 lines.extend(self._follow_exec_chain(t, indent + 1))
         else:
             lines.append(f"{prefix}    pass")
+
+        # Check break condition
+        break_cond = self._inp(node_id, 'break_condition')
+        if break_cond != "False":
+            lines.append(f"{prefix}    if {break_cond}: break")
 
         lines.append(f"{prefix}    {index_var} += 1")
 

@@ -1,0 +1,48 @@
+{
+    "node_id": "houdini_edges_to_curves",
+    "name": "houdini_edges_to_curves",
+    "description": "Converts edges aligned with the X axis into curves using a Convert Line SOP and a VEX wrangle filter.",
+    "category": "Houdini",
+    "icon_path": "icons/houdini.svg",
+    "use_exec": true,
+    "inputs": [
+        {
+            "name": "geo_path",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "x_threshold",
+            "type": "float",
+            "widget_type": "float",
+            "options": null,
+            "default": 0.9
+        },
+        {
+            "name": "exec_in",
+            "type": "any",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        }
+    ],
+    "outputs": [
+        {
+            "name": "result_path",
+            "type": "string",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "exec_out",
+            "type": "any",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.hou_bridge import get_bridge\n\nclass Houdini_Edges_To_CurvesNode(BaseNode):\n    name = \"houdini_edges_to_curves\"\n\n    def __init__(self):\n        super().__init__()\n        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"geo_path\", \"string\", widget_type=\"text\")\n        self.add_input(\"x_threshold\", \"float\", widget_type=\"float\", default=0.9)\n        self.add_output(\"result_path\", \"string\")\n        # [AUTO-GENERATED-PORTS-END]\n\n    async def execute(self, inputs):\n        geo_path = inputs.get(\"geo_path\", \"\")\n        x_threshold = float(inputs.get(\"x_threshold\", 0.9))\n\n        if not geo_path:\n            self.log_error(\"No geo path provided.\")\n            return {\"result_path\": \"\", \"exec_out\": True}\n\n        try:\n            bridge = get_bridge()\n\n            node_info = bridge.node_info(geo_path)\n            category = node_info.get(\"category\", \"\")\n\n            if category == \"Object\":\n                run_result = bridge.run_code(\n                    f\"n = hou.node('{geo_path}'); result = n.displayNode().path() if n and n.displayNode() else None\"\n                )\n                input_sop_path = run_result.get(\"result\") if run_result else None\n                if not input_sop_path:\n                    raise Exception(f\"No display SOP found inside: {geo_path}\")\n                sop_context = geo_path\n            elif category == \"Sop\":\n                sop_context = \"/\".join(geo_path.rstrip(\"/\").split(\"/\")[:-1])\n                input_sop_path = geo_path\n            else:\n                raise Exception(f\"Unsupported node category '{category}' at: {geo_path}\")\n\n            # Step 1: Convert all polygon edges to line primitives\n            convertline_result = bridge.create_node(sop_context, \"convertline\", \"edges_to_lines\")\n            convertline_path = convertline_result[\"path\"]\n            bridge.connect_nodes(input_sop_path, convertline_path, output=0, input_idx=0)\n\n            # Step 2: VEX wrangle - keep only primitives aligned with the X axis\n            vex_code = (\n                'vector p0 = point(0, \"P\", primpoint(0, @primnum, 0));\\n'\n                'vector p1 = point(0, \"P\", primpoint(0, @primnum, 1));\\n'\n                'vector dir = normalize(p1 - p0);\\n'\n                'float alignment = abs(dot(dir, set(1, 0, 0)));\\n'\n                f'if (alignment < {x_threshold:.4f}) {{\\n'\n                '    removeprim(0, @primnum, 1);\\n'\n                '}'\n            )\n\n            wrangle_result = bridge.create_node(sop_context, \"attribwrangle\", \"filter_x_edges\")\n            wrangle_path = wrangle_result[\"path\"]\n            bridge.connect_nodes(convertline_path, wrangle_path, output=0, input_idx=0)\n            bridge.set_parm(wrangle_path, \"class\", 1)  # run over primitives\n            bridge.set_parm(wrangle_path, \"snippet\", vex_code)\n\n            bridge.set_display_flag(wrangle_path, True)\n            bridge.set_render_flag(wrangle_path, True)\n            bridge.layout_children(sop_context)\n\n            return {\n                \"result_path\": wrangle_path,\n                \"exec_out\": True\n            }\n\n        except Exception as e:\n            self.log_error(f\"Houdini edges_to_curves failed: {str(e)}\")\n            return {\"result_path\": \"\", \"exec_out\": True}\n\ndef register_node():\n    return Houdini_Edges_To_CurvesNode\n"
+}
