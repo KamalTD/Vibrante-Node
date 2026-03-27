@@ -141,9 +141,56 @@ Workflow data now flows in **real-time** across the canvas:
 
 ---
 
+## 🎬 Video Tutorials
+
+New to Vibrante-Node? The YouTube channel has step-by-step tutorials, feature walkthroughs, and workflow showcases.
+
+<p align="center">
+  <a href="https://www.youtube.com/@Vibrante-Node">
+    <img src="https://img.shields.io/badge/YouTube-@Vibrante--Node-FF0000?style=for-the-badge&logo=youtube&logoColor=white" alt="YouTube Channel">
+  </a>
+</p>
+
+### Introduction Tutorial
+
+If this is your first time, start here:
+
+**1. Install & Launch (2 min)**
+- Clone the repo, run `pip install -r requirements.txt`, launch with `python ./src/main.py`
+- The canvas opens with an empty workflow ready to build
+
+**2. Place Your First Nodes**
+- Open the **Node Library** panel on the left
+- Drag any node onto the canvas — try `Console Print` and `String Concat`
+- Or right-click the canvas → search for a node by name
+
+**3. Connect Nodes**
+- Hover over an output port until it highlights, then drag to an input port
+- Ports are color-coded by type — matching types snap together automatically
+- The white `exec_out` → `exec_in` ports define the execution order
+
+**4. Set Values & Run**
+- Click a node's widget (text box, number field) to set a value
+- Press `F5` or click **Run** in the toolbar to execute the workflow
+- Watch results appear in the **Event Log** panel
+
+**5. Save & Export**
+- `Ctrl+S` saves the workflow as a `.json` file — fully portable
+- **File → Export as Python** converts the entire workflow into a standalone Python script
+
+**6. Build Custom Nodes (AI-assisted)**
+- Open **Node Builder** from the toolbar
+- Type a description in the Gemini chat panel — the AI generates the node definition and code for you
+- Click **Apply** to add the node to your library instantly
+
+> 📺 Watch the full walkthrough: [youtube.com/@Vibrante-Node](https://www.youtube.com/@Vibrante-Node)
+
+---
+
 ## 📚 Documentation
 
 Detailed documentation is available for both users and developers:
+-   🎬 **[YouTube Channel](https://www.youtube.com/@Vibrante-Node)**: Video tutorials, feature walkthroughs, and workflow showcases.
 -   📖 **[User Guide](USER_GUIDE.md)**: How to use the interface and build workflows.
 -   🛠️ **[Node Builder API](NODE_BUILDER_API.md)**: In-depth guide for creating custom nodes.
 -   🤖 **[Automation API](AUTOMATION_API.md)**: Reference for Scripting Console automation.
