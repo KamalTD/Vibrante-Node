@@ -26,3 +26,12 @@ htmlcov/
 # OS generated
 .DS_Store
 Thumbs.db
+
+# Build output
+dist/
+build/
+*.spec.bak
+
+# Runtime logs
+crash.log
+upload_result.json
