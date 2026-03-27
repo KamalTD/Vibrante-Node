@@ -225,7 +225,8 @@ Detailed documentation is available for both users and developers:
 
 ## 📋 Release History
 
-- **v1.2.0 (Latest)** — Dynamic Houdini API, Node Bypassing, UI/UX Polish (Drag & Drop, Snapping, Shortcuts)
+- **[v1.3.0](RELEASE_v1.3.0.md) (Latest)** — Houdini Geometry Nodes (Color Curves, Edges to Curves, ABC Convert), AI Context Fix, CLAUDE.md Developer Guide, YouTube Tutorials
+- **[v1.2.0](RELEASE_v1.2.0.md)** — Dynamic Houdini API, Node Bypassing, UI/UX Polish (Drag & Drop, Snapping, Shortcuts)
 - **[v1.1.5](RELEASE_v1.1.5.md)** — Houdini Live Integration, Command Bridge, 19 Houdini Nodes, App Icon
 - **[v1.1.0](RELEASE_v1.1.0.md)** — Professional Code Editor, Execution Optimizations, Event Log Silent Mode
 - **[v1.0.5](RELEASE_v1.0.5.md)** — Loop Execution & Flow Engine Refactor
