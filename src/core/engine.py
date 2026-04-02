@@ -99,7 +99,13 @@ class NetworkExecutor(QObject):
                 self.execution_finished.emit(False)
                 return
             
-            instance = node_class()
+            try:
+                instance = node_class()
+            except Exception as e:
+                err = f"Node '{node_model.node_id}' failed to initialize: {e}"
+                self.node_error.emit(node_id, err)
+                self.execution_finished.emit(False)
+                return
             instance.name = node_model.node_id
             
             # 1. RESTORE DYNAMIC PORTS

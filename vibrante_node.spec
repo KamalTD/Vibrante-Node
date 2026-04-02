@@ -4,11 +4,16 @@
 
 import os
 from pathlib import Path
+from PyInstaller.utils.hooks import collect_all, collect_submodules
 
 block_cipher = None
 
+# google-generativeai uses namespace packages — must collect everything
+google_datas, google_binaries, google_hiddenimports = collect_all('google.generativeai')
+grpc_datas, grpc_binaries, grpc_hiddenimports = collect_all('grpc')
+
 # Collect all data files needed at runtime
-datas = [
+datas = google_datas + grpc_datas + [
     # UI assets
     ('splash.png', '.'),
     ('logo.png', '.'),
@@ -28,19 +33,24 @@ datas = [
 a = Analysis(
     ['src/main.py'],
     pathex=['.'],
-    binaries=[],
+    binaries=google_binaries + grpc_binaries,
     datas=datas,
-    hiddenimports=[
+    hiddenimports=google_hiddenimports + grpc_hiddenimports + collect_submodules('google') + [
         # PyQt5
         'PyQt5',
         'PyQt5.QtCore',
         'PyQt5.QtGui',
         'PyQt5.QtWidgets',
         'PyQt5.sip',
-        # Google Generative AI
+        # Google packages
         'google.generativeai',
         'google.api_core',
+        'google.api_core.operations_v1',
         'google.auth',
+        'google.auth.transport',
+        'google.auth.transport.grpc',
+        'google.auth.transport.requests',
+        'google.protobuf',
         # Async
         'asyncio',
         'asyncio.events',
