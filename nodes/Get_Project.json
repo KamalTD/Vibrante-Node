@@ -2,7 +2,7 @@
     "node_id": "Get_Project",
     "name": "Get_Project",
     "description": "",
-    "category": "Trend_Pipeline",
+    "category": "VFX_Pipeline",
     "icon_path": null,
     "use_exec": true,
     "inputs": [

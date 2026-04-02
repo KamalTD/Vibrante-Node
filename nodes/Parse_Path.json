@@ -2,7 +2,7 @@
     "node_id": "Parse_Path",
     "name": "Parse_Path",
     "description": "",
-    "category": "Trend_Pipeline",
+    "category": "VFX_Pipeline",
     "icon_path": null,
     "use_exec": true,
     "inputs": [
