@@ -115,6 +115,14 @@ class BaseNode(ABC):
         """Optional hook to restore dynamic state (like ports) from saved parameters."""
         pass
 
+    def set_parameter(self, name: str, value: Any):
+        """Set a parameter value. If the port is a dropdown and value is a list, updates options and selects the first item."""
+        if isinstance(value, list) and name in self.inputs and self.inputs[name].widget_type == "dropdown":
+            self.inputs[name].options = value
+            self.parameters[name] = value[0] if value else ""
+        else:
+            self.parameters[name] = value
+
     def get_parameter(self, name: str, default: Any = None) -> Any:
         """Safely retrieve a parameter value."""
         return self.parameters.get(name, default)

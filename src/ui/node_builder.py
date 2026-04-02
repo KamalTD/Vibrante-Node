@@ -16,9 +16,12 @@ QMessageBox = QtWidgets.QMessageBox
 QFileDialog = QtWidgets.QFileDialog
 QComboBox = QtWidgets.QComboBox
 
+QCheckBox = QtWidgets.QCheckBox
+
 Qt = QtCore.Qt
 QTimer = QtCore.QTimer
 import os
+import re
 import ast
 from src.core.loader import ScriptLoader
 from src.utils.highlighter import PythonHighlighter
@@ -53,6 +56,8 @@ class NodeBuilderDialog(QDialog):
         self.outputs_table.itemChanged.connect(self._on_table_changed)
         self.name_edit.textChanged.connect(self._on_metadata_changed)
         self.category_combo.currentTextChanged.connect(self._on_category_changed)
+        self.exec_in_check.stateChanged.connect(self._on_exec_changed)
+        self.exec_out_check.stateChanged.connect(self._on_exec_changed)
 
         if self.editing_node_id:
             self._load_existing_node()
@@ -100,7 +105,17 @@ class NodeBuilderDialog(QDialog):
         icon_layout.addWidget(self.icon_edit)
         icon_layout.addWidget(self.icon_btn)
         config_layout.addLayout(icon_layout)
-        
+
+        # Execution ports
+        exec_layout = QHBoxLayout()
+        self.exec_in_check = QCheckBox("Exec Input (exec_in)")
+        self.exec_in_check.setChecked(True)
+        self.exec_out_check = QCheckBox("Exec Output (exec_out)")
+        self.exec_out_check.setChecked(True)
+        exec_layout.addWidget(self.exec_in_check)
+        exec_layout.addWidget(self.exec_out_check)
+        config_layout.addLayout(exec_layout)
+
         # Inputs Table
         config_layout.addWidget(QLabel("Inputs:"))
         self.inputs_table = QTableWidget(0, 4)
@@ -189,13 +204,20 @@ class NodeBuilderDialog(QDialog):
 
 class {name}(BaseNode):
     name = "{name}"
-    
+
     def __init__(self):
-        super().__init__()
+        \"\"\"Initialize node ports and resources.\"\"\"
+        super().__init__(use_exec=False)
         self.icon_path = None
+        self.add_exec_input("exec_in")
+        self.add_exec_output("exec_out")
         # [AUTO-GENERATED-PORTS-START]
         # [AUTO-GENERATED-PORTS-END]
-        
+        try:
+            pass
+        except Exception as e:
+            pass
+
     def on_plug_sync(self, port_name, is_input, other_node, other_port_name):
         # Access the other node's port data using the specific other_port_name
         data = other_node.get_parameter(other_port_name)
@@ -213,13 +235,18 @@ class {name}(BaseNode):
     async def execute(self, inputs):
         \"\"\"
         Main execution logic for the node.
-        
+
         :param inputs: A dictionary containing data from connected input ports and widgets.
                        Key: Port Name (string), Value: Port Data (any).
         :return: A dictionary containing data to be sent to output ports.
                  Key: Port Name (string), Value: Port Data (any).
         \"\"\"
-        return {{}}
+        # [SET-OUTPUT-START]
+        # [SET-OUTPUT-END]
+        # [EXEC-OUT-START]
+        await self.set_output("exec_out", True)
+        return {{"exec_out": True}}
+        # [EXEC-OUT-END]
 
 def register_node():
     return {name}
@@ -228,6 +255,10 @@ def register_node():
     def _on_code_changed(self):
         if not self._is_syncing:
             self.sync_timer.start(1000) # 1 second debounce
+
+    def _on_exec_changed(self):
+        if not self._is_syncing:
+            self._sync_ui_to_code()
 
     def _on_table_changed(self):
         if not self._is_syncing:
@@ -253,15 +284,15 @@ def register_node():
         """
         if self._is_syncing:
             return
-            
+
         self._is_syncing = True
         try:
             code = self.code_edit.toPlainText()
             tree = ast.parse(code)
-            
-            inputs = {} # name -> type
-            outputs = {} # name -> type
-            
+
+            inputs = {} # name -> (type, widget_type)
+            outputs = {} # name -> (type, widget_type)
+
             class PortVisitor(ast.NodeVisitor):
                 def visit_Call(self, node):
                     if isinstance(node.func, ast.Attribute) and node.func.attr in ["add_input", "add_output"]:
@@ -270,25 +301,47 @@ def register_node():
                             port_type = "any"
                             if len(node.args) >= 2 and isinstance(node.args[1], ast.Constant):
                                 port_type = node.args[1].value
-                            
+
+                            # Extract widget_type keyword argument
+                            widget_type = ""
+                            for kw in node.keywords:
+                                if kw.arg == "widget_type" and isinstance(kw.value, ast.Constant):
+                                    widget_type = kw.value.value or ""
+                                    break
+
                             if node.func.attr == "add_input":
-                                inputs[port_name] = port_type
+                                inputs[port_name] = (port_type, widget_type)
                             else:
-                                outputs[port_name] = port_type
+                                outputs[port_name] = (port_type, widget_type)
                     self.generic_visit(node)
 
             PortVisitor().visit(tree)
-            
+
             # Convert to list for comparison and update
-            input_list = [(k, v) for k, v in inputs.items()]
-            output_list = [(k, v) for k, v in outputs.items()]
-            
+            input_list = [(k, v[0], v[1]) for k, v in inputs.items()]
+            output_list = [(k, v[0], v[1]) for k, v in outputs.items()]
+
             # Check if actual changes happened before updating table to avoid signal storm
             if self._table_needs_update(self.inputs_table, input_list):
                 self._update_table(self.inputs_table, input_list)
             if self._table_needs_update(self.outputs_table, output_list):
                 self._update_table(self.outputs_table, output_list)
-            
+
+            # Detect exec lines and sync checkboxes
+            # Also treat super().__init__() / super().__init__(use_exec=True) as having both exec ports
+            default_exec = bool(
+                re.search(r'super\(\)\.__init__\(\s*\)', code) or
+                re.search(r'super\(\)\.__init__\(use_exec\s*=\s*True\)', code)
+            )
+            has_exec_in = default_exec or bool(re.search(r'add_exec_input', code))
+            has_exec_out = default_exec or bool(re.search(r'add_exec_output', code))
+            self.exec_in_check.blockSignals(True)
+            self.exec_out_check.blockSignals(True)
+            self.exec_in_check.setChecked(has_exec_in)
+            self.exec_out_check.setChecked(has_exec_out)
+            self.exec_in_check.blockSignals(False)
+            self.exec_out_check.blockSignals(False)
+
         except Exception as e:
             # Code might be invalid while typing, ignore
             pass
@@ -298,11 +351,17 @@ def register_node():
     def _table_needs_update(self, table, new_ports):
         if table.rowCount() != len(new_ports):
             return True
-        for i, (name, p_type) in enumerate(new_ports):
+        for i, port in enumerate(new_ports):
+            name = port[0] if not hasattr(port, 'name') else port.name
+            p_type = port[1] if not hasattr(port, 'type') else port.type
+            p_widget = (port[2] if len(port) > 2 else "") if not hasattr(port, 'widget_type') else (port.widget_type or "")
             name_item = table.item(i, 0)
             type_combo = table.cellWidget(i, 1)
+            widget_combo = table.cellWidget(i, 2)
             if not name_item or not type_combo: return True
             if name_item.text() != name or type_combo.currentText() != p_type:
+                return True
+            if widget_combo and widget_combo.currentText() != (p_widget or ""):
                 return True
         return False
 
@@ -389,8 +448,53 @@ def register_node():
                 
             injection += "        # [AUTO-GENERATED-PORTS-END]"
 
+            # Normalize super().__init__() to use_exec=False
+            code = re.sub(r'super\(\)\.__init__\(\s*\)', 'super().__init__(use_exec=False)', code)
+            code = re.sub(r'super\(\)\.__init__\(use_exec\s*=\s*True\)', 'super().__init__(use_exec=False)', code)
+
+            # Remove existing exec lines, then re-add based on checkboxes
+            code = re.sub(r'\n[ \t]*self\.add_exec_input\([^)]*\)', '', code)
+            code = re.sub(r'\n[ \t]*self\.add_exec_output\([^)]*\)', '', code)
+            exec_block = ""
+            if self.exec_in_check.isChecked():
+                exec_block += '\n        self.add_exec_input("exec_in")'
+            if self.exec_out_check.isChecked():
+                exec_block += '\n        self.add_exec_output("exec_out")'
+            if exec_block:
+                code = re.sub(r'(super\(\)\.__init__\([^)]*\))', r'\1' + exec_block, code)
+
+            # Manage commented set_output hints in execute() body
+            set_output_pattern = r"[ \t]*# \[SET-OUTPUT-START\].*?# \[SET-OUTPUT-END\]"
+            if re.search(set_output_pattern, code, re.DOTALL):
+                set_output_lines = "        # [SET-OUTPUT-START]\n"
+                for row in range(self.outputs_table.rowCount()):
+                    item_name = self.outputs_table.item(row, 0)
+                    if not item_name: continue
+                    port_name = item_name.text().strip()
+                    if not port_name or port_name == "exec_out": continue
+                    set_output_lines += f'        #await self.set_output("{port_name}", <{port_name}_data>)\n'
+                set_output_lines += "        # [SET-OUTPUT-END]"
+                code = re.sub(set_output_pattern, set_output_lines, code, flags=re.DOTALL)
+
+            # Manage exec_out lines in execute() body
+            exec_out_pattern = r"[ \t]*# \[EXEC-OUT-START\].*?# \[EXEC-OUT-END\]"
+            if re.search(exec_out_pattern, code, re.DOTALL):
+                if self.exec_out_check.isChecked():
+                    exec_out_block = (
+                        '        # [EXEC-OUT-START]\n'
+                        '        await self.set_output("exec_out", True)\n'
+                        '        return {"exec_out": True}\n'
+                        '        # [EXEC-OUT-END]'
+                    )
+                else:
+                    exec_out_block = (
+                        '        # [EXEC-OUT-START]\n'
+                        '        return {}\n'
+                        '        # [EXEC-OUT-END]'
+                    )
+                code = re.sub(exec_out_pattern, exec_out_block, code, flags=re.DOTALL)
+
             # Replace section using markers
-            import re
             pattern = r"(\s*)# \[AUTO-GENERATED-PORTS-START\].*?# \[AUTO-GENERATED-PORTS-END\]"
             if re.search(pattern, code, re.DOTALL):
                 code = re.sub(pattern, injection, code, flags=re.DOTALL)
@@ -408,10 +512,10 @@ def register_node():
             
             # Update class definition
             code = re.sub(r"class \w+\(BaseNode\):", f"class {safe_name}(BaseNode):", code)
-            # Update name attribute
-            code = re.sub(r'name = "[^"]+"', f'name = "{name}"', code)
-            # Update register_node return
-            code = re.sub(r"return \w+", f"return {safe_name}", code)
+            # Update name attribute (class-level only: 4-space indented line)
+            code = re.sub(r'^(    name\s*=\s*")[^"]*(")', rf'\g<1>{name}\2', code, flags=re.MULTILINE)
+            # Update register_node return (only inside register_node function)
+            code = re.sub(r"(def register_node\(\)[^:]*:.*?return\s+)\w+", rf"\g<1>{safe_name}", code, flags=re.DOTALL)
             
             if code != self.code_edit.toPlainText():
                 self.code_edit.setPlainText(code)
@@ -476,9 +580,11 @@ def register_node():
             QMessageBox.critical(self, "Syntax Error", str(e))
 
     def save_node(self):
-        # Force a final sync from UI to code to ensure consistency
-        self._sync_ui_to_code()
-        
+        # Cancel any pending debounce timer and sync code → tables first,
+        # so the JSON ports reflect the latest hand-edited code.
+        self.sync_timer.stop()
+        self._sync_code_to_ui()
+
         node_id = self.name_edit.text().strip()
         if not node_id:
             QMessageBox.warning(self, "Error", "Node ID/Name is required.")
@@ -541,6 +647,7 @@ def register_node():
             QMessageBox.critical(self, "Error", "Failed to register node class. Check Python code.")
 
     def _load_existing_node(self):
+        self.sync_timer.stop()  # prevent any pending sync from overwriting loaded data
         self._is_syncing = True
         try:
             defn = NodeRegistry.get_definition(self.editing_node_id)
@@ -551,7 +658,15 @@ def register_node():
                 self.icon_edit.setText(defn.icon_path or "")
                 self._update_table(self.inputs_table, defn.inputs)
                 self._update_table(self.outputs_table, defn.outputs)
-                self.code_edit.setPlainText(defn.python_code)
+                # Set exec checkboxes from existing code
+                code = defn.python_code
+                default_exec = bool(
+                    re.search(r'super\(\)\.__init__\(\s*\)', code) or
+                    re.search(r'super\(\)\.__init__\(use_exec\s*=\s*True\)', code)
+                )
+                self.exec_in_check.setChecked(default_exec or bool(re.search(r'add_exec_input', code)))
+                self.exec_out_check.setChecked(default_exec or bool(re.search(r'add_exec_output', code)))
+                self.code_edit.setPlainText(code)
         finally:
             self._is_syncing = False
 

@@ -566,6 +566,9 @@ class MainWindow(QMainWindow):
             QLineEdit, QTextEdit, QPlainTextEdit, QTableWidget, QHeaderView { background-color: #2b2b2b; color: #d4d4d4; border: 1px solid #3c3f41; }
             QHeaderView::section { background-color: #3c3f41; color: white; }
             QLabel { color: #ffffff; }
+            QCheckBox { color: #ffffff; }
+            QCheckBox::indicator { background-color: #3c3f41; border: 1px solid #555; }
+            QCheckBox::indicator:checked { background-color: #50fa7b; border: 1px solid #50fa7b; }
             QComboBox, QSpinBox, QDoubleSpinBox { background-color: #3c3f41; color: white; border: 1px solid #2b2b2b; }
             QTabBar::tab { background: #3c3f41; color: #ffffff; padding: 8px; border: 1px solid #2b2b2b; }
             QTabBar::tab:selected { background: #4b4d4d; border-bottom: 2px solid #50fa7b; }

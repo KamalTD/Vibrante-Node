@@ -1,0 +1,27 @@
+{
+    "node_id": "Get_Project",
+    "name": "Get_Project",
+    "description": "",
+    "category": "Trend_Pipeline",
+    "icon_path": null,
+    "use_exec": true,
+    "inputs": [
+        {
+            "name": "InProject",
+            "type": "string",
+            "widget_type": "dropdown",
+            "options": null,
+            "default": null
+        }
+    ],
+    "outputs": [
+        {
+            "name": "OutProject",
+            "type": "string",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\nfrom main import utils_manager\nclass Get_ProjectNode(BaseNode):\n    name = \"Get_Project\"\n\n    def __init__(self):\n        super().__init__(use_exec=False)\n        self.add_exec_input(\"exec_in\")\n        self.add_exec_output(\"exec_out\")\n        self.icon_path = None\n        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"InProject\", \"string\", widget_type=\"dropdown\")\n        self.add_output(\"OutProject\", \"string\")\n        # [AUTO-GENERATED-PORTS-END]\n        try:\n            self.utls_mgr = utils_manager.UtilsManager()\n            check, projects = self.utls_mgr.get_all_projects()\n            self.set_parameter(\"InProject\", projects)\n        except Exception as e:\n            self.utls_mgr = None\n\n    def on_plug_sync(self, port_name, is_input, other_node, other_port_name):\n        data = other_node.get_parameter(other_port_name)\n        self.log_info(f\"Connected to {other_node.name} port '{other_port_name}'. Data: {data}\")\n\n    def on_unplug_sync(self, port_name, is_input):\n        self.log_info(f\"Disconnected {port_name}\")\n\n    async def on_plug(self, port_name, is_input, other_node, other_port_name):\n        pass\n\n    async def on_unplug(self, port_name, is_input):\n        pass\n\n    async def execute(self, inputs):\n        InProject = inputs.get(\"InProject\", \"\")\n        await self.set_output(\"OutProject\", InProject)\n        await self.set_output(\"exec_out\", True)\n        return {\"OutProject\": InProject, \"exec_out\": True}\n\ndef register_node():\n    return Get_ProjectNode\n"
+}
