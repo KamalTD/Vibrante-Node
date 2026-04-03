@@ -607,8 +607,9 @@ class NodeScene(QGraphicsScene):
         for node_id in NodeRegistry.list_node_ids():
             action = QAction(f"{node_id}", self.parent())
             def spawn_node(nid=node_id, p=pos):
-                self.push_history()
-                self.add_node_by_name(nid, p)
+                result = self.add_node_by_name(nid, p)
+                if result:
+                    self.push_history()
             action.triggered.connect(spawn_node)
             node_menu.addAction(action)
             
@@ -622,7 +623,14 @@ class NodeScene(QGraphicsScene):
             from src.nodes.base import NodeRegistry as BaseRegistry
             node_class = BaseRegistry.get_node_class(node_id)
         if node_class:
-            node_definition = node_class()
+            try:
+                node_definition = node_class()
+            except Exception as e:
+                msg = f"Failed to create node '{node_id}': {e}"
+                print(msg)
+                if self.parent() and hasattr(self.parent(), 'log_panel'):
+                    self.parent().log_panel.log(msg, "error")
+                return None
             if self.parent() and hasattr(self.parent(), 'log_panel'):
                 lp = self.parent().log_panel
                 node_definition._on_log = lambda msg, level: lp.log(f"[{node_definition.name}] {msg}", level)
@@ -632,11 +640,11 @@ class NodeScene(QGraphicsScene):
             node_widget.setPos(pos)
             self.addItem(node_widget)
             self.nodes.append(node_widget)
-            
+
             # Inherit theme
             is_dark = self.backgroundBrush().color().lightness() < 128
             node_widget.apply_theme(is_dark)
-            
+
             # Ensure states are initialized correctly (all enabled)
             node_widget._refresh_widget_states()
             return node_widget

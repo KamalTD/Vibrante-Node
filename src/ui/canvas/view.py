@@ -58,11 +58,12 @@ class NodeView(QGraphicsView):
         if node_id:
             scene = self.scene()
             if scene:
-                scene.push_history()
                 # Map drop position to scene coordinates
                 pos = self.mapToScene(event.pos())
-                scene.add_node_by_name(node_id, pos)
-                event.acceptProposedAction()
+                result = scene.add_node_by_name(node_id, pos)
+                if result:
+                    scene.push_history()
+                    event.acceptProposedAction()
                 return
                 
         super().dropEvent(event)
