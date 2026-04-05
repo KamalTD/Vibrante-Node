@@ -171,7 +171,7 @@ class NodeWidget(QGraphicsItem):
 
         # If this is a python_script node, add an "Edit Script" button proxy
         try:
-            if getattr(self.node_definition, 'node_id', None) == 'python_script' and '_script_btn' not in self.param_widgets:
+            if getattr(self.node_definition, 'node_id', None) in ('python_script', 'maya_action_custom') and '_script_btn' not in self.param_widgets:
                 proxy = QGraphicsProxyWidget(self)
                 container = QWidget()
                 lay = QVBoxLayout(container)
@@ -355,7 +355,7 @@ class NodeWidget(QGraphicsItem):
             val = self.node_definition.parameters.get(p_model.name)
             w.setValue(int(val) if val is not None else 0)
             w.valueChanged.connect(lambda val: self._update_param(p_model.name, val))
-        elif p_model.widget_type == 'file':
+        elif p_model.widget_type in ('file', 'file_save'):
             w = QWidget()
             l = QHBoxLayout(w)
             l.setContentsMargins(0, 0, 0, 0)
@@ -365,10 +365,14 @@ class NodeWidget(QGraphicsItem):
             path_edit.setText(str(val) if val is not None else "")
             btn = QPushButton("...")
             btn.setFixedWidth(25)
-            def select_file():
+            is_save = p_model.widget_type == 'file_save'
+            def select_file(_checked=None, save=is_save):
                 QFileDialog = QtWidgets.QFileDialog
                 curr = self.scene().views()[0] if self.scene() and self.scene().views() else None
-                path, _ = QFileDialog.getOpenFileName(curr, "Select File")
+                if save:
+                    path, _ = QFileDialog.getSaveFileName(curr, "Save File")
+                else:
+                    path, _ = QFileDialog.getOpenFileName(curr, "Select File")
                 if path:
                     path_edit.setText(path)
                     self._update_param(p_model.name, path)

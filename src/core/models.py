@@ -5,7 +5,7 @@ from uuid import UUID, uuid4
 class PortModel(BaseModel):
     name: str
     type: str = "any"
-    widget_type: Optional[str] = None # 'text', 'int', 'float', 'bool', 'dropdown', 'slider', 'text_area'
+    widget_type: Optional[str] = None # 'text', 'int', 'float', 'bool', 'dropdown', 'slider', 'text_area', 'file', 'file_save'
     options: Optional[List[str]] = None # For dropdown
     default: Optional[Any] = None
 
