@@ -1,0 +1,20 @@
+{
+    "node_id": "maya_action_custom",
+    "name": "Maya Action: Custom",
+    "description": "A template Maya action node with editable Python code. Duplicate this node and modify the code to create your own custom Maya actions. The python_code runs inside mayapy with maya.cmds available.",
+    "category": "DCCs",
+    "icon_path": "icons/maya_icon.jpg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "actions_in", "type": "list", "default": [] },
+        { "name": "action_name", "type": "string", "widget_type": "text", "default": "my_custom_action" },
+        { "name": "python_code", "type": "string", "widget_type": "text_area", "default": "# Write your Maya Python code here.\n# Available variables:\n#   cmds   - maya.cmds module\n#   action - this action's dict (contains all fields below)\n#\n# Example: create a polySphere\n# cmds.polySphere(name='mySphere', radius=1)\n\nprint('Hello from custom Maya action!')\n" },
+        { "name": "param1", "type": "string", "widget_type": "text", "default": "" },
+        { "name": "param2", "type": "string", "widget_type": "text", "default": "" }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "actions_out", "type": "list" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    actions_in = inputs.get('actions_in') or []\n    if not isinstance(actions_in, list):\n        actions_in = [actions_in]\n\n    action_name = inputs.get('action_name') or self.get_parameter('action_name', 'my_custom_action')\n    python_code = inputs.get('python_code') or self.get_parameter('python_code', '')\n    param1 = inputs.get('param1') or self.get_parameter('param1', '')\n    param2 = inputs.get('param2') or self.get_parameter('param2', '')\n\n    action = {\n        'type': 'custom_python',\n        'action_name': action_name,\n        'python_code': python_code,\n        'param1': param1,\n        'param2': param2\n    }\n\n    actions_out = list(actions_in) + [action]\n    self.log_info(f'Added custom action: {action_name}')\n\n    await self.set_output('actions_out', actions_out)\n    await self.set_output('exec_out', True)\n    return {'actions_out': actions_out}"
+}
