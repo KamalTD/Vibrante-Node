@@ -1,0 +1,18 @@
+{
+    "node_id": "maya_action_set_aovs",
+    "name": "Maya Action: Set AOVs",
+    "description": "Creates a Maya action that ensures a list of AOVs (arbitrary output variables / render passes) exists for the active renderer. Currently supports Arnold (mtoa) and Redshift. Provide AOV names comma-separated (e.g. 'diffuse,specular,N,P,Z'). Chain via actions_in/actions_out into a Maya Headless node.",
+    "category": "DCCs",
+    "icon_path": "icons/maya_icon.jpg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "actions_in", "type": "list", "default": [] },
+        { "name": "renderer", "type": "string", "widget_type": "dropdown", "options": ["arnold", "redshift"], "default": "arnold" },
+        { "name": "aovs", "type": "string", "widget_type": "text", "default": "" }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "actions_out", "type": "list" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    actions_in = inputs.get('actions_in') or []\n    if not isinstance(actions_in, list):\n        actions_in = [actions_in]\n\n    renderer = inputs.get('renderer') or self.get_parameter('renderer', 'arnold')\n    aovs = inputs.get('aovs') or self.get_parameter('aovs', '')\n\n    action = {\n        'type': 'set_aovs',\n        'renderer': renderer,\n        'aovs': aovs\n    }\n\n    actions_out = list(actions_in) + [action]\n    self.log_info(f'Added set_aovs action -> {renderer}: {aovs}')\n\n    await self.set_output('actions_out', actions_out)\n    await self.set_output('exec_out', True)\n    return {'actions_out': actions_out}"
+}

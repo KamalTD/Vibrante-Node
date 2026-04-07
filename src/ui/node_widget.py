@@ -171,7 +171,7 @@ class NodeWidget(QGraphicsItem):
 
         # If this is a python_script node, add an "Edit Script" button proxy
         try:
-            if getattr(self.node_definition, 'node_id', None) in ('python_script', 'maya_action_custom') and '_script_btn' not in self.param_widgets:
+            if getattr(self.node_definition, 'node_id', None) in ('python_script', 'maya_action_custom', 'houdini_action_custom') and '_script_btn' not in self.param_widgets:
                 proxy = QGraphicsProxyWidget(self)
                 container = QWidget()
                 lay = QVBoxLayout(container)
@@ -520,16 +520,16 @@ class NodeWidget(QGraphicsItem):
 
     def _open_script_editor(self):
         try:
-            # Find a parent QWidget if possible
             parent = None
             if self.scene() and self.scene().views():
                 parent = self.scene().views()[0]
-            current_code = self.node_definition.parameters.get('python_code', '')
+            current_code = self.node_definition.get_parameter('python_code', '')
             dlg = ScriptEditorDialog(parent=parent, initial_code=current_code)
             if exec_dialog(dlg) == dlg.Accepted:
                 code = dlg.get_code()
-                # Save into node parameters so runtime execute will use it
-                self.node_definition.parameters['python_code'] = code
+                if self.scene():
+                    self.scene().push_history()
+                self.set_parameter('python_code', code, propagate=False)
         except Exception:
             pass
 

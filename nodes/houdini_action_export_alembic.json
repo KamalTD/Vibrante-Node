@@ -1,0 +1,20 @@
+{
+    "node_id": "houdini_action_export_alembic",
+    "name": "Houdini Action: Export Alembic",
+    "description": "Creates a Houdini action that exports geometry as an Alembic (.abc) cache via an Alembic ROP in /out. Provide root SOP/OBJ paths comma-separated. Chain via actions_in/actions_out into a Houdini Headless node.",
+    "category": "DCCs",
+    "icon_path": "icons/houdini_icon.png",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "actions_in", "type": "list", "default": [] },
+        { "name": "abc_path", "type": "string", "widget_type": "file_save", "default": "" },
+        { "name": "root_nodes", "type": "string", "widget_type": "text", "default": "" },
+        { "name": "frame_start", "type": "int", "widget_type": "int", "default": 1 },
+        { "name": "frame_end", "type": "int", "widget_type": "int", "default": 100 }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "actions_out", "type": "list" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    actions_in = inputs.get('actions_in') or []\n    if not isinstance(actions_in, list):\n        actions_in = [actions_in]\n    abc_path = inputs.get('abc_path') or self.get_parameter('abc_path', '')\n    root_nodes = inputs.get('root_nodes') or self.get_parameter('root_nodes', '')\n    frame_start = inputs.get('frame_start')\n    if frame_start is None:\n        frame_start = self.get_parameter('frame_start', 1)\n    frame_end = inputs.get('frame_end')\n    if frame_end is None:\n        frame_end = self.get_parameter('frame_end', 100)\n    action = {'type': 'export_alembic', 'abc_path': abc_path, 'root_nodes': root_nodes, 'frame_start': int(frame_start), 'frame_end': int(frame_end)}\n    actions_out = list(actions_in) + [action]\n    self.log_info(f'Added export_alembic action -> {abc_path} (frames {frame_start}-{frame_end})')\n    await self.set_output('actions_out', actions_out)\n    await self.set_output('exec_out', True)\n    return {'actions_out': actions_out}"
+}

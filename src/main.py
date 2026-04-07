@@ -61,7 +61,7 @@ sys.excepthook = exception_hook
 
 
 class SplashScreen(QSplashScreen):
-    VERSION = "v1.4.0"
+    VERSION = "v1.5.0"
     COPYRIGHT = "\u00a9 2026 Mahmoud Kamal - KamalTD"
 
     def __init__(self):

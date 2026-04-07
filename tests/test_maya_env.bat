@@ -1,0 +1,1 @@
+set VIBRANTE_NODE=TEST

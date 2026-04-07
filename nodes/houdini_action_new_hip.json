@@ -1,0 +1,16 @@
+{
+    "node_id": "houdini_action_new_hip",
+    "name": "Houdini Action: New HIP",
+    "description": "Creates a Houdini action that clears the current scene (new empty .hip). Chain via actions_in/actions_out into a Houdini Headless node.",
+    "category": "DCCs",
+    "icon_path": "icons/houdini_icon.png",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "actions_in", "type": "list", "default": [] }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "actions_out", "type": "list" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    actions_in = inputs.get('actions_in') or []\n    if not isinstance(actions_in, list):\n        actions_in = [actions_in]\n    action = {'type': 'new_hip'}\n    actions_out = list(actions_in) + [action]\n    self.log_info('Added new_hip action')\n    await self.set_output('actions_out', actions_out)\n    await self.set_output('exec_out', True)\n    return {'actions_out': actions_out}"
+}

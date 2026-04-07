@@ -1,0 +1,18 @@
+{
+    "node_id": "maya_action_set_frame_range",
+    "name": "Maya Action: Set Frame Range",
+    "description": "Creates a Maya action that sets the playback frame range (animation start/end and playback start/end) of the current scene. Chain multiple action nodes together via actions_in/actions_out, then feed the final actions_out into a Maya Headless node.",
+    "category": "DCCs",
+    "icon_path": "icons/maya_icon.jpg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "actions_in", "type": "list", "default": [] },
+        { "name": "frame_start", "type": "int", "widget_type": "int", "default": 1 },
+        { "name": "frame_end", "type": "int", "widget_type": "int", "default": 100 }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "actions_out", "type": "list" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    actions_in = inputs.get('actions_in') or []\n    if not isinstance(actions_in, list):\n        actions_in = [actions_in]\n\n    frame_start = inputs.get('frame_start')\n    if frame_start is None:\n        frame_start = self.get_parameter('frame_start', 1)\n    frame_end = inputs.get('frame_end')\n    if frame_end is None:\n        frame_end = self.get_parameter('frame_end', 100)\n\n    action = {\n        'type': 'set_frame_range',\n        'frame_start': int(frame_start),\n        'frame_end': int(frame_end)\n    }\n\n    actions_out = list(actions_in) + [action]\n    self.log_info(f'Added set_frame_range action -> {frame_start}-{frame_end}')\n\n    await self.set_output('actions_out', actions_out)\n    await self.set_output('exec_out', True)\n    return {'actions_out': actions_out}"
+}

@@ -1,0 +1,19 @@
+{
+    "node_id": "maya_action_create_render_layer",
+    "name": "Maya Action: Create Render Layer",
+    "description": "Creates a Maya action that creates a new render setup layer (renderSetup API) and optionally adds members via a collection. Provide member node names comma-separated. Chain via actions_in/actions_out into a Maya Headless node.",
+    "category": "DCCs",
+    "icon_path": "icons/maya_icon.jpg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "actions_in", "type": "list", "default": [] },
+        { "name": "layer_name", "type": "string", "widget_type": "text", "default": "renderLayer1" },
+        { "name": "members", "type": "string", "widget_type": "text", "default": "" },
+        { "name": "make_current", "type": "bool", "widget_type": "checkbox", "default": true }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "actions_out", "type": "list" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    actions_in = inputs.get('actions_in') or []\n    if not isinstance(actions_in, list):\n        actions_in = [actions_in]\n\n    layer_name = inputs.get('layer_name') or self.get_parameter('layer_name', 'renderLayer1')\n    members = inputs.get('members') or self.get_parameter('members', '')\n    make_current = inputs.get('make_current')\n    if make_current is None:\n        make_current = self.get_parameter('make_current', True)\n\n    action = {\n        'type': 'create_render_layer',\n        'layer_name': layer_name,\n        'members': members,\n        'make_current': bool(make_current)\n    }\n\n    actions_out = list(actions_in) + [action]\n    self.log_info(f'Added create_render_layer action -> {layer_name}')\n\n    await self.set_output('actions_out', actions_out)\n    await self.set_output('exec_out', True)\n    return {'actions_out': actions_out}"
+}

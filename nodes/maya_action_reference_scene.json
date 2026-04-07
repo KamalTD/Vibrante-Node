@@ -1,0 +1,18 @@
+{
+    "node_id": "maya_action_reference_scene",
+    "name": "Maya Action: Reference Scene",
+    "description": "Creates a Maya action to reference another Maya scene (.ma/.mb) into the current scene with namespace support. Chain multiple action nodes together via actions_in/actions_out, then feed the final actions_out into a Maya Headless node.",
+    "category": "DCCs",
+    "icon_path": "icons/maya_icon.jpg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "actions_in", "type": "list", "default": [] },
+        { "name": "scene_path", "type": "string", "widget_type": "file", "default": "" },
+        { "name": "namespace", "type": "string", "widget_type": "text", "default": "ref" }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "actions_out", "type": "list" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    actions_in = inputs.get('actions_in') or []\n    if not isinstance(actions_in, list):\n        actions_in = [actions_in]\n\n    scene_path = inputs.get('scene_path') or self.get_parameter('scene_path', '')\n    namespace = inputs.get('namespace') or self.get_parameter('namespace', 'ref')\n\n    action = {\n        'type': 'reference_scene',\n        'scene_path': scene_path,\n        'namespace': namespace\n    }\n\n    actions_out = list(actions_in) + [action]\n    self.log_info(f'Added reference_scene action for: {scene_path} (ns: {namespace})')\n\n    await self.set_output('actions_out', actions_out)\n    await self.set_output('exec_out', True)\n    return {'actions_out': actions_out}"
+}
