@@ -1,0 +1,16 @@
+{
+    "node_id": "maya_action_list_references",
+    "name": "Maya Action: List References",
+    "description": "Creates a Maya action that queries all references in the current scene. The list of reference nodes, file paths, namespaces, and loaded state is written into the action's 'info' field, available via the executed_actions output of the Maya Headless node.",
+    "category": "DCCs",
+    "icon_path": "icons/maya_icon.jpg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "actions_in", "type": "list", "default": [] }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "actions_out", "type": "list" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    actions_in = inputs.get('actions_in') or []\n    if not isinstance(actions_in, list):\n        actions_in = [actions_in]\n\n    action = {\n        'type': 'list_references'\n    }\n\n    actions_out = list(actions_in) + [action]\n    self.log_info('Added list_references action')\n\n    await self.set_output('actions_out', actions_out)\n    await self.set_output('exec_out', True)\n    return {'actions_out': actions_out}"
+}

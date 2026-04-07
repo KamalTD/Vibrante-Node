@@ -1,0 +1,17 @@
+{
+    "node_id": "houdini_action_save_hip",
+    "name": "Houdini Action: Save HIP",
+    "description": "Creates a Houdini action to save the current scene as a .hip/.hipnc/.hiplc file. Chain via actions_in/actions_out into a Houdini Headless node.",
+    "category": "DCCs",
+    "icon_path": "icons/houdini_icon.png",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "actions_in", "type": "list", "default": [] },
+        { "name": "hip_path", "type": "string", "widget_type": "file_save", "default": "" }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "actions_out", "type": "list" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    actions_in = inputs.get('actions_in') or []\n    if not isinstance(actions_in, list):\n        actions_in = [actions_in]\n    hip_path = inputs.get('hip_path') or self.get_parameter('hip_path', '')\n    action = {'type': 'save_hip', 'hip_path': hip_path}\n    actions_out = list(actions_in) + [action]\n    self.log_info(f'Added save_hip action -> {hip_path}')\n    await self.set_output('actions_out', actions_out)\n    await self.set_output('exec_out', True)\n    return {'actions_out': actions_out}"
+}

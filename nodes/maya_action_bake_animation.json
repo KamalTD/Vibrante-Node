@@ -1,0 +1,21 @@
+{
+    "node_id": "maya_action_bake_animation",
+    "name": "Maya Action: Bake Animation",
+    "description": "Creates a Maya action to bake animation onto specified nodes over a frame range. Provide target node names comma-separated. Chain multiple action nodes together via actions_in/actions_out, then feed the final actions_out into a Maya Headless node.",
+    "category": "DCCs",
+    "icon_path": "icons/maya_icon.jpg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "actions_in", "type": "list", "default": [] },
+        { "name": "nodes", "type": "string", "widget_type": "text", "default": "" },
+        { "name": "frame_start", "type": "int", "widget_type": "int", "default": 1 },
+        { "name": "frame_end", "type": "int", "widget_type": "int", "default": 100 },
+        { "name": "sample_by", "type": "float", "widget_type": "float", "default": 1.0 },
+        { "name": "simulation", "type": "bool", "widget_type": "checkbox", "default": true }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "actions_out", "type": "list" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    actions_in = inputs.get('actions_in') or []\n    if not isinstance(actions_in, list):\n        actions_in = [actions_in]\n\n    nodes = inputs.get('nodes') or self.get_parameter('nodes', '')\n    frame_start = inputs.get('frame_start')\n    if frame_start is None:\n        frame_start = self.get_parameter('frame_start', 1)\n    frame_end = inputs.get('frame_end')\n    if frame_end is None:\n        frame_end = self.get_parameter('frame_end', 100)\n    sample_by = inputs.get('sample_by')\n    if sample_by is None:\n        sample_by = self.get_parameter('sample_by', 1.0)\n    simulation = inputs.get('simulation')\n    if simulation is None:\n        simulation = self.get_parameter('simulation', True)\n\n    action = {\n        'type': 'bake_animation',\n        'nodes': nodes,\n        'frame_start': int(frame_start),\n        'frame_end': int(frame_end),\n        'sample_by': float(sample_by),\n        'simulation': bool(simulation)\n    }\n\n    actions_out = list(actions_in) + [action]\n    self.log_info(f'Added bake_animation action -> {nodes} (frames {frame_start}-{frame_end})')\n\n    await self.set_output('actions_out', actions_out)\n    await self.set_output('exec_out', True)\n    return {'actions_out': actions_out}"
+}

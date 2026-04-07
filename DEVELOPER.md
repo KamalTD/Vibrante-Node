@@ -136,3 +136,140 @@ The Houdini integration was expanded to support arbitrary API calls:
 - **Bypass Support**: Bypassed nodes are emitted as pass-through comments, mapping outputs to the first input variable.
 - **Generic Exec Branching**: The recursion logic now automatically follows ALL execution pins (e.g., `exec_false`, `then`, `on_finished`) if they are not explicitly handled by specialized control-flow emitters.
 - **Loop Logic Refactor**: `for_loop` is now treated as a data-provider node (generating a range list) while `loop_body` handles the actual Python `for` loop, eliminating redundant nesting.
+
+## 🆕 v1.3.0 — Houdini Geometry Nodes, AI Context Fix & CLAUDE.md
+
+### New Houdini Geometry Nodes
+Three new bridge-based nodes were added for geometry pipeline work:
+- **Color Curves**: Assigns a ramp-driven color attribute along curve primitives.
+- **Edges to Curves**: Extracts polygon edges and converts them to curves for hair/grooming workflows.
+- **ABC Convert**: Imports an Alembic and converts the result to polygons.
+
+### AI Context Fix
+Gemini node-building requests now receive the correct node-builder context (previous versions leaked irrelevant workflow state into the prompt).
+
+### CLAUDE.md Developer Guide
+A new `CLAUDE.md` in the repo root teaches AI assistants how to author Houdini bridge nodes — the JSON file format, the `BaseNode` skeleton, the full `hou_bridge` API with return-value contracts, and common patterns (geo container construction, Object vs SOP resolution, VEX wrangles). See `CLAUDE.md` for the full guide.
+
+### YouTube Channel
+A `@Vibrante-Node` YouTube channel was launched with walkthroughs and tutorials. Links added to README.
+
+## 🆕 v1.4.0 — Node Builder Save & Register Fix, BaseNode Hardening, VFX Nodes
+
+### Node Builder "Save & Register" No Longer Erases Manual Code Edits
+**Bug:** `save_node()` previously called `_sync_ui_to_code()` as its first step, which regenerated the code from the UI tables. If the 1-second debounce timer in the editor hadn't fired yet, any hand-written logic inside `execute()` was overwritten before being saved.
+
+**Fix:** `save_node()` now stops the pending timer and calls `_sync_code_to_ui()` instead — parsing the latest *code* to update the tables. The code editor is the source of truth.
+
+### `BaseNode.set_parameter()` Added
+`BaseNode.set_parameter(name, value)` is now a public method. It handles the dropdown-port edge case: if `value` is a list, it updates the port's `options` list and selects the first item. This resolved an `AttributeError` crash on nodes (e.g. `Get_Project`) that called `set_parameter()` in their `__init__`.
+
+### Safer Engine Initialization
+Node instantiation inside `NetworkExecutor` is now wrapped in try/except. If a node's `__init__` raises, the error is reported via the `node_error` signal rather than crashing the whole executor and tearing down the UI.
+
+### New VFX Pipeline Nodes
+- **`Get_Project`** (VFX_Pipeline) — retrieves project context/path.
+- **`Parse_Path`** (VFX_Pipeline) — splits and parses file paths.
+- **`Test`** (General) — utility test node.
+- Category `Trend_Pipeline` → `VFX_Pipeline` across existing nodes.
+
+### UI: Dark Theme Checkboxes
+QCheckBox widgets in the Node Builder are now themed correctly: white label, dark background indicator, green highlight when checked.
+
+### Miscellaneous
+- `.gitignore` now ignores the `main/` directory.
+
+## 🆕 v1.5.0 — Maya Headless, Houdini Headless & Chainable Action Nodes
+
+### Architecture Overview
+
+Two new DCC executor nodes ship in v1.5.0: `Maya Headless` and `Houdini Headless`. Both launch the DCC in batch mode as a subprocess (`mayapy.exe` / `hython.exe`), run a list of structured "action" dicts against the DCC, and return per-action success/failure plus captured stdout/stderr. This is distinct from the live `hou_bridge` command-server pattern (v1.2.0): the new executors are **short-lived**, **version-pinned**, and **designed for batch/CI use**.
+
+The executors share one design:
+
+1. **Validation pass** (host side, inside Python): walk the action list, skip actions with missing required fields, fail the node early if any were skipped.
+2. **Serialization**: write a temp JSON payload (`{hip_file/scene_file, actions}`) and a temp Python runner script (embedded as a constant in the executor's `python_code`).
+3. **Subprocess launch**: `subprocess.run([dcc_py, runner_script, payload_path, results_path], env=merged_env, timeout=600)`.
+4. **Runner execution** (inside the DCC Python): the runner loads the payload, iterates actions, dispatches each to a typed branch inside try/except, and writes `{index, type, ok, error, info?}` per action into the results JSON.
+5. **Results merge** (host side): the executor reads the results JSON and builds the `executed_actions` list by merging the planned action dict with any `info` field the runner produced.
+
+#### Why structured payload + runner script?
+- **No f-string injection** — action values are JSON-encoded, not interpolated into code strings.
+- **Per-action isolation** — one failing action doesn't blank the rest.
+- **Success contract** — `success = (returncode == 0) and (no_action_errors)`. DCC stderr is informational (Maya emits warnings to stderr even on success; treating stderr as a failure signal caused false failures in early revisions).
+
+#### Version pinning and environment injection
+Both executors have a version dropdown that auto-fills the binary path via an `on_parameter_changed` handler:
+- **Maya**: 2022 / 2024 / 2025 / 2026 → `mayapy.exe`
+- **Houdini**: 20.5.445 / 20.5.278 / 20.0.547 / 19.5.493 → `hython.exe`
+
+Users can also override the path directly. Both executors accept:
+- A `.bat` file — parsed for `SET key=val` lines (case-insensitive `set ` prefix).
+- A `Maya.env` / `houdini.env` file — parsed as `key=value` lines, `#` comments.
+Values are expanded for `%VAR%` references against the current environment, then merged into the subprocess env (`.bat` overrides `.env`, both override the inherited env).
+
+### Action Node Pattern
+
+An action node is a small JSON node that takes `actions_in: list` + action-specific parameters, appends a typed action dict to the list, and outputs `actions_out: list`. Users chain them left-to-right and plug the final list into the headless executor's `actions` input. This keeps the graph flat and makes individual actions easy to insert/remove.
+
+### Action Types Supported
+
+**Maya Headless:** `open_scene`, `new_scene`, `save_scene`, `scene_info`, `set_frame_range`, `import_obj`, `import_fbx`, `import_alembic`, `export_fbx`, `export_alembic`, `export_camera_alembic`, `import_camera`, `reference_scene`, `reference_alembic`, `list_references`, `playblast`, `bake_animation`, `set_render_settings`, `set_aovs` (Arnold/Redshift), `create_render_layer` (renderSetup), `assign_material`, `custom_python`.
+
+**Houdini Headless:** `open_hip`, `save_hip`, `new_hip`, `scene_info`, `set_frame_range`, `import_obj`, `import_fbx`, `import_alembic`, `import_camera`, `export_fbx`, `export_alembic`, `export_camera_alembic`, `bake_animation`, `custom_python`.
+
+All Houdini import actions take an optional `context` parameter (`/obj` or `/stage`) to pick between the classic Object/SOP workflow and Solaris/LOPs.
+
+### Renderer-Specific Details (Maya)
+- **`set_aovs` (Arnold)** calls `mtoa.core.createOptions()` to initialize `defaultArnoldRenderOptions` before invoking `AOVInterface`, with a fallback to creating the node directly via `cmds.createNode("aiOptions", ...)` if the import fails. Without this, `AOVInterface` raises `No object matches name: defaultArnoldRenderOptions.aovs` in a cold `mayapy` session.
+- **`set_aovs` (Redshift)** uses `rsCreateAov(type=name)`.
+- **`create_render_layer`** uses the `renderSetup` API (`maya.app.renderSetup.model.renderSetup`) with collection + selector pattern for members.
+- **`assign_material`** auto-looks-up the shader's `shadingEngine` connection, and creates an SG if the material doesn't have one.
+- **`set_render_settings`** maps image format strings (`exr`/`png`/`jpg`/...) to Maya's `defaultRenderGlobals.imageFormat` integer codes for non-Arnold renderers; for Arnold it sets `defaultArnoldDriver.aiTranslator`.
+
+### Get Action Result Helper Nodes
+
+`maya_get_action_result` and `houdini_get_action_result` take an `executed_actions` list and either:
+- An `action_type` string — first-match lookup, or
+- An `index` — 0-based position lookup (defaults to 0).
+
+They output `found`, `action` (full dict), `info` (pointer to `action["info"]` for query actions), and `path` (best-guess from `fbx_path`/`abc_path`/`obj_path`/`scene_path`/`save_scene_path`/`camera_path`/`output_path`/`hip_path`). This replaces manual list filtering downstream and is an additive helper — existing workflows that read `executed_actions` directly keep working.
+
+### New `file_save` Widget Type
+
+A new `widget_type` value on string ports that opens `QFileDialog.getSaveFileName` instead of `getOpenFileName`. Implemented in `src/ui/node_widget.py`:
+
+```python
+elif p_model.widget_type in ('file', 'file_save'):
+    ...
+    is_save = p_model.widget_type == 'file_save'
+    def select_file(_checked=None, save=is_save):
+        if save:
+            path, _ = QFileDialog.getSaveFileName(curr, "Save File")
+        else:
+            path, _ = QFileDialog.getOpenFileName(curr, "Select File")
+```
+
+**Gotcha fixed:** The inner function takes `_checked=None` as its first parameter because `QPushButton.clicked` emits a `bool` argument. Without the absorber, that bool overrode the default `save=is_save` and `file_save` silently fell back to `getOpenFileName`.
+
+### Custom Action Script Editor
+`maya_action_custom` and `houdini_action_custom` are editable action nodes. The Edit Script button in `node_widget.py` is wired for those node_ids:
+
+```python
+if getattr(self.node_definition, 'node_id', None) in ('python_script', 'maya_action_custom', 'houdini_action_custom') and '_script_btn' not in self.param_widgets:
+```
+
+The `_open_script_editor` callback reads/writes `python_code` via `get_parameter`/`set_parameter` (not via the raw parameters dict) so the dialog always reflects current code, and invokes `scene.push_history()` on accept.
+
+### Safer Node Drop
+`NodeScene` and `NodeView` now wrap the node-spawn path in try/except. A failing constructor logs an error via the parent's `log_panel` (if available) and returns `None`. The drop handler checks the return value and only calls `push_history()` / `acceptProposedAction()` on success.
+
+Before this fix, a node with a broken `__init__` (e.g. during active development) would crash the canvas on drag-and-drop.
+
+### File & Module Touchpoints
+- `nodes/maya_headless.json`, `nodes/houdini_headless.json` — executors.
+- `nodes/maya_action_*.json` (22 files), `nodes/houdini_action_*.json` (14 files) — action nodes.
+- `nodes/maya_get_action_result.json`, `nodes/houdini_get_action_result.json` — helpers.
+- `src/ui/node_widget.py` — `file_save` widget type, custom action script editor wiring.
+- `src/ui/canvas/scene.py`, `src/ui/canvas/view.py` — safer node drop.
+- `src/core/models.py` — `file_save` listed in `widget_type` comment.

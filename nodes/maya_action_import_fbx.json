@@ -1,0 +1,17 @@
+{
+    "node_id": "maya_action_import_fbx",
+    "name": "Maya Action: Import FBX",
+    "description": "Creates a Maya action to import an FBX file. Chain multiple action nodes together via actions_in/actions_out, then feed the final actions_out into a Maya Headless node.",
+    "category": "DCCs",
+    "icon_path": "icons/maya_icon.jpg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "actions_in", "type": "list", "default": [] },
+        { "name": "fbx_path", "type": "string", "widget_type": "file", "default": "" }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "actions_out", "type": "list" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    actions_in = inputs.get('actions_in') or []\n    if not isinstance(actions_in, list):\n        actions_in = [actions_in]\n\n    fbx_path = inputs.get('fbx_path') or self.get_parameter('fbx_path', '')\n\n    action = {\n        'type': 'import_fbx',\n        'fbx_path': fbx_path\n    }\n\n    actions_out = list(actions_in) + [action]\n    self.log_info(f'Added import_fbx action for: {fbx_path}')\n\n    await self.set_output('actions_out', actions_out)\n    await self.set_output('exec_out', True)\n    return {'actions_out': actions_out}"
+}

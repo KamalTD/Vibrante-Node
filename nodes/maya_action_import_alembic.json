@@ -1,0 +1,17 @@
+{
+    "node_id": "maya_action_import_alembic",
+    "name": "Maya Action: Import Alembic",
+    "description": "Creates a Maya action to import an Alembic (.abc) cache file directly into the scene. Chain multiple action nodes together via actions_in/actions_out, then feed the final actions_out into a Maya Headless node.",
+    "category": "DCCs",
+    "icon_path": "icons/maya_icon.jpg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "actions_in", "type": "list", "default": [] },
+        { "name": "abc_path", "type": "string", "widget_type": "file", "default": "" }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "actions_out", "type": "list" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    actions_in = inputs.get('actions_in') or []\n    if not isinstance(actions_in, list):\n        actions_in = [actions_in]\n\n    abc_path = inputs.get('abc_path') or self.get_parameter('abc_path', '')\n\n    action = {\n        'type': 'import_alembic',\n        'abc_path': abc_path\n    }\n\n    actions_out = list(actions_in) + [action]\n    self.log_info(f'Added import_alembic action for: {abc_path}')\n\n    await self.set_output('actions_out', actions_out)\n    await self.set_output('exec_out', True)\n    return {'actions_out': actions_out}"
+}

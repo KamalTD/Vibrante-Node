@@ -1,0 +1,20 @@
+{
+    "node_id": "houdini_action_custom",
+    "name": "Houdini Action: Custom Python",
+    "description": "Creates an editable Houdini action with a user-defined Python code block. The code runs inside hython with access to 'hou', 'action', 'os', and 'json'. Use 'action' to read your own parameters. Chain via actions_in/actions_out into a Houdini Headless node. Click 'Edit Script' to open the code editor.",
+    "category": "DCCs",
+    "icon_path": "icons/houdini_icon.png",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "actions_in", "type": "list", "default": [] },
+        { "name": "action_name", "type": "string", "widget_type": "text", "default": "custom" },
+        { "name": "python_code", "type": "string", "widget_type": "text_area", "default": "# Runs inside hython. Available: hou, action, os, json\n# Read custom params from the action dict, e.g. action.get('param1')\nprint('Hello from custom Houdini action')" },
+        { "name": "param1", "type": "string", "widget_type": "text", "default": "" },
+        { "name": "param2", "type": "string", "widget_type": "text", "default": "" }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "actions_out", "type": "list" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    actions_in = inputs.get('actions_in') or []\n    if not isinstance(actions_in, list):\n        actions_in = [actions_in]\n    action_name = inputs.get('action_name') or self.get_parameter('action_name', 'custom')\n    python_code = self.get_parameter('python_code', '')\n    param1 = inputs.get('param1') or self.get_parameter('param1', '')\n    param2 = inputs.get('param2') or self.get_parameter('param2', '')\n    action = {'type': 'custom_python', 'name': action_name, 'python_code': python_code, 'param1': param1, 'param2': param2}\n    actions_out = list(actions_in) + [action]\n    self.log_info(f'Added custom_python action -> {action_name}')\n    await self.set_output('actions_out', actions_out)\n    await self.set_output('exec_out', True)\n    return {'actions_out': actions_out}"
+}

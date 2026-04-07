@@ -1,0 +1,18 @@
+{
+    "node_id": "houdini_action_import_fbx",
+    "name": "Houdini Action: Import FBX",
+    "description": "Creates a Houdini action that imports an .fbx file. When context is /obj, uses hou.hipFile.importFBX() to build the /obj network. When context is /stage, creates an FBX LOP. Chain via actions_in/actions_out into a Houdini Headless node.",
+    "category": "DCCs",
+    "icon_path": "icons/houdini_icon.png",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "actions_in", "type": "list", "default": [] },
+        { "name": "fbx_path", "type": "string", "widget_type": "file", "default": "" },
+        { "name": "context", "type": "string", "widget_type": "dropdown", "options": ["/obj", "/stage"], "default": "/obj" }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "actions_out", "type": "list" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    actions_in = inputs.get('actions_in') or []\n    if not isinstance(actions_in, list):\n        actions_in = [actions_in]\n    fbx_path = inputs.get('fbx_path') or self.get_parameter('fbx_path', '')\n    context = inputs.get('context') or self.get_parameter('context', '/obj')\n    action = {'type': 'import_fbx', 'fbx_path': fbx_path, 'context': context}\n    actions_out = list(actions_in) + [action]\n    self.log_info(f'Added import_fbx action -> {fbx_path} ({context})')\n    await self.set_output('actions_out', actions_out)\n    await self.set_output('exec_out', True)\n    return {'actions_out': actions_out}"
+}

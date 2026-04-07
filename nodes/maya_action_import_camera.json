@@ -1,0 +1,17 @@
+{
+    "node_id": "maya_action_import_camera",
+    "name": "Maya Action: Import Camera",
+    "description": "Creates a Maya action that imports a camera from an external file (.ma, .mb, .fbx, or .abc). Auto-detects the file type from extension. Chain multiple action nodes together via actions_in/actions_out, then feed the final actions_out into a Maya Headless node.",
+    "category": "DCCs",
+    "icon_path": "icons/maya_icon.jpg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "actions_in", "type": "list", "default": [] },
+        { "name": "camera_path", "type": "string", "widget_type": "file", "default": "" }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "actions_out", "type": "list" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    actions_in = inputs.get('actions_in') or []\n    if not isinstance(actions_in, list):\n        actions_in = [actions_in]\n\n    camera_path = inputs.get('camera_path') or self.get_parameter('camera_path', '')\n\n    action = {\n        'type': 'import_camera',\n        'camera_path': camera_path\n    }\n\n    actions_out = list(actions_in) + [action]\n    self.log_info(f'Added import_camera action -> {camera_path}')\n\n    await self.set_output('actions_out', actions_out)\n    await self.set_output('exec_out', True)\n    return {'actions_out': actions_out}"
+}
