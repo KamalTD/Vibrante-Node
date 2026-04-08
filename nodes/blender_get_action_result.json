@@ -1,0 +1,22 @@
+{
+    "node_id": "blender_get_action_result",
+    "name": "Blender: Get Action Result",
+    "description": "Extracts a single action result from the Blender Headless 'executed_actions' output. Select by action type (first match) or by index. Outputs the matched action dict, its 'info' field (if present), and a best-guess path field so downstream nodes don't need to filter the list manually.",
+    "category": "DCCs",
+    "icon_path": "icons/blender_icon.png",
+    "use_exec": true,
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "executed_actions", "type": "list", "default": [] },
+        { "name": "action_type", "type": "string", "widget_type": "text", "default": "" },
+        { "name": "index", "type": "int", "widget_type": "int", "default": 0 }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "found", "type": "bool" },
+        { "name": "action", "type": "dict" },
+        { "name": "info", "type": "dict" },
+        { "name": "path", "type": "string" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    executed = inputs.get('executed_actions') or []\n    if not isinstance(executed, list):\n        executed = [executed]\n\n    action_type = (inputs.get('action_type') or self.get_parameter('action_type', '') or '').strip()\n    index = inputs.get('index')\n    if index is None:\n        index = self.get_parameter('index', 0)\n    try:\n        index = int(index)\n    except Exception:\n        index = 0\n\n    match = None\n\n    if action_type:\n        for a in executed:\n            if isinstance(a, dict) and a.get('type') == action_type:\n                match = a\n                break\n        if match is None:\n            self.log_error(f'No executed action of type \"{action_type}\" found')\n    else:\n        if 0 <= index < len(executed):\n            candidate = executed[index]\n            if isinstance(candidate, dict):\n                match = candidate\n            else:\n                self.log_error(f'Executed action at index {index} is not a dict')\n        elif len(executed) == 0:\n            self.log_error('executed_actions is empty')\n        else:\n            self.log_error(f'Index {index} out of range (executed_actions has {len(executed)} entries)')\n\n    found = match is not None\n    action = match or {}\n    info = action.get('info', {}) if isinstance(action, dict) else {}\n    if not isinstance(info, dict):\n        info = {}\n\n    path = ''\n    if isinstance(action, dict):\n        for key in ('blend_path', 'fbx_path', 'abc_path', 'obj_path', 'gltf_path', 'usd_path', 'output_path'):\n            val = action.get(key)\n            if val:\n                path = val\n                break\n\n    if found:\n        self.log_info(f'Matched action type={action.get(\"type\", \"\")}')\n\n    await self.set_output('found', found)\n    await self.set_output('action', action)\n    await self.set_output('info', info)\n    await self.set_output('path', path)\n    await self.set_output('exec_out', True)\n    return {'found': found, 'action': action, 'info': info, 'path': path}"
+}

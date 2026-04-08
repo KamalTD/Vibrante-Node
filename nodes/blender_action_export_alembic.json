@@ -1,0 +1,22 @@
+{
+    "node_id": "blender_action_export_alembic",
+    "name": "Blender Action: Export Alembic",
+    "description": "Creates a Blender action to export geometry as an Alembic (.abc) cache using bpy.ops.wm.alembic_export. Supports frame range, hair, and particles.",
+    "category": "DCCs",
+    "icon_path": "icons/blender_icon.png",
+    "use_exec": true,
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "actions_in", "type": "list", "default": [] },
+        { "name": "abc_path", "type": "string", "widget_type": "file_save", "default": "" },
+        { "name": "frame_start", "type": "int", "widget_type": "int", "default": 1 },
+        { "name": "frame_end", "type": "int", "widget_type": "int", "default": 100 },
+        { "name": "export_hair", "type": "bool", "widget_type": "checkbox", "default": false },
+        { "name": "export_particles", "type": "bool", "widget_type": "checkbox", "default": false }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "actions_out", "type": "list" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    actions_in = inputs.get('actions_in') or []\n    if not isinstance(actions_in, list):\n        actions_in = [actions_in]\n    abc_path = inputs.get('abc_path') or self.get_parameter('abc_path', '')\n    frame_start = inputs.get('frame_start')\n    if frame_start is None:\n        frame_start = self.get_parameter('frame_start', 1)\n    frame_end = inputs.get('frame_end')\n    if frame_end is None:\n        frame_end = self.get_parameter('frame_end', 100)\n    export_hair = inputs.get('export_hair')\n    if export_hair is None:\n        export_hair = self.get_parameter('export_hair', False)\n    export_particles = inputs.get('export_particles')\n    if export_particles is None:\n        export_particles = self.get_parameter('export_particles', False)\n    action = {\n        'type': 'export_alembic',\n        'abc_path': abc_path,\n        'frame_start': int(frame_start),\n        'frame_end': int(frame_end),\n        'export_hair': bool(export_hair),\n        'export_particles': bool(export_particles)\n    }\n    actions_out = list(actions_in) + [action]\n    self.log_info(f'Added export_alembic action -> {abc_path} (frames {frame_start}-{frame_end})')\n    await self.set_output('actions_out', actions_out)\n    await self.set_output('exec_out', True)\n    return {'actions_out': actions_out}"
+}

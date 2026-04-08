@@ -1,0 +1,17 @@
+{
+    "node_id": "blender_action_scene_info",
+    "name": "Blender Action: Scene Info",
+    "description": "Creates a Blender action to query scene metadata: name, blend path, frame range, FPS, render engine, resolution, output path, object/camera/collection lists.",
+    "category": "DCCs",
+    "icon_path": "icons/blender_icon.png",
+    "use_exec": true,
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "actions_in", "type": "list", "default": [] }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "actions_out", "type": "list" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    actions_in = inputs.get('actions_in') or []\n    if not isinstance(actions_in, list):\n        actions_in = [actions_in]\n    action = {'type': 'scene_info'}\n    actions_out = list(actions_in) + [action]\n    self.log_info('Added scene_info action')\n    await self.set_output('actions_out', actions_out)\n    await self.set_output('exec_out', True)\n    return {'actions_out': actions_out}"
+}

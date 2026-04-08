@@ -1,0 +1,19 @@
+{
+    "node_id": "blender_action_export_obj",
+    "name": "Blender Action: Export OBJ",
+    "description": "Creates a Blender action to export geometry as OBJ. Uses bpy.ops.wm.obj_export (Blender 4.0+) or bpy.ops.export_scene.obj (3.x), auto-selected by the runner.",
+    "category": "DCCs",
+    "icon_path": "icons/blender_icon.png",
+    "use_exec": true,
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "actions_in", "type": "list", "default": [] },
+        { "name": "obj_path", "type": "string", "widget_type": "file_save", "default": "" },
+        { "name": "selection_only", "type": "bool", "widget_type": "checkbox", "default": false }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "actions_out", "type": "list" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    actions_in = inputs.get('actions_in') or []\n    if not isinstance(actions_in, list):\n        actions_in = [actions_in]\n    obj_path = inputs.get('obj_path') or self.get_parameter('obj_path', '')\n    selection_only = inputs.get('selection_only')\n    if selection_only is None:\n        selection_only = self.get_parameter('selection_only', False)\n    action = {'type': 'export_obj', 'obj_path': obj_path, 'selection_only': bool(selection_only)}\n    actions_out = list(actions_in) + [action]\n    self.log_info(f'Added export_obj action -> {obj_path}')\n    await self.set_output('actions_out', actions_out)\n    await self.set_output('exec_out', True)\n    return {'actions_out': actions_out}"
+}

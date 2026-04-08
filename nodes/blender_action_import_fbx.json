@@ -1,0 +1,18 @@
+{
+    "node_id": "blender_action_import_fbx",
+    "name": "Blender Action: Import FBX",
+    "description": "Creates a Blender action to import an FBX file using bpy.ops.import_scene.fbx.",
+    "category": "DCCs",
+    "icon_path": "icons/blender_icon.png",
+    "use_exec": true,
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "actions_in", "type": "list", "default": [] },
+        { "name": "fbx_path", "type": "string", "widget_type": "file", "default": "" }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "actions_out", "type": "list" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    actions_in = inputs.get('actions_in') or []\n    if not isinstance(actions_in, list):\n        actions_in = [actions_in]\n    fbx_path = inputs.get('fbx_path') or self.get_parameter('fbx_path', '')\n    action = {'type': 'import_fbx', 'fbx_path': fbx_path}\n    actions_out = list(actions_in) + [action]\n    self.log_info(f'Added import_fbx action: {fbx_path}')\n    await self.set_output('actions_out', actions_out)\n    await self.set_output('exec_out', True)\n    return {'actions_out': actions_out}"
+}

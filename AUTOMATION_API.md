@@ -34,7 +34,9 @@ When writing scripts in the console, the following objects are pre-loaded into y
 - **`node.set_parameter(name, value)`**: 
   - Updates a widget value programmatically.
   - Automatically triggers downstream data propagation.
+  - For dropdown ports, passing a list updates the options and selects the first item (v1.4.0).
 - **`node.node_definition`**: Access the underlying Python logic instance.
+- **`node.node_definition.bypassed`**: `True` if the node is in bypass mode (v1.2.0).
 
 ### 🔹 Application Control (`app`)
 - **`app.add_new_workflow(name)`**: Opens a new empty tab.
@@ -113,4 +115,16 @@ git.status()
 git.commit("Automated workflow backup")
 git.push()
 print("Workflow pushed to GitHub successfully.")
+```
+
+### 5. Inspect and Toggle Bypass State (v1.2.0)
+Find all bypassed nodes and re-enable them programmatically.
+
+```python
+for node in scene.nodes:
+    defn = node.node_definition
+    if getattr(defn, 'bypassed', False):
+        defn.bypassed = False
+        print(f"Re-enabled: {defn.name}")
+print("All bypassed nodes restored.")
 ```

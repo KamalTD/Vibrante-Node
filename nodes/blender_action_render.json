@@ -1,0 +1,23 @@
+{
+    "node_id": "blender_action_render",
+    "name": "Blender Action: Render",
+    "description": "Creates a Blender action to render a still frame (write_still=True) or a full animation sequence. Set output_path and file_format before rendering. For animation, also set frame_start and frame_end.",
+    "category": "DCCs",
+    "icon_path": "icons/blender_icon.png",
+    "use_exec": true,
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "actions_in", "type": "list", "default": [] },
+        { "name": "output_path", "type": "string", "widget_type": "text", "default": "//render/frame_" },
+        { "name": "file_format", "type": "string", "widget_type": "dropdown", "options": ["PNG", "JPEG", "OPEN_EXR", "OPEN_EXR_MULTILAYER", "TIFF", "BMP"], "default": "PNG" },
+        { "name": "animation", "type": "bool", "widget_type": "checkbox", "default": false },
+        { "name": "frame", "type": "int", "widget_type": "int", "default": 1 },
+        { "name": "frame_start", "type": "int", "widget_type": "int", "default": 1 },
+        { "name": "frame_end", "type": "int", "widget_type": "int", "default": 100 }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "actions_out", "type": "list" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    actions_in = inputs.get('actions_in') or []\n    if not isinstance(actions_in, list):\n        actions_in = [actions_in]\n\n    def _get(key, default):\n        v = inputs.get(key)\n        return v if v is not None else self.get_parameter(key, default)\n\n    animate = bool(_get('animation', False))\n    action = {\n        'type': 'render',\n        'output_path': _get('output_path', '//render/frame_'),\n        'file_format': _get('file_format', 'PNG'),\n        'animation': animate,\n    }\n    if animate:\n        action['frame_start'] = int(_get('frame_start', 1))\n        action['frame_end'] = int(_get('frame_end', 100))\n    else:\n        action['frame'] = int(_get('frame', 1))\n\n    actions_out = list(actions_in) + [action]\n    mode = 'animation' if animate else f'still frame {action.get(\"frame\", 1)}'\n    self.log_info(f'Added render action ({mode}) -> {action[\"output_path\"]}')\n    await self.set_output('actions_out', actions_out)\n    await self.set_output('exec_out', True)\n    return {'actions_out': actions_out}"
+}

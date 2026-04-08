@@ -1,0 +1,23 @@
+{
+    "node_id": "blender_action_bake_animation",
+    "name": "Blender Action: Bake Animation",
+    "description": "Creates a Blender action to bake object/pose animation using bpy.ops.nla.bake. Bakes all selected objects over the given frame range, sampling every frame_step frames.",
+    "category": "DCCs",
+    "icon_path": "icons/blender_icon.png",
+    "use_exec": true,
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "actions_in", "type": "list", "default": [] },
+        { "name": "frame_start", "type": "int", "widget_type": "int", "default": 1 },
+        { "name": "frame_end", "type": "int", "widget_type": "int", "default": 100 },
+        { "name": "frame_step", "type": "int", "widget_type": "int", "default": 1 },
+        { "name": "only_selected", "type": "bool", "widget_type": "checkbox", "default": true },
+        { "name": "visual_keying", "type": "bool", "widget_type": "checkbox", "default": true },
+        { "name": "clear_constraints", "type": "bool", "widget_type": "checkbox", "default": false }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "actions_out", "type": "list" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    actions_in = inputs.get('actions_in') or []\n    if not isinstance(actions_in, list):\n        actions_in = [actions_in]\n\n    def _get(key, default):\n        v = inputs.get(key)\n        return v if v is not None else self.get_parameter(key, default)\n\n    action = {\n        'type': 'bake_animation',\n        'frame_start': int(_get('frame_start', 1)),\n        'frame_end': int(_get('frame_end', 100)),\n        'frame_step': int(_get('frame_step', 1)),\n        'only_selected': bool(_get('only_selected', True)),\n        'visual_keying': bool(_get('visual_keying', True)),\n        'clear_constraints': bool(_get('clear_constraints', False)),\n    }\n    actions_out = list(actions_in) + [action]\n    self.log_info(f'Added bake_animation action (frames {action[\"frame_start\"]}-{action[\"frame_end\"]} step {action[\"frame_step\"]})')\n    await self.set_output('actions_out', actions_out)\n    await self.set_output('exec_out', True)\n    return {'actions_out': actions_out}"
+}
