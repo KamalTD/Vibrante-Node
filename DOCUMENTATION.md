@@ -157,13 +157,13 @@ if node:
 
 ## 🎬 4. Headless DCC Execution (v1.5.0)
 
-Vibrante-Node ships two headless executor nodes that launch Maya (`mayapy.exe`) and Houdini (`hython.exe`) as subprocesses, run a list of structured "actions" against the DCC, and return the results. This is distinct from the live `hou_bridge` integration (Section 5) — it's designed for **batch processing**, **CI/render-farm use**, and **repeatable pipelines** where spinning up a short-lived DCC per run is the right model.
+Vibrante-Node ships three headless executor nodes that launch Maya (`mayapy.exe`), Houdini (`hython.exe`), and Blender (`blender --background`) as subprocesses, run a list of structured "actions" against the DCC, and return the results. This is distinct from the live `hou_bridge` integration (Section 5) — it's designed for **batch processing**, **CI/render-farm use**, and **repeatable pipelines** where spinning up a short-lived DCC per run is the right model.
 
 ### 🔹 Architecture
 
 1. **Action Nodes** — small chainable nodes, each describing one DCC operation (e.g. `Import OBJ`, `Export Alembic`). They expose `actions_in` / `actions_out` list ports and append a typed action dict to the list.
-2. **Headless Executor Node** — `Maya Headless` or `Houdini Headless`. Validates the action list, serializes it to a temp JSON file, writes an embedded runner script to a second temp file, launches the DCC subprocess with both as arguments, reads the results JSON back, and maps success/failure per action.
-3. **Runner Script** — a self-contained Python script that runs inside `mayapy`/`hython`, iterates the action list, dispatches each to a typed handler, and writes a per-action `{index, type, ok, error, info?}` dict into the results file.
+2. **Headless Executor Node** — `Maya Headless`, `Houdini Headless`, or `Blender Headless`. Validates the action list, serializes it to a temp JSON file, writes an embedded runner script to a second temp file, launches the DCC subprocess with both as arguments, reads the results JSON back, and maps success/failure per action.
+3. **Runner Script** — a self-contained Python script that runs inside `mayapy`/`hython`/`blender --background`, iterates the action list, dispatches each to a typed handler, and writes a per-action `{index, type, ok, error, info?}` dict into the results file.
 4. **Get Action Result helper** — extracts a single action from `executed_actions` by type (first match) or index, exposing `action`, `info`, and a best-guess `path` field so downstream nodes don't have to filter the list manually.
 
 ### 🔹 Why Subprocess + Structured Payload?
@@ -171,8 +171,8 @@ Vibrante-Node ships two headless executor nodes that launch Maya (`mayapy.exe`) 
 - **No f-string injection** — action values are JSON-encoded, not interpolated into code.
 - **Per-action isolation** — each action runs in its own try/except inside the runner; one failing action doesn't blank out the rest.
 - **Success contract** — the executor only reports success when process returncode is 0 **and** no action-level errors were reported. DCC stderr warnings (which Maya emits even on successful runs) are informational.
-- **Version-pinned** — each executor has a version dropdown that auto-fills the binary path (Maya: 2022/2024/2025/2026, Houdini: 20.5.445/20.5.278/20.0.547/19.5.493). Paths remain editable.
-- **Custom env vars** — both executors accept a `.bat` file (parses `SET key=val` lines) and a `Maya.env` / `houdini.env` file, merged into the subprocess environment. `%VAR%` references are expanded against the current environment.
+- **Version-pinned** — each executor has a version dropdown that auto-fills the binary path (Maya: 2022/2024/2025/2026, Houdini: 20.5.445/20.5.278/20.0.547/19.5.493, Blender: 4.3/4.2/4.1/4.0/3.6). Paths remain editable.
+- **Custom env vars** — all executors accept a `.bat` file (parses `SET key=val` lines) and a DCC-specific env file (`Maya.env`, `houdini.env`, `blender.env`), merged into the subprocess environment. `%VAR%` references are expanded against the current environment.
 
 ### 🔹 Maya Headless Node
 
@@ -195,19 +195,28 @@ Vibrante-Node ships two headless executor nodes that launch Maya (`mayapy.exe`) 
 
 **Import context:** Every import action takes an optional `context` parameter — `/obj` for the classic Object/SOP workflow, or `/stage` for Solaris/LOPs (creates SOP Import LOP, FBX Character Import LOP, Sublayer LOP, etc.).
 
+### 🔹 Blender Headless Node
+
+**Inputs:** `blender_version` (dropdown), `blender.exe`, `bat_file`, `blender_env_file`, `blend_file`, `actions`
+**Outputs:** `success`, `stdout`, `stderr`, `exit_code`, `executed_actions`, `skipped_actions`
+
+**Supported action types:** `open_blend`, `save_blend`, `new_blend`, `scene_info`, `set_frame_range`, `import_obj`, `import_fbx`, `import_alembic`, `import_gltf`, `export_obj`, `export_fbx`, `export_alembic`, `export_gltf`, `export_usd`, `set_render_settings`, `render`, `bake_animation`, `custom_python`.
+
+**bpy version handling:** The runner detects `bpy.app.version` at runtime and uses the 4.0+ `wm.obj_import`/`wm.obj_export` operators on Blender 4.x and the legacy `import_scene.obj`/`export_scene.obj` on 3.x. Full traceback per action is captured and included in the `error` field for easier debugging.
+
 ### 🔹 Action Nodes at a Glance
 
-| Category | Maya | Houdini |
-|---|---|---|
-| Scene IO | Open/Save/New Scene, Scene Info | Open/Save/New HIP, Scene Info |
-| Frame | Set Frame Range | Set Frame Range |
-| Geometry In | Import OBJ, Import FBX, Import Alembic | Import OBJ, Import FBX, Import Alembic |
-| Geometry Out | Export FBX, Export Alembic | Export FBX, Export Alembic |
-| References | Reference Scene, Reference Alembic, List References | — |
-| Camera | Import Camera, Export Camera Alembic | Import Camera, Export Camera Alembic |
-| Animation | Bake Animation | Bake Animation |
-| Rendering | Playblast, Set Render Settings, Set AOVs, Create Render Layer, Assign Material | — |
-| Extensibility | Custom Python (editable) | Custom Python (editable) |
+| Category | Maya | Houdini | Blender |
+|---|---|---|---|
+| Scene IO | Open/Save/New Scene, Scene Info | Open/Save/New HIP, Scene Info | Open/Save/New Blend, Scene Info |
+| Frame | Set Frame Range | Set Frame Range | Set Frame Range |
+| Geometry In | Import OBJ, FBX, Alembic | Import OBJ, FBX, Alembic | Import OBJ, FBX, Alembic, glTF |
+| Geometry Out | Export FBX, Alembic | Export FBX, Alembic | Export OBJ, FBX, Alembic, glTF, USD |
+| References | Reference Scene, Reference Alembic, List References | — | — |
+| Camera | Import Camera, Export Camera Alembic | Import Camera, Export Camera Alembic | — |
+| Animation | Bake Animation | Bake Animation | Bake Animation (NLA) |
+| Rendering | Playblast, Set Render Settings, Set AOVs, Create Render Layer, Assign Material | — | Set Render Settings, Render |
+| Extensibility | Custom Python | Custom Python | Custom Python |
 
 ### 🔹 New `file_save` Widget Type
 
@@ -215,15 +224,43 @@ Export action nodes use a new `"widget_type": "file_save"` on string ports, whic
 
 ### 🔹 Custom Python Action Nodes
 
-`maya_action_custom` and `houdini_action_custom` are editable action nodes with a `python_code` text-area parameter and an **Edit Script** button wired into `node_widget.py`'s script-editor list. Duplicate one, click Edit Script, write your own code — the runner exposes `hou` / `cmds`, the action dict, and `os`/`json` to your code.
+`maya_action_custom`, `houdini_action_custom`, and `blender_action_custom` are editable action nodes with a `python_code` text-area parameter and an **Edit Script** button wired into `node_widget.py`'s script-editor list. Duplicate one, click Edit Script, write your own code — the runner exposes `cmds` (Maya), `hou` (Houdini), or `bpy` (Blender), the action dict, and `os`/`json` to your code.
 
 ### 🔹 Get Action Result Helpers
 
-`maya_get_action_result` and `houdini_get_action_result` take an `executed_actions` list and either an `action_type` string (first-match) or an `index`. They output:
+`maya_get_action_result`, `houdini_get_action_result`, and `blender_get_action_result` take an `executed_actions` list and either an `action_type` string (first-match) or an `index`. They output:
 - `found` (bool)
 - `action` (dict) — the matched action
 - `info` (dict) — convenience pointer to `action["info"]` for query actions (`scene_info`, `list_references`)
 - `path` (string) — auto-picked from the first non-empty path-like field (`fbx_path`, `abc_path`, etc.)
+
+---
+
+## 🎯 4b. Deadline Render Farm Integration (v1.5.0)
+
+Four nodes in the **DCCs** category submit jobs to a Deadline render farm and query job status via `deadlinecommand`.
+
+### 🔹 Submitter Nodes
+
+All three submitters write Job Info + Plugin Info as temp files, call `deadlinecommand`, parse `JobID` from the output (`JobID=` line, or 24-hex string fallback), and clean up temp files in a `finally` block. An `extra_job_args` text area accepts arbitrary extra `key=value` Job Info lines.
+
+| Node | Plugin | Key Inputs |
+|---|---|---|
+| `deadline_maya_submit` | MayaBatch | scene_file, renderer (Arnold/VRay/Redshift/RenderMan/Software/Hardware2), maya_version, project_path, output_path, camera |
+| `deadline_houdini_submit` | Houdini | hip_file, rop_path, houdini_version (auto-shortens build string), sim_job, ignore_inputs |
+| `deadline_blender_submit` | Blender | blend_file, renderer (CYCLES/EEVEE/EEVEE_NEXT/WORKBENCH), blender_version, output_path, output_format, gpu_enable |
+
+**Common inputs:** job_name, batch_name, pool, group, priority, chunk_size, frame_start, frame_end, frame_step, extra_job_args
+**Outputs:** `success`, `job_id`, `stdout`, `stderr`
+
+### 🔹 Job Status Node
+
+`deadline_job_status` calls `deadlinecommand -GetJobDetails <job_id>` and parses the response.
+
+**Inputs:** `job_id`, `poll_until_done` (bool), `poll_interval_seconds`, `timeout_seconds`
+**Outputs:** `status`, `progress`, `tasks_total`, `tasks_complete`, `tasks_failed`, `is_complete`, `is_failed`, `details`
+
+When `poll_until_done` is enabled, the node polls asynchronously at the configured interval, logs progress on each tick, and stops when the job reaches a terminal state or the timeout is exceeded.
 
 ---
 
