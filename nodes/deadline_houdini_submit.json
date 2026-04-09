@@ -2,7 +2,7 @@
     "node_id": "deadline_houdini_submit",
     "name": "Deadline: Submit Houdini",
     "description": "Submits a Houdini render job to Thinkbox Deadline by writing a Job Info file and Plugin Info file, then calling deadlinecommand. Specify the ROP output driver path (e.g. /out/mantra1, /out/karma1, /out/arnold). Returns the submitted Job ID.",
-    "category": "Deadline",
+    "category": "DCCs",
     "icon_path": "icons/210429_DeadlineFreeOn10RenderMachines.jpg",
     "use_exec": true,
     "inputs": [

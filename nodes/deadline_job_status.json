@@ -2,7 +2,7 @@
     "node_id": "deadline_job_status",
     "name": "Deadline: Job Status",
     "description": "Queries the status of a Deadline job by Job ID using 'deadlinecommand -GetJobDetails'. Returns status (Active, Rendering, Complete, Failed, Suspended, Pending), progress percentage, task counts, and the full details string. Can optionally wait/poll until the job completes.",
-    "category": "Deadline",
+    "category": "DCCs",
     "icon_path": "icons/210429_DeadlineFreeOn10RenderMachines.jpg",
     "use_exec": true,
     "inputs": [

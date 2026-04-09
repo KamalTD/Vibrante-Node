@@ -2,7 +2,7 @@
     "node_id": "deadline_maya_submit",
     "name": "Deadline: Submit Maya",
     "description": "Submits a Maya render job to Thinkbox Deadline by writing a Job Info file and Plugin Info file, then calling deadlinecommand. Supports Arnold, VRay, Redshift, RenderMan, MayaSoftware, and MayaHardware2. Returns the submitted Job ID.",
-    "category": "Deadline",
+    "category": "DCCs",
     "icon_path": "icons/210429_DeadlineFreeOn10RenderMachines.jpg",
     "use_exec": true,
     "inputs": [

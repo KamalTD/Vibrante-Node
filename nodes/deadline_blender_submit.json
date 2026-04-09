@@ -2,7 +2,7 @@
     "node_id": "deadline_blender_submit",
     "name": "Deadline: Submit Blender",
     "description": "Submits a Blender render job to Thinkbox Deadline by writing a Job Info file and Plugin Info file, then calling deadlinecommand. Supports Cycles, EEVEE, and EEVEE Next renderers. Returns the submitted Job ID.",
-    "category": "Deadline",
+    "category": "DCCs",
     "icon_path": "icons/210429_DeadlineFreeOn10RenderMachines.jpg",
     "use_exec": true,
     "inputs": [
