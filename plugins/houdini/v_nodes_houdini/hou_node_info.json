@@ -1,0 +1,18 @@
+{
+    "node_id": "hou_node_info",
+    "name": "Hou Node Info",
+    "description": "Get detailed information about an existing Houdini node: type, category, inputs, outputs, and children.",
+    "category": "Houdini",
+    "icon_path": "icons/database-search.svg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "node_path", "type": "string", "widget_type": "text", "default": "/obj" }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "info", "type": "any" },
+        { "name": "node_type", "type": "string" },
+        { "name": "children", "type": "list" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    from src.utils.hou_bridge import get_bridge\n\n    path = inputs.get('node_path') or self.get_parameter('node_path', '/obj')\n\n    try:\n        bridge = get_bridge()\n        info = bridge.node_info(path)\n        self.log_info(f'Node: {info[\"path\"]} | Type: {info[\"type\"]} | Children: {len(info[\"children\"])}')\n        await self.set_output('info', info)\n        await self.set_output('node_type', info.get('type', ''))\n        await self.set_output('children', info.get('children', []))\n    except Exception as e:\n        self.log_error(f'Failed to get node info: {e}')\n        await self.set_output('info', {})\n        await self.set_output('node_type', '')\n        await self.set_output('children', [])\n\n    await self.set_output('exec_out', True)\n    return {}"
+}

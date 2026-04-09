@@ -1,0 +1,464 @@
+{
+    "nodes": [
+        {
+            "instance_id": "f60e2b32-2a22-4c0f-9137-624ea64ef733",
+            "node_id": "maya_headless",
+            "position": [
+                145.0,
+                -208.0
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "maya_version": "2024",
+                "mayabatch.exe": "C:/Program Files/Autodesk/Maya2024/bin/mayabatch.exe",
+                "scene_file": "",
+                "actions": [
+                    {
+                        "type": "import_obj",
+                        "obj_path": "C:/Users/Mahmoud/Documents/Entagma_Geo_Cartoon_Shader/Entagma_Geo_Cartoon_Shader/geo/Jenner Post.obj"
+                    },
+                    {
+                        "type": "reference_alembic",
+                        "abc_path": "C:/Users/Mahmoud/Documents/maya/2020/modules/ZivaVFX-Maya-1_9/demos/armFlexBones.abc",
+                        "namespace": "armFlexBones"
+                    },
+                    {
+                        "type": "save_scene",
+                        "save_scene_path": "G:/test.ma",
+                        "file_type": "mayaAscii"
+                    }
+                ],
+                "success": true,
+                "stdout": "",
+                "stderr": "File read in  7.5 seconds.\nError: Failed to open IFF file for reading : C:/Users/Mahmoud/AppData/Local/Temp//maya39904000001B855910510.iff\nAbcImport v1.0 using Alembic 1.8.3 (built Oct 18 2023 13:02:50)\nFile read in  0.076 seconds.\n",
+                "exit_code": 0,
+                "executed_actions": [
+                    {
+                        "type": "import_obj",
+                        "obj_path": "C:/Users/Mahmoud/Documents/Entagma_Geo_Cartoon_Shader/Entagma_Geo_Cartoon_Shader/geo/Jenner Post.obj"
+                    },
+                    {
+                        "type": "reference_alembic",
+                        "abc_path": "C:/Users/Mahmoud/Documents/maya/2020/modules/ZivaVFX-Maya-1_9/demos/armFlexBones.abc",
+                        "namespace": "armFlexBones"
+                    },
+                    {
+                        "type": "save_scene",
+                        "save_scene_path": "G:/test_scene.ma",
+                        "file_type": "mayaAscii"
+                    }
+                ],
+                "maya_path": "C:/ProgramFiles/Autodesk/Maya2024/bin/maya.exe"
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "9ea4f673-0544-4f18-a3af-2d3b2a4099d1",
+            "node_id": "maya_action_import_obj",
+            "position": [
+                -971.0,
+                -257.0
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "actions_in": [],
+                "obj_path": "C:/Users/Mahmoud/Documents/Entagma_Geo_Cartoon_Shader/Entagma_Geo_Cartoon_Shader/geo/Jenner Post.obj",
+                "actions_out": [
+                    {
+                        "type": "import_obj",
+                        "obj_path": "C:/Users/Mahmoud/Documents/Entagma_Geo_Cartoon_Shader/Entagma_Geo_Cartoon_Shader/geo/Jenner Post.obj"
+                    }
+                ],
+                "file_path": "C:/Users/Mahmoud/Documents/ASSET_1749582574_8391403.obj"
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "79943cda-f7d2-47b2-a598-184a52b3a6ed",
+            "node_id": "maya_action_save_scene",
+            "position": [
+                -160.0,
+                -208.0
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "actions_in": [
+                    {
+                        "type": "import_obj",
+                        "obj_path": "C:/Users/Mahmoud/Documents/Entagma_Geo_Cartoon_Shader/Entagma_Geo_Cartoon_Shader/geo/Jenner Post.obj"
+                    },
+                    {
+                        "type": "reference_alembic",
+                        "abc_path": "C:/Users/Mahmoud/Documents/maya/2020/modules/ZivaVFX-Maya-1_9/demos/armFlexBones.abc",
+                        "namespace": "armFlexBones"
+                    }
+                ],
+                "save_scene_path": "G:/test_scen.ma",
+                "file_type": "mayaAscii",
+                "actions_out": [
+                    {
+                        "type": "import_obj",
+                        "obj_path": "C:/Users/Mahmoud/Documents/Entagma_Geo_Cartoon_Shader/Entagma_Geo_Cartoon_Shader/geo/Jenner Post.obj"
+                    },
+                    {
+                        "type": "reference_alembic",
+                        "abc_path": "C:/Users/Mahmoud/Documents/maya/2020/modules/ZivaVFX-Maya-1_9/demos/armFlexBones.abc",
+                        "namespace": "armFlexBones"
+                    },
+                    {
+                        "type": "save_scene",
+                        "save_scene_path": "G:/test_scene.ma",
+                        "file_type": "mayaAscii"
+                    }
+                ],
+                "file_path": "G:/test.ma"
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "b4e11255-86b7-4551-8d14-5a068b8cac6e",
+            "node_id": "maya_action_reference_alembic",
+            "position": [
+                -482.0,
+                -209.0
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "actions_in": [
+                    {
+                        "type": "import_obj",
+                        "obj_path": "C:/Users/Mahmoud/Documents/Entagma_Geo_Cartoon_Shader/Entagma_Geo_Cartoon_Shader/geo/Jenner Post.obj"
+                    }
+                ],
+                "abc_path": "C:/Users/Mahmoud/Documents/maya/2020/modules/ZivaVFX-Maya-1_9/demos/armFlexBones.abc",
+                "namespace": "armFlexBones",
+                "actions_out": [
+                    {
+                        "type": "import_obj",
+                        "obj_path": "C:/Users/Mahmoud/Documents/Entagma_Geo_Cartoon_Shader/Entagma_Geo_Cartoon_Shader/geo/Jenner Post.obj"
+                    },
+                    {
+                        "type": "reference_alembic",
+                        "abc_path": "C:/Users/Mahmoud/Documents/maya/2020/modules/ZivaVFX-Maya-1_9/demos/armFlexBones.abc",
+                        "namespace": "armFlexBones"
+                    }
+                ],
+                "file_path": "C:/Users/Mahmoud/Documents/maya/projects/default/cache/alembic/pSphere1.abc"
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "37067308-3760-4f8d-9aa2-cec9080b4b0b",
+            "node_id": "message_node",
+            "position": [
+                -463.08,
+                82.27999999999997
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "msg": "G:/test_scene.ma",
+                "out": "G:/test_scene.ma"
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "5b8498c1-a5eb-43ea-9542-f6070c3fa36e",
+            "node_id": "message_node",
+            "position": [
+                524.0,
+                -207.0
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "msg": "False",
+                "out": "True"
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "5fa8fb0c-f2ef-41ce-8db2-c1944993ef13",
+            "node_id": "string_split",
+            "position": [
+                -1725.0,
+                5.0
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "text": "C:/Users/Mahmoud/Documents/maya/2020/modules/ZivaVFX-Maya-1_9/demos/armFlexBones.abc",
+                "separator": "/",
+                "items": [
+                    "C:",
+                    "Users",
+                    "Mahmoud",
+                    "Documents",
+                    "maya",
+                    "2020",
+                    "modules",
+                    "ZivaVFX-Maya-1_9",
+                    "demos",
+                    "armFlexBones.abc"
+                ]
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "ea211cb4-8de4-4700-94ce-1936fab8ef98",
+            "node_id": "message_node",
+            "position": [
+                -2012.6484374999998,
+                -71.44140625
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "msg": "C:/Users/Mahmoud/Documents/maya/2020/modules/ZivaVFX-Maya-1_9/demos/armFlexBones.abc",
+                "out": "C:/Users/Mahmoud/Documents/maya/2020/modules/ZivaVFX-Maya-1_9/demos/armFlexBones.abc"
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "3057ade9-75e0-4a32-8d60-b6c68cee7ab6",
+            "node_id": "get_list_item",
+            "position": [
+                -1473.0,
+                4.0
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "list_name": "",
+                "list": [
+                    "C:",
+                    "Users",
+                    "Mahmoud",
+                    "Documents",
+                    "maya",
+                    "2020",
+                    "modules",
+                    "ZivaVFX-Maya-1_9",
+                    "demos",
+                    "armFlexBones.abc"
+                ],
+                "index": -1,
+                "item": "armFlexBones.abc",
+                "success": true
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "da3216f5-79ad-43a6-986e-2040b8c3a191",
+            "node_id": "string_split",
+            "position": [
+                -1193.0,
+                2.0
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "text": "armFlexBones.abc",
+                "separator": ".",
+                "items": [
+                    "armFlexBones",
+                    "abc"
+                ]
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "4f6b762c-cca0-4bb0-aed3-d3cc409a3f4e",
+            "node_id": "get_list_item",
+            "position": [
+                -933.0,
+                -3.0
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "list_name": "",
+                "list": [
+                    "armFlexBones",
+                    "abc"
+                ],
+                "index": 0,
+                "item": "armFlexBones",
+                "success": true
+            },
+            "state": "idle",
+            "bypassed": false
+        }
+    ],
+    "connections": [
+        {
+            "id": "f9dcbb53-47a1-4503-8474-12d57e4f0a8a",
+            "from_node": "79943cda-f7d2-47b2-a598-184a52b3a6ed",
+            "from_port": "actions_out",
+            "to_node": "f60e2b32-2a22-4c0f-9137-624ea64ef733",
+            "to_port": "actions",
+            "is_exec": false
+        },
+        {
+            "id": "83028a05-42ea-42d6-90f6-a11b846a550a",
+            "from_node": "79943cda-f7d2-47b2-a598-184a52b3a6ed",
+            "from_port": "exec_out",
+            "to_node": "f60e2b32-2a22-4c0f-9137-624ea64ef733",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "4797647a-b271-455d-b48a-679e492e64ca",
+            "from_node": "9ea4f673-0544-4f18-a3af-2d3b2a4099d1",
+            "from_port": "exec_out",
+            "to_node": "b4e11255-86b7-4551-8d14-5a068b8cac6e",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "4ff5eb3d-95ba-4282-8fd7-f900dc17c5d0",
+            "from_node": "b4e11255-86b7-4551-8d14-5a068b8cac6e",
+            "from_port": "exec_out",
+            "to_node": "79943cda-f7d2-47b2-a598-184a52b3a6ed",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "7aa176cd-c92c-4083-8e0b-547516566477",
+            "from_node": "9ea4f673-0544-4f18-a3af-2d3b2a4099d1",
+            "from_port": "actions_out",
+            "to_node": "b4e11255-86b7-4551-8d14-5a068b8cac6e",
+            "to_port": "actions_in",
+            "is_exec": false
+        },
+        {
+            "id": "5eb21151-7d09-4d59-b654-290d3693550e",
+            "from_node": "b4e11255-86b7-4551-8d14-5a068b8cac6e",
+            "from_port": "actions_out",
+            "to_node": "79943cda-f7d2-47b2-a598-184a52b3a6ed",
+            "to_port": "actions_in",
+            "is_exec": false
+        },
+        {
+            "id": "b3b7e47b-3805-4b50-805c-fe7070447832",
+            "from_node": "37067308-3760-4f8d-9aa2-cec9080b4b0b",
+            "from_port": "out",
+            "to_node": "79943cda-f7d2-47b2-a598-184a52b3a6ed",
+            "to_port": "save_scene_path",
+            "is_exec": false
+        },
+        {
+            "id": "c7810771-f465-4e14-8758-45937529518f",
+            "from_node": "f60e2b32-2a22-4c0f-9137-624ea64ef733",
+            "from_port": "exec_out",
+            "to_node": "5b8498c1-a5eb-43ea-9542-f6070c3fa36e",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "d733c2dc-e2d8-4e76-b2bb-325c3e34ae83",
+            "from_node": "f60e2b32-2a22-4c0f-9137-624ea64ef733",
+            "from_port": "success",
+            "to_node": "5b8498c1-a5eb-43ea-9542-f6070c3fa36e",
+            "to_port": "msg",
+            "is_exec": false
+        },
+        {
+            "id": "e1657e56-172a-4c66-abba-11135c2cb0ec",
+            "from_node": "ea211cb4-8de4-4700-94ce-1936fab8ef98",
+            "from_port": "exec_out",
+            "to_node": "5fa8fb0c-f2ef-41ce-8db2-c1944993ef13",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "db9708b1-0804-4ab2-a1c7-c8bcc4d870a5",
+            "from_node": "ea211cb4-8de4-4700-94ce-1936fab8ef98",
+            "from_port": "out",
+            "to_node": "5fa8fb0c-f2ef-41ce-8db2-c1944993ef13",
+            "to_port": "text",
+            "is_exec": false
+        },
+        {
+            "id": "b247810e-9ac1-4918-b22c-e1bd454a7e6f",
+            "from_node": "5fa8fb0c-f2ef-41ce-8db2-c1944993ef13",
+            "from_port": "items",
+            "to_node": "3057ade9-75e0-4a32-8d60-b6c68cee7ab6",
+            "to_port": "list",
+            "is_exec": false
+        },
+        {
+            "id": "24e5b2f1-2d33-49f6-bc4c-db6013ad4922",
+            "from_node": "5fa8fb0c-f2ef-41ce-8db2-c1944993ef13",
+            "from_port": "exec_out",
+            "to_node": "3057ade9-75e0-4a32-8d60-b6c68cee7ab6",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "e8d85d0b-b7d8-45ac-a7e9-75b6d1111020",
+            "from_node": "3057ade9-75e0-4a32-8d60-b6c68cee7ab6",
+            "from_port": "item",
+            "to_node": "da3216f5-79ad-43a6-986e-2040b8c3a191",
+            "to_port": "text",
+            "is_exec": false
+        },
+        {
+            "id": "b150eb81-5239-4748-a3e5-28ac0760ad6d",
+            "from_node": "3057ade9-75e0-4a32-8d60-b6c68cee7ab6",
+            "from_port": "exec_out",
+            "to_node": "da3216f5-79ad-43a6-986e-2040b8c3a191",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "e6f9db5f-f951-4b79-b12c-6882f2c3e851",
+            "from_node": "da3216f5-79ad-43a6-986e-2040b8c3a191",
+            "from_port": "items",
+            "to_node": "4f6b762c-cca0-4bb0-aed3-d3cc409a3f4e",
+            "to_port": "list",
+            "is_exec": false
+        },
+        {
+            "id": "92026f9e-ccc6-4cca-b601-4a1f4b1393fd",
+            "from_node": "da3216f5-79ad-43a6-986e-2040b8c3a191",
+            "from_port": "exec_out",
+            "to_node": "4f6b762c-cca0-4bb0-aed3-d3cc409a3f4e",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "cec55fa9-6764-4982-bda0-1d3864d28b11",
+            "from_node": "ea211cb4-8de4-4700-94ce-1936fab8ef98",
+            "from_port": "out",
+            "to_node": "b4e11255-86b7-4551-8d14-5a068b8cac6e",
+            "to_port": "abc_path",
+            "is_exec": false
+        },
+        {
+            "id": "29b101cf-a9c8-43a9-9eda-31ebf5b8e2a3",
+            "from_node": "4f6b762c-cca0-4bb0-aed3-d3cc409a3f4e",
+            "from_port": "item",
+            "to_node": "b4e11255-86b7-4551-8d14-5a068b8cac6e",
+            "to_port": "namespace",
+            "is_exec": false
+        }
+    ],
+    "sticky_notes": [],
+    "backdrops": [],
+    "metadata": {}
+}

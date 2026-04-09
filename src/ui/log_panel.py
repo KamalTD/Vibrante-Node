@@ -1,8 +1,24 @@
-from PyQt5.QtWidgets import (QDockWidget, QTextEdit, QWidget, QVBoxLayout, QPushButton, 
-                             QHBoxLayout, QToolBar, QAction, QStyle, QLineEdit, QCheckBox,
-                             QLabel, QFrame, QComboBox)
-from PyQt5.QtGui import QTextCursor, QTextCharFormat, QColor, QFont
-from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
+from src.utils.qt_compat import QtWidgets, QtGui, QtCore, Signal, Slot
+
+QDockWidget = QtWidgets.QDockWidget
+QTextEdit = QtWidgets.QTextEdit
+QWidget = QtWidgets.QWidget
+QVBoxLayout = QtWidgets.QVBoxLayout
+QPushButton = QtWidgets.QPushButton
+QHBoxLayout = QtWidgets.QHBoxLayout
+QToolBar = QtWidgets.QToolBar
+QAction = QtWidgets.QAction
+QStyle = QtWidgets.QStyle
+QLineEdit = QtWidgets.QLineEdit
+QCheckBox = QtWidgets.QCheckBox
+QLabel = QtWidgets.QLabel
+QFrame = QtWidgets.QFrame
+QComboBox = QtWidgets.QComboBox
+QTextCursor = QtGui.QTextCursor
+QTextCharFormat = QtGui.QTextCharFormat
+QColor = QtGui.QColor
+QFont = QtGui.QFont
+Qt = QtCore.Qt
 from dataclasses import dataclass
 from typing import Optional
 import re
@@ -17,7 +33,7 @@ class LogEntry:
 
 class LogPanel(QDockWidget):
     # Signal to allow thread-safe logging from background threads
-    log_signal = pyqtSignal(str, str)
+    log_signal = Signal(str, str)
 
     def __init__(self, parent=None):
         super().__init__("Event Log", parent)
@@ -83,14 +99,27 @@ class LogPanel(QDockWidget):
         sep2 = QFrame()
         sep2.setFrameShape(QFrame.VLine)
         filter_layout.addWidget(sep2)
-        
+
+        # Silent Mode toggle
+        self.silent_mode = QCheckBox("Silent Mode")
+        self.silent_mode.setToolTip("Show only errors and warnings, hide info/execution/output messages")
+        self.silent_mode.setChecked(False)
+        self.silent_mode.stateChanged.connect(self._toggle_silent_mode)
+        filter_layout.addWidget(self.silent_mode)
+
+        # Separator
+        sep3 = QFrame()
+        sep3.setFrameShape(QFrame.VLine)
+        filter_layout.addWidget(sep3)
+
         # Clear button
         self.clear_btn = QPushButton("Clear")
         self.clear_btn.setMaximumWidth(60)
         self.clear_btn.clicked.connect(self.clear)
         filter_layout.addWidget(self.clear_btn)
-        
+
         filter_layout.addStretch()
+
         layout.addWidget(filter_container)
         
         # === Log Area ===
@@ -103,7 +132,7 @@ class LogPanel(QDockWidget):
         
         layout.addWidget(self.log_area)
         self.setWidget(container)
-        
+
         # Connect signal to the internal handler
         self.log_signal.connect(self._handle_log)
         
@@ -179,12 +208,16 @@ class LogPanel(QDockWidget):
         else:
             return "info"
 
-    @pyqtSlot(str, str)
+    @Slot(str, str)
     def _handle_log(self, message: str, level: str):
         """Store entry and update display."""
+        # Silent mode fast path: skip all processing for non-error/warning messages
+        if self.silent_mode.isChecked() and level not in ("error", "warning"):
+            return
+
         node_name = self._extract_node_name(message)
         entry_type = self._determine_entry_type(message, level)
-        
+
         entry = LogEntry(
             message=message,
             level=level,
@@ -192,7 +225,7 @@ class LogPanel(QDockWidget):
             entry_type=entry_type
         )
         self._entries.append(entry)
-        
+
         # Check if entry passes current filters before adding
         if self._entry_passes_filter(entry):
             self._append_entry_to_display(entry)
@@ -259,4 +292,23 @@ class LogPanel(QDockWidget):
         """Clear all log entries."""
         self._entries.clear()
         self.log_area.clear()
+
+    def _toggle_silent_mode(self, state):
+        """Toggle silent mode: when active, disable and uncheck Info, Execution, Outputs.
+           When deactivated, re-enable and re-check them.
+        """
+        is_silent = state == Qt.Checked
+        if is_silent:
+            self.filter_info.setChecked(False)
+            self.filter_exec.setChecked(False)
+            self.filter_output.setChecked(False)
+        else:
+            self.filter_info.setChecked(True)
+            self.filter_exec.setChecked(True)
+            self.filter_output.setChecked(True)
+
+        self.filter_info.setEnabled(not is_silent)
+        self.filter_exec.setEnabled(not is_silent)
+        self.filter_output.setEnabled(not is_silent)
+        self._apply_filters()
 

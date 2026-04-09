@@ -1,0 +1,27 @@
+{
+    "node_id": "blender_action_set_render_settings",
+    "name": "Blender Action: Set Render Settings",
+    "description": "Creates a Blender action to configure render settings: engine (CYCLES, BLENDER_EEVEE, BLENDER_EEVEE_NEXT, BLENDER_WORKBENCH), resolution, samples, output path, file format, frame range, and GPU toggle.",
+    "category": "DCCs",
+    "icon_path": "icons/blender_icon.png",
+    "use_exec": true,
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "actions_in", "type": "list", "default": [] },
+        { "name": "render_engine", "type": "string", "widget_type": "dropdown", "options": ["CYCLES", "BLENDER_EEVEE", "BLENDER_EEVEE_NEXT", "BLENDER_WORKBENCH"], "default": "CYCLES" },
+        { "name": "resolution_x", "type": "int", "widget_type": "int", "default": 1920 },
+        { "name": "resolution_y", "type": "int", "widget_type": "int", "default": 1080 },
+        { "name": "resolution_percentage", "type": "int", "widget_type": "int", "default": 100 },
+        { "name": "samples", "type": "int", "widget_type": "int", "default": 128 },
+        { "name": "use_gpu", "type": "bool", "widget_type": "checkbox", "default": false },
+        { "name": "output_path", "type": "string", "widget_type": "text", "default": "" },
+        { "name": "file_format", "type": "string", "widget_type": "dropdown", "options": ["PNG", "JPEG", "OPEN_EXR", "OPEN_EXR_MULTILAYER", "TIFF", "BMP"], "default": "PNG" },
+        { "name": "frame_start", "type": "int", "widget_type": "int", "default": 1 },
+        { "name": "frame_end", "type": "int", "widget_type": "int", "default": 100 }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "actions_out", "type": "list" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    actions_in = inputs.get('actions_in') or []\n    if not isinstance(actions_in, list):\n        actions_in = [actions_in]\n\n    def _get(key, default):\n        v = inputs.get(key)\n        return v if v is not None else self.get_parameter(key, default)\n\n    action = {\n        'type': 'set_render_settings',\n        'render_engine': _get('render_engine', 'CYCLES'),\n        'resolution_x': int(_get('resolution_x', 1920)),\n        'resolution_y': int(_get('resolution_y', 1080)),\n        'resolution_percentage': int(_get('resolution_percentage', 100)),\n        'samples': int(_get('samples', 128)),\n        'use_gpu': bool(_get('use_gpu', False)),\n        'output_path': _get('output_path', ''),\n        'file_format': _get('file_format', 'PNG'),\n        'frame_start': int(_get('frame_start', 1)),\n        'frame_end': int(_get('frame_end', 100)),\n    }\n    actions_out = list(actions_in) + [action]\n    self.log_info(f'Added set_render_settings action ({action[\"render_engine\"]} {action[\"resolution_x\"]}x{action[\"resolution_y\"]} {action[\"samples\"]}spp)')\n    await self.set_output('actions_out', actions_out)\n    await self.set_output('exec_out', True)\n    return {'actions_out': actions_out}"
+}

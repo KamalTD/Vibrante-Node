@@ -23,7 +23,7 @@ Every custom node must be a class inheriting from `BaseNode`.
 These are typically called in the `__init__` method of your node.
 
 ### `self.add_input(name, data_type="any", widget_type=None, options=None)`
-- **`widget_type`**: Options are `"text"`, `"text_area"`, `"int"`, `"float"`, `"bool"`, `"dropdown"`, `"slider"`, `"file"`.
+- **`widget_type`**: Options are `"text"`, `"text_area"`, `"int"`, `"float"`, `"bool"`, `"checkbox"`, `"dropdown"`, `"slider"`, `"file"`, `"file_save"` (Save File dialog — v1.5.0).
 - **`options`**: A list of strings used only for the `"dropdown"` widget.
 
 ### `self.add_output(name, data_type="any")`
@@ -31,6 +31,9 @@ These are typically called in the `__init__` method of your node.
 
 ### `self.add_parameter(name, type, default=None)`
 - Defines internal state variables not necessarily linked to a port.
+
+### `self.set_parameter(name, value)` (v1.4.0)
+- Programmatically sets a port or parameter value. For dropdown ports, passing a list updates the options and selects the first item. Safe to call inside `__init__`.
 
 ---
 
@@ -102,6 +105,6 @@ async def execute(self, inputs):
 
 - **`python_code` parameter**: Nodes created via the Node Builder may include a `python_code` parameter which contains the node's execute/on_parameter_changed logic as text. When the workflow is loaded, the engine compiles this `python_code` into a dynamic node class. Ensure your `python_code` defines an `execute(self, inputs)` function or assigns to `result` when using the `python_script` node.
 
-- **In-UI Script Editor**: For nodes that expose `python_code` (e.g., `python_script`), use the `Edit Script` button to open the code editor. Changes are saved into the node's parameter map so they persist with the workflow.
+- **In-UI Script Editor**: For nodes that expose `python_code` (e.g., `python_script`, `maya_action_custom`, `houdini_action_custom`), use the `Edit Script` button to open the code editor. Changes are saved into the node's parameter map so they persist with the workflow. (v1.5.0: custom action nodes also support this button.)
 
 - **Gemini Support**: The Node Builder can optionally use Gemini to suggest code snippets and prompt templates while authoring node logic. Gemini integration is provided as a helper — always review generated code for correctness and safety before executing in production.

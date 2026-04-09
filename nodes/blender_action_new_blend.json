@@ -1,0 +1,18 @@
+{
+    "node_id": "blender_action_new_blend",
+    "name": "Blender Action: New Blend",
+    "description": "Creates a Blender action to reset the scene to a new empty file (bpy.ops.wm.read_factory_settings). Chain action nodes via actions_in/actions_out.",
+    "category": "DCCs",
+    "icon_path": "icons/blender_icon.png",
+    "use_exec": true,
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "actions_in", "type": "list", "default": [] },
+        { "name": "use_empty", "type": "bool", "widget_type": "checkbox", "default": false }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "actions_out", "type": "list" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    actions_in = inputs.get('actions_in') or []\n    if not isinstance(actions_in, list):\n        actions_in = [actions_in]\n    use_empty = inputs.get('use_empty')\n    if use_empty is None:\n        use_empty = self.get_parameter('use_empty', False)\n    action = {'type': 'new_blend', 'use_empty': bool(use_empty)}\n    actions_out = list(actions_in) + [action]\n    self.log_info('Added new_blend action')\n    await self.set_output('actions_out', actions_out)\n    await self.set_output('exec_out', True)\n    return {'actions_out': actions_out}"
+}

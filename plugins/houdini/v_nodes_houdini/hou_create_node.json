@@ -1,0 +1,18 @@
+{
+    "node_id": "hou_create_node",
+    "name": "Hou Create Node",
+    "description": "Create a new node in the live Houdini session. Specify the parent path (e.g. /obj), node type (e.g. geo, cam, null), and optional name.",
+    "category": "Houdini",
+    "icon_path": "icons/plus.svg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "parent", "type": "string", "widget_type": "text", "default": "/obj" },
+        { "name": "node_type", "type": "string", "widget_type": "text", "default": "geo" },
+        { "name": "name", "type": "string", "widget_type": "text", "default": "" }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "node_path", "type": "string" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    from src.utils.hou_bridge import get_bridge\n\n    parent = inputs.get('parent') or self.get_parameter('parent', '/obj')\n    node_type = inputs.get('node_type') or self.get_parameter('node_type', 'geo')\n    name = inputs.get('name') or self.get_parameter('name', '')\n\n    try:\n        bridge = get_bridge()\n        result = bridge.create_node(parent, node_type, name)\n        path = result['path']\n        self.log_info(f'Created Houdini node: {path} (type: {result[\"type\"]})')\n        await self.set_output('node_path', path)\n    except Exception as e:\n        self.log_error(f'Failed to create node: {e}')\n        await self.set_output('node_path', '')\n\n    await self.set_output('exec_out', True)\n    return {'node_path': self.get_parameter('node_path', '')}"
+}

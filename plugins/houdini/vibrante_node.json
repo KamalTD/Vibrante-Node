@@ -1,0 +1,12 @@
+{
+    "recommends": "houdini_version >= '20.5'",
+    "env": [
+        {
+            "VIBRANTE_NODE_APP": "<VIBRANTE NODE DIR>"
+        },
+        {
+            "VIBRANTE_PYTHON_EXE": "<PYTHON EXE PATH>"
+        }
+    ],
+    "path": "$VIBRANTE_NODE_APP/plugins/houdini/houdini"
+}

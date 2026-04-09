@@ -1,6 +1,12 @@
-from PyQt5.QtWidgets import QGraphicsPathItem, QGraphicsItem
-from PyQt5.QtCore import Qt, QPointF
-from PyQt5.QtGui import QPainterPath, QPen, QColor
+from src.utils.qt_compat import QtWidgets, QtCore, QtGui
+
+QGraphicsPathItem = QtWidgets.QGraphicsPathItem
+QGraphicsItem = QtWidgets.QGraphicsItem
+Qt = QtCore.Qt
+QPointF = QtCore.QPointF
+QPainterPath = QtGui.QPainterPath
+QPen = QtGui.QPen
+QColor = QtGui.QColor
 
 class Edge(QGraphicsPathItem):
     def __init__(self, from_port, to_port=None, parent=None):

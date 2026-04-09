@@ -22,6 +22,103 @@ The project focuses on flexibility, extensibility, and developer productivity, m
 
 ## 🌟 Latest Enhancements
 
+### 🎬 Headless DCC Execution, Chainable Action Nodes & Deadline Submitters (v1.5.0)
+
+Vibrante-Node can now drive **Autodesk Maya**, **SideFX Houdini**, and **Blender** in true headless batch mode, with a visual "Action Node" pattern for composing DCC pipelines. Deadline render-farm submitter nodes for all three DCCs are also included. Over 55 new nodes in this release.
+
+- **Maya Headless Executor**: Launches `mayapy.exe` with a structured JSON payload + embedded runner script. Version dropdown (2022/2024/2025/2026) auto-fills the path. Inject custom env vars via `.bat` or `Maya.env`. Outputs `success`, `stdout`, `stderr`, `exit_code`, `executed_actions`, and `skipped_actions`.
+- **Houdini Headless Executor**: Same design but for `hython.exe`. Version dropdown (20.5.445, 20.5.278, 20.0.547, 19.5.493) with editable path. Inject env via `.bat` or `houdini.env`. Optional `/obj` vs `/stage` (Solaris/LOPs) context on import nodes.
+- **Blender Headless Executor**: Same pattern for `blender --background`. Version dropdown (4.3/4.2/4.1/4.0/3.6). bpy-version-aware OBJ import/export (4.0+ vs 3.x API). Full per-action traceback capture.
+- **Chainable Action Nodes**: Each action node describes one DCC operation and exposes `actions_in`/`actions_out` list ports. Chain them left-to-right and plug the final list into the headless executor.
+- **Per-action validation**: Actions with missing required fields are skipped with clear reasons and the node fails early instead of silently misbehaving.
+- **Get Action Result helpers**: Extract a single action dict, its `info` field, or a best-guess file path from `executed_actions` without manual list filtering.
+
+#### Maya Action Nodes (22)
+Open/Save/New Scene, Scene Info, Set Frame Range, Import OBJ/FBX/Alembic, Export FBX/Alembic, Reference Scene, Reference Alembic, Import Camera, Export Camera Alembic, List References, Playblast, Bake Animation, Set Render Settings, Set AOVs (Arnold/Redshift), Create Render Layer (renderSetup), Assign Material, Custom Python.
+
+#### Houdini Action Nodes (14)
+Open/Save/New HIP, Scene Info, Set Frame Range, Import OBJ/FBX/Alembic (/obj or /stage), Import Camera, Export FBX/Alembic/Camera Alembic (ROP-based), Bake Animation, Custom Python.
+
+#### Blender Action Nodes (19)
+Open/Save/New Blend, Scene Info, Set Frame Range, Import OBJ/FBX/Alembic/glTF, Export OBJ/FBX/Alembic/glTF/USD, Set Render Settings (engine/res/samples/GPU/format), Render (still or animation), Bake Animation (NLA bake), Custom Python.
+
+#### Deadline Render Farm Submitters (DCCs category)
+- **Submit Maya**: job/plugin info temp files, renderer dropdown (Arnold/VRay/Redshift/RenderMan/Software/Hardware2), `JobID` parsed from output.
+- **Submit Houdini**: ROP-based submission, `houdini_version` auto-extracted from full build string.
+- **Submit Blender**: renderer dropdown (CYCLES/EEVEE/EEVEE_NEXT/WORKBENCH), GPU toggle, output format.
+- **Job Status**: query `deadlinecommand -GetJobDetails`; optional `poll_until_done` mode with async polling and timeout.
+
+#### New UI: `file_save` Widget
+Export action nodes open a **Save File** dialog instead of Open. Add `"widget_type": "file_save"` to any string port.
+
+#### Safer Node Drop
+Node constructor failures during drag-and-drop are wrapped in try/except — they log an error instead of crashing the UI, and undo history is only pushed on successful spawn.
+
+#### Custom Action Script Editor
+The `Edit Script` button now works on `maya_action_custom`, `houdini_action_custom`, and `blender_action_custom`, letting users duplicate those nodes and write their own DCC actions. Reads/writes `python_code` via `get_parameter`/`set_parameter`.
+
+### 🛠️ Node Builder Fix & BaseNode Improvements (v1.4.0)
+
+- **Save & Register bug fix**: Node Builder no longer erases hand-written code when saving. `save_node()` now calls `_sync_code_to_ui()` (code → UI) instead of the reverse, making the editor the source of truth.
+- **`BaseNode.set_parameter()`**: New method handles dropdown ports correctly (list values update options and select first item). Fixes `AttributeError` crashes on nodes that called `set_parameter()` in `__init__`.
+- **Safer engine init**: `NetworkExecutor` wraps node instantiation in try/except and reports errors cleanly via `node_error` instead of crashing.
+- **New VFX pipeline nodes**: `Get_Project`, `Parse_Path`, `Test`. Category renamed `Trend_Pipeline` → `VFX_Pipeline`.
+- **Dark theme checkboxes**: QCheckBox widgets in Node Builder now themed (white label, dark indicator, green highlight).
+
+### 🧩 Houdini Geometry Nodes & AI Context (v1.3.0)
+
+- **New Houdini geometry nodes**: Color Curves, Edges to Curves, ABC Convert.
+- **AI Context fix**: Gemini now receives correct node-builder context.
+- **CLAUDE.md Developer Guide**: Houdini-bridge-specific guidance for AI-assisted node creation.
+
+### 🔥 SideFX Houdini Integration (v1.2.0)
+Full two-way integration with SideFX Houdini via a live command bridge:
+- **Dynamic API Support**: Call ANY Houdini Python API method directly through the bridge. No longer limited to fixed command sets.
+- **IntelliSense for Houdini**: Real-time auto-completion for `hou` module members in the Node Builder and node parameter widgets.
+- **19+ Houdini Nodes**: Including a flexible "Hou Run Python" node with auto-complete.
+- **Improved Error Handling**: Full tracebacks from Houdini are captured and displayed in the application console.
+- **Live Command Server**: A JSON-RPC command server runs inside Houdini, allowing real-time scene manipulation.
+
+### 🖱️ UI/UX & Workflow Enhancements (v1.2.0)
+- **Drag & Drop**: Seamlessly drag nodes from the library directly onto the canvas.
+- **Enhanced Network Boxes (Backdrops)**:
+    - **Fit to Nodes**: Automatically resize a backdrop to wrap all overlapping nodes.
+    - **Select Contained**: Instantly select all nodes inside a network box.
+    - **Restricted Move**: Move backdrops via the header area to allow standard rubber-band selection within the box body.
+- **Animated Ports**: Ports now scale up smoothly on hover and feature a "snap" effect when dragging wires near them.
+- **New Power-User Shortcuts**:
+    - `F5` / `Shift+F5`: Run or Stop the active workflow.
+    - `Ctrl+G`: Wrap selected nodes in a new Network Box.
+    - `Ctrl+B`: Toggle Bypass state for all selected nodes.
+
+### 🚫 Node Bypassing (v1.2.0)
+- **Visual Bypass**: Click the "B" button in the node header or press `Ctrl+B` to disable a node without deleting it.
+- **Smart Passthrough**: Bypassed nodes automatically pass their first data input to all outputs and propagate execution flow correctly.
+- **Persistence**: Bypass state is saved into and restored from workflow files.
+
+### 🐍 Refined Python Export (v1.2.0)
+The "Export Workflow as Python" engine has been significantly improved:
+- **Bypass Support**: Bypassed nodes are correctly handled in the exported script as pass-through comments.
+- **Branching Logic**: Full support for all execution pins, including `exec_false` and `exec_on_finished`.
+- **Nested Loop Fixes**: Resolved issues where certain flow patterns generated redundant nested loops.
+
+### 🖥️ Professional Python Code Editor (v1.1.0)
+
+The "Export Workflow as Python" dialog is now a full IDE-style code editor:
+- **Editable Code**: Full `CodeEditor` with line numbers, syntax highlighting, bracket matching, auto-completion, and live linting.
+- **Run & Debug**: Execute scripts directly with real-time stdout/stderr output and a Stop button.
+- **AI-Powered Fix**: Send errors to Google Gemini for automatic code correction with accept/reject workflow.
+- **Dracula Theme**: Consistent dark-themed toolbar, editor, output panel, and status bar.
+
+### 🔇 Event Log Silent Mode (v1.1.0)
+- **Silent Mode toggle** on the Event Log filter bar suppresses Info, Execution, and Output messages — showing only Errors and Warnings.
+- **Zero-overhead filtering**: Silent mode skips all log processing (regex, object creation, UI updates) for maximum execution speed.
+
+### ⚡ Execution Engine Optimizations (v1.1.0)
+- **Removed artificial delays**: Loop nodes (ForEach, WhileLoop, Sequence) no longer sleep between iterations — up to 150x faster for large loops.
+- **Indexed connection lookups**: O(1) dict lookups replace O(N) scans on every `set_output` call.
+- **Cached widget lookups**: Node widget resolution uses a dict cache instead of linear scan during execution.
+
 ### ⚡ Refined Flow Engine (v1.0.5)
 The execution engine has been significantly upgraded for power and reliability:
 - **Loop Execution Fixed:** Resolved a critical deadlock in `NetworkExecutor`, enabling smooth, nested flow processing for `For Loop` and `Loop Body` nodes.
@@ -93,9 +190,56 @@ Workflow data now flows in **real-time** across the canvas:
 
 ---
 
+## 🎬 Video Tutorials
+
+New to Vibrante-Node? The YouTube channel has step-by-step tutorials, feature walkthroughs, and workflow showcases.
+
+<p align="center">
+  <a href="https://www.youtube.com/@Vibrante-Node">
+    <img src="https://img.shields.io/badge/YouTube-@Vibrante--Node-FF0000?style=for-the-badge&logo=youtube&logoColor=white" alt="YouTube Channel">
+  </a>
+</p>
+
+### Introduction Tutorial
+
+If this is your first time, start here:
+
+**1. Install & Launch (2 min)**
+- Clone the repo, run `pip install -r requirements.txt`, launch with `python ./src/main.py`
+- The canvas opens with an empty workflow ready to build
+
+**2. Place Your First Nodes**
+- Open the **Node Library** panel on the left
+- Drag any node onto the canvas — try `Console Print` and `String Concat`
+- Or right-click the canvas → search for a node by name
+
+**3. Connect Nodes**
+- Hover over an output port until it highlights, then drag to an input port
+- Ports are color-coded by type — matching types snap together automatically
+- The white `exec_out` → `exec_in` ports define the execution order
+
+**4. Set Values & Run**
+- Click a node's widget (text box, number field) to set a value
+- Press `F5` or click **Run** in the toolbar to execute the workflow
+- Watch results appear in the **Event Log** panel
+
+**5. Save & Export**
+- `Ctrl+S` saves the workflow as a `.json` file — fully portable
+- **File → Export as Python** converts the entire workflow into a standalone Python script
+
+**6. Build Custom Nodes (AI-assisted)**
+- Open **Node Builder** from the toolbar
+- Type a description in the Gemini chat panel — the AI generates the node definition and code for you
+- Click **Apply** to add the node to your library instantly
+
+> 📺 Watch the full walkthrough: [youtube.com/@Vibrante-Node](https://www.youtube.com/@Vibrante-Node)
+
+---
+
 ## 📚 Documentation
 
 Detailed documentation is available for both users and developers:
+-   🎬 **[YouTube Channel](https://www.youtube.com/@Vibrante-Node)**: Video tutorials, feature walkthroughs, and workflow showcases.
 -   📖 **[User Guide](USER_GUIDE.md)**: How to use the interface and build workflows.
 -   🛠️ **[Node Builder API](NODE_BUILDER_API.md)**: In-depth guide for creating custom nodes.
 -   🤖 **[Automation API](AUTOMATION_API.md)**: Reference for Scripting Console automation.
@@ -108,31 +252,35 @@ Detailed documentation is available for both users and developers:
 
 ```text
 ├── examples/           # Automation scripts and custom node examples
-├── icons/              # UI icons (SVG format)
+├── icons/              # UI icons (SVG/PNG format)
 ├── nodes/              # Primary JSON definitions for custom nodes
 ├── node_examples/      # Pre-built node library for quick reference
+├── plugins/            # DCC integrations
+│   └── houdini/        # SideFX Houdini plugin
+│       ├── houdini/    # Houdini package files (menus, shelf, scripts)
+│       ├── v_nodes_houdini/  # Houdini-specific node definitions
+│       └── v_scripts_houdini/# Houdini-specific example scripts
 ├── src/                # Application source code
 │   ├── core/           # Engine, Registry, and Graph management
 │   ├── ui/             # PyQt5 components (Canvas, Panels, Node Widgets)
-│   ├── utils/          # Theming, Runtime, and Threading helpers
+│   ├── utils/          # Theming, Runtime, Qt compat, Houdini bridge
 │   └── main.py         # Application entry point
 ├── tests/              # Unit and integration tests
 ├── workflows/          # Saved pipeline files (.json)
 └── DOCUMENTATION.md    # Detailed technical documentation
+```
 
 ---
 
-## 🆕 New in this branch
+## 📋 Release History
 
-- **Python Script Node**: Add node `python_script` which runs user-provided Python held in the node's `python_code` parameter. Use the in-UI "Edit Script" button on the node to author and save scripts.
-- **While Loop Node**: Added `WhileLoopNode` (builtin) and `while_loop` JSON example workflows to support loop-based control flow within the graph.
-- **Utility Nodes**: Several list/dictionary/string helper nodes were added (`create_list`, `get_list_item`, `list_length`, `create_dictionary`, `get_dict_value`, `set_dict_value`, `concat`, `split`, `replace`, `lowercase`, `uppercase`, `string_length`).
-- **Engine Fix**: Runtime now applies workflow-saved parameters (such as `python_code`) to node instances before execution so authored scripts run when loading saved workflows.
-
-Branch: `feature/python-script-while-loop-nodes` — pushed to remote `origin`.
-
-If you want this change reflected in other branches or published docs, I can open a PR or update additional files.
-```
+- **[v1.5.0](RELEASE_v1.5.0.md) (Latest)** — Maya/Houdini/Blender Headless executors, chainable action-node system, 55+ new DCC action nodes (scene IO, cameras, Alembic/FBX/glTF/USD, render settings, AOVs, bake, playblast), Get Action Result helpers, Deadline render-farm submitters (Maya/Houdini/Blender + Job Status)
+- **[v1.4.0](RELEASE_v1.4.0.md)** — Node Builder Save & Register fix, BaseNode set_parameter, safer node init, VFX pipeline nodes
+- **[v1.3.0](RELEASE_v1.3.0.md)** — Houdini Geometry Nodes (Color Curves, Edges to Curves, ABC Convert), AI Context Fix, CLAUDE.md Developer Guide, YouTube Tutorials
+- **[v1.2.0](RELEASE_v1.2.0.md)** — Dynamic Houdini API, Node Bypassing, UI/UX Polish (Drag & Drop, Snapping, Shortcuts)
+- **[v1.1.5](RELEASE_v1.1.5.md)** — Houdini Live Integration, Command Bridge, 19 Houdini Nodes, App Icon
+- **[v1.1.0](RELEASE_v1.1.0.md)** — Professional Code Editor, Execution Optimizations, Event Log Silent Mode
+- **[v1.0.5](RELEASE_v1.0.5.md)** — Loop Execution & Flow Engine Refactor
 
 ---
 

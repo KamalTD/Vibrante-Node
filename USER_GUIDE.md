@@ -4,23 +4,40 @@ Welcome to Vibrante-Node! This guide will help you get started with building and
 
 ## 🕹️ Interface Basics
 
--   **Node Library (Left)**: Browse and search for nodes. Drag-and-drop or double-click to add them to the canvas.
+-   **Node Library (Left)**: Browse and search for nodes. **Drag-and-drop** or double-click to add them to the canvas.
 -   **Main Canvas (Center)**: Your workspace.
-    -   **Pan**: Middle-mouse button drag.
+    -   **Pan**: Middle-mouse button drag or `Space + Left Drag`.
     -   **Zoom**: Mouse wheel.
-    -   **Focus**: Press `F` to focus on selected nodes or the center of the graph.
-    -   **Copy/Paste**: Press `Ctrl+C` to copy selected nodes and `Ctrl+V` to paste them at the cursor position.
+    -   **Focus**: Press `F` to focus on selected nodes.
+    -   **Copy/Paste**: Press `Ctrl+C` / `Ctrl+V`.
+    -   **Bypass**: Press `Ctrl+B` to toggle bypass on selected nodes.
+    -   **Group**: Press `Ctrl+G` to wrap selected nodes in a Network Box (Backdrop).
     -   **Delete**: Select an item and press the `Delete` key.
 -   **Event Log (Bottom)**: Real-time feedback on execution, outputs, and connection events.
 
 ## 🔗 Building a Workflow
 
-1.  **Add Nodes**: Use the library or right-click on the canvas to add nodes.
-2.  **Connect Ports**: Click and drag from an **Output Port** (right side) to an **Input Port** (left side).
-    -   *Live Sync*: When you connect two nodes, the data from the source is instantly pushed to the destination.
-3.  **Configure Data**: Interact with widgets (text boxes, sliders, etc.) directly on the node.
-    -   *Reactive Flow*: Destination widgets are disabled when connected but will **update live** as you change the source node's values.
-4.  **Run**: Click the **Play** icon in the toolbar or press `F5`.
+1.  **Add Nodes**: Drag from the library or right-click on the canvas.
+2.  **Connect Ports**: Click and drag from an **Output Port** to an **Input Port**.
+    -   **Snapping**: Wires will automatically snap to compatible ports when dragged nearby.
+    -   **Animations**: Ports scale up on hover to show they are ready for connection.
+3.  **Configure Data**: Interact with widgets directly on the node.
+4.  **Run**: Click the **Play** icon, press **F5**, or use the scripting console.
+
+## 🚫 Bypassing Nodes (v1.2.0)
+
+You can temporarily disable nodes without removing them from your workflow:
+-   **Toggle**: Click the **"B" button** in the top-right corner of any node, or press `Ctrl+B` with nodes selected.
+-   **Behavior**: Bypassed nodes turn semi-transparent. They skip their internal logic and instead pass the data from their **first input** directly to all outputs. Execution flow (`exec`) continues through the node normally.
+
+## 📦 Network Boxes (Backdrops)
+
+Organize your graph using Network Boxes:
+-   **Create**: Right-click > Add Network Box, or select nodes and press `Ctrl+G`.
+-   **Interact**: Move the box by dragging its **Title Bar**. Dragging the body allows you to use rubber-band selection for nodes inside.
+-   **Context Menu**: Right-click a box to:
+    -   **Fit to Contained Nodes**: Automatically resize the box to wrap all overlapping nodes.
+    -   **Select Contained Nodes**: Select everything inside the box.
 
 ## ⚙️ Advanced Execution Flow (v1.0.5+)
 
@@ -64,9 +81,146 @@ Vibrante-Node allows you to create your own nodes with custom Python logic:
 
 You can switch between **Dark** and **Light** modes at any time using the **Themes** menu. Themes apply globally.
 
+## 🖥️ Python Code Editor (Export)
+
+Export your workflow as Python and edit, run, and debug it in a professional IDE-style editor:
+
+1.  **Export**: Go to **File > Export Workflow as Python** (or `Ctrl+Shift+E`).
+2.  **Edit**: The generated code is fully editable with syntax highlighting, auto-completion, bracket matching, and live syntax linting.
+3.  **Run**: Press **F5** or click the **Run** button. See stdout/stderr output in real-time in the **Output** panel.
+4.  **Stop**: Click **Stop** to kill a running script.
+5.  **Fix with AI**: If your code has errors, click **Fix with AI** to send the code and error to Google Gemini. Review the suggested fix and accept or reject it.
+6.  **Save**: Press `Ctrl+S` to save the script to a `.py` file.
+
+## 🔇 Event Log Silent Mode
+
+The Event Log supports a **Silent Mode** toggle in the filter bar:
+-   When enabled, only **Errors** and **Warnings** are shown. Info, Execution, and Output messages are suppressed.
+-   Silent mode also skips all internal log processing for filtered messages, reducing overhead during execution.
+-   Toggle it on for faster execution when you only need to see errors.
+
+## 🔥 SideFX Houdini Live Integration (v1.2.0)
+
+Vibrante-Node can control a live SideFX Houdini session directly from your workflows via a JSON-RPC command bridge.
+
+### Setting Up the Houdini Plugin
+
+1. Locate the `plugins/houdini/vibrante_node.json` file in the project folder.
+2. Edit the JSON file and replace the placeholders:
+    - Change `<VIBRANTE NODE DIR>` to the absolute path of your Vibrante-Node folder.
+    - Change `<PYTHON EXE PATH>` to the absolute path of your Python executable (e.g., `C:\Python310\python.exe`).
+3. Copy the modified `vibrante_node.json` file into your Houdini **packages** directory:
+    - **Windows**: `C:\Users\<USER_NAME>\Documents\houdini20.5\packages\`
+    - **Linux/Mac**: `~/houdini20.5/packages/`
+    *(Note: If the `packages` folder doesn't exist, create it.)*
+4. Restart Houdini. You will now see a **Vibrante_Node** menu in the main menu bar and a **Vibrante** shelf tab.
+5. Click the **Launch Vibrante-Node** button on the shelf to start the app.
+
+### Using Houdini Bridge Nodes
+
+Once the command server is running inside Houdini, the **Houdini** category appears in the Node Library with 22 nodes (19 core + 3 geometry nodes added in v1.3.0):
+
+- **Scene Operations**: Query scene info, save .hip files, set timeline frame/range.
+- **Node Operations**: Create, delete, cook, layout, connect nodes. Set display/render flags.
+- **Parameter Operations**: Get/set single or multiple parameters, set expressions/keyframes.
+- **Code Execution**: Run arbitrary Python code inside Houdini's Python interpreter.
+- **Geometry (v1.3.0)**: Color Curves, Edges to Curves, ABC Convert.
+
+### Example Workflow: Create a Box in Houdini
+
+1. Add a **Hou Create Geo** node — set the name to `my_box`.
+2. Add a **Hou Create Node** — set parent to `/obj/my_box`, type to `box`, name to `box1`.
+3. Add a **Hou Set Parm** node — set node to `/obj/my_box/box1`, parm to `sizex`, value to `3`.
+4. Connect the exec flow pins and press **Play**.
+
+### Houdini Example Scripts
+
+Pre-built scripts in `plugins/houdini/v_scripts_houdini/`:
+- **`hou_scene_info.py`** — Query the current Houdini scene.
+- **`hou_create_box_demo.py`** — Create a Geometry container with a Box SOP.
+- **`hou_list_scene_nodes.py`** — List all children under `/obj`.
+
+---
+
+## 🎬 Headless DCC Execution (v1.5.0)
+
+For **batch processing** and **CI/render-farm** use cases, Vibrante-Node can launch Maya and Houdini as short-lived subprocesses without a GUI. This is separate from the live bridge: the headless executors spin up `mayapy.exe` / `hython.exe`, run a list of operations, and return structured results.
+
+### How It Works
+
+1. **Action Nodes** — Small chainable nodes (e.g. `Maya: Open Scene`, `Maya: Export Alembic`). Each exposes `actions_in` and `actions_out` list ports and appends one typed action dict to the list.
+2. **Chain them** — Connect action nodes left-to-right to build an operation sequence.
+3. **Headless Executor** — Plug the final `actions_out` into a `Maya Headless` or `Houdini Headless` node. It validates the list, launches the DCC subprocess, runs all actions, and returns results.
+4. **Get Action Result** — Use the `Maya: Get Action Result` or `Houdini: Get Action Result` helper to extract a single action's output dict, `info`, or file `path` without filtering `executed_actions` manually.
+
+### Maya Headless Node
+
+- **Version dropdown**: 2022 / 2024 / 2025 / 2026 — auto-fills the `mayapy.exe` path.
+- **Custom environment**: inject variables via a `.bat` file (`SET key=val`) or `Maya.env` file.
+- **Outputs**: `success`, `stdout`, `stderr`, `exit_code`, `executed_actions`, `skipped_actions`.
+
+**Available Maya action nodes**: Open/Save/New Scene, Scene Info, Set Frame Range, Import OBJ/FBX/Alembic, Export FBX/Alembic, Reference Scene/Alembic, Import Camera, Export Camera Alembic, List References, Playblast, Bake Animation, Set Render Settings, Set AOVs (Arnold/Redshift), Create Render Layer, Assign Material, Custom Python.
+
+### Houdini Headless Node
+
+- **Version dropdown**: 20.5.445 / 20.5.278 / 20.0.547 / 19.5.493 — auto-fills the `hython.exe` path.
+- **Custom environment**: inject variables via a `.bat` file or `houdini.env`.
+- **Import context**: choose `/obj` (classic SOP) or `/stage` (Solaris/LOPs) on import action nodes.
+- **Outputs**: same contract as Maya Headless.
+
+**Available Houdini action nodes**: Open/Save/New HIP, Scene Info, Set Frame Range, Import OBJ/FBX/Alembic, Import Camera, Export FBX/Alembic/Camera Alembic, Bake Animation, Custom Python.
+
+### Blender Headless Node
+
+- **Version dropdown**: 4.3 / 4.2 / 4.1 / 4.0 / 3.6 — auto-fills the `blender.exe` path.
+- **Custom environment**: inject variables via a `.bat` file or `blender.env`.
+- **bpy-version-aware OBJ**: the runner automatically uses `wm.obj_import` on Blender 4.0+ and `import_scene.obj` on 3.x.
+- **Outputs**: same contract as Maya/Houdini Headless.
+
+**Available Blender action nodes**: Open/Save/New Blend, Scene Info, Set Frame Range, Import OBJ/FBX/Alembic/glTF, Export OBJ/FBX/Alembic/glTF/USD, Set Render Settings (engine/resolution/samples/GPU/format), Render (still or animation), Bake Animation (NLA bake with visual keying), Custom Python.
+
+### Custom Python Action Nodes
+
+`maya_action_custom`, `houdini_action_custom`, and `blender_action_custom` each have an **Edit Script** button. Click it to open the code editor and write your own DCC action. The runner exposes `cmds` (Maya), `hou` (Houdini), or `bpy` (Blender), the action dict, `os`, and `json` to your script.
+
+### Example: Export an Alembic from Maya Headless
+
+1. Add **Maya: Open Scene** → set `scene_path` to your `.ma` file.
+2. Add **Maya: Export Alembic** → set `abc_path` to the output `.abc` path and frame range.
+3. Add **Maya Headless** → set the version dropdown; connect `actions_out` from step 2 to `actions`.
+4. Press **F5**. Check `success` and `executed_actions` outputs in the Event Log.
+
+---
+
+## 🎯 Deadline Render Farm Submission
+
+Vibrante-Node can submit render jobs directly to a **Deadline** render farm via `deadlinecommand`. All Deadline nodes are in the **DCCs** category.
+
+### Submitter Nodes
+
+| Node | DCC | Renderers |
+|------|-----|-----------|
+| `Deadline: Submit Maya` | Maya | Arnold, VRay, Redshift, RenderMan, Software, Hardware2 |
+| `Deadline: Submit Houdini` | Houdini | Any ROP path |
+| `Deadline: Submit Blender` | Blender | CYCLES, EEVEE, EEVEE_NEXT, WORKBENCH |
+
+All submitters share the same core inputs: scene file, job name, batch name, pool, group, priority, chunk size, frame range, and an `extra_job_args` text area for any additional Deadline Job Info key=value lines. Outputs: `success`, `job_id`, `stdout`, `stderr`.
+
+### Job Status Node
+
+`Deadline: Job Status` queries `deadlinecommand -GetJobDetails` and returns `status`, `progress`, `tasks_total`, `tasks_complete`, `tasks_failed`, `is_complete`, `is_failed`, and `details`.
+
+Enable **poll_until_done** to have the node poll every N seconds until the job finishes or a timeout is reached — useful for waiting on a job before triggering downstream steps.
+
+### Example: Submit and Wait
+
+1. Add **Deadline: Submit Maya** → fill in the scene file, renderer, and frame range.
+2. Add **Deadline: Job Status** → connect `job_id` output → `job_id` input; enable `poll_until_done`.
+3. Connect exec flow. Press **F5**. The workflow blocks until the job completes.
+
+---
+
 ## 🪵 Troubleshooting
--
-## 🆕 Scripting Node & Node Builder Gemini
 
 - **Python Script Node (`python_script`)**: Place the node on the canvas and click the `Edit Script` button to author Python code. The script executes with access to a local `inputs` dictionary containing current input values and `params` for node parameters. Assign your output to `result` to publish it to the node's `result` output port.
 
@@ -84,7 +238,7 @@ else:
 
 - **Gemini Assistance in Node Builder**: When creating node logic in the Node Builder you can enable Gemini assistance to generate starter code, prompt templates, or example snippets. Gemini integration is optional and configurable in the app settings; it is intended to speed up authoring but always validate generated code before running.
 
-## 🪵 Troubleshooting
--   **Node is Red**: The node failed during execution. Check the **Event Log** for the error.
--   **Widgets are Disabled**: This is normal! Widgets are disabled when they are receiving data from another node via a wire.
--   **Crashes**: If the app closes, check `crash.log` in the project folder for details.
+- **Node is Red**: The node failed during execution. Check the **Event Log** for the error.
+- **Widgets are Disabled**: This is normal — widgets are disabled when they are receiving data from another node via a wire.
+- **Crashes**: If the app closes, check `crash.log` in the project folder for details.
+- **Headless DCC fails immediately**: Check that the `mayapy.exe` / `hython.exe` path is correct for your installed version. Use the version dropdown to auto-fill, or set the path manually. Check `stderr` output for missing plugins or environment issues.

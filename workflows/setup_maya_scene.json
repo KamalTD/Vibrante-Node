@@ -1,0 +1,352 @@
+{
+    "nodes": [
+        {
+            "instance_id": "b5c03044-1be3-46f1-afb2-e1c24cb64d6f",
+            "node_id": "maya_action_set_render_settings",
+            "position": [
+                -601.0,
+                -233.0
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "actions_in": [],
+                "renderer": "arnold",
+                "width": 1920,
+                "height": 1080,
+                "frame_start": 1,
+                "frame_end": 100,
+                "image_format": "exr",
+                "file_prefix": "",
+                "actions_out": [
+                    {
+                        "type": "new_scene"
+                    },
+                    {
+                        "type": "set_render_settings",
+                        "renderer": "arnold",
+                        "width": 1920,
+                        "height": 1080,
+                        "frame_start": 1,
+                        "frame_end": 100,
+                        "image_format": "exr",
+                        "file_prefix": ""
+                    }
+                ]
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "5350a52c-9f7a-48e7-b6be-da33eb86a2e3",
+            "node_id": "maya_action_create_render_layer",
+            "position": [
+                -6.0,
+                -181.0
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "actions_in": [],
+                "layer_name": "Kamal",
+                "members": "",
+                "make_current": true,
+                "actions_out": [
+                    {
+                        "type": "new_scene"
+                    },
+                    {
+                        "type": "set_render_settings",
+                        "renderer": "arnold",
+                        "width": 1920,
+                        "height": 1080,
+                        "frame_start": 1,
+                        "frame_end": 100,
+                        "image_format": "exr",
+                        "file_prefix": ""
+                    },
+                    {
+                        "type": "create_render_layer",
+                        "layer_name": "Kamal",
+                        "members": "",
+                        "make_current": true
+                    }
+                ]
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "1a8bb894-b581-4cc4-829a-3a292b4c22a3",
+            "node_id": "maya_action_set_aovs",
+            "position": [
+                280.0,
+                -183.0
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "actions_in": [],
+                "renderer": "arnold",
+                "aovs": "ID",
+                "actions_out": [
+                    {
+                        "type": "new_scene"
+                    },
+                    {
+                        "type": "set_render_settings",
+                        "renderer": "arnold",
+                        "width": 1920,
+                        "height": 1080,
+                        "frame_start": 1,
+                        "frame_end": 100,
+                        "image_format": "exr",
+                        "file_prefix": ""
+                    },
+                    {
+                        "type": "create_render_layer",
+                        "layer_name": "Kamal",
+                        "members": "",
+                        "make_current": true
+                    },
+                    {
+                        "type": "set_aovs",
+                        "renderer": "arnold",
+                        "aovs": "ID"
+                    }
+                ]
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "c8c8121e-f562-45b8-a02a-5ea4c1dbee1f",
+            "node_id": "variable_node",
+            "position": [
+                -311.0,
+                -21.0
+            ],
+            "parameters": {
+                "exec_in": null,
+                "type": "bool",
+                "value": "True",
+                "exec_out": true,
+                "out": true
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "6f2e8dbb-a364-43bf-8f03-906e18e8f76c",
+            "node_id": "maya_action_save_scene",
+            "position": [
+                596.0,
+                -179.0
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "actions_in": [],
+                "save_scene_path": "G:/test_fbx_maya03.ma",
+                "file_type": "mayaAscii",
+                "actions_out": [
+                    {
+                        "type": "new_scene"
+                    },
+                    {
+                        "type": "set_render_settings",
+                        "renderer": "arnold",
+                        "width": 1920,
+                        "height": 1080,
+                        "frame_start": 1,
+                        "frame_end": 100,
+                        "image_format": "exr",
+                        "file_prefix": ""
+                    },
+                    {
+                        "type": "create_render_layer",
+                        "layer_name": "Kamal",
+                        "members": "",
+                        "make_current": true
+                    },
+                    {
+                        "type": "set_aovs",
+                        "renderer": "arnold",
+                        "aovs": "ID"
+                    },
+                    {
+                        "type": "save_scene",
+                        "save_scene_path": "G:/test_fbx_maya03.ma",
+                        "file_type": "mayaAscii"
+                    }
+                ]
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "668ae51e-4770-405b-9c0a-a403ca6a74e5",
+            "node_id": "maya_headless",
+            "position": [
+                969.0,
+                -217.0
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "maya_version": "2024",
+                "mayapy.exe": "C:/Program Files/Autodesk/Maya2024/bin/mayapy.exe",
+                "bat_file": "",
+                "maya_env_file": "",
+                "scene_file": "",
+                "actions": [],
+                "success": false,
+                "stdout": "00:00:00   369MB         | log started Tue Apr  7 20:47:27 2026\n00:00:00   369MB         | Arnold 7.2.4.1 [1fee86c4] windows x86_64 clang-15.0.7 oiio-2.4.1 osl-1.12.9 vdb-7.1.1 adlsdk-7.4.2.47 clmhub-3.1.1.43 rlm-14.2.5 optix-6.6.0 2023/10/17 03:22:02\n00:00:00   369MB         | running on Kamal, pid=53272\n00:00:00   369MB         |  2 x Intel(R) Xeon(R) CPU X5650 @ 2.67GHz (12 cores, 12 logical) with 32751MB\n00:00:00   369MB         |  NVIDIA driver version 580.97 (Optix 60810)\n00:00:00   369MB         |  GPU 0: NVIDIA GeForce GTX 950 @ 1278MHz (compute 5.2) with 2047MB (197MB available) (NVLink:0)\n00:00:00   369MB         |  Windows 10 (version 10.0, build 19045)\n00:00:00   369MB         |  soft limit for open files changed from 512 to 2048\n00:00:00   369MB         |  \n00:00:00   369MB         | Installing system handler with mask 255\n00:00:02   526MB         | [metadata] loading metadata file: C:\\Program Files\\Autodesk\\Arnold\\maya2024\\bin\\arnold.mtd\n00:00:02   528MB         | [color_manager_ocio] default ocio.config found in C:\\Program Files\\Autodesk\\Arnold\\maya2024\\bin\\../ocio/configs/arnold/config.ocio\n00:00:02   528MB         | loading plugins from C:\\Program Files\\Autodesk\\Arnold\\maya2024\\bin\\..\\plugins ...\n00:00:02   529MB         |  alembic_proc.dll: alembic uses Arnold 7.2.4.1\n00:00:02   529MB         |  cryptomatte.dll: cryptomatte uses Arnold 7.2.4.1\n00:00:02   529MB         |  cryptomatte.dll: cryptomatte_filter uses Arnold 7.2.4.1\n00:00:02   529MB         |  cryptomatte.dll: cryptomatte_manifest_driver uses Arnold 7.2.4.1\n00:00:02   529MB         |  [metadata] loading metadata file: C:\\Program Files\\Autodesk\\Arnold\\maya2024\\bin\\..\\plugins\\cryptomatte.mtd\n00:00:02   541MB         |  usd_proc.dll: usd uses Arnold 7.2.4.1\n00:00:02   541MB         | loaded 5 plugins from 3 lib(s) in 0:00.10\n00:00:09   603MB         |  unloading 10 plugins\n00:00:09   603MB         |   closing alembic_proc.dll ...\n00:00:09   603MB         |   closing cryptomatte.dll ...\n00:00:09   603MB         |   closing usd_proc.dll ...\n00:00:09   603MB         |   closing hairPhysicalShader_shaders.dll ...\n00:00:09   603MB         |   closing lookdevkit_shaders.dll ...\n00:00:09   603MB         |   closing mtoa_shaders.dll ...\n00:00:09   603MB         |   closing renderSetup_shaders.dll ...\n00:00:09   603MB         |   closing xgenSpline_shaders.dll ...\n00:00:09   603MB         |   closing xgenSpline_procedural.dll ...\n00:00:09   603MB         |   closing xgen_procedural.dll ...\n00:00:09   603MB         |  unloading plugins done\n00:00:09   603MB         | Arnold shutdown\n",
+                "stderr": "",
+                "exit_code": 0,
+                "executed_actions": [
+                    {
+                        "type": "new_scene"
+                    },
+                    {
+                        "type": "set_render_settings",
+                        "renderer": "arnold",
+                        "width": 1920,
+                        "height": 1080,
+                        "frame_start": 1,
+                        "frame_end": 100,
+                        "image_format": "exr",
+                        "file_prefix": ""
+                    },
+                    {
+                        "type": "create_render_layer",
+                        "layer_name": "Kamal",
+                        "members": "",
+                        "make_current": true
+                    },
+                    {
+                        "type": "save_scene",
+                        "save_scene_path": "G:/test_fbx_maya03.ma",
+                        "file_type": "mayaAscii"
+                    }
+                ],
+                "skipped_actions": []
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "fe42f6de-080a-4168-acb5-b79147582613",
+            "node_id": "maya_action_new_scene",
+            "position": [
+                -942.5,
+                -218.75
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "actions_in": [],
+                "actions_out": [
+                    {
+                        "type": "new_scene"
+                    }
+                ]
+            },
+            "state": "idle",
+            "bypassed": false
+        }
+    ],
+    "connections": [
+        {
+            "id": "5e0eb124-4b43-4a5b-95b1-39fc844332a5",
+            "from_node": "b5c03044-1be3-46f1-afb2-e1c24cb64d6f",
+            "from_port": "exec_out",
+            "to_node": "5350a52c-9f7a-48e7-b6be-da33eb86a2e3",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "c93ad0e0-ddcc-46a6-9982-245e91ea4fd6",
+            "from_node": "b5c03044-1be3-46f1-afb2-e1c24cb64d6f",
+            "from_port": "actions_out",
+            "to_node": "5350a52c-9f7a-48e7-b6be-da33eb86a2e3",
+            "to_port": "actions_in",
+            "is_exec": false
+        },
+        {
+            "id": "7ddeb4b6-18d5-4cad-8c4b-5291880b06cb",
+            "from_node": "5350a52c-9f7a-48e7-b6be-da33eb86a2e3",
+            "from_port": "exec_out",
+            "to_node": "1a8bb894-b581-4cc4-829a-3a292b4c22a3",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "7ce78d68-b92d-4a4f-a64f-d4084828a221",
+            "from_node": "5350a52c-9f7a-48e7-b6be-da33eb86a2e3",
+            "from_port": "actions_out",
+            "to_node": "1a8bb894-b581-4cc4-829a-3a292b4c22a3",
+            "to_port": "actions_in",
+            "is_exec": false
+        },
+        {
+            "id": "b2b353b0-4f4e-4c65-893a-838b1e907af8",
+            "from_node": "c8c8121e-f562-45b8-a02a-5ea4c1dbee1f",
+            "from_port": "out",
+            "to_node": "5350a52c-9f7a-48e7-b6be-da33eb86a2e3",
+            "to_port": "make_current",
+            "is_exec": false
+        },
+        {
+            "id": "a2152ac0-3e9d-44e8-94ac-7e587c4a1276",
+            "from_node": "1a8bb894-b581-4cc4-829a-3a292b4c22a3",
+            "from_port": "exec_out",
+            "to_node": "6f2e8dbb-a364-43bf-8f03-906e18e8f76c",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "53bf1884-fa99-4cc9-b273-d2a399939eeb",
+            "from_node": "1a8bb894-b581-4cc4-829a-3a292b4c22a3",
+            "from_port": "actions_out",
+            "to_node": "6f2e8dbb-a364-43bf-8f03-906e18e8f76c",
+            "to_port": "actions_in",
+            "is_exec": false
+        },
+        {
+            "id": "0c186faf-748d-4be0-af64-b5a03949e0b6",
+            "from_node": "6f2e8dbb-a364-43bf-8f03-906e18e8f76c",
+            "from_port": "exec_out",
+            "to_node": "668ae51e-4770-405b-9c0a-a403ca6a74e5",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "91880f0f-4bd9-4a36-b237-3afa2bca618a",
+            "from_node": "6f2e8dbb-a364-43bf-8f03-906e18e8f76c",
+            "from_port": "actions_out",
+            "to_node": "668ae51e-4770-405b-9c0a-a403ca6a74e5",
+            "to_port": "actions",
+            "is_exec": false
+        },
+        {
+            "id": "0b8dbb2a-dbc3-4100-b470-1412aa5223be",
+            "from_node": "fe42f6de-080a-4168-acb5-b79147582613",
+            "from_port": "exec_out",
+            "to_node": "b5c03044-1be3-46f1-afb2-e1c24cb64d6f",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "8197f9cf-632d-496b-a1c2-909292fe1465",
+            "from_node": "fe42f6de-080a-4168-acb5-b79147582613",
+            "from_port": "actions_out",
+            "to_node": "b5c03044-1be3-46f1-afb2-e1c24cb64d6f",
+            "to_port": "actions_in",
+            "is_exec": false
+        }
+    ],
+    "sticky_notes": [],
+    "backdrops": [],
+    "metadata": {}
+}

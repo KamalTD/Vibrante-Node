@@ -1,0 +1,18 @@
+{
+    "node_id": "maya_action_save_scene",
+    "name": "Maya Action: Save Scene",
+    "description": "Creates a Maya action to save the current scene. Chain multiple action nodes together via actions_in/actions_out, then feed the final actions_out into a Maya Headless node.",
+    "category": "DCCs",
+    "icon_path": "icons/maya_icon.jpg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "actions_in", "type": "list", "default": [] },
+        { "name": "save_scene_path", "type": "string", "widget_type": "file_save", "default": "" },
+        { "name": "file_type", "type": "string", "widget_type": "dropdown", "options": ["mayaAscii", "mayaBinary"], "default": "mayaAscii" }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "actions_out", "type": "list" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    actions_in = inputs.get('actions_in') or []\n    if not isinstance(actions_in, list):\n        actions_in = [actions_in]\n\n    save_scene_path = inputs.get('save_scene_path') or self.get_parameter('save_scene_path', '')\n    file_type = inputs.get('file_type') or self.get_parameter('file_type', 'mayaAscii')\n\n    action = {\n        'type': 'save_scene',\n        'save_scene_path': save_scene_path,\n        'file_type': file_type\n    }\n\n    actions_out = list(actions_in) + [action]\n    self.log_info(f'Added save_scene action -> {save_scene_path} ({file_type})')\n\n    await self.set_output('actions_out', actions_out)\n    await self.set_output('exec_out', True)\n    return {'actions_out': actions_out}"
+}

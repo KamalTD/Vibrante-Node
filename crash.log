@@ -1,4 +1,7 @@
 Traceback (most recent call last):
-  File "E:\AI\Vibrante-Node\source\src\ui\code_editor.py", line 14, in paintEvent
-    def paintEvent(self, event):
-KeyboardInterrupt
+  File "G:\MyData\test_python\node_based_pipeline\node_based_app\src\ui\canvas\view.py", line 64, in dropEvent
+    scene.add_node_by_name(node_id, pos)
+  File "G:\MyData\test_python\node_based_pipeline\node_based_app\src\ui\canvas\scene.py", line 625, in add_node_by_name
+    node_definition = node_class()
+  File "<string>", line 14, in __init__
+AttributeError: 'Get_ProjectNode' object has no attribute 'set_parameter'

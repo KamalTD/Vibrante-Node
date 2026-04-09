@@ -5,7 +5,7 @@ from uuid import UUID, uuid4
 class PortModel(BaseModel):
     name: str
     type: str = "any"
-    widget_type: Optional[str] = None # 'text', 'int', 'float', 'bool', 'dropdown', 'slider', 'text_area'
+    widget_type: Optional[str] = None # 'text', 'int', 'float', 'bool', 'dropdown', 'slider', 'text_area', 'file', 'file_save'
     options: Optional[List[str]] = None # For dropdown
     default: Optional[Any] = None
 
@@ -40,6 +40,7 @@ class NodeInstanceModel(BaseModel):
     position: Tuple[float, float]
     parameters: Dict[str, Any] = Field(default_factory=dict)
     state: str = "idle"
+    bypassed: bool = False
 
 class ConnectionModel(BaseModel):
     id: UUID = Field(default_factory=uuid4)

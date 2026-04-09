@@ -1,6 +1,30 @@
-from PyQt5.QtWidgets import QGraphicsItem, QGraphicsRectItem, QGraphicsTextItem, QGraphicsProxyWidget, QLineEdit, QSpinBox, QDoubleSpinBox, QCheckBox, QLabel, QComboBox, QSlider, QTextEdit, QWidget, QHBoxLayout, QPushButton, QVBoxLayout
-from PyQt5.QtCore import Qt, QRectF
-from PyQt5.QtGui import QColor, QPen, QBrush, QPixmap, QPainterPath
+from src.utils.qt_compat import QtWidgets, QtCore, QtGui, exec_dialog
+
+QGraphicsItem = QtWidgets.QGraphicsItem
+QGraphicsRectItem = QtWidgets.QGraphicsRectItem
+QGraphicsTextItem = QtWidgets.QGraphicsTextItem
+QGraphicsProxyWidget = QtWidgets.QGraphicsProxyWidget
+QLineEdit = QtWidgets.QLineEdit
+QSpinBox = QtWidgets.QSpinBox
+QDoubleSpinBox = QtWidgets.QDoubleSpinBox
+QCheckBox = QtWidgets.QCheckBox
+QLabel = QtWidgets.QLabel
+QComboBox = QtWidgets.QComboBox
+QSlider = QtWidgets.QSlider
+QTextEdit = QtWidgets.QTextEdit
+QWidget = QtWidgets.QWidget
+QHBoxLayout = QtWidgets.QHBoxLayout
+QPushButton = QtWidgets.QPushButton
+QVBoxLayout = QtWidgets.QVBoxLayout
+
+Qt = QtCore.Qt
+QRectF = QtCore.QRectF
+
+QColor = QtGui.QColor
+QPen = QtGui.QPen
+QBrush = QtGui.QBrush
+QPixmap = QtGui.QPixmap
+QPainterPath = QtGui.QPainterPath
 from src.ui.port_widget import PortWidget
 from src.ui.script_editor import ScriptEditorDialog
 from src.utils.runtime import AsyncRuntime
@@ -25,8 +49,10 @@ class NodeWidget(QGraphicsItem):
         self.param_widgets = {} # name -> proxy_widget
         self.status = "idle" # idle, running, success, failed
         self.is_dark = True
+        self.bypassed = False
         self._is_propagating = False # Recursion guard
         
+        self.setToolTip("Bypass Node (Ctrl+B)")
         self._init_ui()
 
     def apply_theme(self, is_dark=True):
@@ -53,7 +79,6 @@ class NodeWidget(QGraphicsItem):
             if param_label:
                 param_label.setStyleSheet(f"color: {label_color}; font-size: 9px; font-weight: bold; background: transparent;")
             
-            from PyQt5.QtWidgets import QLineEdit, QSpinBox, QDoubleSpinBox, QCheckBox, QComboBox, QSlider, QTextEdit
             for w in container.findChildren((QLineEdit, QSpinBox, QDoubleSpinBox, QCheckBox, QComboBox, QSlider, QTextEdit)):
                 w.setStyleSheet(f"background-color: {bg_color}; color: {text_color_name}; border: 1px solid {border_color};")
         
@@ -146,7 +171,7 @@ class NodeWidget(QGraphicsItem):
 
         # If this is a python_script node, add an "Edit Script" button proxy
         try:
-            if getattr(self.node_definition, 'node_id', None) == 'python_script' and '_script_btn' not in self.param_widgets:
+            if getattr(self.node_definition, 'node_id', None) in ('python_script', 'maya_action_custom', 'houdini_action_custom') and '_script_btn' not in self.param_widgets:
                 proxy = QGraphicsProxyWidget(self)
                 container = QWidget()
                 lay = QVBoxLayout(container)
@@ -200,7 +225,7 @@ class NodeWidget(QGraphicsItem):
         min_width = 220
         content_width = 0
         if hasattr(self, 'title_text') and self.title_text:
-            content_width = max(content_width, self.title_text.boundingRect().width() + 40)
+            content_width = max(content_width, self.title_text.boundingRect().width() + 60) # Extra for bypass btn
         for proxy in self.param_widgets.values():
             w = proxy.widget()
             if w:
@@ -212,6 +237,9 @@ class NodeWidget(QGraphicsItem):
             content_width = max(content_width, w_row + 20)
         self.width = max(min_width, content_width)
         
+        # Bypass Button Position (Top Right)
+        self.bypass_rect = QRectF(self.width - 30, 5, 25, 25)
+
         # 2. Vertical Centering for params
         body_top = ports_bottom_y + 10
         body_bottom = self.height - 10
@@ -249,7 +277,7 @@ class NodeWidget(QGraphicsItem):
                     child.setEnabled(not is_connected)
 
     def _get_port_font(self):
-        from PyQt5.QtGui import QFont
+        QFont = QtGui.QFont
         f = QFont("Arial", 8)
         return f
 
@@ -271,9 +299,23 @@ class NodeWidget(QGraphicsItem):
             w.setText(str(val) if val is not None else "")
             w.textChanged.connect(lambda val: self._update_param(p_model.name, val))
         elif p_model.widget_type == 'text_area':
-            w = QTextEdit()
-            w.setAcceptRichText(False)
-            w.setMaximumHeight(60)
+            from src.ui.code_editor import CodeEditor
+            w = CodeEditor()
+            # HACK: Disable line numbers for small widget
+            w.lineNumberArea.hide()
+            w.setViewportMargins(0, 0, 0, 0)
+            w.setMaximumHeight(80)
+            w.setMinimumWidth(150)
+            
+            # Fetch Houdini completions if this is a Houdini node
+            if self.node_definition.category == "Houdini":
+                from src.utils.hou_bridge import is_available, get_bridge
+                if is_available():
+                    try:
+                        bridge = get_bridge()
+                        w.append_completer_list(bridge.get_completions())
+                    except: pass
+
             val = self.node_definition.parameters.get(p_model.name)
             w.setPlainText(str(val) if val is not None else "")
             w.textChanged.connect(lambda: self._update_param(p_model.name, w.toPlainText()))
@@ -313,7 +355,7 @@ class NodeWidget(QGraphicsItem):
             val = self.node_definition.parameters.get(p_model.name)
             w.setValue(int(val) if val is not None else 0)
             w.valueChanged.connect(lambda val: self._update_param(p_model.name, val))
-        elif p_model.widget_type == 'file':
+        elif p_model.widget_type in ('file', 'file_save'):
             w = QWidget()
             l = QHBoxLayout(w)
             l.setContentsMargins(0, 0, 0, 0)
@@ -323,10 +365,14 @@ class NodeWidget(QGraphicsItem):
             path_edit.setText(str(val) if val is not None else "")
             btn = QPushButton("...")
             btn.setFixedWidth(25)
-            def select_file():
-                from PyQt5.QtWidgets import QFileDialog
+            is_save = p_model.widget_type == 'file_save'
+            def select_file(_checked=None, save=is_save):
+                QFileDialog = QtWidgets.QFileDialog
                 curr = self.scene().views()[0] if self.scene() and self.scene().views() else None
-                path, _ = QFileDialog.getOpenFileName(curr, "Select File")
+                if save:
+                    path, _ = QFileDialog.getSaveFileName(curr, "Save File")
+                else:
+                    path, _ = QFileDialog.getOpenFileName(curr, "Select File")
                 if path:
                     path_edit.setText(path)
                     self._update_param(p_model.name, path)
@@ -379,7 +425,6 @@ class NodeWidget(QGraphicsItem):
         if name in self.param_widgets:
             proxy = self.param_widgets[name]
             container = proxy.widget()
-            from PyQt5.QtWidgets import QLineEdit, QSpinBox, QDoubleSpinBox, QCheckBox, QComboBox, QSlider, QTextEdit
             w = container.findChild(QLineEdit) or container.findChild(QSpinBox) or \
                 container.findChild(QDoubleSpinBox) or container.findChild(QCheckBox) or \
                 container.findChild(QComboBox) or container.findChild(QSlider) or \
@@ -439,6 +484,14 @@ class NodeWidget(QGraphicsItem):
         self.status = status
         self.update()
 
+    def set_bypassed(self, bypassed: bool):
+        if self.bypassed == bypassed:
+            return
+        self.bypassed = bypassed
+        if self.scene():
+            self.scene().push_history()
+        self.update()
+
     def is_port_connected(self, port_name, is_input):
         """Checks if a port has any active connections in the scene."""
         if not self.scene(): return False
@@ -467,20 +520,25 @@ class NodeWidget(QGraphicsItem):
 
     def _open_script_editor(self):
         try:
-            # Find a parent QWidget if possible
             parent = None
             if self.scene() and self.scene().views():
                 parent = self.scene().views()[0]
-            current_code = self.node_definition.parameters.get('python_code', '')
+            current_code = self.node_definition.get_parameter('python_code', '')
             dlg = ScriptEditorDialog(parent=parent, initial_code=current_code)
-            if dlg.exec_() == dlg.Accepted:
+            if exec_dialog(dlg) == dlg.Accepted:
                 code = dlg.get_code()
-                # Save into node parameters so runtime execute will use it
-                self.node_definition.parameters['python_code'] = code
+                if self.scene():
+                    self.scene().push_history()
+                self.set_parameter('python_code', code, propagate=False)
         except Exception:
             pass
 
     def paint(self, painter, option, widget):
+        if self.bypassed:
+            painter.setOpacity(0.4)
+        else:
+            painter.setOpacity(1.0)
+
         from src.utils.color_manager import ColorManager
         base_color = QColor(40, 40, 40) if self.is_dark else QColor(220, 220, 220)
         if self.status == "running": base_color = QColor(100, 100, 0)
@@ -515,6 +573,21 @@ class NodeWidget(QGraphicsItem):
         painter.setPen(QPen(QColor(30, 30, 30), 1))
         painter.drawLine(0, 35, int(self.width), 35)
 
+        # 3. DRAW BYPASS BUTTON (B)
+        painter.save()
+        if self.bypassed:
+            painter.setBrush(QBrush(QColor(255, 165, 0))) # Orange when bypassed
+            painter.setPen(QPen(Qt.black, 1))
+        else:
+            painter.setBrush(QBrush(QColor(60, 60, 60)))
+            painter.setPen(QPen(QColor(200, 200, 200), 1))
+            
+        painter.drawRoundedRect(self.bypass_rect, 4, 4)
+        painter.setPen(QPen(Qt.white if not self.bypassed else Qt.black))
+        painter.setFont(QtGui.QFont("Arial", 10, QtGui.QFont.Bold))
+        painter.drawText(self.bypass_rect, Qt.AlignCenter, "B")
+        painter.restore()
+
         if hasattr(self.node_definition, 'icon_path') and self.node_definition.icon_path:
             pixmap = QPixmap(self.node_definition.icon_path)
             if not pixmap.isNull():
@@ -527,3 +600,10 @@ class NodeWidget(QGraphicsItem):
             painter.setPen(QPen(QColor(255, 165, 0), 2))
             painter.setBrush(Qt.NoBrush)
             painter.drawRoundedRect(self.boundingRect(), 10, 10)
+
+    def mousePressEvent(self, event):
+        if self.bypass_rect.contains(event.pos()):
+            self.set_bypassed(not self.bypassed)
+            event.accept()
+            return
+        super().mousePressEvent(event)

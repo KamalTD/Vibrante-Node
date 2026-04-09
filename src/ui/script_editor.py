@@ -1,6 +1,12 @@
-from PyQt5.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QPushButton, QLabel
+from src.utils.qt_compat import QtWidgets
 from src.ui.code_editor import CodeEditor
 from src.utils.highlighter import PythonHighlighter
+
+QDialog = QtWidgets.QDialog
+QVBoxLayout = QtWidgets.QVBoxLayout
+QHBoxLayout = QtWidgets.QHBoxLayout
+QPushButton = QtWidgets.QPushButton
+QLabel = QtWidgets.QLabel
 
 
 class ScriptEditorDialog(QDialog):

@@ -1,0 +1,19 @@
+{
+    "node_id": "hou_set_keyframe",
+    "name": "Hou Set Keyframe",
+    "description": "Set a keyframe on a Houdini parameter at a given frame with a given value.",
+    "category": "Houdini",
+    "icon_path": "icons/timer.svg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "node_path", "type": "string", "widget_type": "text", "default": "" },
+        { "name": "parm_name", "type": "string", "widget_type": "text", "default": "" },
+        { "name": "frame", "type": "float", "widget_type": "float", "default": 1 },
+        { "name": "value", "type": "float", "widget_type": "float", "default": 0 }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "success", "type": "bool" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    from src.utils.hou_bridge import get_bridge\n\n    node_path = inputs.get('node_path') or self.get_parameter('node_path', '')\n    parm_name = inputs.get('parm_name') or self.get_parameter('parm_name', '')\n    frame = inputs.get('frame')\n    if frame is None:\n        frame = self.get_parameter('frame', 1)\n    value = inputs.get('value')\n    if value is None:\n        value = self.get_parameter('value', 0)\n\n    if not node_path or not parm_name:\n        self.log_error('Node path and parameter name are required')\n        await self.set_output('success', False)\n        await self.set_output('exec_out', True)\n        return {'success': False}\n\n    try:\n        bridge = get_bridge()\n        bridge.set_keyframe(node_path, parm_name, float(frame), float(value))\n        self.log_info(f'Keyframe: {node_path}/{parm_name} = {value} @ frame {frame}')\n        await self.set_output('success', True)\n    except Exception as e:\n        self.log_error(f'Failed to set keyframe: {e}')\n        await self.set_output('success', False)\n\n    await self.set_output('exec_out', True)\n    return {'success': self.get_parameter('success', False)}"
+}

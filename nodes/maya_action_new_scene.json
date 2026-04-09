@@ -1,0 +1,16 @@
+{
+    "node_id": "maya_action_new_scene",
+    "name": "Maya Action: New Scene",
+    "description": "Creates a Maya action that opens a new empty scene (discarding any current scene). Chain multiple action nodes together via actions_in/actions_out, then feed the final actions_out into a Maya Headless node.",
+    "category": "DCCs",
+    "icon_path": "icons/maya_icon.jpg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "actions_in", "type": "list", "default": [] }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "actions_out", "type": "list" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    actions_in = inputs.get('actions_in') or []\n    if not isinstance(actions_in, list):\n        actions_in = [actions_in]\n\n    action = {\n        'type': 'new_scene'\n    }\n\n    actions_out = list(actions_in) + [action]\n    self.log_info('Added new_scene action')\n\n    await self.set_output('actions_out', actions_out)\n    await self.set_output('exec_out', True)\n    return {'actions_out': actions_out}"
+}

@@ -1,7 +1,14 @@
-from PyQt5.QtWidgets import QGraphicsScene, QGraphicsItem, QMenu, QAction
-from PyQt5.QtCore import Qt, QPointF
-from PyQt5.QtGui import QColor, QPen
+from src.utils.qt_compat import QtWidgets, QtCore, QtGui, exec_dialog
 import asyncio
+
+QGraphicsScene = QtWidgets.QGraphicsScene
+QGraphicsItem = QtWidgets.QGraphicsItem
+QMenu = QtWidgets.QMenu
+QAction = QtWidgets.QAction
+Qt = QtCore.Qt
+QPointF = QtCore.QPointF
+QColor = QtGui.QColor
+QPen = QtGui.QPen
 from src.core.registry import NodeRegistry
 from src.ui.node_widget import NodeWidget
 from src.ui.canvas.edge import Edge
@@ -27,6 +34,9 @@ class NodeScene(QGraphicsScene):
         self.backdrops = []
         self.active_edge = None
         self.file_path = None
+        
+        # Snap target state
+        self._snapped_port = None
 
         self.history = []
         self.redo_stack = []
@@ -269,7 +279,8 @@ class NodeScene(QGraphicsScene):
                 instance_id=node_widget.instance_id,
                 node_id=getattr(node_widget.node_definition, 'node_id', node_widget.node_definition.name),
                 position=(node_widget.pos().x(), node_widget.pos().y()),
-                parameters=node_widget.node_definition.parameters.copy()
+                parameters=node_widget.node_definition.parameters.copy(),
+                bypassed=node_widget.bypassed
             )
             model.nodes.append(node_model)
         for edge in self.edges:
@@ -318,6 +329,7 @@ class NodeScene(QGraphicsScene):
             widget = self.add_node_by_name(node_model.node_id, QPointF(node_model.position[0], node_model.position[1]))
             if widget:
                 widget.instance_id = node_model.instance_id
+                widget.set_bypassed(node_model.bypassed)
                 # SYNC: Apply parameters to UI widgets and node definition
                 for p_name, p_val in node_model.parameters.items():
                     widget.set_parameter(p_name, p_val, propagate=False)
@@ -389,7 +401,42 @@ class NodeScene(QGraphicsScene):
 
     def mouseMoveEvent(self, event):
         if self.active_edge:
-            self.active_edge.set_end_pos(event.scenePos())
+            pos = event.scenePos()
+            
+            # SNAP LOGIC
+            snap_radius = 35
+            nearest_port = None
+            min_dist = snap_radius
+            
+            # Find nearest compatible port
+            for item in self.items(QtCore.QRectF(pos.x() - snap_radius, pos.y() - snap_radius, snap_radius*2, snap_radius*2)):
+                if isinstance(item, PortWidget):
+                    # Compatibility check
+                    if item.parentItem() != self.active_edge.from_port.parentItem() and \
+                       item.is_input != self.active_edge.from_port.is_input:
+                        
+                        dist = (item.scenePos() - pos).manhattanLength()
+                        if dist < min_dist:
+                            min_dist = dist
+                            nearest_port = item
+            
+            if nearest_port:
+                # Snap to port center
+                self.active_edge.set_end_pos(nearest_port.scenePos())
+                
+                # Trigger animation on the target port
+                if self._snapped_port != nearest_port:
+                    if self._snapped_port: 
+                        self._snapped_port.hoverLeaveEvent(None)
+                    self._snapped_port = nearest_port
+                    self._snapped_port.hoverEnterEvent(None)
+            else:
+                # No snap, follow mouse
+                self.active_edge.set_end_pos(pos)
+                if self._snapped_port:
+                    self._snapped_port.hoverLeaveEvent(None)
+                    self._snapped_port = None
+                    
             event.accept()
         else:
             super().mouseMoveEvent(event)
@@ -398,7 +445,12 @@ class NodeScene(QGraphicsScene):
         if self.active_edge and event.button() == Qt.LeftButton:
             view = self.views()[0] if self.views() else None
             transform = view.transform() if view else None
-            item = self.itemAt(event.scenePos(), transform) if transform else self.itemAt(event.scenePos())
+            
+            # Use the snapped port if it exists, otherwise check under mouse
+            item = self._snapped_port
+            if not item:
+                item = self.itemAt(event.scenePos(), transform) if transform else self.itemAt(event.scenePos())
+            
             if isinstance(item, PortWidget):
                 if item != self.active_edge.from_port and \
                    item.parentItem() != self.active_edge.from_port.parentItem() and \
@@ -427,6 +479,12 @@ class NodeScene(QGraphicsScene):
             else:
                 self.removeItem(self.active_edge)
                 self.active_edge = None
+            
+            # Reset snapped state
+            if self._snapped_port:
+                self._snapped_port.hoverLeaveEvent(None)
+                self._snapped_port = None
+                
             event.accept()
         else:
             super().mouseReleaseEvent(event)
@@ -476,6 +534,28 @@ class NodeScene(QGraphicsScene):
             copy_act = QAction(f"Copy {len(selected_nodes)} Nodes", self.parent())
             copy_act.triggered.connect(self.copy_selection)
             menu.addAction(copy_act)
+            
+            # BYPASS Options
+            any_bypassed = any(n.bypassed for n in selected_nodes)
+            any_not_bypassed = any(not n.bypassed for n in selected_nodes)
+            
+            if any_not_bypassed:
+                bypass_act = QAction("Bypass Selected Nodes", self.parent())
+                def do_bypass():
+                    self.push_history()
+                    for n in selected_nodes: n.set_bypassed(True)
+                bypass_act.triggered.connect(do_bypass)
+                menu.addAction(bypass_act)
+                
+            if any_bypassed:
+                unbypass_act = QAction("Unbypass Selected Nodes", self.parent())
+                def do_unbypass():
+                    self.push_history()
+                    for n in selected_nodes: n.set_bypassed(False)
+                unbypass_act.triggered.connect(do_unbypass)
+                menu.addAction(unbypass_act)
+
+            menu.addSeparator()
             
             wrap_act = QAction(f"Wrap {len(selected_nodes)} Nodes in Box", self.parent())
             def wrap_selection():
@@ -527,12 +607,13 @@ class NodeScene(QGraphicsScene):
         for node_id in NodeRegistry.list_node_ids():
             action = QAction(f"{node_id}", self.parent())
             def spawn_node(nid=node_id, p=pos):
-                self.push_history()
-                self.add_node_by_name(nid, p)
+                result = self.add_node_by_name(nid, p)
+                if result:
+                    self.push_history()
             action.triggered.connect(spawn_node)
             node_menu.addAction(action)
             
-        if not menu.isEmpty(): menu.exec_(event.screenPos())
+        if not menu.isEmpty(): exec_dialog(menu, event.screenPos())
         else: super().contextMenuEvent(event)
 
     def add_node_by_name(self, node_id, pos):
@@ -542,7 +623,14 @@ class NodeScene(QGraphicsScene):
             from src.nodes.base import NodeRegistry as BaseRegistry
             node_class = BaseRegistry.get_node_class(node_id)
         if node_class:
-            node_definition = node_class()
+            try:
+                node_definition = node_class()
+            except Exception as e:
+                msg = f"Failed to create node '{node_id}': {e}"
+                print(msg)
+                if self.parent() and hasattr(self.parent(), 'log_panel'):
+                    self.parent().log_panel.log(msg, "error")
+                return None
             if self.parent() and hasattr(self.parent(), 'log_panel'):
                 lp = self.parent().log_panel
                 node_definition._on_log = lambda msg, level: lp.log(f"[{node_definition.name}] {msg}", level)
@@ -552,11 +640,11 @@ class NodeScene(QGraphicsScene):
             node_widget.setPos(pos)
             self.addItem(node_widget)
             self.nodes.append(node_widget)
-            
+
             # Inherit theme
             is_dark = self.backgroundBrush().color().lightness() < 128
             node_widget.apply_theme(is_dark)
-            
+
             # Ensure states are initialized correctly (all enabled)
             node_widget._refresh_widget_states()
             return node_widget

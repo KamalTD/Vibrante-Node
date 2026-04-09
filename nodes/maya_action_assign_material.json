@@ -1,0 +1,18 @@
+{
+    "node_id": "maya_action_assign_material",
+    "name": "Maya Action: Assign Material",
+    "description": "Creates a Maya action that assigns an existing material (shading group or shader) to one or more target nodes. Provide target node names comma-separated. If a shader is provided instead of a shading group, the node will look up its shading group automatically. Chain via actions_in/actions_out into a Maya Headless node.",
+    "category": "DCCs",
+    "icon_path": "icons/maya_icon.jpg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "actions_in", "type": "list", "default": [] },
+        { "name": "material", "type": "string", "widget_type": "text", "default": "" },
+        { "name": "target_nodes", "type": "string", "widget_type": "text", "default": "" }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "actions_out", "type": "list" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    actions_in = inputs.get('actions_in') or []\n    if not isinstance(actions_in, list):\n        actions_in = [actions_in]\n\n    material = inputs.get('material') or self.get_parameter('material', '')\n    target_nodes = inputs.get('target_nodes') or self.get_parameter('target_nodes', '')\n\n    action = {\n        'type': 'assign_material',\n        'material': material,\n        'target_nodes': target_nodes\n    }\n\n    actions_out = list(actions_in) + [action]\n    self.log_info(f'Added assign_material action -> {material} to {target_nodes}')\n\n    await self.set_output('actions_out', actions_out)\n    await self.set_output('exec_out', True)\n    return {'actions_out': actions_out}"
+}

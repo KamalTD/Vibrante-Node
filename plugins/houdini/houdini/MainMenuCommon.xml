@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mainMenu>
+  <menuBar>
+    <subMenu id="vibrante_node_menu">
+      <label>Vibrante-Node</label>
+
+      <scriptItem id="vibrante_launch_inprocess">
+        <label>Launch with Live HIP Context</label>
+        <scriptCode><![CDATA[
+import vibrante_node_houdini
+vibrante_node_houdini.launch_inprocess()
+]]></scriptCode>
+      </scriptItem>
+
+      <scriptItem id="vibrante_launch">
+        <label>Launch Vibrante-Node (Standalone)</label>
+        <scriptCode><![CDATA[
+import vibrante_node_houdini
+vibrante_node_houdini.launch()
+]]></scriptCode>
+      </scriptItem>
+
+      <scriptItem id="vibrante_launch_context">
+        <label>Launch with Current HIP Context</label>
+        <scriptCode><![CDATA[
+import vibrante_node_houdini
+vibrante_node_houdini.launch_with_context()
+]]></scriptCode>
+      </scriptItem>
+
+      <separatorItem/>
+
+      <scriptItem id="vibrante_open_scripts">
+        <label>Open Houdini Scripts Folder</label>
+        <scriptCode><![CDATA[
+import vibrante_node_houdini
+vibrante_node_houdini.open_houdini_scripts_folder()
+]]></scriptCode>
+      </scriptItem>
+
+      <scriptItem id="vibrante_open_nodes">
+        <label>Open Houdini Nodes Folder</label>
+        <scriptCode><![CDATA[
+import vibrante_node_houdini
+vibrante_node_houdini.open_houdini_nodes_folder()
+]]></scriptCode>
+      </scriptItem>
+
+      <separatorItem/>
+
+      <scriptItem id="vibrante_about">
+        <label>About Vibrante-Node Integration</label>
+        <scriptCode><![CDATA[
+import vibrante_node_houdini
+vibrante_node_houdini.show_about()
+]]></scriptCode>
+      </scriptItem>
+
+    </subMenu>
+  </menuBar>
+</mainMenu>

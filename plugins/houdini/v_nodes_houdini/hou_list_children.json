@@ -1,0 +1,17 @@
+{
+    "node_id": "hou_list_children",
+    "name": "Hou List Children",
+    "description": "List all child nodes under a Houdini network path. Returns a list of child node info (name, type, path).",
+    "category": "Houdini",
+    "icon_path": "icons/list.svg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "parent_path", "type": "string", "widget_type": "text", "default": "/obj" }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "children", "type": "list" },
+        { "name": "count", "type": "int" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    from src.utils.hou_bridge import get_bridge\n\n    path = inputs.get('parent_path') or self.get_parameter('parent_path', '/obj')\n\n    try:\n        bridge = get_bridge()\n        children = bridge.children(path)\n        self.log_info(f'{path} has {len(children)} children')\n        await self.set_output('children', children)\n        await self.set_output('count', len(children))\n    except Exception as e:\n        self.log_error(f'Failed to list children: {e}')\n        await self.set_output('children', [])\n        await self.set_output('count', 0)\n\n    await self.set_output('exec_out', True)\n    return {}"
+}

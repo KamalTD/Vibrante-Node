@@ -1,5 +1,12 @@
-from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLineEdit, QPushButton, QLabel, QHBoxLayout
+from src.utils.qt_compat import QtWidgets
 from src.utils.config_manager import config
+
+QDialog = QtWidgets.QDialog
+QVBoxLayout = QtWidgets.QVBoxLayout
+QLineEdit = QtWidgets.QLineEdit
+QPushButton = QtWidgets.QPushButton
+QLabel = QtWidgets.QLabel
+QHBoxLayout = QtWidgets.QHBoxLayout
 
 class GeminiApiDialog(QDialog):
     def __init__(self, parent=None):

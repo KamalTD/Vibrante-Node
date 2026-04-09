@@ -1,0 +1,18 @@
+{
+    "node_id": "hou_set_parm",
+    "name": "Hou Set Parameter",
+    "description": "Set a parameter value on a Houdini node. Provide the full node path, parameter name, and the value.",
+    "category": "Houdini",
+    "icon_path": "icons/variable-set.svg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "node_path", "type": "string", "widget_type": "text", "default": "" },
+        { "name": "parm_name", "type": "string", "widget_type": "text", "default": "" },
+        { "name": "value", "type": "any", "widget_type": "text", "default": "" }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "success", "type": "bool" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    from src.utils.hou_bridge import get_bridge\n\n    node_path = inputs.get('node_path') or self.get_parameter('node_path', '')\n    parm_name = inputs.get('parm_name') or self.get_parameter('parm_name', '')\n    value = inputs.get('value')\n    if value is None:\n        value = self.get_parameter('value', '')\n\n    if not node_path or not parm_name:\n        self.log_error('Node path and parameter name are required')\n        await self.set_output('success', False)\n        await self.set_output('exec_out', True)\n        return {'success': False}\n\n    try:\n        bridge = get_bridge()\n        bridge.set_parm(node_path, parm_name, value)\n        self.log_info(f'Set {node_path}/{parm_name} = {value}')\n        await self.set_output('success', True)\n    except Exception as e:\n        self.log_error(f'Failed to set parameter: {e}')\n        await self.set_output('success', False)\n\n    await self.set_output('exec_out', True)\n    return {'success': self.get_parameter('success', False)}"
+}

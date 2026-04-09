@@ -5,9 +5,14 @@ __pycache__/
 
 # Environments
 .venv/
+main/
 venv/
 ENV/
 env/
+.claude/
+.gemini/
+.specify/
+tutorials/
 
 # Testing
 .pytest_cache/
@@ -22,3 +27,12 @@ htmlcov/
 # OS generated
 .DS_Store
 Thumbs.db
+
+# Build output
+dist/
+build/
+*.spec.bak
+
+# Runtime logs
+crash.log
+upload_result.json

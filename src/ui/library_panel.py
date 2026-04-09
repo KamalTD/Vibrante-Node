@@ -1,17 +1,77 @@
-from PyQt5.QtWidgets import QDockWidget, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget, QMenu, QAction, QMessageBox, QStyle, QLineEdit
-from PyQt5.QtCore import Qt, pyqtSignal, QSize, QByteArray
-from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtSvg import QSvgRenderer
-from PyQt5.QtGui import QPainter
+from src.utils.qt_compat import QtWidgets, QtCore, QtGui, QtSvg, Signal, exec_dialog
+
+QDockWidget = QtWidgets.QDockWidget
+QTreeWidget = QtWidgets.QTreeWidget
+QTreeWidgetItem = QtWidgets.QTreeWidgetItem
+QVBoxLayout = QtWidgets.QVBoxLayout
+QWidget = QtWidgets.QWidget
+QMenu = QtWidgets.QMenu
+QAction = QtWidgets.QAction
+QMessageBox = QtWidgets.QMessageBox
+QStyle = QtWidgets.QStyle
+QLineEdit = QtWidgets.QLineEdit
+Qt = QtCore.Qt
+QPoint = QtCore.QPoint
+QSize = QtCore.QSize
+QByteArray = QtCore.QByteArray
+QIcon = QtGui.QIcon
+QPixmap = QtGui.QPixmap
+QPainter = QtGui.QPainter
+QDrag = QtGui.QDrag
+QMimeData = QtCore.QMimeData
+QSvgRenderer = QtSvg.QSvgRenderer if QtSvg else None
 from src.core.registry import NodeRegistry
 import os
 import re
 
+class DraggableTreeWidget(QTreeWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setDragEnabled(True)
+        self._drag_start_pos = None
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self._drag_start_pos = event.pos()
+        super().mousePressEvent(event)
+
+    def mouseMoveEvent(self, event):
+        if not (event.buttons() & Qt.LeftButton):
+            return
+        if not self._drag_start_pos:
+            return
+        if (event.pos() - self._drag_start_pos).manhattanLength() < QtWidgets.QApplication.startDragDistance():
+            return
+
+        item = self.itemAt(self._drag_start_pos)
+        if not item:
+            return
+
+        node_id = item.data(0, Qt.UserRole)
+        if not node_id:
+            return
+
+        # Start Drag
+        drag = QDrag(self)
+        mime_data = QMimeData()
+        mime_data.setText(node_id)
+        mime_data.setData("application/x-node-id", QByteArray(node_id.encode("utf-8")))
+        drag.setMimeData(mime_data)
+
+        # Set a ghost icon for the drag
+        icon = item.icon(0)
+        if not icon.isNull():
+            pixmap = icon.pixmap(32, 32)
+            drag.setPixmap(pixmap)
+            drag.setHotSpot(QPoint(16, 16))
+
+        drag.exec_(Qt.CopyAction)
+
 class LibraryPanel(QDockWidget):
     # Signals
-    node_selected = pyqtSignal(str) # node_id
-    edit_requested = pyqtSignal(str) # node_id
-    delete_requested = pyqtSignal(str) # node_id
+    node_selected = Signal(str) # node_id
+    edit_requested = Signal(str) # node_id
+    delete_requested = Signal(str) # node_id
 
     def __init__(self, parent=None):
         super().__init__("Node Library", parent)
@@ -28,7 +88,7 @@ class LibraryPanel(QDockWidget):
         self.layout.addWidget(self.search_bar)
         
         # Tree Widget for Categories
-        self.tree_widget = QTreeWidget()
+        self.tree_widget = DraggableTreeWidget()
         self.tree_widget.setHeaderHidden(True)
         self.tree_widget.setIconSize(QSize(24, 24))
         self.tree_widget.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -43,6 +103,8 @@ class LibraryPanel(QDockWidget):
 
     def _load_svg_icon_with_color(self, svg_path, color):
         """Load an SVG file and replace stroke color, return QIcon."""
+        if QSvgRenderer is None:
+            return None
         try:
             with open(svg_path, 'r', encoding='utf-8') as f:
                 svg_content = f.read()
@@ -179,4 +241,5 @@ class LibraryPanel(QDockWidget):
         delete_action.triggered.connect(lambda: self.delete_requested.emit(node_id))
         menu.addAction(delete_action)
         
-        menu.exec_(self.tree_widget.mapToGlobal(pos))
+        _exec_menu = getattr(menu, 'exec', menu.exec_)
+        _exec_menu(self.tree_widget.mapToGlobal(pos))

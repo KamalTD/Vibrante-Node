@@ -22,6 +22,27 @@ class NodeRegistry:
             os.makedirs(directory)
             return
 
+        cls._load_directory(directory)
+
+    @classmethod
+    def load_all_with_extras(cls, default_directory: str):
+        """
+        Load nodes from the default directory plus any directories
+        specified in the v_nodes_dir environment variable.
+        """
+        cls.load_all(default_directory)
+
+        extra_dirs = os.environ.get('v_nodes_dir', '')
+        if extra_dirs:
+            for extra_dir in extra_dirs.split(os.pathsep):
+                extra_dir = extra_dir.strip()
+                if extra_dir and os.path.isdir(extra_dir):
+                    print(f"Loading extra nodes from: {extra_dir}")
+                    cls._load_directory(extra_dir)
+
+    @classmethod
+    def _load_directory(cls, directory: str):
+        """Walk a single directory for .json node files and load them."""
         for root, _, filenames in os.walk(directory):
             for filename in filenames:
                 if filename.endswith(".json"):

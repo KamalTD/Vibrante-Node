@@ -1,0 +1,23 @@
+{
+    "node_id": "blender_action_export_usd",
+    "name": "Blender Action: Export USD",
+    "description": "Creates a Blender action to export scene as Universal Scene Description (USD/USDA/USDC) using bpy.ops.wm.usd_export. Supports animation, hair, UVs, normals, and materials.",
+    "category": "DCCs",
+    "icon_path": "icons/blender_icon.png",
+    "use_exec": true,
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "actions_in", "type": "list", "default": [] },
+        { "name": "usd_path", "type": "string", "widget_type": "file_save", "default": "" },
+        { "name": "export_animation", "type": "bool", "widget_type": "checkbox", "default": false },
+        { "name": "export_hair", "type": "bool", "widget_type": "checkbox", "default": false },
+        { "name": "export_uvmaps", "type": "bool", "widget_type": "checkbox", "default": true },
+        { "name": "export_normals", "type": "bool", "widget_type": "checkbox", "default": true },
+        { "name": "export_materials", "type": "bool", "widget_type": "checkbox", "default": true }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "actions_out", "type": "list" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    actions_in = inputs.get('actions_in') or []\n    if not isinstance(actions_in, list):\n        actions_in = [actions_in]\n    usd_path = inputs.get('usd_path') or self.get_parameter('usd_path', '')\n\n    def _get_bool(key, default):\n        v = inputs.get(key)\n        return bool(v if v is not None else self.get_parameter(key, default))\n\n    action = {\n        'type': 'export_usd',\n        'usd_path': usd_path,\n        'export_animation': _get_bool('export_animation', False),\n        'export_hair': _get_bool('export_hair', False),\n        'export_uvmaps': _get_bool('export_uvmaps', True),\n        'export_normals': _get_bool('export_normals', True),\n        'export_materials': _get_bool('export_materials', True),\n    }\n    actions_out = list(actions_in) + [action]\n    self.log_info(f'Added export_usd action -> {usd_path}')\n    await self.set_output('actions_out', actions_out)\n    await self.set_output('exec_out', True)\n    return {'actions_out': actions_out}"
+}

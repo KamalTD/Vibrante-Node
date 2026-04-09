@@ -1,0 +1,21 @@
+{
+    "node_id": "blender_action_export_gltf",
+    "name": "Blender Action: Export glTF",
+    "description": "Creates a Blender action to export scene or selection as glTF/GLB using bpy.ops.export_scene.gltf. Supports GLB/GLTF_SEPARATE/GLTF_EMBEDDED formats and animation export.",
+    "category": "DCCs",
+    "icon_path": "icons/blender_icon.png",
+    "use_exec": true,
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "actions_in", "type": "list", "default": [] },
+        { "name": "gltf_path", "type": "string", "widget_type": "file_save", "default": "" },
+        { "name": "format", "type": "string", "widget_type": "dropdown", "options": ["GLB", "GLTF_SEPARATE", "GLTF_EMBEDDED"], "default": "GLB" },
+        { "name": "selection_only", "type": "bool", "widget_type": "checkbox", "default": false },
+        { "name": "export_animations", "type": "bool", "widget_type": "checkbox", "default": true }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "actions_out", "type": "list" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    actions_in = inputs.get('actions_in') or []\n    if not isinstance(actions_in, list):\n        actions_in = [actions_in]\n    gltf_path = inputs.get('gltf_path') or self.get_parameter('gltf_path', '')\n    fmt = inputs.get('format') or self.get_parameter('format', 'GLB')\n    selection_only = inputs.get('selection_only')\n    if selection_only is None:\n        selection_only = self.get_parameter('selection_only', False)\n    export_animations = inputs.get('export_animations')\n    if export_animations is None:\n        export_animations = self.get_parameter('export_animations', True)\n    action = {\n        'type': 'export_gltf',\n        'gltf_path': gltf_path,\n        'format': fmt,\n        'selection_only': bool(selection_only),\n        'export_animations': bool(export_animations)\n    }\n    actions_out = list(actions_in) + [action]\n    self.log_info(f'Added export_gltf action -> {gltf_path} [{fmt}]')\n    await self.set_output('actions_out', actions_out)\n    await self.set_output('exec_out', True)\n    return {'actions_out': actions_out}"
+}

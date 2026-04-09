@@ -1,0 +1,16 @@
+{
+    "node_id": "hou_layout_children",
+    "name": "Hou Layout Children",
+    "description": "Auto-layout child nodes inside a Houdini network. Useful after creating multiple nodes to organize the network view.",
+    "category": "Houdini",
+    "icon_path": "icons/shuffle.svg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "parent_path", "type": "string", "widget_type": "text", "default": "/obj" }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "success", "type": "bool" }
+    ],
+    "python_code": "async def execute(self, inputs):\n    from src.utils.hou_bridge import get_bridge\n\n    path = inputs.get('parent_path') or self.get_parameter('parent_path', '/obj')\n\n    try:\n        bridge = get_bridge()\n        bridge.layout_children(path)\n        self.log_info(f'Layout children in {path}')\n        await self.set_output('success', True)\n    except Exception as e:\n        self.log_error(f'Failed to layout: {e}')\n        await self.set_output('success', False)\n\n    await self.set_output('exec_out', True)\n    return {'success': self.get_parameter('success', False)}"
+}

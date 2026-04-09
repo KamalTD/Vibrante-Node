@@ -1,0 +1,17 @@
+{
+    "node_id": "hou_set_parms",
+    "name": "Hou Set Multiple Parms",
+    "description": "Set multiple parameters on a Houdini node at once. Provide a JSON dictionary of {parm_name: value} pairs.",
+    "category": "Houdini",
+    "icon_path": "icons/gear.svg",
+    "inputs": [
+        { "name": "exec_in", "type": "exec" },
+        { "name": "node_path", "type": "string", "widget_type": "text", "default": "" },
+        { "name": "parms", "type": "any", "widget_type": "text_area", "default": "{}" }
+    ],
+    "outputs": [
+        { "name": "exec_out", "type": "exec" },
+        { "name": "success", "type": "bool" }
+    ],
+    "python_code": "import json as _json\n\nasync def execute(self, inputs):\n    from src.utils.hou_bridge import get_bridge\n\n    node_path = inputs.get('node_path') or self.get_parameter('node_path', '')\n    parms = inputs.get('parms') or self.get_parameter('parms', '{}')\n\n    if isinstance(parms, str):\n        try:\n            parms = _json.loads(parms)\n        except _json.JSONDecodeError as e:\n            self.log_error(f'Invalid JSON for parms: {e}')\n            await self.set_output('success', False)\n            await self.set_output('exec_out', True)\n            return {'success': False}\n\n    if not node_path or not parms:\n        self.log_error('Node path and parms dict are required')\n        await self.set_output('success', False)\n        await self.set_output('exec_out', True)\n        return {'success': False}\n\n    try:\n        bridge = get_bridge()\n        bridge.set_parms(node_path, parms)\n        self.log_info(f'Set {len(parms)} parms on {node_path}')\n        await self.set_output('success', True)\n    except Exception as e:\n        self.log_error(f'Failed to set parms: {e}')\n        await self.set_output('success', False)\n\n    await self.set_output('exec_out', True)\n    return {'success': self.get_parameter('success', False)}"
+}
