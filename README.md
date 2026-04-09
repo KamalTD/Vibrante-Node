@@ -22,12 +22,13 @@ The project focuses on flexibility, extensibility, and developer productivity, m
 
 ## 🌟 Latest Enhancements
 
-### 🎬 Headless DCC Execution & Chainable Action Nodes (v1.5.0)
+### 🎬 Headless DCC Execution, Chainable Action Nodes & Deadline Submitters (v1.5.0)
 
-Vibrante-Node can now drive **Autodesk Maya** and **SideFX Houdini** in true headless batch mode, with a visual "Action Node" pattern for composing DCC pipelines.
+Vibrante-Node can now drive **Autodesk Maya**, **SideFX Houdini**, and **Blender** in true headless batch mode, with a visual "Action Node" pattern for composing DCC pipelines. Deadline render-farm submitter nodes for all three DCCs are also included. Over 55 new nodes in this release.
 
 - **Maya Headless Executor**: Launches `mayapy.exe` with a structured JSON payload + embedded runner script. Version dropdown (2022/2024/2025/2026) auto-fills the path. Inject custom env vars via `.bat` or `Maya.env`. Outputs `success`, `stdout`, `stderr`, `exit_code`, `executed_actions`, and `skipped_actions`.
 - **Houdini Headless Executor**: Same design but for `hython.exe`. Version dropdown (20.5.445, 20.5.278, 20.0.547, 19.5.493) with editable path. Inject env via `.bat` or `houdini.env`. Optional `/obj` vs `/stage` (Solaris/LOPs) context on import nodes.
+- **Blender Headless Executor**: Same pattern for `blender --background`. Version dropdown (4.3/4.2/4.1/4.0/3.6). bpy-version-aware OBJ import/export (4.0+ vs 3.x API). Full per-action traceback capture.
 - **Chainable Action Nodes**: Each action node describes one DCC operation and exposes `actions_in`/`actions_out` list ports. Chain them left-to-right and plug the final list into the headless executor.
 - **Per-action validation**: Actions with missing required fields are skipped with clear reasons and the node fails early instead of silently misbehaving.
 - **Get Action Result helpers**: Extract a single action dict, its `info` field, or a best-guess file path from `executed_actions` without manual list filtering.
@@ -38,6 +39,15 @@ Open/Save/New Scene, Scene Info, Set Frame Range, Import OBJ/FBX/Alembic, Export
 #### Houdini Action Nodes (14)
 Open/Save/New HIP, Scene Info, Set Frame Range, Import OBJ/FBX/Alembic (/obj or /stage), Import Camera, Export FBX/Alembic/Camera Alembic (ROP-based), Bake Animation, Custom Python.
 
+#### Blender Action Nodes (19)
+Open/Save/New Blend, Scene Info, Set Frame Range, Import OBJ/FBX/Alembic/glTF, Export OBJ/FBX/Alembic/glTF/USD, Set Render Settings (engine/res/samples/GPU/format), Render (still or animation), Bake Animation (NLA bake), Custom Python.
+
+#### Deadline Render Farm Submitters (DCCs category)
+- **Submit Maya**: job/plugin info temp files, renderer dropdown (Arnold/VRay/Redshift/RenderMan/Software/Hardware2), `JobID` parsed from output.
+- **Submit Houdini**: ROP-based submission, `houdini_version` auto-extracted from full build string.
+- **Submit Blender**: renderer dropdown (CYCLES/EEVEE/EEVEE_NEXT/WORKBENCH), GPU toggle, output format.
+- **Job Status**: query `deadlinecommand -GetJobDetails`; optional `poll_until_done` mode with async polling and timeout.
+
 #### New UI: `file_save` Widget
 Export action nodes open a **Save File** dialog instead of Open. Add `"widget_type": "file_save"` to any string port.
 
@@ -45,7 +55,7 @@ Export action nodes open a **Save File** dialog instead of Open. Add `"widget_ty
 Node constructor failures during drag-and-drop are wrapped in try/except — they log an error instead of crashing the UI, and undo history is only pushed on successful spawn.
 
 #### Custom Action Script Editor
-The `Edit Script` button now works on `maya_action_custom` and `houdini_action_custom`, letting users duplicate those nodes and write their own DCC actions. Reads/writes `python_code` via `get_parameter`/`set_parameter`.
+The `Edit Script` button now works on `maya_action_custom`, `houdini_action_custom`, and `blender_action_custom`, letting users duplicate those nodes and write their own DCC actions. Reads/writes `python_code` via `get_parameter`/`set_parameter`.
 
 ### 🛠️ Node Builder Fix & BaseNode Improvements (v1.4.0)
 
@@ -264,7 +274,7 @@ Detailed documentation is available for both users and developers:
 
 ## 📋 Release History
 
-- **[v1.5.0](RELEASE_v1.5.0.md) (Latest)** — Maya Headless & Houdini Headless executors, chainable action-node system, 30+ new DCC action nodes (scene IO, cameras, Alembic/FBX, render settings, AOVs, bake, flipbook/playblast), Get Action Result helpers
+- **[v1.5.0](RELEASE_v1.5.0.md) (Latest)** — Maya/Houdini/Blender Headless executors, chainable action-node system, 55+ new DCC action nodes (scene IO, cameras, Alembic/FBX/glTF/USD, render settings, AOVs, bake, playblast), Get Action Result helpers, Deadline render-farm submitters (Maya/Houdini/Blender + Job Status)
 - **[v1.4.0](RELEASE_v1.4.0.md)** — Node Builder Save & Register fix, BaseNode set_parameter, safer node init, VFX pipeline nodes
 - **[v1.3.0](RELEASE_v1.3.0.md)** — Houdini Geometry Nodes (Color Curves, Edges to Curves, ABC Convert), AI Context Fix, CLAUDE.md Developer Guide, YouTube Tutorials
 - **[v1.2.0](RELEASE_v1.2.0.md)** — Dynamic Houdini API, Node Bypassing, UI/UX Polish (Drag & Drop, Snapping, Shortcuts)

@@ -170,9 +170,18 @@ For **batch processing** and **CI/render-farm** use cases, Vibrante-Node can lau
 
 **Available Houdini action nodes**: Open/Save/New HIP, Scene Info, Set Frame Range, Import OBJ/FBX/Alembic, Import Camera, Export FBX/Alembic/Camera Alembic, Bake Animation, Custom Python.
 
+### Blender Headless Node
+
+- **Version dropdown**: 4.3 / 4.2 / 4.1 / 4.0 / 3.6 — auto-fills the `blender.exe` path.
+- **Custom environment**: inject variables via a `.bat` file or `blender.env`.
+- **bpy-version-aware OBJ**: the runner automatically uses `wm.obj_import` on Blender 4.0+ and `import_scene.obj` on 3.x.
+- **Outputs**: same contract as Maya/Houdini Headless.
+
+**Available Blender action nodes**: Open/Save/New Blend, Scene Info, Set Frame Range, Import OBJ/FBX/Alembic/glTF, Export OBJ/FBX/Alembic/glTF/USD, Set Render Settings (engine/resolution/samples/GPU/format), Render (still or animation), Bake Animation (NLA bake with visual keying), Custom Python.
+
 ### Custom Python Action Nodes
 
-Both `maya_action_custom` and `houdini_action_custom` have an **Edit Script** button. Click it to open the code editor and write your own DCC action. The runner exposes `cmds` (Maya) or `hou` (Houdini), the action dict, `os`, and `json` to your script.
+`maya_action_custom`, `houdini_action_custom`, and `blender_action_custom` each have an **Edit Script** button. Click it to open the code editor and write your own DCC action. The runner exposes `cmds` (Maya), `hou` (Houdini), or `bpy` (Blender), the action dict, `os`, and `json` to your script.
 
 ### Example: Export an Alembic from Maya Headless
 
@@ -180,6 +189,34 @@ Both `maya_action_custom` and `houdini_action_custom` have an **Edit Script** bu
 2. Add **Maya: Export Alembic** → set `abc_path` to the output `.abc` path and frame range.
 3. Add **Maya Headless** → set the version dropdown; connect `actions_out` from step 2 to `actions`.
 4. Press **F5**. Check `success` and `executed_actions` outputs in the Event Log.
+
+---
+
+## 🎯 Deadline Render Farm Submission
+
+Vibrante-Node can submit render jobs directly to a **Deadline** render farm via `deadlinecommand`. All Deadline nodes are in the **DCCs** category.
+
+### Submitter Nodes
+
+| Node | DCC | Renderers |
+|------|-----|-----------|
+| `Deadline: Submit Maya` | Maya | Arnold, VRay, Redshift, RenderMan, Software, Hardware2 |
+| `Deadline: Submit Houdini` | Houdini | Any ROP path |
+| `Deadline: Submit Blender` | Blender | CYCLES, EEVEE, EEVEE_NEXT, WORKBENCH |
+
+All submitters share the same core inputs: scene file, job name, batch name, pool, group, priority, chunk size, frame range, and an `extra_job_args` text area for any additional Deadline Job Info key=value lines. Outputs: `success`, `job_id`, `stdout`, `stderr`.
+
+### Job Status Node
+
+`Deadline: Job Status` queries `deadlinecommand -GetJobDetails` and returns `status`, `progress`, `tasks_total`, `tasks_complete`, `tasks_failed`, `is_complete`, `is_failed`, and `details`.
+
+Enable **poll_until_done** to have the node poll every N seconds until the job finishes or a timeout is reached — useful for waiting on a job before triggering downstream steps.
+
+### Example: Submit and Wait
+
+1. Add **Deadline: Submit Maya** → fill in the scene file, renderer, and frame range.
+2. Add **Deadline: Job Status** → connect `job_id` output → `job_id` input; enable `poll_until_done`.
+3. Connect exec flow. Press **F5**. The workflow blocks until the job completes.
 
 ---
 
