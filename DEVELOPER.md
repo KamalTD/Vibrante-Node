@@ -179,16 +179,16 @@ QCheckBox widgets in the Node Builder are now themed correctly: white label, dar
 ### Miscellaneous
 - `.gitignore` now ignores the `main/` directory.
 
-## 🆕 v1.5.0 — Maya Headless, Houdini Headless & Chainable Action Nodes
+## 🆕 v1.5.0 — Maya Headless, Houdini Headless, Blender Headless & Deadline Submitters
 
 ### Architecture Overview
 
-Two new DCC executor nodes ship in v1.5.0: `Maya Headless` and `Houdini Headless`. Both launch the DCC in batch mode as a subprocess (`mayapy.exe` / `hython.exe`), run a list of structured "action" dicts against the DCC, and return per-action success/failure plus captured stdout/stderr. This is distinct from the live `hou_bridge` command-server pattern (v1.2.0): the new executors are **short-lived**, **version-pinned**, and **designed for batch/CI use**.
+Three new DCC executor nodes ship in v1.5.0: `Maya Headless`, `Houdini Headless`, and `Blender Headless`. All launch the DCC in batch mode as a subprocess (`mayapy.exe`, `hython.exe`, or `blender --background`), run a list of structured "action" dicts against the DCC, and return per-action success/failure plus captured stdout/stderr. This is distinct from the live `hou_bridge` command-server pattern (v1.2.0): the new executors are **short-lived**, **version-pinned**, and **designed for batch/CI use**.
 
 The executors share one design:
 
 1. **Validation pass** (host side, inside Python): walk the action list, skip actions with missing required fields, fail the node early if any were skipped.
-2. **Serialization**: write a temp JSON payload (`{hip_file/scene_file, actions}`) and a temp Python runner script (embedded as a constant in the executor's `python_code`).
+2. **Serialization**: write a temp JSON payload (`{hip_file/scene_file/blend_file, actions}`) and a temp Python runner script (embedded as a constant in the executor's `python_code`).
 3. **Subprocess launch**: `subprocess.run([dcc_py, runner_script, payload_path, results_path], env=merged_env, timeout=600)`.
 4. **Runner execution** (inside the DCC Python): the runner loads the payload, iterates actions, dispatches each to a typed branch inside try/except, and writes `{index, type, ok, error, info?}` per action into the results JSON.
 5. **Results merge** (host side): the executor reads the results JSON and builds the `executed_actions` list by merging the planned action dict with any `info` field the runner produced.
@@ -199,13 +199,14 @@ The executors share one design:
 - **Success contract** — `success = (returncode == 0) and (no_action_errors)`. DCC stderr is informational (Maya emits warnings to stderr even on success; treating stderr as a failure signal caused false failures in early revisions).
 
 #### Version pinning and environment injection
-Both executors have a version dropdown that auto-fills the binary path via an `on_parameter_changed` handler:
+Executors have a version dropdown that auto-fills the binary path via an `on_parameter_changed` handler:
 - **Maya**: 2022 / 2024 / 2025 / 2026 → `mayapy.exe`
 - **Houdini**: 20.5.445 / 20.5.278 / 20.0.547 / 19.5.493 → `hython.exe`
+- **Blender**: 4.3 / 4.2 / 4.1 / 4.0 / 3.6 → `blender.exe`
 
 Users can also override the path directly. Both executors accept:
 - A `.bat` file — parsed for `SET key=val` lines (case-insensitive `set ` prefix).
-- A `Maya.env` / `houdini.env` file — parsed as `key=value` lines, `#` comments.
+- A `Maya.env` / `houdini.env` / `blender.env` file — parsed as `key=value` lines, `#` comments.
 Values are expanded for `%VAR%` references against the current environment, then merged into the subprocess env (`.bat` overrides `.env`, both override the inherited env).
 
 ### Action Node Pattern
@@ -220,6 +221,10 @@ An action node is a small JSON node that takes `actions_in: list` + action-speci
 
 All Houdini import actions take an optional `context` parameter (`/obj` or `/stage`) to pick between the classic Object/SOP workflow and Solaris/LOPs.
 
+**Blender Headless:** `open_blend`, `save_blend`, `new_blend`, `scene_info`, `set_frame_range`, `import_obj`, `import_fbx`, `import_alembic`, `import_gltf`, `export_obj`, `export_fbx`, `export_alembic`, `export_gltf`, `export_usd`, `set_render_settings`, `render`, `bake_animation`, `custom_python`.
+
+Blender runner detects `bpy.app.version` and uses the 4.0+ `wm.obj_import`/`wm.obj_export` operators on Blender 4.x and the legacy `import_scene.obj`/`export_scene.obj` on 3.x.
+
 ### Renderer-Specific Details (Maya)
 - **`set_aovs` (Arnold)** calls `mtoa.core.createOptions()` to initialize `defaultArnoldRenderOptions` before invoking `AOVInterface`, with a fallback to creating the node directly via `cmds.createNode("aiOptions", ...)` if the import fails. Without this, `AOVInterface` raises `No object matches name: defaultArnoldRenderOptions.aovs` in a cold `mayapy` session.
 - **`set_aovs` (Redshift)** uses `rsCreateAov(type=name)`.
@@ -229,11 +234,18 @@ All Houdini import actions take an optional `context` parameter (`/obj` or `/sta
 
 ### Get Action Result Helper Nodes
 
-`maya_get_action_result` and `houdini_get_action_result` take an `executed_actions` list and either:
+`maya_get_action_result`, `houdini_get_action_result`, and `blender_get_action_result` take an `executed_actions` list and either:
 - An `action_type` string — first-match lookup, or
 - An `index` — 0-based position lookup (defaults to 0).
 
-They output `found`, `action` (full dict), `info` (pointer to `action["info"]` for query actions), and `path` (best-guess from `fbx_path`/`abc_path`/`obj_path`/`scene_path`/`save_scene_path`/`camera_path`/`output_path`/`hip_path`). This replaces manual list filtering downstream and is an additive helper — existing workflows that read `executed_actions` directly keep working.
+They output `found`, `action` (full dict), `info` (pointer to `action["info"]` for query actions), and `path` (best-guess from `fbx_path`/`abc_path`/`obj_path`/`scene_path`/`save_scene_path`/`camera_path`/`output_path`/`hip_path`/`blend_path`). This replaces manual list filtering downstream and is an additive helper — existing workflows that read `executed_actions` directly keep working.
+
+### Deadline Render Farm Submitters
+
+Four new nodes in the **DCCs** category submit jobs to a Deadline render farm via `deadlinecommand`.
+
+- **Submitters** (`deadline_maya_submit`, `deadline_houdini_submit`, `deadline_blender_submit`) write Job Info + Plugin Info temp files, parse `JobID` from the output (`JobID=` line or 24-hex fallback), and clean up temp files in a `finally` block.
+- **Job Status** (`deadline_job_status`) calls `deadlinecommand -GetJobDetails` and parses the response. Supports an asynchronous `poll_until_done` mode with configurable interval and timeout.
 
 ### New `file_save` Widget Type
 
@@ -253,10 +265,10 @@ elif p_model.widget_type in ('file', 'file_save'):
 **Gotcha fixed:** The inner function takes `_checked=None` as its first parameter because `QPushButton.clicked` emits a `bool` argument. Without the absorber, that bool overrode the default `save=is_save` and `file_save` silently fell back to `getOpenFileName`.
 
 ### Custom Action Script Editor
-`maya_action_custom` and `houdini_action_custom` are editable action nodes. The Edit Script button in `node_widget.py` is wired for those node_ids:
+`maya_action_custom`, `houdini_action_custom`, and `blender_action_custom` are editable action nodes. The Edit Script button in `node_widget.py` is wired for those node_ids:
 
 ```python
-if getattr(self.node_definition, 'node_id', None) in ('python_script', 'maya_action_custom', 'houdini_action_custom') and '_script_btn' not in self.param_widgets:
+if getattr(self.node_definition, 'node_id', None) in ('python_script', 'maya_action_custom', 'houdini_action_custom', 'blender_action_custom') and '_script_btn' not in self.param_widgets:
 ```
 
 The `_open_script_editor` callback reads/writes `python_code` via `get_parameter`/`set_parameter` (not via the raw parameters dict) so the dialog always reflects current code, and invokes `scene.push_history()` on accept.
@@ -267,9 +279,11 @@ The `_open_script_editor` callback reads/writes `python_code` via `get_parameter
 Before this fix, a node with a broken `__init__` (e.g. during active development) would crash the canvas on drag-and-drop.
 
 ### File & Module Touchpoints
-- `nodes/maya_headless.json`, `nodes/houdini_headless.json` — executors.
-- `nodes/maya_action_*.json` (22 files), `nodes/houdini_action_*.json` (14 files) — action nodes.
-- `nodes/maya_get_action_result.json`, `nodes/houdini_get_action_result.json` — helpers.
+- `nodes/maya_headless.json`, `nodes/houdini_headless.json`, `nodes/blender_headless.json` — executors.
+- `nodes/deadline_*.json` (4 files) — Deadline submitters in `DCCs` category.
+- `nodes/maya_action_*.json` (22 files), `nodes/houdini_action_*.json` (14 files), `nodes/blender_action_*.json` (19 files) — action nodes.
+- `nodes/maya_get_action_result.json`, `nodes/houdini_get_action_result.json`, `nodes/blender_get_action_result.json` — helpers.
 - `src/ui/node_widget.py` — `file_save` widget type, custom action script editor wiring.
 - `src/ui/canvas/scene.py`, `src/ui/canvas/view.py` — safer node drop.
 - `src/core/models.py` — `file_save` listed in `widget_type` comment.
+

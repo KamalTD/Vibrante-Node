@@ -28,6 +28,7 @@ class BaseNode(ABC):
         self._check_stopped = None # Hook for engine to check cancellation
         self._on_ports_changed = None # Hook for UI to rebuild ports
         self._is_port_connected = None # Hook for UI to check connections
+        self._on_dropdown_options_changed = None # Hook for UI to update dropdown items
         
         if use_exec:
             # DEFAULT pins if requested
@@ -120,6 +121,8 @@ class BaseNode(ABC):
         if isinstance(value, list) and name in self.inputs and self.inputs[name].widget_type == "dropdown":
             self.inputs[name].options = value
             self.parameters[name] = value[0] if value else ""
+            if self._on_dropdown_options_changed:
+                self._on_dropdown_options_changed(name, value)
         else:
             self.parameters[name] = value
 

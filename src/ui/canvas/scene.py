@@ -637,6 +637,7 @@ class NodeScene(QGraphicsScene):
             node_widget = NodeWidget(node_definition)
             node_definition._on_ports_changed = node_widget.rebuild_ports
             node_definition._is_port_connected = node_widget.is_port_connected
+            node_definition._on_dropdown_options_changed = node_widget.update_dropdown_options
             node_widget.setPos(pos)
             self.addItem(node_widget)
             self.nodes.append(node_widget)

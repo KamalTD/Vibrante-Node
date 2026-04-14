@@ -12,6 +12,13 @@
             "widget_type": null,
             "options": null,
             "default": null
+        },
+        {
+            "name": "mode",
+            "type": "string",
+            "widget_type": "dropdown",
+            "options": null,
+            "default": null
         }
     ],
     "outputs": [
@@ -23,5 +30,5 @@
             "default": null
         }
     ],
-    "python_code": "from src.nodes.base import BaseNode\n\nclass TestNode(BaseNode):\n    name = \"Test\"\n    \n    def __init__(self):\n        super().__init__()\n        self.icon_path = None        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"In\", \"any\")\n        self.add_output(\"Out\", \"any\")\n        # [AUTO-GENERATED-PORTS-END]\n        \n    def on_plug_sync(self, port_name, is_input, other_node, other_port_name):\n        # Access the other node's port data using the specific other_port_name\n\n        #data = other_node.get_parameter(other_port_name)\n        self.log_info(f\"Connected to {other_node.name} port '{other_port_name}'. Data: {data}\")\n\n    def on_unplug_sync(self, port_name, is_input):\n        self.log_info(f\"Disconnected {port_name}\")\n\n    async def on_plug(self, port_name, is_input, other_node, other_port_name):\n        pass\n\n    async def on_unplug(self, port_name, is_input):\n        pass\n\n    async def execute(self, inputs):\n        \"\"\"\n        Main execution logic for the node.\n        \n        :param inputs: A dictionary containing data from connected input ports and widgets.\n                       Key: Port Name (string), Value: Port Data (any).\n        :return: A dictionary containing data to be sent to output ports.\n                 Key: Port Name (string), Value: Port Data (any).\n        \"\"\"\n        \n        data=test\n        return {}\n\ndef register_node():\n    return TestNode\n"
+    "python_code": "from src.nodes.base import BaseNode\n\nclass TestNode(BaseNode):\n    name = \"Test\"\n    \n    def __init__(self):\n        super().__init__()\n        self.add_input(\"In\", \"any\")\n        self.add_input(\"mode\", \"string\", widget_type=\"dropdown\")  # starts empty — that's fine now\n        self.add_output(\"Out\", \"any\")\n    \n    def on_plug_sync(self, port_name, is_input, other_node, other_port_name):\n        if is_input and port_name == \"In\":\n            self.set_parameter(\"mode\", [\"option_a\", \"option_b\", \"option_c\"])\n    \n    def on_unplug_sync(self, port_name, is_input):\n        if is_input and port_name == \"In\":\n            self.set_parameter(\"mode\", [\"—\"])\n    \n        def on_unplug_sync(self, port_name, is_input):\n            if is_input and port_name == \"Port\":\n                # Reset to placeholder when the upstream node is disconnected.\n                self.set_parameter(\"selection\", [\"— connect a list —\"])\n                self.log_info(\"Upstream disconnected — dropdown reset.\")\n    \n    \n    \n            \n                \n    async def on_plug(self, port_name, is_input, other_node, other_port_name):\n        pass\n\n    async def on_unplug(self, port_name, is_input):\n        pass\n\n    async def execute(self, inputs):\n        \"\"\"\n        Main execution logic for the node.\n        \n        :param inputs: A dictionary containing data from connected input ports and widgets.\n                       Key: Port Name (string), Value: Port Data (any).\n        :return: A dictionary containing data to be sent to output ports.\n                 Key: Port Name (string), Value: Port Data (any).\n        \"\"\"\n        \n        return {}\n\ndef register_node():\n    return TestNode\n"
 }

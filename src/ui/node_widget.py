@@ -46,7 +46,8 @@ class NodeWidget(QGraphicsItem):
         self.output_widgets = []
         self.input_labels = []
         self.output_labels = []
-        self.param_widgets = {} # name -> proxy_widget
+        self.param_widgets = {} # name -> proxy_widget (QGraphicsProxyWidget)
+        self._param_raw_widgets = {} # name -> raw Qt widget (QLineEdit, QComboBox, etc.)
         self.status = "idle" # idle, running, success, failed
         self.is_dark = True
         self.bypassed = False
@@ -380,11 +381,16 @@ class NodeWidget(QGraphicsItem):
             path_edit.textChanged.connect(lambda val: self._update_param(p_model.name, val))
             l.addWidget(path_edit)
             l.addWidget(btn)
+            # For file widgets the editable part is path_edit, not the outer QWidget wrapper
+            self._param_raw_widgets[p_model.name] = path_edit
 
-        if w:
+        if w is not None:
             w.setStyleSheet("background-color: #333; color: white; border: 1px solid #555;")
             layout.addWidget(w)
-            
+            # Store direct reference; file widgets already stored path_edit above
+            if p_model.name not in self._param_raw_widgets:
+                self._param_raw_widgets[p_model.name] = w
+
         container.setStyleSheet("background: transparent;")
         proxy.setWidget(container)
         self.param_widgets[p_model.name] = proxy
@@ -404,7 +410,7 @@ class NodeWidget(QGraphicsItem):
              port_def = next((p for p in output_list if p.name == name), None)
         
         target_value = value
-        if port_def:
+        if port_def and not isinstance(value, list):  # never coerce a list — it may be dropdown options
             try:
                 data_type = getattr(port_def, 'data_type', getattr(port_def, 'type', 'any')).lower()
                 if data_type == 'int': target_value = int(value)
@@ -421,28 +427,31 @@ class NodeWidget(QGraphicsItem):
             
         self.node_definition.parameters[name] = target_value
         
-        # 1. Update UI
-        if name in self.param_widgets:
-            proxy = self.param_widgets[name]
-            container = proxy.widget()
-            w = container.findChild(QLineEdit) or container.findChild(QSpinBox) or \
-                container.findChild(QDoubleSpinBox) or container.findChild(QCheckBox) or \
-                container.findChild(QComboBox) or container.findChild(QSlider) or \
-                container.findChild(QTextEdit)
-
-            if w:
-                w.blockSignals(True) # Prevent recursion
-                if isinstance(w, QLineEdit): w.setText(str(target_value) if target_value is not None else "")
-                elif isinstance(w, (QSpinBox, QDoubleSpinBox, QSlider)): 
-                    if target_value is not None:
-                        try:
-                            w.setValue(target_value)
-                        except TypeError:
-                            pass # Guard against bad types
-                elif isinstance(w, QCheckBox): w.setChecked(bool(target_value))
-                elif isinstance(w, QComboBox): w.setCurrentText(str(target_value) if target_value is not None else "")
-                elif isinstance(w, QTextEdit): w.setPlainText(str(target_value) if target_value is not None else "")
-                w.blockSignals(False)
+        # 1. Update UI — use direct widget reference (never findChild)
+        w = self._param_raw_widgets.get(name)
+        if w is not None:
+            w.blockSignals(True)
+            if isinstance(w, QLineEdit):
+                w.setText(str(target_value) if target_value is not None else "")
+            elif isinstance(w, (QSpinBox, QDoubleSpinBox, QSlider)):
+                if target_value is not None:
+                    try:
+                        w.setValue(target_value)
+                    except TypeError:
+                        pass
+            elif isinstance(w, QCheckBox):
+                w.setChecked(bool(target_value))
+            elif isinstance(w, QComboBox):
+                if isinstance(target_value, list):
+                    w.clear()
+                    w.addItems([str(i) for i in target_value])
+                    if target_value:
+                        w.setCurrentIndex(0)
+                else:
+                    w.setCurrentText(str(target_value) if target_value is not None else "")
+            elif isinstance(w, QTextEdit):
+                w.setPlainText(str(target_value) if target_value is not None else "")
+            w.blockSignals(False)
 
         # 2. Trigger node logic
         AsyncRuntime.run_coroutine(self.node_definition.on_parameter_changed(name, target_value))
@@ -479,6 +488,20 @@ class NodeWidget(QGraphicsItem):
                 
                 # Recursive push to destination
                 target_node.set_parameter(target_port_name, current_val, propagate=True)
+
+    def update_dropdown_options(self, name: str, options: list):
+        """Update the items of a dropdown (QComboBox) widget for the given parameter name."""
+        w = self._param_raw_widgets.get(name)
+        if not isinstance(w, QComboBox):
+            return
+        current = w.currentText()
+        w.blockSignals(True)
+        w.clear()
+        w.addItems([str(o) for o in options])
+        idx = w.findText(current)
+        w.setCurrentIndex(idx if idx >= 0 else 0)
+        w.blockSignals(False)
+        self.node_definition.parameters[name] = w.currentText()
 
     def set_status(self, status: str):
         self.status = status

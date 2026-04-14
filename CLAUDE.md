@@ -331,57 +331,45 @@ async def execute(self, inputs):
 
 ---
 
-## 6. Full Reference Node Example
+---
 
-`nodes/houdini_abc_convert.json` — imports an Alembic file and converts it to polygons:
+## 7. Headless Action Nodes (v1.5.0)
+
+Headless action nodes (Maya, Houdini, Blender) follow a "list-builder" pattern. They don't perform work themselves; they just append a dictionary to a list that is later processed by the Headless Executor.
+
+### 7.1 Action Node Skeleton
 
 ```python
-from src.nodes.base import BaseNode
-from src.utils.hou_bridge import get_bridge
-
-class Houdini_Abc_ConvertNode(BaseNode):
-    name = "houdini_abc_convert"
-
+class DCC_Action_Node(BaseNode):
     def __init__(self):
         super().__init__()
         # [AUTO-GENERATED-PORTS-START]
-        self.add_input("abc_path", "string", widget_type="text")
-        self.add_output("geo_path", "string")
+        self.add_input("actions_in", "list")
+        self.add_input("some_param", "string", widget_type="text")
+        self.add_output("actions_out", "list")
         # [AUTO-GENERATED-PORTS-END]
 
     async def execute(self, inputs):
-        abc_file = inputs.get("abc_path", "")
-        if not abc_file:
-            self.log_error("No Alembic path provided.")
-            return {"geo_path": "", "exec_out": True}
-
-        try:
-            bridge = get_bridge()
-
-            geo_result = bridge.create_node("/obj", "geo", "vibrante_abc_import")
-            geo_path = geo_result["path"]
-
-            for child in bridge.children(geo_path):
-                bridge.delete_node(child["path"])
-
-            abc_result = bridge.create_node(geo_path, "alembic", "input_alembic")
-            abc_path = abc_result["path"]
-            bridge.set_parm(abc_path, "fileName", abc_file)
-
-            convert_result = bridge.create_node(geo_path, "convert", "convert_to_polygons")
-            convert_path = convert_result["path"]
-            bridge.connect_nodes(abc_path, convert_path, output=0, input_idx=0)
-
-            bridge.set_display_flag(convert_path, True)
-            bridge.set_render_flag(convert_path, True)
-            bridge.layout_children(geo_path)
-
-            return {"geo_path": geo_path, "exec_out": True}
-
-        except Exception as e:
-            self.log_error(f"Houdini Bridge Execution Failed: {str(e)}")
-            return {"geo_path": "", "exec_out": True}
-
-def register_node():
-    return Houdini_Abc_ConvertNode
+        actions = list(inputs.get("actions_in") or [])
+        
+        # Build the action dictionary
+        action = {
+            "type": "my_action_type",
+            "some_param": inputs.get("some_param", "")
+        }
+        
+        actions.append(action)
+        
+        return {
+            "actions_out": actions,
+            "exec_out": True
+        }
 ```
+
+### 7.2 Conventions for Action Nodes
+
+- **`node_id`** should follow the pattern: `maya_action_...`, `houdini_action_...`, or `blender_action_...`.
+- **`category`** should be `"Maya"`, `"Houdini"`, or `"Blender"`.
+- **`actions_in` / `actions_out`** are mandatory for chaining.
+- Always use `list(inputs.get("actions_in") or [])` to avoid mutating the original list or failing on None.
+- The `type` field in the dictionary must match a handler in the corresponding DCC runner script.
