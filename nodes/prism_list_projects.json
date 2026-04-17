@@ -1,0 +1,25 @@
+{
+    "node_id": "prism_list_projects",
+    "name": "Prism: List Projects",
+    "description": "Returns the list of known/recent Prism projects. Wraps core.projects.getProjects().",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "core",
+            "type": "any"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "projects",
+            "type": "list"
+        },
+        {
+            "name": "count",
+            "type": "int"
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\nclass PrismListProjectsNode(BaseNode):\n    name = \"Prism: List Projects\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__(use_exec=False)\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_output(\"projects\", \"list\")\n        self.add_output(\"count\", \"int\")\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        if core is None:\n            self.log_error(\"No PrismCore found. Add a prism_core_init node to your graph and connect its exec_out before this node.\")\n            return {'projects': [], 'count': 0}\n        try:\n            projects = []\n            projects_module = getattr(core, 'projects', None)\n            if projects_module is not None:\n                if hasattr(projects_module, 'getProjects'):\n                    projects = projects_module.getProjects() or []\n                else:\n                    projects = getattr(projects_module, 'recentProjects', []) or []\n            elif hasattr(core, 'getProjects'):\n                projects = core.getProjects() or []\n            elif hasattr(core, 'recentProjects'):\n                projects = getattr(core, 'recentProjects', []) or []\n            self.log_info(f\"Found {len(projects)} project(s)\")\n            return {'projects': list(projects), 'count': len(projects)}\n        except Exception as e:\n            self.log_error(f\"getProjects failed: {e}\")\n            return {'projects': [], 'count': 0}\n\ndef register_node():\n    return PrismListProjectsNode\n",
+    "use_exec": false
+}

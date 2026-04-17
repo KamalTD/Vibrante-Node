@@ -1,0 +1,110 @@
+{
+    "metadata": {
+        "name": "Prism Pipeline Demo",
+        "description": "Demonstrates a typical Prism workflow in Vibrante: init core -> create project -> create asset -> build scene from preset.",
+        "version": "1.0.0"
+    },
+    "nodes": [
+        {
+            "instance_id": "n_init",
+            "node_id": "prism_core_init",
+            "position": [-600, 0],
+            "parameters": {
+                "prism_scripts_path": "C:/Program Files/Prism2/Scripts",
+                "load_project": true,
+                "show_ui": false
+            }
+        },
+        {
+            "instance_id": "n_create_project",
+            "node_id": "prism_create_project",
+            "position": [-300, -100],
+            "parameters": {
+                "name": "MyShow",
+                "path": "D:/Projects/MyShow",
+                "preset": "Default"
+            }
+        },
+        {
+            "instance_id": "n_change_project",
+            "node_id": "prism_change_project",
+            "position": [0, -100],
+            "parameters": {
+                "project_path": "D:/Projects/MyShow"
+            }
+        },
+        {
+            "instance_id": "n_build_entity",
+            "node_id": "prism_build_entity",
+            "position": [-300, 100],
+            "parameters": {
+                "entity_type": "asset",
+                "asset_path": "chars/dog"
+            }
+        },
+        {
+            "instance_id": "n_create_entity",
+            "node_id": "prism_create_entity",
+            "position": [300, 0],
+            "parameters": {
+                "entity_type": "asset",
+                "asset_path": "chars/dog"
+            }
+        },
+        {
+            "instance_id": "n_create_category",
+            "node_id": "prism_create_category",
+            "position": [600, 0],
+            "parameters": {
+                "department": "mod",
+                "task": "baseGeo"
+            }
+        },
+        {
+            "instance_id": "n_get_presets",
+            "node_id": "prism_get_preset_scenes",
+            "position": [600, 200],
+            "parameters": {
+                "extension_filter": ".hip"
+            }
+        },
+        {
+            "instance_id": "n_create_scene",
+            "node_id": "prism_create_scene_from_preset",
+            "position": [900, 100],
+            "parameters": {
+                "department": "mod",
+                "task": "baseGeo",
+                "comment": "initial geometry"
+            }
+        },
+        {
+            "instance_id": "n_popup",
+            "node_id": "prism_popup",
+            "position": [1200, 100],
+            "parameters": {
+                "message": "Vibrante: Prism workflow finished.",
+                "title": "Vibrante \u00d7 Prism"
+            }
+        }
+    ],
+    "connections": [
+        {"from_node": "n_init",            "from_port": "exec_out",   "to_node": "n_create_project",     "to_port": "exec_in",      "is_exec": true},
+        {"from_node": "n_init",            "from_port": "core",       "to_node": "n_create_project",     "to_port": "core",         "is_exec": false},
+        {"from_node": "n_create_project",  "from_port": "exec_out",   "to_node": "n_change_project",     "to_port": "exec_in",      "is_exec": true},
+        {"from_node": "n_init",            "from_port": "core",       "to_node": "n_change_project",     "to_port": "core",         "is_exec": false},
+        {"from_node": "n_change_project",  "from_port": "exec_out",   "to_node": "n_create_entity",      "to_port": "exec_in",      "is_exec": true},
+        {"from_node": "n_init",            "from_port": "core",       "to_node": "n_create_entity",      "to_port": "core",         "is_exec": false},
+        {"from_node": "n_create_entity",   "from_port": "exec_out",   "to_node": "n_create_category",    "to_port": "exec_in",      "is_exec": true},
+        {"from_node": "n_init",            "from_port": "core",       "to_node": "n_create_category",    "to_port": "core",         "is_exec": false},
+        {"from_node": "n_build_entity",    "from_port": "entity",     "to_node": "n_create_category",    "to_port": "entity",       "is_exec": false},
+        {"from_node": "n_create_category", "from_port": "exec_out",   "to_node": "n_get_presets",        "to_port": "exec_in",      "is_exec": true},
+        {"from_node": "n_init",            "from_port": "core",       "to_node": "n_get_presets",        "to_port": "core",         "is_exec": false},
+        {"from_node": "n_get_presets",     "from_port": "exec_out",   "to_node": "n_create_scene",       "to_port": "exec_in",      "is_exec": true},
+        {"from_node": "n_init",            "from_port": "core",       "to_node": "n_create_scene",       "to_port": "core",         "is_exec": false},
+        {"from_node": "n_build_entity",    "from_port": "entity",     "to_node": "n_create_scene",       "to_port": "entity",       "is_exec": false},
+        {"from_node": "n_get_presets",     "from_port": "first_preset","to_node": "n_create_scene",      "to_port": "preset_file",  "is_exec": false},
+        {"from_node": "n_create_scene",    "from_port": "exec_out",   "to_node": "n_popup",              "to_port": "exec_in",      "is_exec": true},
+        {"from_node": "n_init",            "from_port": "core",       "to_node": "n_popup",              "to_port": "core",         "is_exec": false}
+    ]
+}

@@ -1,0 +1,25 @@
+{
+    "node_id": "prism_list_plugins",
+    "name": "Prism: List Plugins",
+    "description": "Returns the names of all currently loaded Prism plugins. Wraps core.plugins.getLoadedPlugins().",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "core",
+            "type": "any"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "plugin_names",
+            "type": "list"
+        },
+        {
+            "name": "count",
+            "type": "int"
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\nclass PrismListPluginsNode(BaseNode):\n    name = \"Prism: List Plugins\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__(use_exec=False)\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_output(\"plugin_names\", \"list\")\n        self.add_output(\"count\", \"int\")\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        if core is None:\n            self.log_error(\"No PrismCore found. Add a prism_core_init node to your graph and connect its exec_out before this node.\")\n            return {'plugin_names': [], 'count': 0}\n        try:\n            names = []\n            plugins_module = getattr(core, 'plugins', None)\n            if plugins_module is None:\n                return {'plugin_names': [], 'count': 0}\n            for attr in ('getLoadedPlugins', 'getPlugins', 'loadedPlugins'):\n                if hasattr(plugins_module, attr):\n                    val = getattr(plugins_module, attr)\n                    res = val() if callable(val) else val\n                    if isinstance(res, dict): names = list(res.keys())\n                    else: names = [str(getattr(p, 'pluginName', p)) for p in (res or [])]\n                    break\n            self.log_info(f\"{len(names)} plugin(s) loaded.\")\n            return {'plugin_names': names, 'count': len(names)}\n        except Exception as e:\n            self.log_error(f\"listPlugins failed: {e}\")\n            return {'plugin_names': [], 'count': 0}\n\ndef register_node():\n    return PrismListPluginsNode\n",
+    "use_exec": false
+}

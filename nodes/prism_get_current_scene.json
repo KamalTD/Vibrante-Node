@@ -1,0 +1,37 @@
+{
+    "node_id": "prism_get_current_scene",
+    "name": "Prism: Get Current Scene",
+    "description": "Returns information about the scene currently open in the connected DCC: file path and parsed entity context. Wraps core.getCurrentFileName() and core.getScenefileData(filepath).",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "core",
+            "type": "any"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "file_path",
+            "type": "string"
+        },
+        {
+            "name": "entity",
+            "type": "dict"
+        },
+        {
+            "name": "department",
+            "type": "string"
+        },
+        {
+            "name": "task",
+            "type": "string"
+        },
+        {
+            "name": "version",
+            "type": "string"
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\nclass PrismGetCurrentSceneNode(BaseNode):\n    name = \"Prism: Get Current Scene\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__(use_exec=False)\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_output(\"file_path\", \"string\")\n        self.add_output(\"entity\", \"dict\")\n        self.add_output(\"department\", \"string\")\n        self.add_output(\"task\", \"string\")\n        self.add_output(\"version\", \"string\")\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        if core is None:\n            self.log_error(\"No PrismCore found. Add a prism_core_init node to your graph and connect its exec_out before this node.\")\n            return {'file_path':'','entity':{},'department':'','task':'','version':''}\n        try:\n            fpath = ''\n            for attr in ('getCurrentFileName', 'getCurrentScenefile'):\n                if hasattr(core, attr):\n                    fpath = str(getattr(core, attr)() or '')\n                    if fpath: break\n            data = {}\n            if fpath:\n                for attr in ('getScenefileData', 'getDataFromScenefile'):\n                    if hasattr(core, attr):\n                        try:\n                            data = getattr(core, attr)(fpath) or {}\n                            break\n                        except Exception:\n                            data = {}\n            entity = {}\n            if isinstance(data, dict):\n                if data.get('type') in ('asset','shot'):\n                    entity = {k:v for k,v in data.items() if k in ('type','asset_path','sequence','shot')}\n                else:\n                    entity = data.get('entity') or {}\n            dept = str((data or {}).get('department','') or '')\n            task = str((data or {}).get('task','') or '')\n            ver  = str((data or {}).get('version','') or '')\n            self.log_info(f\"Current scene: {fpath}\")\n            return {'file_path': fpath, 'entity': entity, 'department': dept, 'task': task, 'version': ver}\n        except Exception as e:\n            self.log_error(f\"getCurrentScene failed: {e}\")\n            return {'file_path':'','entity':{},'department':'','task':'','version':''}\n\ndef register_node():\n    return PrismGetCurrentSceneNode\n",
+    "use_exec": false
+}

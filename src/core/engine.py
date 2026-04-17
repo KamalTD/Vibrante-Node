@@ -1,8 +1,7 @@
 import asyncio
 from typing import Dict, Any, List, Set, Optional
 from uuid import UUID
-from src.utils.qt_compat import QtCore, Signal, Slot
-QObject = QtCore.QObject
+from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
 from src.core.graph import GraphManager
 from src.core.registry import NodeRegistry
 from src.utils.runtime import SafeRuntime
@@ -10,12 +9,12 @@ from src.nodes.base import BaseNode
 
 class NetworkExecutor(QObject):
     # Signals for UI feedback
-    node_started = Signal(object)
-    node_finished = Signal(object, str) # node_id, status ('success' or 'failed')
-    node_error = Signal(object, str)    # node_id, error_message
-    node_output = Signal(object, dict)  # node_id, output_data
-    node_log = Signal(object, str, str) # node_id, message, level
-    execution_finished = Signal(bool) # success
+    node_started = pyqtSignal(UUID)
+    node_finished = pyqtSignal(UUID, str) # node_id, status ('success' or 'failed')
+    node_error = pyqtSignal(UUID, str)    # node_id, error_message
+    node_output = pyqtSignal(UUID, dict)  # node_id, output_data
+    node_log = pyqtSignal(UUID, str, str) # node_id, message, level
+    execution_finished = pyqtSignal(bool) # success
 
     def __init__(self, graph_manager: GraphManager):
         super().__init__()
@@ -26,19 +25,18 @@ class NetworkExecutor(QObject):
         self._currently_executing: Set[UUID] = set() # Nodes currently in the stack
         self._is_stopped = False
         self._active_tasks: Set[asyncio.Task] = set()
-        self._finished_event = asyncio.Event()
+        self._finished_event: Optional[asyncio.Event] = None
         
         # Pre-calculated lookup maps
-        self._incoming_data_conns: Dict[UUID, List[Any]] = {}
-        self._outgoing_data_conns: Dict[tuple, List[Any]] = {}  # (node_id, port_name) -> [conn]
-        self._outgoing_exec_conns: Dict[tuple, List[Any]] = {}  # (node_id, port_name) -> [conn]
+        self._incoming_data_conns: Dict[UUID, List[Any]] = {} 
         self._driven_by_flow: Set[UUID] = set()
 
     def stop(self):
         self._is_stopped = True
         for task in self._active_tasks:
             task.cancel()
-        self._finished_event.set()
+        if self._finished_event is not None:
+            self._finished_event.set()
 
     def _track_task(self, coro):
         """Helper to create and track a task in the current event loop."""
@@ -63,21 +61,16 @@ class NetworkExecutor(QObject):
         self._currently_executing.clear()
         self._is_stopped = False
         self._active_tasks.clear()
-        self._finished_event.clear()
+        self._finished_event = asyncio.Event()
         
         # 1. PRE-CALCULATE LOOKUP MAPS
         self._incoming_data_conns = {}
-        self._outgoing_data_conns = {}
-        self._outgoing_exec_conns = {}
         self._driven_by_flow = set()
         for conn in self.graph_manager.connections:
-            key = (conn.from_node, conn.from_port)
             if conn.is_exec:
                 self._driven_by_flow.add(conn.to_node)
-                self._outgoing_exec_conns.setdefault(key, []).append(conn)
             else:
                 self._incoming_data_conns.setdefault(conn.to_node, []).append(conn)
-                self._outgoing_data_conns.setdefault(key, []).append(conn)
 
         # 2. PREPARE ALL NODES
         self.node_results = {}
@@ -99,13 +92,7 @@ class NetworkExecutor(QObject):
                 self.execution_finished.emit(False)
                 return
             
-            try:
-                instance = node_class()
-            except Exception as e:
-                err = f"Node '{node_model.node_id}' failed to initialize: {e}"
-                self.node_error.emit(node_id, err)
-                self.execution_finished.emit(False)
-                return
+            instance = node_class()
             instance.name = node_model.node_id
             
             # 1. RESTORE DYNAMIC PORTS
@@ -142,30 +129,44 @@ class NetworkExecutor(QObject):
             def create_output_handler(nid):
                 async def handler(name, value):
                     if self._is_stopped: return
-
+                    
                     # Store result immediately
                     self.node_results[nid][name] = value
                     self.node_output.emit(nid, {name: value})
+                    
+                    # 1. REACTIVE DATA PROPAGATION
+                    # exec_conns is defined below, but Python closures will find it
+                    for conn in self.graph_manager.connections:
+                        if conn.from_node == nid and conn.from_port == name and not conn.is_exec:
+                            target_instance = self.node_instances.get(conn.to_node)
+                            if target_instance:
+                                # Sync both parameter and result cache
+                                target_instance.parameters[conn.to_port] = value
+                                self.node_results[conn.to_node][conn.to_port] = value
+                                
+                                # ALWAYS trigger on_parameter_changed for data connections.
+                                # This allows nodes (like For Each) to react to data changes
+                                # even if they are primarily driven by flow pins.
+                                await target_instance.on_parameter_changed(conn.to_port, value)
 
-                    # 1. REACTIVE DATA PROPAGATION (indexed lookup)
-                    for conn in self._outgoing_data_conns.get((nid, name), []):
-                        target_instance = self.node_instances.get(conn.to_node)
-                        if target_instance:
-                            target_instance.parameters[conn.to_port] = value
-                            self.node_results[conn.to_node][conn.to_port] = value
-                            await target_instance.on_parameter_changed(conn.to_port, value)
-
-                    # 2. FLOW-BASED ROUTING (indexed lookup)
-                    if bool(value) is True:
+                    # 2. FLOW-BASED ROUTING
+                    if bool(value) is True: # Handle both True and truthy values for execution pins
                         node_inst = self.node_instances.get(nid)
                         port_def = node_inst.outputs.get(name) if node_inst else None
                         if port_def and getattr(port_def, 'data_type', 'any') == 'exec':
-                            for conn in self._outgoing_exec_conns.get((nid, name), []):
-                                await self._execute_flow(conn.to_node)
+                            for conn in self.graph_manager.connections:
+                                if conn.from_node == nid and conn.from_port == name and conn.is_exec:
+                                    await self._execute_flow(conn.to_node)
                 return handler
             instance._on_output = create_output_handler(node_id)
 
-        # 2. IDENTIFY ENTRY NODES
+        # 2. PRISM BOOTSTRAP
+        # If any prism_core_init node exists, initialise PrismCore before the
+        # main execution loop so every prism_* node can resolve it from the
+        # shared cache without requiring an explicit 'core' wire.
+        await self._bootstrap_prism_if_needed()
+
+        # 3. IDENTIFY ENTRY NODES
         exec_conns = [c for c in self.graph_manager.connections if c.is_exec]
         
         try:
@@ -201,7 +202,7 @@ class NetworkExecutor(QObject):
                     while self._active_tasks and not self._is_stopped:
                         await self._finished_event.wait()
                         self._finished_event.clear()
-                        await asyncio.sleep(0)
+                        await asyncio.sleep(0.05)
             else:
                 # CLASSIC DATA-FLOW (Using Topological Sorting)
                 # Execute the graph layer by layer as mandated by GEMINI.md
@@ -228,6 +229,28 @@ class NetworkExecutor(QObject):
 
         finally:
             self.execution_finished.emit(not self._is_stopped)
+
+    async def _bootstrap_prism_if_needed(self):
+        """Run bootstrap_prism_core before the main graph if a prism_core_init
+        node is present and PrismCore is not already cached."""
+        from src.utils.prism_core import resolve_prism_core, bootstrap_prism_core
+        if resolve_prism_core() is not None:
+            return
+        for node_id, node_model in self.graph_manager.nodes.items():
+            if node_model.node_id == "prism_core_init":
+                params = node_model.parameters
+                scripts_path = params.get("prism_scripts_path", "C:/Program Files/Prism2/Scripts")
+                load_project = bool(params.get("load_project", True))
+                show_ui = bool(params.get("show_ui", False))
+                try:
+                    bootstrap_prism_core(
+                        prism_scripts_path=scripts_path,
+                        load_project=load_project,
+                        show_ui=show_ui,
+                    )
+                except Exception as e:
+                    self.node_log.emit(node_id, f"Prism bootstrap failed: {e}", "error")
+                break
 
     async def _execute_flow(self, node_id: UUID):
         """Executes a single node. Flow continuation is handled EXCLUSIVELY by set_output calls."""
@@ -258,8 +281,6 @@ class NetworkExecutor(QObject):
         
         try:
             instance = self.node_instances[node_id]
-            node_model = self.graph_manager.nodes.get(node_id)
-            is_bypassed = getattr(node_model, 'bypassed', False)
 
             # 1. PULL UPSTREAM DATA NODES (In Port Order)
             incoming = self._incoming_data_conns.get(node_id, [])
@@ -290,35 +311,6 @@ class NetworkExecutor(QObject):
                     instance.parameters[conn.to_port] = val
                     await instance.on_parameter_changed(conn.to_port, val)
             
-            if is_bypassed:
-                # BYPASS LOGIC: 
-                # 1. Flow nodes: Trigger ALL exec outputs
-                # 2. Data nodes: Pass first input to all outputs
-                self.node_log.emit(node_id, "Node is bypassed. Passing through.", "info")
-                
-                bypass_results = {}
-                
-                # Identify first data input for passthrough
-                first_data_input_val = None
-                for p_name, p_def in instance.inputs.items():
-                    if p_def.data_type != 'exec':
-                        first_data_input_val = instance.get_parameter(p_name)
-                        break
-                
-                for p_name, p_def in instance.outputs.items():
-                    if p_def.data_type == 'exec':
-                        # Trigger flow
-                        await instance.set_output(p_name, True)
-                    else:
-                        # Passthrough data
-                        bypass_results[p_name] = first_data_input_val
-                        await instance.set_output(p_name, first_data_input_val)
-                
-                self._executed_nodes.add(node_id)
-                self.node_results[node_id].update(bypass_results)
-                self.node_finished.emit(node_id, "success")
-                return True
-
             inputs = instance.parameters.copy()
             success, result, error = await SafeRuntime.run_node_safe(instance.execute, inputs)
             

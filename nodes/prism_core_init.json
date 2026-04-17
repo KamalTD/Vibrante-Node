@@ -1,0 +1,46 @@
+{
+    "node_id": "prism_core_init",
+    "name": "Prism: Init Core",
+    "description": "Initializes or retrieves the PrismCore instance. Outputs the `core` object used by all other Prism nodes. Inside a DCC (Houdini, Maya, Blender...) the existing PrismCore is reused; otherwise a fresh headless instance is created.",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "exec_in",
+            "type": "exec"
+        },
+        {
+            "name": "prism_scripts_path",
+            "type": "string",
+            "widget_type": "text",
+            "default": "C:/Program Files/Prism2/Scripts"
+        },
+        {
+            "name": "load_project",
+            "type": "bool",
+            "widget_type": "bool",
+            "default": true
+        },
+        {
+            "name": "show_ui",
+            "type": "bool",
+            "widget_type": "bool",
+            "default": false
+        }
+    ],
+    "outputs": [
+        {
+            "name": "exec_out",
+            "type": "exec"
+        },
+        {
+            "name": "core",
+            "type": "any"
+        },
+        {
+            "name": "version",
+            "type": "string"
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.prism_core import bootstrap_prism_core, resolve_prism_core\n\nclass PrismCoreInitNode(BaseNode):\n    name = \"Prism: Init Core\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__()\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"prism_scripts_path\", \"string\", widget_type=\"text\", default=\"C:/Program Files/Prism2/Scripts\")\n        self.add_input(\"load_project\", \"bool\", widget_type=\"bool\", default=True)\n        self.add_input(\"show_ui\", \"bool\", widget_type=\"bool\", default=False)\n        self.add_output(\"core\", \"any\")\n        self.add_output(\"version\", \"string\")\n\n    async def execute(self, inputs):\n        cached_core = resolve_prism_core()\n        if cached_core is not None:\n            self.log_success(f\"Reusing cached PrismCore (version={cached_core.version})\")\n            await self.set_output('exec_out', True)\n            return {'core': cached_core, 'version': str(cached_core.version)}\n\n        scripts_path = inputs.get('prism_scripts_path', 'C:/Program Files/Prism2/Scripts')\n        load_project = bool(inputs.get('load_project', True))\n        show_ui = bool(inputs.get('show_ui', False))\n\n        try:\n            core = bootstrap_prism_core(prism_scripts_path=scripts_path, load_project=load_project, show_ui=show_ui)\n            self.log_success(f\"PrismCore initialized (version={core.version})\")\n            await self.set_output('exec_out', True)\n            return {'core': core, 'version': str(core.version)}\n        except Exception as e:\n            self.log_error(f\"PrismCore init failed: {e}\")\n            await self.set_output('exec_out', True)\n            return {'core': None, 'version': ''}\n\ndef register_node():\n    return PrismCoreInitNode\n"
+}

@@ -1,0 +1,33 @@
+{
+    "node_id": "prism_get_media_versions",
+    "name": "Prism: Get Media Versions",
+    "description": "Returns all versions of a media identifier. Wraps core.mediaProducts.getVersionsFromIdentifier(media_identifier).",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "core",
+            "type": "any"
+        },
+        {
+            "name": "media_identifier",
+            "type": "any"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "versions",
+            "type": "list"
+        },
+        {
+            "name": "latest",
+            "type": "any"
+        },
+        {
+            "name": "count",
+            "type": "int"
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\nclass PrismGetMediaVersionsNode(BaseNode):\n    name = \"Prism: Get Media Versions\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__(use_exec=False)\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_input(\"media_identifier\", \"any\")\n        self.add_output(\"versions\", \"list\")\n        self.add_output(\"latest\", \"any\")\n        self.add_output(\"count\", \"int\")\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        ident = inputs.get('media_identifier')\n        if core is None or ident is None:\n            self.log_error(\"No PrismCore or media_identifier provided.\")\n            return {'versions': [], 'latest': None, 'count': 0}\n        try:\n            media_module = getattr(core, 'mediaProducts', None) or getattr(core, 'media', None)\n            versions = []\n            for attr in ('getVersionsFromIdentifier', 'getMediaVersions', 'getVersions'):\n                if hasattr(media_module, attr):\n                    versions = getattr(media_module, attr)(ident) or []\n                    break\n            versions = list(versions)\n            latest = versions[-1] if versions else None\n            self.log_info(f\"Found {len(versions)} media version(s).\")\n            return {'versions': versions, 'latest': latest, 'count': len(versions)}\n        except Exception as e:\n            self.log_error(f\"getMediaVersions failed: {e}\")\n            return {'versions': [], 'latest': None, 'count': 0}\n\ndef register_node():\n    return PrismGetMediaVersionsNode\n",
+    "use_exec": false
+}

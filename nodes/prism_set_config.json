@@ -1,0 +1,55 @@
+{
+    "node_id": "prism_set_config",
+    "name": "Prism: Set Config",
+    "description": "Writes a Prism config value. Wraps core.setConfig(category, key, value, config='user'|'project'|'shared').",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "exec_in",
+            "type": "exec"
+        },
+        {
+            "name": "core",
+            "type": "any"
+        },
+        {
+            "name": "category",
+            "type": "string",
+            "widget_type": "text",
+            "default": "globals"
+        },
+        {
+            "name": "key",
+            "type": "string",
+            "widget_type": "text",
+            "default": ""
+        },
+        {
+            "name": "value",
+            "type": "any"
+        },
+        {
+            "name": "config_scope",
+            "type": "string",
+            "widget_type": "dropdown",
+            "options": [
+                "user",
+                "project",
+                "shared"
+            ],
+            "default": "user"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "exec_out",
+            "type": "exec"
+        },
+        {
+            "name": "success",
+            "type": "bool"
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\nclass PrismSetConfigNode(BaseNode):\n    name = \"Prism: Set Config\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__()\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_input(\"category\", \"string\", widget_type=\"text\", default=\"globals\")\n        self.add_input(\"key\", \"string\", widget_type=\"text\", default=\"\")\n        self.add_input(\"value\", \"any\")\n        self.add_input(\"config_scope\", \"string\", widget_type=\"dropdown\", options=[\"user\",\"project\",\"shared\"], default=\"user\")\n        self.add_output(\"success\", \"bool\")\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        cat = inputs.get('category') or ''\n        key = inputs.get('key') or ''\n        value = inputs.get('value')\n        scope = inputs.get('config_scope') or 'user'\n        if core is None:\n            self.log_error(\"No PrismCore found. Add a prism_core_init node to your graph and connect its exec_out before this node.\")\n            return {'success': False}\n        try:\n            ok = False\n            if hasattr(core, 'setConfig'):\n                try:\n                    core.setConfig(cat, key, value, config=scope)\n                except TypeError:\n                    core.setConfig(cat, key, value)\n                ok = True\n            elif hasattr(core, 'configs') and hasattr(core.configs, 'setConfig'):\n                core.configs.setConfig(cat, key, value, config=scope)\n                ok = True\n            if ok:\n                self.log_success(f\"Config[{scope}][{cat}][{key}] <- {value!r}\")\n                await self.set_output('exec_out', True)\n            return {'success': ok}\n        except Exception as e:\n            self.log_error(f\"setConfig failed: {e}\")\n            return {'success': False}\n\ndef register_node():\n    return PrismSetConfigNode\n"
+}

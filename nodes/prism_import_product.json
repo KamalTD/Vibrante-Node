@@ -1,0 +1,37 @@
+{
+    "node_id": "prism_import_product",
+    "name": "Prism: Import Product",
+    "description": "Imports a product version into the currently open DCC scene. Wraps core.products.importProduct(version) / core.appPlugin.importImages.",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "exec_in",
+            "type": "exec"
+        },
+        {
+            "name": "core",
+            "type": "any"
+        },
+        {
+            "name": "version_path",
+            "type": "string",
+            "widget_type": "file"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "exec_out",
+            "type": "exec"
+        },
+        {
+            "name": "success",
+            "type": "bool"
+        },
+        {
+            "name": "imported_node",
+            "type": "any"
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\nclass PrismImportProductNode(BaseNode):\n    name = \"Prism: Import Product\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__()\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_input(\"version_path\", \"string\", widget_type=\"file\")\n        self.add_output(\"success\", \"bool\")\n        self.add_output(\"imported_node\", \"any\")\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        path = inputs.get('version_path') or ''\n        if core is None or not path:\n            self.log_error(\"Need PrismCore and version_path.\")\n            return {'success': False, 'imported_node': None}\n        try:\n            result = None\n            products = getattr(core, 'products', None)\n            if products is not None:\n                for attr in ('importProduct', 'importFile'):\n                    if hasattr(products, attr):\n                        result = getattr(products, attr)(path)\n                        break\n            app_plugin = getattr(core, 'appPlugin', None)\n            if result is None and app_plugin is not None:\n                for attr in ('importImages', 'importFile'):\n                    if not hasattr(app_plugin, attr):\n                        continue\n                    fn = getattr(app_plugin, attr)\n                    try:\n                        result = fn(core, path)\n                    except TypeError:\n                        result = fn(path)\n                    break\n            if result is None:\n                self.log_error(\"No importProduct/importImages method available.\")\n                return {'success': False, 'imported_node': None}\n            self.log_success(f\"Imported product: {path}\")\n            await self.set_output('exec_out', True)\n            return {'success': True, 'imported_node': result}\n        except Exception as e:\n            self.log_error(f\"importProduct failed: {e}\")\n            return {'success': False, 'imported_node': None}\n\ndef register_node():\n    return PrismImportProductNode\n"
+}

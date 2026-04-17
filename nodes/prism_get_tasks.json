@@ -1,0 +1,35 @@
+{
+    "node_id": "prism_get_tasks",
+    "name": "Prism: Get Tasks",
+    "description": "Returns the list of tasks for the given entity and department. Wraps core.entities.getTasks(entity, department).",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "core",
+            "type": "any"
+        },
+        {
+            "name": "entity",
+            "type": "dict"
+        },
+        {
+            "name": "department",
+            "type": "string",
+            "widget_type": "text",
+            "default": "fx"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "tasks",
+            "type": "list"
+        },
+        {
+            "name": "count",
+            "type": "int"
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\nclass PrismGetTasksNode(BaseNode):\n    name = \"Prism: Get Tasks\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__(use_exec=False)\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_input(\"entity\", \"dict\")\n        self.add_input(\"department\", \"string\", widget_type=\"text\", default=\"fx\")\n        self.add_output(\"tasks\", \"list\")\n        self.add_output(\"count\", \"int\")\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        entity = inputs.get('entity') or {}\n        dept = inputs.get('department') or ''\n        if core is None:\n            self.log_error(\"No PrismCore found. Add a prism_core_init node to your graph and connect its exec_out before this node.\")\n            return {'tasks': [], 'count': 0}\n        try:\n            tasks = core.entities.getTasks(entity, dept) or []\n            self.log_info(f\"Found {len(tasks)} task(s) in {dept}.\")\n            return {'tasks': list(tasks), 'count': len(tasks)}\n        except Exception as e:\n            self.log_error(f\"getTasks failed: {e}\")\n            return {'tasks': [], 'count': 0}\n\ndef register_node():\n    return PrismGetTasksNode\n",
+    "use_exec": false
+}

@@ -1,0 +1,33 @@
+{
+    "node_id": "prism_login_token",
+    "name": "Prism: Login (Access Token)",
+    "description": "Logs into Prism with an access token via the PrismInternals plugin. Wraps plugin.internals.login(accessToken=...).",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "exec_in",
+            "type": "exec"
+        },
+        {
+            "name": "core",
+            "type": "any"
+        },
+        {
+            "name": "access_token",
+            "type": "string",
+            "widget_type": "text"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "exec_out",
+            "type": "exec"
+        },
+        {
+            "name": "success",
+            "type": "bool"
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\nclass PrismLoginTokenNode(BaseNode):\n    name = \"Prism: Login (Access Token)\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__()\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_input(\"access_token\", \"string\", widget_type=\"text\")\n        self.add_output(\"success\", \"bool\")\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        token = inputs.get('access_token') or ''\n        if core is None or not token:\n            self.log_error(\"Need core and access_token.\")\n            return {'success': False}\n        try:\n            plugin = core.getPlugin('PrismInternals') if hasattr(core, 'getPlugin') else core.plugins.getPlugin('PrismInternals')\n            if plugin is None:\n                self.log_error(\"PrismInternals plugin not loaded.\")\n                return {'success': False}\n            internals = getattr(plugin, 'internals', plugin)\n            internals.login(accessToken=token)\n            self.log_success(\"Logged in via access token.\")\n            await self.set_output('exec_out', True)\n            return {'success': True}\n        except Exception as e:\n            self.log_error(f\"login failed: {e}\")\n            return {'success': False}\n\ndef register_node():\n    return PrismLoginTokenNode\n"
+}

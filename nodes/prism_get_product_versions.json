@@ -1,0 +1,33 @@
+{
+    "node_id": "prism_get_product_versions",
+    "name": "Prism: Get Product Versions",
+    "description": "Returns all versions of the given product. Wraps core.products.getVersionsFromProduct(product).",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "core",
+            "type": "any"
+        },
+        {
+            "name": "product",
+            "type": "any"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "versions",
+            "type": "list"
+        },
+        {
+            "name": "latest_version",
+            "type": "any"
+        },
+        {
+            "name": "count",
+            "type": "int"
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\nclass PrismGetProductVersionsNode(BaseNode):\n    name = \"Prism: Get Product Versions\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__(use_exec=False)\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_input(\"product\", \"any\")\n        self.add_output(\"versions\", \"list\")\n        self.add_output(\"latest_version\", \"any\")\n        self.add_output(\"count\", \"int\")\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        product = inputs.get('product')\n        if core is None or product is None:\n            self.log_error(\"No PrismCore or product provided.\")\n            return {'versions': [], 'latest_version': None, 'count': 0}\n        try:\n            versions = []\n            for attr in ('getVersionsFromProduct', 'getProductVersions', 'getVersions'):\n                if hasattr(core.products, attr):\n                    versions = getattr(core.products, attr)(product) or []\n                    break\n            versions = list(versions)\n            latest = versions[-1] if versions else None\n            self.log_info(f\"Found {len(versions)} version(s).\")\n            return {'versions': versions, 'latest_version': latest, 'count': len(versions)}\n        except Exception as e:\n            self.log_error(f\"getVersionsFromProduct failed: {e}\")\n            return {'versions': [], 'latest_version': None, 'count': 0}\n\ndef register_node():\n    return PrismGetProductVersionsNode\n",
+    "use_exec": false
+}

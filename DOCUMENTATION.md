@@ -1,25 +1,17 @@
 # Vibrante-Node - Technical API & Architecture Documentation
 
-This document provides an exhaustive reference for the Vibrante-Node platform, covering core architecture, the custom node Scripting API, the Workflow Automation system, and the SideFX Houdini integration.
+This document provides an exhaustive reference for the Vibrante-Node platform, covering core architecture, the custom node Scripting API, and the Workflow Automation system.
 
 ---
 
 ## 🚀 1. Core Application Architecture
 
 ### 🔹 Professional Python Code Editor
-The Node Builder and Export Python dialog feature a fully-integrated, professional-grade source code editor:
+The Node Builder features a fully-integrated, professional-grade source code editor:
 - **Intelligent Syntax Highlighting**: Dracula-inspired theme for keywords, builtins, and multi-line strings.
 - **Auto-Indentation & Linting**: Automatic 4-space indent after colons (`:`) and instant syntax error detection with gutter highlighting.
 - **IntelliSense**: Rich completion suggestions for Python keywords and common node methods.
 - **Bracket Matching & Auto-Closing**: Instant feedback for `()`, `[]`, and `{}`.
-
-### 🔹 IDE-Style Export Dialog (v1.1.0)
-The "Export Workflow as Python" dialog provides a full development environment:
-- **Editable code** with the same CodeEditor used in the Node Builder.
-- **Code execution** via `QProcess` with real-time stdout/stderr streaming.
-- **AI-powered error fixing** using Google Gemini with accept/reject workflow.
-- **Dracula-themed** toolbar, editor, output panel, and status bar.
-- **Status bar** with cursor position (Ln/Col) and execution status.
 
 ### 🔹 High-Performance Execution Engine
 - **Asynchronous Execution**: Uses a background `asyncio` loop to keep the UI responsive.
@@ -28,34 +20,13 @@ The "Export Workflow as Python" dialog provides a full development environment:
     - **Flow-Based Routing**: Execution follows `exec` pins sequentially.
     - **Recursive Data Pulling**: Before any node executes, it recursively triggers upstream data-only nodes to ensure all inputs are current.
     - **Re-entrant Execution**: Fixed deadlocks in `NetworkExecutor` to allow nested flow calls (essential for Loops).
+- **Prism Bootstrap Phase (v1.6.0)**: Before main execution, the engine detects `prism_core_init` nodes and bootstraps PrismCore on the Qt main thread.
 - **Recursive Data Propagation**: A live system that pushes parameter changes through the entire node chain instantly as the user interacts with the UI.
-- **Zero-Delay Loop Execution (v1.1.0)**: All artificial `asyncio.sleep()` delays removed from ForEach, WhileLoop, and Sequence nodes.
-- **Indexed Connection Lookups (v1.1.0)**: O(1) pre-calculated dict lookups replace O(N) connection scans in the output handler.
-- **Cached Widget Resolution (v1.1.0)**: Node widget lookups use a dict cache during execution instead of linear scans.
-
-### 🔹 Event Log System
-- **Filtered Logging**: Filter by node name, level (Errors, Warnings, Info, Execution, Outputs).
-- **Silent Mode (v1.1.0)**: Toggle to suppress all non-error messages with zero processing overhead for maximum execution speed.
-- **Auto-Restore (v1.2.0)**: Disabling Silent Mode automatically re-enables previously filtered message categories (Info, Exec, Output).
 
 ### 🔹 Advanced Connection System
 - **Bidirectional Dragging**: Start wires from either input or output ports.
 - **Single-Input Enforcement**: Automatically replaces old wires when a new one is connected to an input port.
 - **Redrag-to-Disconnect**: Seamlessly move existing wires by dragging them away from ports.
-- **Animated Snapping (v1.2.0)**: Ports feature smooth scaling animations on hover and a "magnetic" snap effect when wires are dragged within 35 pixels.
-
-### 🔹 Keyboard Shortcuts (v1.2.0)
-| Shortcut | Action |
-| :--- | :--- |
-| `F5` | Run active workflow |
-| `Shift + F5` | Stop workflow execution |
-| `F` | Focus on selection |
-| `Tab` | Open Quick Search popup |
-| `Ctrl + C` / `Ctrl + V` | Copy / Paste nodes |
-| `Ctrl + G` | Wrap selected nodes in a Network Box (Backdrop) |
-| `Ctrl + B` | Toggle Bypass on selected nodes |
-| `Delete` | Remove selected items |
-| `Space + Drag` | Pan the canvas (Left Mouse) |
 
 ---
 
@@ -67,13 +38,13 @@ All custom nodes must inherit from the `BaseNode` class.
 | Attribute | Type | Description |
 | :--- | :--- | :--- |
 | `name` | `str` | The display name of the node in the library and canvas. |
-| `category` | `str` | Logical grouping (e.g., "Math", "IO", "Logic"). |
+| `category` | `str` | Logical grouping (e.g., "Math", "IO", "Logic", "Prism"). |
 | `description` | `str` | Tooltip/help text for the user. |
 | `icon_path` | `str` | Path to an SVG/PNG icon. |
 
 ### 🔹 Configuration Methods
-- **`self.add_input(name, data_type, widget_type, options)`**: Adds an input port. 
-  - Supported widgets: `"text"`, `"text_area"`, `"int"`, `"float"`, `"bool"`, `"dropdown"`, `"slider"`, `"file"`, `"file_save"` (Save File dialog — new in v1.5.0), `"checkbox"`.
+- **`self.add_input(name, data_type, widget_type, options)`**: Adds an input port.
+  - Supported widgets: `"text"`, `"text_area"`, `"int"`, `"float"`, `"bool"`, `"dropdown"`, `"slider"`, `"file"`, `"file_save"`.
 - **`self.add_output(name, data_type)`**: Adds an output port.
 - **`self.add_parameter(name, type, default)`**: Defines internal data not linked to a port.
 
@@ -96,7 +67,7 @@ All custom nodes must inherit from the `BaseNode` class.
 def on_plug_sync(self, port_name, is_input, other_node, other_port_name):
     if is_input:
         data = other_node.get_parameter(other_port_name)
-        self.set_parameter(port_name, data) # Sync UI immediately
+        self.set_parameter(port_name, data)
         self.log_info(f"Connected to {other_node.name}")
 ```
 
@@ -104,7 +75,7 @@ def on_plug_sync(self, port_name, is_input, other_node, other_port_name):
 ```python
 async def execute(self, inputs):
     self.log_info("Starting heavy calculation...")
-    await asyncio.sleep(2.0) # Non-blocking sleep
+    await asyncio.sleep(2.0)
     return {"result": inputs.get("val") * 10}
 ```
 
@@ -133,7 +104,6 @@ The built-in **Scripting Console** allows for full application automation using 
 
 #### Scenario C: Pipeline Grid Generation
 ```python
-# Create a grid of connected nodes
 prev = None
 for i in range(3):
     for j in range(3):
@@ -145,7 +115,6 @@ for i in range(3):
 
 #### Scenario D: Automated Batch Execution
 ```python
-# Update input and run workflow programmatically
 node = scene.find_node_by_name("Message Node")
 if node:
     for val in ["Test A", "Test B", "Test C"]:
@@ -155,213 +124,7 @@ if node:
 
 ---
 
-## 🎬 4. Headless DCC Execution (v1.5.0)
-
-Vibrante-Node ships three headless executor nodes that launch Maya (`mayapy.exe`), Houdini (`hython.exe`), and Blender (`blender --background`) as subprocesses, run a list of structured "actions" against the DCC, and return the results. This is distinct from the live `hou_bridge` integration (Section 5) — it's designed for **batch processing**, **CI/render-farm use**, and **repeatable pipelines** where spinning up a short-lived DCC per run is the right model.
-
-### 🔹 Architecture
-
-1. **Action Nodes** — small chainable nodes, each describing one DCC operation (e.g. `Import OBJ`, `Export Alembic`). They expose `actions_in` / `actions_out` list ports and append a typed action dict to the list.
-2. **Headless Executor Node** — `Maya Headless`, `Houdini Headless`, or `Blender Headless`. Validates the action list, serializes it to a temp JSON file, writes an embedded runner script to a second temp file, launches the DCC subprocess with both as arguments, reads the results JSON back, and maps success/failure per action.
-3. **Runner Script** — a self-contained Python script that runs inside `mayapy`/`hython`/`blender --background`, iterates the action list, dispatches each to a typed handler, and writes a per-action `{index, type, ok, error, info?}` dict into the results file.
-4. **Get Action Result helper** — extracts a single action from `executed_actions` by type (first match) or index, exposing `action`, `info`, and a best-guess `path` field so downstream nodes don't have to filter the list manually.
-
-### 🔹 Why Subprocess + Structured Payload?
-
-- **No f-string injection** — action values are JSON-encoded, not interpolated into code.
-- **Per-action isolation** — each action runs in its own try/except inside the runner; one failing action doesn't blank out the rest.
-- **Success contract** — the executor only reports success when process returncode is 0 **and** no action-level errors were reported. DCC stderr warnings (which Maya emits even on successful runs) are informational.
-- **Version-pinned** — each executor has a version dropdown that auto-fills the binary path (Maya: 2022/2024/2025/2026, Houdini: 20.5.445/20.5.278/20.0.547/19.5.493, Blender: 4.3/4.2/4.1/4.0/3.6). Paths remain editable.
-- **Custom env vars** — all executors accept a `.bat` file (parses `SET key=val` lines) and a DCC-specific env file (`Maya.env`, `houdini.env`, `blender.env`), merged into the subprocess environment. `%VAR%` references are expanded against the current environment.
-
-### 🔹 Maya Headless Node
-
-**Inputs:** `maya_version` (dropdown), `mayapy.exe`, `bat_file`, `maya_env_file`, `scene_file`, `actions`
-**Outputs:** `success`, `stdout`, `stderr`, `exit_code`, `executed_actions`, `skipped_actions`
-
-**Supported action types:** `open_scene`, `new_scene`, `save_scene`, `scene_info`, `set_frame_range`, `import_obj`, `import_fbx`, `import_alembic`, `export_fbx`, `export_alembic`, `export_camera_alembic`, `import_camera`, `reference_scene`, `reference_alembic`, `list_references`, `playblast`, `bake_animation`, `set_render_settings`, `set_aovs`, `create_render_layer`, `assign_material`, `custom_python`.
-
-**Renderer-specific support:**
-- **AOVs**: Arnold (via `mtoa.core.createOptions()` + `mtoa.aovs.AOVInterface`) and Redshift (via `rsCreateAov`).
-- **Render Layers**: Maya's `renderSetup` API.
-- **Render Settings**: Resolution, frame range, image format (per-renderer mapping), file prefix.
-
-### 🔹 Houdini Headless Node
-
-**Inputs:** `houdini_version` (dropdown), `hython.exe`, `bat_file`, `houdini_env_file`, `hip_file`, `actions`
-**Outputs:** `success`, `stdout`, `stderr`, `exit_code`, `executed_actions`, `skipped_actions`
-
-**Supported action types:** `open_hip`, `save_hip`, `new_hip`, `scene_info`, `set_frame_range`, `import_obj`, `import_fbx`, `import_alembic`, `import_camera`, `export_fbx`, `export_alembic`, `export_camera_alembic`, `bake_animation`, `custom_python`.
-
-**Import context:** Every import action takes an optional `context` parameter — `/obj` for the classic Object/SOP workflow, or `/stage` for Solaris/LOPs (creates SOP Import LOP, FBX Character Import LOP, Sublayer LOP, etc.).
-
-### 🔹 Blender Headless Node
-
-**Inputs:** `blender_version` (dropdown), `blender.exe`, `bat_file`, `blender_env_file`, `blend_file`, `actions`
-**Outputs:** `success`, `stdout`, `stderr`, `exit_code`, `executed_actions`, `skipped_actions`
-
-**Supported action types:** `open_blend`, `save_blend`, `new_blend`, `scene_info`, `set_frame_range`, `import_obj`, `import_fbx`, `import_alembic`, `import_gltf`, `export_obj`, `export_fbx`, `export_alembic`, `export_gltf`, `export_usd`, `set_render_settings`, `render`, `bake_animation`, `custom_python`.
-
-**bpy version handling:** The runner detects `bpy.app.version` at runtime and uses the 4.0+ `wm.obj_import`/`wm.obj_export` operators on Blender 4.x and the legacy `import_scene.obj`/`export_scene.obj` on 3.x. Full traceback per action is captured and included in the `error` field for easier debugging.
-
-### 🔹 Action Nodes at a Glance
-
-| Category | Maya | Houdini | Blender |
-|---|---|---|---|
-| Scene IO | Open/Save/New Scene, Scene Info | Open/Save/New HIP, Scene Info | Open/Save/New Blend, Scene Info |
-| Frame | Set Frame Range | Set Frame Range | Set Frame Range |
-| Geometry In | Import OBJ, FBX, Alembic | Import OBJ, FBX, Alembic | Import OBJ, FBX, Alembic, glTF |
-| Geometry Out | Export FBX, Alembic | Export FBX, Alembic | Export OBJ, FBX, Alembic, glTF, USD |
-| References | Reference Scene, Reference Alembic, List References | — | — |
-| Camera | Import Camera, Export Camera Alembic | Import Camera, Export Camera Alembic | — |
-| Animation | Bake Animation | Bake Animation | Bake Animation (NLA) |
-| Rendering | Playblast, Set Render Settings, Set AOVs, Create Render Layer, Assign Material | — | Set Render Settings, Render |
-| Extensibility | Custom Python | Custom Python | Custom Python |
-
-### 🔹 New `file_save` Widget Type
-
-Export action nodes use a new `"widget_type": "file_save"` on string ports, which opens a **Save File** dialog instead of an Open dialog. Implemented in `src/ui/node_widget.py` with the `QPushButton.clicked` bool-arg bug worked around via a defaulted `_checked=None` parameter.
-
-### 🔹 Custom Python Action Nodes
-
-`maya_action_custom`, `houdini_action_custom`, and `blender_action_custom` are editable action nodes with a `python_code` text-area parameter and an **Edit Script** button wired into `node_widget.py`'s script-editor list. Duplicate one, click Edit Script, write your own code — the runner exposes `cmds` (Maya), `hou` (Houdini), or `bpy` (Blender), the action dict, and `os`/`json` to your code.
-
-### 🔹 Get Action Result Helpers
-
-`maya_get_action_result`, `houdini_get_action_result`, and `blender_get_action_result` take an `executed_actions` list and either an `action_type` string (first-match) or an `index`. They output:
-- `found` (bool)
-- `action` (dict) — the matched action
-- `info` (dict) — convenience pointer to `action["info"]` for query actions (`scene_info`, `list_references`)
-- `path` (string) — auto-picked from the first non-empty path-like field (`fbx_path`, `abc_path`, etc.)
-
----
-
-## 🎯 4b. Deadline Render Farm Integration (v1.5.0)
-
-Four nodes in the **DCCs** category submit jobs to a Deadline render farm and query job status via `deadlinecommand`.
-
-### 🔹 Submitter Nodes
-
-All three submitters write Job Info + Plugin Info as temp files, call `deadlinecommand`, parse `JobID` from the output (`JobID=` line, or 24-hex string fallback), and clean up temp files in a `finally` block. An `extra_job_args` text area accepts arbitrary extra `key=value` Job Info lines.
-
-| Node | Plugin | Key Inputs |
-|---|---|---|
-| `deadline_maya_submit` | MayaBatch | scene_file, renderer (Arnold/VRay/Redshift/RenderMan/Software/Hardware2), maya_version, project_path, output_path, camera |
-| `deadline_houdini_submit` | Houdini | hip_file, rop_path, houdini_version (auto-shortens build string), sim_job, ignore_inputs |
-| `deadline_blender_submit` | Blender | blend_file, renderer (CYCLES/EEVEE/EEVEE_NEXT/WORKBENCH), blender_version, output_path, output_format, gpu_enable |
-
-**Common inputs:** job_name, batch_name, pool, group, priority, chunk_size, frame_start, frame_end, frame_step, extra_job_args
-**Outputs:** `success`, `job_id`, `stdout`, `stderr`
-
-### 🔹 Job Status Node
-
-`deadline_job_status` calls `deadlinecommand -GetJobDetails <job_id>` and parses the response.
-
-**Inputs:** `job_id`, `poll_until_done` (bool), `poll_interval_seconds`, `timeout_seconds`
-**Outputs:** `status`, `progress`, `tasks_total`, `tasks_complete`, `tasks_failed`, `is_complete`, `is_failed`, `details`
-
-When `poll_until_done` is enabled, the node polls asynchronously at the configured interval, logs progress on each tick, and stops when the job reaches a terminal state or the timeout is exceeded.
-
----
-
-## 🔥 5. SideFX Houdini Integration (v1.2.0)
-
-Vibrante-Node provides a deep integration with SideFX Houdini FX via a **Live Command Bridge** architecture. This allows you to control a live Houdini session from within Vibrante-Node workflows.
-
-### 🔹 Architecture Overview
-
-The integration uses a client-server model:
-
-1. **Command Server** (`vibrante_hou_server.py`): A JSON-RPC server that runs inside Houdini's Python process on `127.0.0.1:18811`. It dispatches commands to Houdini's main thread using `hdefereval` for thread-safe scene manipulation.
-2. **Bridge Client** (`src/utils/hou_bridge.py`): A Python client (`HouBridge`) used by the Vibrante-Node engine to send commands to the Houdini server. It exposes a high-level API and is accessed via `get_bridge()` singleton.
-3. **Houdini Node Definitions** (`plugins/houdini/v_nodes_houdini/`): 19 JSON-defined nodes that map directly to Houdini operations.
-
-### 🔹 Command Server (22 Commands)
-
-The server supports the following JSON-RPC commands:
-
-| Command | Description |
-| :--- | :--- |
-| `ping` | Health check — returns `"pong"` |
-| `create_node` | Create a Houdini node (parent, type, name) |
-| `delete_node` | Delete a node by path |
-| `set_parm` | Set a single parameter on a node |
-| `get_parm` | Get a single parameter value |
-| `set_parms` | Set multiple parameters at once |
-| `get_parms` | Get multiple parameter values |
-| `connect_nodes` | Connect two nodes (output → input) |
-| `cook_node` | Force-cook a node |
-| `run_code` | Execute arbitrary Python code in Houdini |
-| `scene_info` | Get scene metadata (filename, frame, FPS, etc.) |
-| `node_info` | Get detailed info about a specific node |
-| `children` | List child nodes of a given path |
-| `node_exists` | Check if a node path exists |
-| `set_display_flag` | Set the display flag on a node |
-| `set_render_flag` | Set the render flag on a node |
-| `layout_children` | Auto-layout child nodes in the network editor |
-| `save_hip` | Save the current .hip file |
-| `set_expression` | Set a channel expression on a parameter |
-| `set_keyframe` | Set a keyframe on a parameter |
-| `set_frame` | Set the current timeline frame |
-| `set_playback_range` | Set the timeline frame range |
-| `call` | Execute ANY Houdini API method dynamically (`path`, `args`, `kwargs`) |
-| `get_completions` | Fetch auto-complete suggestions for `hou` members |
-
-### 🔹 Bridge Client API
-
-```python
-from src.utils.hou_bridge import get_bridge
-
-bridge = get_bridge()
-if bridge.is_available():
-    result = bridge.create_node("/obj", "geo", "my_geo")
-    bridge.set_parm("/obj/my_geo/tx", 5.0)
-    info = bridge.scene_info()
-```
-
-### 🔹 Houdini Node Library (19 Nodes)
-
-All nodes are JSON-defined and validated against the pydantic `NodeDefinitionJSON` model:
-
-| Node | Category | Description |
-| :--- | :--- | :--- |
-| `hou_create_node` | Houdini | Create a node in the Houdini scene |
-| `hou_create_geo` | Houdini | Create a Geometry container at /obj |
-| `hou_delete_node` | Houdini | Delete a node by path |
-| `hou_set_parm` | Houdini | Set a single parameter |
-| `hou_get_parm` | Houdini | Read a parameter value |
-| `hou_set_parms` | Houdini | Set multiple parameters (JSON) |
-| `hou_connect_nodes` | Houdini | Wire two nodes together |
-| `hou_cook` | Houdini | Force-cook a node |
-| `hou_run_code` | Houdini | Execute Python code in Houdini |
-| `hou_scene_info` | Houdini | Query scene metadata |
-| `hou_node_info` | Houdini | Get detailed node information |
-| `hou_list_children` | Houdini | List child nodes |
-| `hou_node_exists` | Houdini | Check node existence |
-| `hou_set_display_flag` | Houdini | Toggle display flag |
-| `hou_set_expression` | Houdini | Set a channel expression |
-| `hou_set_keyframe` | Houdini | Set a keyframe value |
-| `hou_set_frame` | Houdini | Jump to a timeline frame |
-| `hou_save_hip` | Houdini | Save the .hip file |
-| `hou_layout_children` | Houdini | Auto-layout network children |
-
-### 🔹 Plugin Installation
-
-1. Copy `plugins/houdini/houdini/` to your Houdini user preferences directory (e.g., `$HOME/houdiniXX.X/`).
-2. The plugin registers a **Vibrante** shelf and **Vibrante** menu in Houdini.
-3. Launch Vibrante-Node from the shelf button — the command server starts automatically.
-4. The bundled virtual environment (`plugins/houdini/houdini/scripts/python/env/`) provides dependencies (pydantic, etc.) without modifying Houdini's Python.
-
-### 🔹 Example Houdini Scripts
-
-Located in `plugins/houdini/v_scripts_houdini/`:
-- **`hou_scene_info.py`** — Query the current Houdini scene via the bridge.
-- **`hou_create_box_demo.py`** — Create a Geometry container with a Box SOP.
-- **`hou_list_scene_nodes.py`** — List all children under `/obj`.
-
----
-
-## 🎨 6. UI Architecture & Features
+## 🎨 4. UI Architecture & Features
 
 - **Dynamic Node Scaling**: Nodes automatically resize their bounding box based on port count and child widget dimensions.
 - **Vertical Parameter Centering**: Parameter widgets (Label + Input) are distributed and centered within the node body.
@@ -371,22 +134,68 @@ Located in `plugins/houdini/v_scripts_houdini/`:
 
 ---
 
-## 🛠️ 7. Technical Safety & Reliability
+## 🛠️ 5. Technical Safety & Reliability
 
 - **Thread-Safe UI Updates**: Signal-based communication ensures that background threads can safely update the Event Log and widgets.
 - **Crash Protection**: A global exception hook captures unhandled errors and generates a `crash.log` file for instant debugging.
-- **Safer Node Drop (v1.5.0)**: Node constructor failures during drag-and-drop are wrapped in try/except in `scene.py` and `view.py`. Failing nodes log a clean error and do not corrupt undo history.
-- **Safer Engine Init (v1.4.0)**: `NetworkExecutor` wraps node instantiation in try/except and reports errors via the `node_error` signal instead of crashing the executor.
 - **Robust Persistence**: Full workflow states (positions, parameters, and connections) are serialized as clean, portable JSON.
 - **Name Sanitization**: Automated slug generation for custom nodes to ensure filesystem and class compatibility.
-- **Qt Compatibility Layer** (v1.2.0): A unified `src/utils/qt_compat.py` module handles differences between PyQt5 and PySide2 for cross-environment support.
 
 ---
 
-## 🆕 8. Branch Notes — Scripting & Looping Enhancements
+## 🆕 6. v1.6.0 — Prism Integration, Python Script, While Loop, Utilities
 
-- **Python Script Node**: A dynamic `python_script` node and in-UI `ScriptEditorDialog` were added. The node stores user code in the `python_code` parameter and executes it during workflow runs. User scripts should assign their primary output to a variable named `result` which is published to the `result` output port.
-- **While Loop Support**: A builtin `WhileLoopNode` and example workflows (`workflows/while_loop_example.json`, `workflows/while_loop_retry_example.json`) provide flow-driven loop control patterns. The engine supports nested and re-entrant execution for safe loop operation.
-- **Utility Nodes**: New helper nodes for lists, dictionaries, and string operations were added in the `nodes/` folder to accelerate common tasks.
-- **Engine Runtime Fix**: Workflow-saved parameters (including `python_code`) are now applied to node instances at startup so authored scripts embedded in saved workflows execute as intended.
-- **Gemini Support in Node Builder**: The Node Builder includes integration hooks for Gemini-based assistance to scaffold example scripts, generate prompt templates, and provide sample code snippets. See `src/ui/gemini_chat.py` for configuration and usage notes.
+### Prism Pipeline Integration
+
+40+ new nodes in the `Prism` category enable full Prism Pipeline studio-management workflows:
+
+| Node Group | Nodes |
+|---|---|
+| Core | `prism_core_init`, `prism_core_info` |
+| Entities | `prism_get_assets`, `prism_get_shots`, `prism_build_entity`, `prism_create_entity` |
+| Products | `prism_get_products`, `prism_get_product_versions`, `prism_create_product_version`, `prism_get_latest_product_path`, `prism_import_product` |
+| Media | `prism_get_media`, `prism_get_media_versions`, `prism_create_playblast` |
+| Scenes | `prism_get_current_scene`, `prism_get_scene_files`, `prism_get_preset_scenes`, `prism_open_scene`, `prism_save_scene_version`, `prism_create_scene_from_preset` |
+| Config | `prism_get_config`, `prism_set_config`, `prism_get_project_config_path` |
+| Projects | `prism_list_projects`, `prism_create_project`, `prism_change_project` |
+| Departments/Tasks | `prism_get_departments`, `prism_get_tasks`, `prism_create_category` |
+| Plugins | `prism_list_plugins`, `prism_get_plugin`, `prism_add_integration` |
+| USD | `prism_usd_entity_path`, `prism_usd_department_layer_path`, `prism_usd_sublayer_path`, `prism_usd_update_department_layer`, `prism_usd_update_sublayer` |
+| Advanced | `prism_eval`, `prism_monkey_patch`, `prism_register_callback`, `prism_trigger_callback`, `prism_popup`, `prism_send_cmd`, `prism_login_token`, `prism_studio_assign_project` |
+
+Key behaviours:
+- **Auto-bootstrap**: `prism_core_init` is detected before execution and PrismCore is initialized on the Qt main thread.
+- **Zero-wiring**: All `prism_*` nodes resolve the shared `PrismCore` via `resolve_prism_core()` — no `core` wire needed.
+- **Qt compat**: `qt_compat.py` auto-stubs `shiboken` and backfills `QColor.fromString` so Prism loads without binary-wheel conflicts.
+
+### Python Script Node
+
+- `python_script` node ships with an **Edit Script** button that opens a full code editor dialog.
+- Scripts are persisted in the workflow JSON under the `python_code` parameter.
+- The engine injects `python_code` into node instances before execution, so saved scripts always run correctly.
+- User scripts should assign their primary output to a variable named `result`, which is published to the `result` output port.
+
+### While Loop Node
+
+- `while_loop` builtin: iterates while a boolean `condition` input is `True`.
+- Safe re-entrant execution — the engine's lock-free design prevents deadlocks in nested loop scenarios.
+
+### Utility Nodes
+
+| Category | Nodes |
+|---|---|
+| List | `create_list`, `get_list_item`, `list_length` |
+| Dictionary | `create_dictionary`, `get_dict_value`, `set_dict_value` |
+| String | `concat`, `split`, `replace`, `lowercase`, `uppercase`, `string_length` |
+
+### `file_save` Widget Type
+
+A new `"file_save"` widget type is available for output file path inputs. It opens a save-file dialog rather than an open-file dialog, making it suitable for export nodes.
+
+### Engine Runtime Fix
+
+Workflow-saved parameters (including `python_code`) are now applied to node instances at startup so authored scripts embedded in saved workflows execute as intended.
+
+### Gemini Support in Node Builder
+
+The Node Builder includes integration hooks for Gemini-based assistance to scaffold example scripts, generate prompt templates, and provide sample code snippets. See `src/ui/gemini_chat.py` for configuration and usage notes.

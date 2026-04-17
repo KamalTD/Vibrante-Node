@@ -1,0 +1,48 @@
+{
+    "node_id": "prism_get_config",
+    "name": "Prism: Get Config",
+    "description": "Reads a Prism config value. Wraps core.getConfig(category, key, config='user'|'project'|'shared').",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "core",
+            "type": "any"
+        },
+        {
+            "name": "category",
+            "type": "string",
+            "widget_type": "text",
+            "default": "globals"
+        },
+        {
+            "name": "key",
+            "type": "string",
+            "widget_type": "text",
+            "default": ""
+        },
+        {
+            "name": "config_scope",
+            "type": "string",
+            "widget_type": "dropdown",
+            "options": [
+                "user",
+                "project",
+                "shared"
+            ],
+            "default": "user"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "value",
+            "type": "any"
+        },
+        {
+            "name": "found",
+            "type": "bool"
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\nclass PrismGetConfigNode(BaseNode):\n    name = \"Prism: Get Config\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__(use_exec=False)\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_input(\"category\", \"string\", widget_type=\"text\", default=\"globals\")\n        self.add_input(\"key\", \"string\", widget_type=\"text\", default=\"\")\n        self.add_input(\"config_scope\", \"string\", widget_type=\"dropdown\", options=[\"user\",\"project\",\"shared\"], default=\"user\")\n        self.add_output(\"value\", \"any\")\n        self.add_output(\"found\", \"bool\")\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        cat = inputs.get('category') or ''\n        key = inputs.get('key') or ''\n        scope = inputs.get('config_scope') or 'user'\n        if core is None:\n            self.log_error(\"No PrismCore found. Add a prism_core_init node to your graph and connect its exec_out before this node.\")\n            return {'value': None, 'found': False}\n        try:\n            value = None\n            if hasattr(core, 'getConfig'):\n                try:\n                    value = core.getConfig(cat, key, config=scope)\n                except TypeError:\n                    value = core.getConfig(cat, key)\n            elif hasattr(core, 'configs') and hasattr(core.configs, 'getConfig'):\n                value = core.configs.getConfig(cat, key, config=scope)\n            found = value is not None\n            self.log_info(f\"Config[{scope}][{cat}][{key}] = {value!r}\")\n            return {'value': value, 'found': found}\n        except Exception as e:\n            self.log_error(f\"getConfig failed: {e}\")\n            return {'value': None, 'found': False}\n\ndef register_node():\n    return PrismGetConfigNode\n",
+    "use_exec": false
+}

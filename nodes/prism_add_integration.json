@@ -1,0 +1,49 @@
+{
+    "node_id": "prism_add_integration",
+    "name": "Prism: Add DCC Integration",
+    "description": "Installs the Prism integration files into a DCC's preferences folder. Wraps core.integration.addIntegration(dcc, path). Use 'Add All' mode to add every available DCC integration via core.integration.addAllIntegrations().",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "exec_in",
+            "type": "exec"
+        },
+        {
+            "name": "core",
+            "type": "any"
+        },
+        {
+            "name": "mode",
+            "type": "string",
+            "widget_type": "dropdown",
+            "options": [
+                "specific",
+                "all"
+            ],
+            "default": "specific"
+        },
+        {
+            "name": "dcc_name",
+            "type": "string",
+            "widget_type": "text",
+            "default": "Maya"
+        },
+        {
+            "name": "dcc_prefs_path",
+            "type": "string",
+            "widget_type": "file"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "exec_out",
+            "type": "exec"
+        },
+        {
+            "name": "success",
+            "type": "bool"
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\nclass PrismAddIntegrationNode(BaseNode):\n    name = \"Prism: Add DCC Integration\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__()\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_input(\"mode\", \"string\", widget_type=\"dropdown\", options=[\"specific\",\"all\"], default=\"specific\")\n        self.add_input(\"dcc_name\", \"string\", widget_type=\"text\", default=\"Maya\")\n        self.add_input(\"dcc_prefs_path\", \"string\", widget_type=\"file\")\n        self.add_output(\"success\", \"bool\")\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        mode = inputs.get('mode') or 'specific'\n        dcc = inputs.get('dcc_name') or ''\n        path = inputs.get('dcc_prefs_path') or ''\n        if core is None:\n            self.log_error(\"No PrismCore found. Add a prism_core_init node to your graph and run it before this node (connect its exec_out to this node's exec_in).\")\n            return {'success': False, 'exec_out': True}\n        try:\n            if mode == 'all':\n                core.integration.addAllIntegrations()\n                self.log_success(\"Added all DCC integrations.\")\n            else:\n                if not dcc or not path:\n                    self.log_error(\"Need dcc_name and dcc_prefs_path for 'specific' mode.\")\n                    return {'success': False}\n                core.integration.addIntegration(dcc, path)\n                self.log_success(f\"Added integration: {dcc} -> {path}\")\n            await self.set_output('exec_out', True)\n            return {'success': True}\n        except Exception as e:\n            self.log_error(f\"addIntegration failed: {e}\")\n            return {'success': False}\n\ndef register_node():\n    return PrismAddIntegrationNode\n"
+}

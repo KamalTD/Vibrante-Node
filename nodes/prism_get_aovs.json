@@ -1,0 +1,29 @@
+{
+    "node_id": "prism_get_aovs",
+    "name": "Prism: Get AOVs",
+    "description": "Lists AOVs (render passes) for a given media version. Wraps core.mediaProducts.getAOVsFromVersion(version).",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "core",
+            "type": "any"
+        },
+        {
+            "name": "version",
+            "type": "any"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "aovs",
+            "type": "list"
+        },
+        {
+            "name": "count",
+            "type": "int"
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\nclass PrismGetAOVsNode(BaseNode):\n    name = \"Prism: Get AOVs\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__(use_exec=False)\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_input(\"version\", \"any\")\n        self.add_output(\"aovs\", \"list\")\n        self.add_output(\"count\", \"int\")\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        version = inputs.get('version')\n        if core is None or version is None:\n            self.log_error(\"Need PrismCore and version.\")\n            return {'aovs': [], 'count': 0}\n        try:\n            media_module = getattr(core, 'mediaProducts', None) or getattr(core, 'media', None)\n            aovs = []\n            for attr in ('getAOVsFromVersion', 'getAOVs'):\n                if hasattr(media_module, attr):\n                    aovs = getattr(media_module, attr)(version) or []\n                    break\n            self.log_info(f\"Found {len(aovs)} AOV(s).\")\n            return {'aovs': list(aovs), 'count': len(aovs)}\n        except Exception as e:\n            self.log_error(f\"getAOVs failed: {e}\")\n            return {'aovs': [], 'count': 0}\n\ndef register_node():\n    return PrismGetAOVsNode\n",
+    "use_exec": false
+}

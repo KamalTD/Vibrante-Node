@@ -1,0 +1,29 @@
+{
+    "node_id": "prism_usd_entity_path",
+    "name": "Prism USD: New Entity Path",
+    "description": "Generates the file path for the top-level entity USD file. Wraps plugin.api.getNewEntityUsdPath(entity) on the USD plugin.",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "core",
+            "type": "any"
+        },
+        {
+            "name": "entity",
+            "type": "dict"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "usd_path",
+            "type": "string"
+        },
+        {
+            "name": "success",
+            "type": "bool"
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\nclass PrismUsdEntityPathNode(BaseNode):\n    name = \"Prism USD: New Entity Path\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__(use_exec=False)\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_input(\"entity\", \"dict\")\n        self.add_output(\"usd_path\", \"string\")\n        self.add_output(\"success\", \"bool\")\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        entity = inputs.get('entity') or {}\n        if core is None:\n            self.log_error(\"No PrismCore found. Add a prism_core_init node to your graph and connect its exec_out before this node.\")\n            return {'usd_path': '', 'success': False}\n        try:\n            plugin = core.getPlugin('USD') if hasattr(core, 'getPlugin') else core.plugins.getPlugin('USD')\n            if plugin is None:\n                self.log_error(\"USD plugin not loaded.\")\n                return {'usd_path': '', 'success': False}\n            path = str(plugin.api.getNewEntityUsdPath(entity=entity) or '')\n            self.log_success(f\"Entity USD path: {path}\")\n            return {'usd_path': path, 'success': True}\n        except Exception as e:\n            self.log_error(f\"getNewEntityUsdPath failed: {e}\")\n            return {'usd_path': '', 'success': False}\n\ndef register_node():\n    return PrismUsdEntityPathNode\n",
+    "use_exec": false
+}

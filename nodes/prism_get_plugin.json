@@ -1,0 +1,35 @@
+{
+    "node_id": "prism_get_plugin",
+    "name": "Prism: Get Plugin",
+    "description": "Retrieves a loaded Prism plugin by name. Wraps core.plugins.getPlugin(name) (alias core.getPlugin).",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "core",
+            "type": "any"
+        },
+        {
+            "name": "plugin_name",
+            "type": "string",
+            "widget_type": "text",
+            "default": "USD"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "plugin",
+            "type": "any"
+        },
+        {
+            "name": "is_loaded",
+            "type": "bool"
+        },
+        {
+            "name": "plugin_path",
+            "type": "string"
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\nclass PrismGetPluginNode(BaseNode):\n    name = \"Prism: Get Plugin\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__(use_exec=False)\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_input(\"plugin_name\", \"string\", widget_type=\"text\", default=\"USD\")\n        self.add_output(\"plugin\", \"any\")\n        self.add_output(\"is_loaded\", \"bool\")\n        self.add_output(\"plugin_path\", \"string\")\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        name = inputs.get('plugin_name') or ''\n        if core is None:\n            self.log_error(\"No PrismCore found. Add a prism_core_init node to your graph and connect its exec_out before this node.\")\n            return {'plugin': None, 'is_loaded': False, 'plugin_path': ''}\n        try:\n            plugin = None\n            if hasattr(core, 'plugins') and hasattr(core.plugins, 'getPlugin'):\n                plugin = core.plugins.getPlugin(name)\n            elif hasattr(core, 'getPlugin'):\n                plugin = core.getPlugin(name)\n            loaded = plugin is not None\n            ppath = ''\n            if loaded:\n                for attr in ('pluginPath', 'pluginDirectory', 'path'):\n                    if hasattr(plugin, attr):\n                        ppath = str(getattr(plugin, attr) or '')\n                        if ppath: break\n            self.log_info(f\"Plugin '{name}' loaded={loaded} path={ppath}\")\n            return {'plugin': plugin, 'is_loaded': loaded, 'plugin_path': ppath}\n        except Exception as e:\n            self.log_error(f\"getPlugin failed: {e}\")\n            return {'plugin': None, 'is_loaded': False, 'plugin_path': ''}\n\ndef register_node():\n    return PrismGetPluginNode\n",
+    "use_exec": false
+}

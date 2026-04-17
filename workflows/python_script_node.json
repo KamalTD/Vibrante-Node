@@ -8,9 +8,9 @@
                 -93.0
             ],
             "parameters": {
-                "exec_in": null,
+                "exec_in": true,
                 "exec_out": true,
-                "data": "star",
+                "data": "start",
                 "return_result": true,
                 "result": null,
                 "python_code": "# Example user script:\n# Set `result` to transformed input data\nval = inputs.get('data')\nif isinstance(val, str):\n    result = val.upper()\nelse:\n    result = val"
@@ -41,7 +41,7 @@
                 -94.0
             ],
             "parameters": {
-                "exec_in": null,
+                "exec_in": true,
                 "exec_out": true,
                 "data": null,
                 "out": ""
@@ -51,7 +51,7 @@
     ],
     "connections": [
         {
-            "id": "c49a123d-f6d0-4619-b17e-b32f7065a569",
+            "id": "da910ac6-4999-4693-bc07-6616adcfa3ad",
             "from_node": "c4eaa2d4-9275-4d6f-aa90-8045ac17ec7b",
             "from_port": "out",
             "to_node": "3bce1507-51df-4a9c-9137-d1a3dd0a63f7",
@@ -59,7 +59,7 @@
             "is_exec": false
         },
         {
-            "id": "96191d6b-b3ae-4a80-bd01-c4f3e30887fa",
+            "id": "f957de14-3c5a-4461-b0d0-236b08fda9c6",
             "from_node": "c4eaa2d4-9275-4d6f-aa90-8045ac17ec7b",
             "from_port": "exec_out",
             "to_node": "3bce1507-51df-4a9c-9137-d1a3dd0a63f7",
@@ -67,7 +67,7 @@
             "is_exec": true
         },
         {
-            "id": "c9cc54a9-bdde-4479-b4b4-bd4a6b5939b7",
+            "id": "e8c4b484-3f94-42a4-a324-0e4a87a43816",
             "from_node": "3bce1507-51df-4a9c-9137-d1a3dd0a63f7",
             "from_port": "result",
             "to_node": "0471ac18-524c-4ffe-a3d9-bcadcf0fe109",
@@ -75,7 +75,7 @@
             "is_exec": false
         },
         {
-            "id": "53b191b2-04d3-4514-8b57-e0469e296469",
+            "id": "670dcacd-ab4f-47b7-a56b-a384c62645a9",
             "from_node": "3bce1507-51df-4a9c-9137-d1a3dd0a63f7",
             "from_port": "exec_out",
             "to_node": "0471ac18-524c-4ffe-a3d9-bcadcf0fe109",

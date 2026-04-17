@@ -1,6 +1,6 @@
-# Vibrante-Node — Developer Guide for Claude
+# Vibrante-Node — Developer Guide for Codex
 
-This file teaches Claude how to create nodes for this node-based pipeline, with special focus on nodes that control Houdini via the bridge plugin.
+This file teaches Codex how to create nodes for this node-based pipeline, with special focus on nodes that control Houdini via the bridge plugin.
 
 ---
 
