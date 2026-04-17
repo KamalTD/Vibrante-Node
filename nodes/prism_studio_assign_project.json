@@ -1,0 +1,43 @@
+{
+    "node_id": "prism_studio_assign_project",
+    "name": "Prism Studio: Assign User to Project",
+    "description": "Adds the current (or given) user as an assignee on the given project. Wraps Studio plugin's getProjectsForUser / setProjectsAssignedToUsers.",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "exec_in",
+            "type": "exec"
+        },
+        {
+            "name": "core",
+            "type": "any"
+        },
+        {
+            "name": "user",
+            "type": "string",
+            "widget_type": "text",
+            "default": ""
+        },
+        {
+            "name": "project_path",
+            "type": "string",
+            "widget_type": "file"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "exec_out",
+            "type": "exec"
+        },
+        {
+            "name": "success",
+            "type": "bool"
+        },
+        {
+            "name": "assigned_count",
+            "type": "int"
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\nclass PrismStudioAssignProjectNode(BaseNode):\n    name = \"Prism Studio: Assign User to Project\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__()\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_input(\"user\", \"string\", widget_type=\"text\", default=\"\")\n        self.add_input(\"project_path\", \"string\", widget_type=\"file\")\n        self.add_output(\"success\", \"bool\")\n        self.add_output(\"assigned_count\", \"int\")\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        user = inputs.get('user') or ''\n        proj_path = inputs.get('project_path') or ''\n        if core is None or not proj_path:\n            self.log_error(\"Need core and project_path.\")\n            return {'success': False, 'assigned_count': 0}\n        try:\n            plugin = core.getPlugin('Studio') if hasattr(core, 'getPlugin') else core.plugins.getPlugin('Studio')\n            if plugin is None:\n                self.log_error(\"Studio plugin not loaded.\")\n                return {'success': False, 'assigned_count': 0}\n            if not user:\n                user = str(getattr(core, 'username', '') or '')\n            cfg_path = core.configs.getProjectConfigPath(proj_path)\n            current = plugin.getProjectsForUser(user) or []\n            existing_paths = [a.get('configPath') for a in current if isinstance(a, dict)]\n            if cfg_path not in existing_paths:\n                existing_paths.append(cfg_path)\n            plugin.setProjectsAssignedToUsers(users=[user], projects=existing_paths)\n            self.log_success(f\"Assigned {user} to {len(existing_paths)} project(s).\")\n            await self.set_output('exec_out', True)\n            return {'success': True, 'assigned_count': len(existing_paths)}\n        except Exception as e:\n            self.log_error(f\"assign project failed: {e}\")\n            return {'success': False, 'assigned_count': 0}\n\ndef register_node():\n    return PrismStudioAssignProjectNode\n"
+}

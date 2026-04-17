@@ -1,0 +1,26 @@
+{
+    "node_id": "prism_get_project_config_path",
+    "name": "Prism: Get Project Config Path",
+    "description": "Returns the absolute path to the config file for a given project. Wraps core.configs.getProjectConfigPath(projectPath).",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "core",
+            "type": "any"
+        },
+        {
+            "name": "project_path",
+            "type": "string",
+            "widget_type": "file"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "config_path",
+            "type": "string"
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\nclass PrismGetProjectConfigPathNode(BaseNode):\n    name = \"Prism: Get Project Config Path\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__(use_exec=False)\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_input(\"project_path\", \"string\", widget_type=\"file\")\n        self.add_output(\"config_path\", \"string\")\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        path = inputs.get('project_path') or ''\n        if core is None:\n            self.log_error(\"No PrismCore provided.\")\n            return {'config_path': ''}\n        try:\n            cfg = ''\n            if hasattr(core, 'configs') and hasattr(core.configs, 'getProjectConfigPath'):\n                cfg = str(core.configs.getProjectConfigPath(path) or '')\n            self.log_info(f\"Config path: {cfg}\")\n            return {'config_path': cfg}\n        except Exception as e:\n            self.log_error(f\"getProjectConfigPath failed: {e}\")\n            return {'config_path': ''}\n\ndef register_node():\n    return PrismGetProjectConfigPathNode\n",
+    "use_exec": false
+}

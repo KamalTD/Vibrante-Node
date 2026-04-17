@@ -1,0 +1,59 @@
+{
+    "node_id": "prism_create_scene_from_preset",
+    "name": "Prism: Create Scene From Preset",
+    "description": "Creates a new scene file in the given entity/department/task using a preset file. Wraps core.entities.createSceneFromPreset(entity, fileName, department, task, comment).",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "exec_in",
+            "type": "exec"
+        },
+        {
+            "name": "core",
+            "type": "any"
+        },
+        {
+            "name": "entity",
+            "type": "dict"
+        },
+        {
+            "name": "preset_file",
+            "type": "string",
+            "widget_type": "file"
+        },
+        {
+            "name": "department",
+            "type": "string",
+            "widget_type": "text",
+            "default": "fx"
+        },
+        {
+            "name": "task",
+            "type": "string",
+            "widget_type": "text",
+            "default": "fire"
+        },
+        {
+            "name": "comment",
+            "type": "string",
+            "widget_type": "text",
+            "default": ""
+        }
+    ],
+    "outputs": [
+        {
+            "name": "exec_out",
+            "type": "exec"
+        },
+        {
+            "name": "success",
+            "type": "bool"
+        },
+        {
+            "name": "scene_path",
+            "type": "string"
+        }
+    ],
+    "python_code": "from os import PathLike\nfrom src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\nclass PrismCreateSceneFromPresetNode(BaseNode):\n    name = \"Prism: Create Scene From Preset\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__()\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_input(\"entity\", \"dict\")\n        self.add_input(\"preset_file\", \"string\", widget_type=\"file\")\n        self.add_input(\"department\", \"string\", widget_type=\"text\", default=\"fx\")\n        self.add_input(\"task\", \"string\", widget_type=\"text\", default=\"fire\")\n        self.add_input(\"comment\", \"string\", widget_type=\"text\", default=\"\")\n        self.add_output(\"success\", \"bool\")\n        self.add_output(\"scene_path\", \"string\")\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        entity = inputs.get('entity') or {}\n        preset = inputs.get('preset_file') or ''\n        dept = inputs.get('department') or ''\n        task = inputs.get('task') or ''\n        comment = inputs.get('comment') or ''\n        if core is None:\n            self.log_error(\"No PrismCore provided.\")\n            return {'success': False, 'scene_path': ''}\n        try:\n            result = core.entities.createSceneFromPreset(entity, preset, dept, task, comment=comment)\n            scene_path = ''\n            if isinstance(result, dict):\n                scene_path = str(result.get('path') or result.get('scene_path') or result.get('filepath') or '')\n            elif isinstance(result, (str, bytes, PathLike)):\n                scene_path = str(result or '')\n            self.log_success(f\"Scene created from preset {preset}\")\n            await self.set_output('exec_out', True)\n            return {'success': True, 'scene_path': scene_path}\n        except Exception as e:\n            self.log_error(f\"createSceneFromPreset failed: {e}\")\n            return {'success': False, 'scene_path': ''}\n\ndef register_node():\n    return PrismCreateSceneFromPresetNode\n"
+}

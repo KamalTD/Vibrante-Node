@@ -1,0 +1,29 @@
+{
+    "node_id": "prism_get_products",
+    "name": "Prism: Get Products",
+    "description": "Lists all products (cached/exported assets) for the given entity. Wraps core.products.getProductsFromEntity(entity).",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "core",
+            "type": "any"
+        },
+        {
+            "name": "entity",
+            "type": "dict"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "products",
+            "type": "list"
+        },
+        {
+            "name": "count",
+            "type": "int"
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\nclass PrismGetProductsNode(BaseNode):\n    name = \"Prism: Get Products\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__(use_exec=False)\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_input(\"entity\", \"dict\")\n        self.add_output(\"products\", \"list\")\n        self.add_output(\"count\", \"int\")\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        entity = inputs.get('entity') or {}\n        if core is None:\n            self.log_error(\"No PrismCore provided.\")\n            return {'products': [], 'count': 0}\n        try:\n            products = []\n            for attr in ('getProductsFromEntity', 'getProducts'):\n                if hasattr(core.products, attr):\n                    products = getattr(core.products, attr)(entity) or []\n                    break\n            self.log_info(f\"Found {len(products)} product(s).\")\n            return {'products': list(products), 'count': len(products)}\n        except Exception as e:\n            self.log_error(f\"getProducts failed: {e}\")\n            return {'products': [], 'count': 0}\n\ndef register_node():\n    return PrismGetProductsNode\n",
+    "use_exec": false
+}

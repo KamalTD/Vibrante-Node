@@ -1,0 +1,44 @@
+{
+    "node_id": "prism_save_scene_version",
+    "name": "Prism: Save Scene Version",
+    "description": "Saves the currently open DCC scene as the next Prism version with an optional comment. Wraps core.saveScene(comment=...) / core.saveSceneVersion(comment=...).",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "exec_in",
+            "type": "exec"
+        },
+        {
+            "name": "core",
+            "type": "any"
+        },
+        {
+            "name": "comment",
+            "type": "string",
+            "widget_type": "text",
+            "default": ""
+        },
+        {
+            "name": "publish",
+            "type": "bool",
+            "widget_type": "bool",
+            "default": false
+        }
+    ],
+    "outputs": [
+        {
+            "name": "exec_out",
+            "type": "exec"
+        },
+        {
+            "name": "success",
+            "type": "bool"
+        },
+        {
+            "name": "saved_path",
+            "type": "string"
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\nclass PrismSaveSceneVersionNode(BaseNode):\n    name = \"Prism: Save Scene Version\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__()\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_input(\"comment\", \"string\", widget_type=\"text\", default=\"\")\n        self.add_input(\"publish\", \"bool\", widget_type=\"bool\", default=False)\n        self.add_output(\"success\", \"bool\")\n        self.add_output(\"saved_path\", \"string\")\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        comment = inputs.get('comment') or ''\n        publish = bool(inputs.get('publish', False))\n        if core is None:\n            self.log_error(\"No PrismCore provided.\")\n            return {'success': False, 'saved_path': ''}\n        try:\n            saved = None\n            for attr in ('saveSceneVersion', 'saveScene'):\n                if hasattr(core, attr):\n                    fn = getattr(core, attr)\n                    try:\n                        saved = fn(comment=comment, publish=publish)\n                    except TypeError:\n                        saved = fn(comment=comment)\n                    break\n            if saved is None:\n                self.log_error(\"No saveScene/saveSceneVersion method on this PrismCore.\")\n                return {'success': False, 'saved_path': ''}\n            saved_path = str(saved) if isinstance(saved, (str, bytes)) else ''\n            self.log_success(f\"Saved scene version: {saved_path or '(ok)'}\")\n            await self.set_output('exec_out', True)\n            return {'success': True, 'saved_path': saved_path}\n        except Exception as e:\n            self.log_error(f\"saveScene failed: {e}\")\n            return {'success': False, 'saved_path': ''}\n\ndef register_node():\n    return PrismSaveSceneVersionNode\n"
+}

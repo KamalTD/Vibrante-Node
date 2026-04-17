@@ -1,0 +1,45 @@
+{
+    "node_id": "prism_build_entity",
+    "name": "Prism: Build Entity Dict",
+    "description": "Pure helper node. Builds a Prism entity dict (asset or shot) that can be fed into any other Prism node. Does not call Prism - it's a data-only node.",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "entity_type",
+            "type": "string",
+            "widget_type": "dropdown",
+            "options": [
+                "asset",
+                "shot"
+            ],
+            "default": "asset"
+        },
+        {
+            "name": "asset_path",
+            "type": "string",
+            "widget_type": "text",
+            "default": "chars/dog"
+        },
+        {
+            "name": "sequence",
+            "type": "string",
+            "widget_type": "text",
+            "default": "a"
+        },
+        {
+            "name": "shot",
+            "type": "string",
+            "widget_type": "text",
+            "default": "0010"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "entity",
+            "type": "dict"
+        }
+    ],
+    "use_exec": false,
+    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\nclass PrismBuildEntityNode(BaseNode):\n    name = \"Prism: Build Entity Dict\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__(use_exec=False)\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"entity_type\", \"string\", widget_type=\"dropdown\", options=[\"asset\",\"shot\"], default=\"asset\")\n        self.add_input(\"asset_path\", \"string\", widget_type=\"text\", default=\"chars/dog\")\n        self.add_input(\"sequence\", \"string\", widget_type=\"text\", default=\"a\")\n        self.add_input(\"shot\", \"string\", widget_type=\"text\", default=\"0010\")\n        self.add_output(\"entity\", \"dict\")\n\n    def _compute(self):\n        etype = self.get_parameter('entity_type') or 'asset'\n        if etype == 'asset':\n            return {'type':'asset', 'asset_path': self.get_parameter('asset_path') or ''}\n        return {'type':'shot', 'sequence': self.get_parameter('sequence') or '', 'shot': self.get_parameter('shot') or ''}\n\n    async def on_parameter_changed(self, name, value):\n        if name in ('entity_type','asset_path','sequence','shot'):\n            self.parameters['entity'] = self._compute()\n\n    async def execute(self, inputs):\n        etype = inputs.get('entity_type') or 'asset'\n        if etype == 'asset':\n            ent = {'type':'asset','asset_path': inputs.get('asset_path') or ''}\n        else:\n            ent = {'type':'shot','sequence': inputs.get('sequence') or '', 'shot': inputs.get('shot') or ''}\n        return {'entity': ent}\n\ndef register_node():\n    return PrismBuildEntityNode\n"
+}

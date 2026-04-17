@@ -1,0 +1,29 @@
+{
+    "node_id": "prism_get_media",
+    "name": "Prism: Get Media",
+    "description": "Lists all media identifiers (renders / playblasts) for the given entity. Wraps core.mediaProducts.getMediaProductsFromEntity(entity).",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "core",
+            "type": "any"
+        },
+        {
+            "name": "entity",
+            "type": "dict"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "media",
+            "type": "list"
+        },
+        {
+            "name": "count",
+            "type": "int"
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\nclass PrismGetMediaNode(BaseNode):\n    name = \"Prism: Get Media\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__(use_exec=False)\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_input(\"entity\", \"dict\")\n        self.add_output(\"media\", \"list\")\n        self.add_output(\"count\", \"int\")\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        entity = inputs.get('entity') or {}\n        if core is None:\n            self.log_error(\"No PrismCore provided.\")\n            return {'media': [], 'count': 0}\n        try:\n            media_module = getattr(core, 'mediaProducts', None) or getattr(core, 'media', None)\n            if media_module is None:\n                self.log_error(\"No media module on this PrismCore.\")\n                return {'media': [], 'count': 0}\n            media = []\n            for attr in ('getMediaProductsFromEntity', 'getMedia', 'getMediaProducts'):\n                if hasattr(media_module, attr):\n                    media = getattr(media_module, attr)(entity) or []\n                    break\n            self.log_info(f\"Found {len(media)} media item(s).\")\n            return {'media': list(media), 'count': len(media)}\n        except Exception as e:\n            self.log_error(f\"getMedia failed: {e}\")\n            return {'media': [], 'count': 0}\n\ndef register_node():\n    return PrismGetMediaNode\n",
+    "use_exec": false
+}

@@ -1,0 +1,33 @@
+{
+    "node_id": "prism_usd_update_department_layer",
+    "name": "Prism USD: Update Department Layer",
+    "description": "Updates the department layer in the current entity USD file. Wraps plugin.api.updateDepartmentLayerInCurrentEntityUSD(departmentUsdFilepath).",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "exec_in",
+            "type": "exec"
+        },
+        {
+            "name": "core",
+            "type": "any"
+        },
+        {
+            "name": "department_usd_path",
+            "type": "string",
+            "widget_type": "file"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "exec_out",
+            "type": "exec"
+        },
+        {
+            "name": "success",
+            "type": "bool"
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\nclass PrismUsdUpdateDepartmentLayerNode(BaseNode):\n    name = \"Prism USD: Update Department Layer\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__()\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_input(\"department_usd_path\", \"string\", widget_type=\"file\")\n        self.add_output(\"success\", \"bool\")\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        path = inputs.get('department_usd_path') or ''\n        if core is None or not path:\n            self.log_error(\"Need PrismCore and department_usd_path.\")\n            return {'success': False}\n        try:\n            plugin = core.getPlugin('USD') if hasattr(core, 'getPlugin') else core.plugins.getPlugin('USD')\n            if plugin is None:\n                self.log_error(\"USD plugin not loaded.\")\n                return {'success': False}\n            plugin.api.updateDepartmentLayerInCurrentEntityUSD(path)\n            self.log_success(f\"Updated department layer: {path}\")\n            await self.set_output('exec_out', True)\n            return {'success': True}\n        except Exception as e:\n            self.log_error(f\"updateDepartmentLayerInCurrentEntityUSD failed: {e}\")\n            return {'success': False}\n\ndef register_node():\n    return PrismUsdUpdateDepartmentLayerNode\n"
+}

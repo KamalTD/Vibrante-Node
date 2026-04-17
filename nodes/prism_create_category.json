@@ -1,0 +1,44 @@
+{
+    "node_id": "prism_create_category",
+    "name": "Prism: Create Category",
+    "description": "Creates a department + task category for an entity. Wraps core.entities.createCategory(entity, department, task).",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "exec_in",
+            "type": "exec"
+        },
+        {
+            "name": "core",
+            "type": "any"
+        },
+        {
+            "name": "entity",
+            "type": "dict"
+        },
+        {
+            "name": "department",
+            "type": "string",
+            "widget_type": "text",
+            "default": "fx"
+        },
+        {
+            "name": "task",
+            "type": "string",
+            "widget_type": "text",
+            "default": "fire"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "exec_out",
+            "type": "exec"
+        },
+        {
+            "name": "success",
+            "type": "bool"
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\nclass PrismCreateCategoryNode(BaseNode):\n    name = \"Prism: Create Category\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__()\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_input(\"entity\", \"dict\")\n        self.add_input(\"department\", \"string\", widget_type=\"text\", default=\"fx\")\n        self.add_input(\"task\", \"string\", widget_type=\"text\", default=\"fire\")\n        self.add_output(\"success\", \"bool\")\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        entity = inputs.get('entity') or {}\n        dept = inputs.get('department') or ''\n        task = inputs.get('task') or ''\n        if core is None:\n            self.log_error(\"No PrismCore provided.\")\n            return {'success': False}\n        try:\n            core.entities.createCategory(entity, dept, task)\n            self.log_success(f\"Created category {dept}/{task} on {entity}.\")\n            await self.set_output('exec_out', True)\n            return {'success': True}\n        except Exception as e:\n            self.log_error(f\"createCategory failed: {e}\")\n            return {'success': False}\n\ndef register_node():\n    return PrismCreateCategoryNode\n"
+}

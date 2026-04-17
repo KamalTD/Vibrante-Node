@@ -1,0 +1,42 @@
+{
+    "node_id": "prism_eval",
+    "name": "Prism: Eval Python",
+    "description": "Executes a custom Python snippet with `core` injected into its namespace. Use this as an escape hatch for any PrismCore method not covered by a dedicated node. Assign your output to a variable named `result`.",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "exec_in",
+            "type": "exec"
+        },
+        {
+            "name": "core",
+            "type": "any"
+        },
+        {
+            "name": "code",
+            "type": "string",
+            "widget_type": "text_area",
+            "default": "result = core.version"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "exec_out",
+            "type": "exec"
+        },
+        {
+            "name": "result",
+            "type": "any"
+        },
+        {
+            "name": "success",
+            "type": "bool"
+        },
+        {
+            "name": "error",
+            "type": "string"
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\nclass PrismEvalNode(BaseNode):\n    name = \"Prism: Eval Python\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__()\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_input(\"code\", \"string\", widget_type=\"text_area\", default=\"result = core.version\")\n        self.add_output(\"result\", \"any\")\n        self.add_output(\"success\", \"bool\")\n        self.add_output(\"error\", \"string\")\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        code = inputs.get('code') or ''\n        if core is None:\n            return {'result': None, 'success': False, 'error': 'No core provided.'}\n        ns = {'core': core, 'result': None}\n        try:\n            exec(code, ns)\n            result = ns.get('result')\n            self.log_success(f\"Eval ok. result={result!r}\")\n            await self.set_output('exec_out', True)\n            return {'result': result, 'success': True, 'error': ''}\n        except Exception as e:\n            self.log_error(f\"Eval failed: {e}\")\n            return {'result': None, 'success': False, 'error': str(e)}\n\ndef register_node():\n    return PrismEvalNode\n"
+}

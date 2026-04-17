@@ -1,0 +1,54 @@
+{
+    "node_id": "prism_send_cmd",
+    "name": "Prism: Send Cmd to DCC",
+    "description": "Sends a Python code string to a running Prism instance inside another DCC (Houdini, Maya, Blender, Nuke, ...). Wraps PrismInternals plugin's sendCmd(target_dcc, code).",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "exec_in",
+            "type": "exec"
+        },
+        {
+            "name": "core",
+            "type": "any"
+        },
+        {
+            "name": "target_dcc",
+            "type": "string",
+            "widget_type": "dropdown",
+            "options": [
+                "Houdini",
+                "Maya",
+                "Blender",
+                "Nuke",
+                "3dsMax",
+                "Unreal",
+                "SubstancePainter",
+                "Photoshop"
+            ],
+            "default": "Houdini"
+        },
+        {
+            "name": "python_code",
+            "type": "string",
+            "widget_type": "text_area",
+            "default": "print('hello from Vibrante')"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "exec_out",
+            "type": "exec"
+        },
+        {
+            "name": "success",
+            "type": "bool"
+        },
+        {
+            "name": "result",
+            "type": "any"
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\nclass PrismSendCmdNode(BaseNode):\n    name = \"Prism: Send Cmd to DCC\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__()\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_input(\"target_dcc\", \"string\", widget_type=\"dropdown\", options=[\"Houdini\",\"Maya\",\"Blender\",\"Nuke\",\"3dsMax\",\"Unreal\",\"SubstancePainter\",\"Photoshop\"], default=\"Houdini\")\n        self.add_input(\"python_code\", \"string\", widget_type=\"text_area\", default=\"print('hello from Vibrante')\")\n        self.add_output(\"success\", \"bool\")\n        self.add_output(\"result\", \"any\")\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        dcc = inputs.get('target_dcc') or ''\n        code = inputs.get('python_code') or ''\n        if core is None or not dcc or not code:\n            self.log_error(\"Need core, target_dcc and python_code.\")\n            return {'success': False, 'result': None}\n        try:\n            plugin = core.getPlugin('PrismInternals') if hasattr(core, 'getPlugin') else core.plugins.getPlugin('PrismInternals')\n            if plugin is None:\n                self.log_error(\"PrismInternals plugin not loaded.\")\n                return {'success': False, 'result': None}\n            internals = getattr(plugin, 'internals', plugin)\n            if not hasattr(internals, 'sendCmd'):\n                self.log_error(\"sendCmd not available on PrismInternals.\")\n                return {'success': False, 'result': None}\n            result = internals.sendCmd(dcc, code)\n            self.log_success(f\"sendCmd -> {dcc}: ok\")\n            await self.set_output('exec_out', True)\n            return {'success': True, 'result': result}\n        except Exception as e:\n            self.log_error(f\"sendCmd failed: {e}\")\n            return {'success': False, 'result': None}\n\ndef register_node():\n    return PrismSendCmdNode\n"
+}

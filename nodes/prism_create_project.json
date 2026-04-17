@@ -1,0 +1,50 @@
+{
+    "node_id": "prism_create_project",
+    "name": "Prism: Create Project",
+    "description": "Creates a new Prism project at the given folder using the specified preset. Wraps core.projects.createProject(name, path, preset).",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "exec_in",
+            "type": "exec"
+        },
+        {
+            "name": "core",
+            "type": "any"
+        },
+        {
+            "name": "name",
+            "type": "string",
+            "widget_type": "text",
+            "default": "My Project"
+        },
+        {
+            "name": "path",
+            "type": "string",
+            "widget_type": "file",
+            "default": "D:/Projects/myProject"
+        },
+        {
+            "name": "preset",
+            "type": "string",
+            "widget_type": "text",
+            "default": "Default"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "exec_out",
+            "type": "exec"
+        },
+        {
+            "name": "success",
+            "type": "bool"
+        },
+        {
+            "name": "project_path",
+            "type": "string"
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\nclass PrismCreateProjectNode(BaseNode):\n    name = \"Prism: Create Project\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__()\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_input(\"name\", \"string\", widget_type=\"text\", default=\"My Project\")\n        self.add_input(\"path\", \"string\", widget_type=\"file\", default=\"D:/Projects/myProject\")\n        self.add_input(\"preset\", \"string\", widget_type=\"text\", default=\"Default\")\n        self.add_output(\"success\", \"bool\")\n        self.add_output(\"project_path\", \"string\")\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        if core is None:\n            self.log_error(\"No PrismCore provided.\")\n            return {'success': False, 'project_path': ''}\n        name = inputs.get('name') or 'Untitled'\n        path = inputs.get('path') or ''\n        preset = inputs.get('preset') or 'Default'\n        try:\n            core.projects.createProject(name, path, preset=preset)\n            self.log_success(f\"Created project '{name}' at {path}\")\n            await self.set_output('exec_out', True)\n            return {'success': True, 'project_path': path}\n        except Exception as e:\n            self.log_error(f\"createProject failed: {e}\")\n            return {'success': False, 'project_path': ''}\n\ndef register_node():\n    return PrismCreateProjectNode\n"
+}

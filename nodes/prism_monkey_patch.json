@@ -1,0 +1,46 @@
+{
+    "node_id": "prism_monkey_patch",
+    "name": "Prism: Monkey-Patch Function",
+    "description": "Replaces an arbitrary Prism API function with a Python callable, evaluated from a code string. The replacement code must define a function named `replacement(self, *args, **kwargs)`. Wraps core.plugins.monkeyPatch(target, replacement, owner, force=True).",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "exec_in",
+            "type": "exec"
+        },
+        {
+            "name": "core",
+            "type": "any"
+        },
+        {
+            "name": "target_path",
+            "type": "string",
+            "widget_type": "text",
+            "default": "core.entities.getAssetDescription"
+        },
+        {
+            "name": "replacement_code",
+            "type": "string",
+            "widget_type": "text_area",
+            "default": "def replacement(self, *args, **kwargs):\n    return 'patched value'"
+        },
+        {
+            "name": "force",
+            "type": "bool",
+            "widget_type": "bool",
+            "default": true
+        }
+    ],
+    "outputs": [
+        {
+            "name": "exec_out",
+            "type": "exec"
+        },
+        {
+            "name": "success",
+            "type": "bool"
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\nclass PrismMonkeyPatchNode(BaseNode):\n    name = \"Prism: Monkey-Patch Function\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__()\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_input(\"target_path\", \"string\", widget_type=\"text\", default=\"core.entities.getAssetDescription\")\n        self.add_input(\"replacement_code\", \"string\", widget_type=\"text_area\", default=\"def replacement(self, *args, **kwargs):\\n    return 'patched value'\")\n        self.add_input(\"force\", \"bool\", widget_type=\"bool\", default=True)\n        self.add_output(\"success\", \"bool\")\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        target_path = inputs.get('target_path') or ''\n        code = inputs.get('replacement_code') or ''\n        force = bool(inputs.get('force', True))\n        if core is None or not target_path or not code:\n            self.log_error(\"Need core, target_path and replacement_code.\")\n            return {'success': False}\n        try:\n            # Resolve dotted target on the core object\n            obj = core\n            parts = target_path.split('.')\n            if parts[0] == 'core':\n                parts = parts[1:]\n            for p in parts[:-1]:\n                obj = getattr(obj, p)\n            target = getattr(obj, parts[-1])\n            # Compile replacement\n            ns = {}\n            exec(code, ns)\n            repl = ns.get('replacement')\n            if repl is None:\n                self.log_error(\"replacement_code must define a function named 'replacement'.\")\n                return {'success': False}\n            core.plugins.monkeyPatch(target, repl, self, force=force)\n            self.log_success(f\"Patched {target_path}\")\n            await self.set_output('exec_out', True)\n            return {'success': True}\n        except Exception as e:\n            self.log_error(f\"monkeyPatch failed: {e}\")\n            return {'success': False}\n\ndef register_node():\n    return PrismMonkeyPatchNode\n"
+}

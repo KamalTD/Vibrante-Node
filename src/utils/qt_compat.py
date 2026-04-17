@@ -15,6 +15,7 @@ importing directly from PyQt5 or PySide2.
 
 import os
 import sys
+import types
 
 # Detect which Qt binding is available.
 # Priority: PySide2 (Houdini in-process only) -> PyQt5 (standalone/subprocess)
@@ -57,6 +58,49 @@ if QT_BINDING is None:
             "No Qt binding found. Install PyQt5 (`pip install PyQt5`) "
             "or run inside Houdini (PySide2)."
         )
+
+
+def ensure_qcolor_from_string():
+    """
+    Backfill QColor.fromString for Qt5 bindings that don't expose it.
+
+    Prism imports expect a Qt6-style QColor API in some environments.
+    """
+    QColor = QtGui.QColor
+    if hasattr(QColor, "fromString"):
+        return
+
+    @classmethod
+    def _from_string(cls, value):
+        color = cls()
+        try:
+            color.setNamedColor(str(value))
+        except Exception:
+            color = cls(str(value))
+        return color
+
+    QColor.fromString = _from_string
+
+
+ensure_qcolor_from_string()
+
+
+def ensure_shiboken_stub():
+    """
+    When running under PyQt, Prism may still attempt to import shiboken2/6
+    opportunistically. In this app that can resolve to binary wheels which are
+    incompatible with the current NumPy runtime, even though Prism doesn't need
+    them for PyQt-based execution.
+    """
+    if QT_BINDING not in ("PyQt5", "PyQt6"):
+        return
+
+    for mod_name in ("shiboken2", "shiboken6"):
+        if mod_name in sys.modules:
+            continue
+        stub = types.ModuleType(mod_name)
+        stub.isValid = lambda obj: True
+        sys.modules[mod_name] = stub
 
 
 # ---------------------------------------------------------------------------

@@ -1,0 +1,29 @@
+{
+    "node_id": "prism_get_departments",
+    "name": "Prism: Get Departments",
+    "description": "Returns the list of departments configured for the given entity. Wraps core.entities.getDepartments(entity).",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "core",
+            "type": "any"
+        },
+        {
+            "name": "entity",
+            "type": "dict"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "departments",
+            "type": "list"
+        },
+        {
+            "name": "count",
+            "type": "int"
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\nclass PrismGetDepartmentsNode(BaseNode):\n    name = \"Prism: Get Departments\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__(use_exec=False)\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_input(\"entity\", \"dict\")\n        self.add_output(\"departments\", \"list\")\n        self.add_output(\"count\", \"int\")\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        entity = inputs.get('entity') or {}\n        if core is None:\n            self.log_error(\"No PrismCore provided.\")\n            return {'departments': [], 'count': 0}\n        try:\n            depts = core.entities.getDepartments(entity) or []\n            self.log_info(f\"Found {len(depts)} department(s) for {entity}.\")\n            return {'departments': list(depts), 'count': len(depts)}\n        except Exception as e:\n            self.log_error(f\"getDepartments failed: {e}\")\n            return {'departments': [], 'count': 0}\n\ndef register_node():\n    return PrismGetDepartmentsNode\n",
+    "use_exec": false
+}

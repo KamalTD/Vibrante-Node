@@ -1,0 +1,35 @@
+{
+    "node_id": "prism_get_preset_scenes",
+    "name": "Prism: Get Preset Scenes",
+    "description": "Returns the list of available preset scene files for the current project. Wraps core.entities.getPresetScenes().",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "core",
+            "type": "any"
+        },
+        {
+            "name": "extension_filter",
+            "type": "string",
+            "widget_type": "text",
+            "default": ""
+        }
+    ],
+    "outputs": [
+        {
+            "name": "presets",
+            "type": "list"
+        },
+        {
+            "name": "first_preset",
+            "type": "string"
+        },
+        {
+            "name": "count",
+            "type": "int"
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\nclass PrismGetPresetScenesNode(BaseNode):\n    name = \"Prism: Get Preset Scenes\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__(use_exec=False)\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_input(\"extension_filter\", \"string\", widget_type=\"text\", default=\"\")\n        self.add_output(\"presets\", \"list\")\n        self.add_output(\"first_preset\", \"string\")\n        self.add_output(\"count\", \"int\")\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        ext = (inputs.get('extension_filter') or '').strip().lower()\n        if core is None:\n            self.log_error(\"No PrismCore provided.\")\n            return {'presets': [], 'first_preset': '', 'count': 0}\n        try:\n            presets = core.entities.getPresetScenes() or []\n            if ext:\n                if not ext.startswith('.'):\n                    ext = '.' + ext\n                presets = [p for p in presets if str(p).lower().endswith(ext)]\n            first = presets[0] if presets else ''\n            self.log_info(f\"Found {len(presets)} preset(s).\")\n            return {'presets': list(presets), 'first_preset': first, 'count': len(presets)}\n        except Exception as e:\n            self.log_error(f\"getPresetScenes failed: {e}\")\n            return {'presets': [], 'first_preset': '', 'count': 0}\n\ndef register_node():\n    return PrismGetPresetScenesNode\n",
+    "use_exec": false
+}

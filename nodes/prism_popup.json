@@ -1,0 +1,40 @@
+{
+    "node_id": "prism_popup",
+    "name": "Prism: Popup",
+    "description": "Displays a popup message inside Prism. Wraps core.popup(message).",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "exec_in",
+            "type": "exec"
+        },
+        {
+            "name": "core",
+            "type": "any"
+        },
+        {
+            "name": "message",
+            "type": "string",
+            "widget_type": "text_area",
+            "default": "Hello from Vibrante!"
+        },
+        {
+            "name": "title",
+            "type": "string",
+            "widget_type": "text",
+            "default": "Prism"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "exec_out",
+            "type": "exec"
+        },
+        {
+            "name": "shown",
+            "type": "bool"
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\nclass PrismPopupNode(BaseNode):\n    name = \"Prism: Popup\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__()\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_input(\"message\", \"string\", widget_type=\"text_area\", default=\"Hello from Vibrante!\")\n        self.add_input(\"title\", \"string\", widget_type=\"text\", default=\"Prism\")\n        self.add_output(\"shown\", \"bool\")\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        msg = inputs.get('message') or ''\n        title = inputs.get('title') or 'Prism'\n        if core is None:\n            self.log_error(\"No PrismCore provided.\")\n            return {'shown': False}\n        try:\n            try:\n                core.popup(msg, title=title)\n            except TypeError:\n                core.popup(msg)\n            self.log_info(f\"Popup: {msg}\")\n            await self.set_output('exec_out', True)\n            return {'shown': True}\n        except Exception as e:\n            self.log_error(f\"popup failed: {e}\")\n            return {'shown': False}\n\ndef register_node():\n    return PrismPopupNode\n"
+}

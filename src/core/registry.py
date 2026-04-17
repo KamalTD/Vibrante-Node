@@ -11,6 +11,26 @@ class NodeRegistry:
     last_error: Optional[str] = None
 
     @classmethod
+    def _prepare_definition(cls, definition: NodeDefinitionJSON) -> NodeDefinitionJSON:
+        """
+        Normalize selected node families before class generation.
+        Prism nodes can auto-resolve the active PrismCore from shared memory,
+        so users don't have to wire the `core` output through every node.
+        """
+        if not definition.python_code:
+            return definition
+
+        if definition.node_id.startswith("prism_") and definition.node_id != "prism_core_init":
+            code = definition.python_code
+            if "resolve_prism_core" not in code:
+                code = "from src.utils.prism_core import resolve_prism_core\n" + code
+            code = code.replace("core = inputs.get('core')", "core = resolve_prism_core(inputs)")
+            code = code.replace('core = inputs.get("core")', "core = resolve_prism_core(inputs)")
+            definition.python_code = code
+
+        return definition
+
+    @classmethod
     def load_all(cls, directory: str):
         """
         Scans directory and subdirectories for .json files and registers them.
@@ -113,6 +133,8 @@ class NodeRegistry:
 
     @classmethod
     def register_definition(cls, definition: NodeDefinitionJSON) -> bool:
+        definition = cls._prepare_definition(definition)
+
         # 1. Normalize pins: Ensure at least 'exec_in' and 'exec_out' exist if use_exec is True
         # But allow other 'exec' type pins as well.
         if definition.use_exec:

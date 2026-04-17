@@ -1,0 +1,29 @@
+{
+    "node_id": "prism_get_shots",
+    "name": "Prism: Get Shots",
+    "description": "Returns all sequences and shots in the current project. Wraps core.entities.getShots() -> (sequences, shots).",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "core",
+            "type": "any"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "sequences",
+            "type": "list"
+        },
+        {
+            "name": "shots",
+            "type": "list"
+        },
+        {
+            "name": "shot_count",
+            "type": "int"
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\nclass PrismGetShotsNode(BaseNode):\n    name = \"Prism: Get Shots\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__(use_exec=False)\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_output(\"sequences\", \"list\")\n        self.add_output(\"shots\", \"list\")\n        self.add_output(\"shot_count\", \"int\")\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        if core is None:\n            self.log_error(\"No PrismCore provided.\")\n            return {'sequences': [], 'shots': [], 'shot_count': 0}\n        try:\n            sequences, shots = core.entities.getShots()\n            sequences = list(sequences or [])\n            shots = list(shots or [])\n            self.log_info(f\"Found {len(sequences)} sequence(s), {len(shots)} shot(s).\")\n            return {'sequences': sequences, 'shots': shots, 'shot_count': len(shots)}\n        except Exception as e:\n            self.log_error(f\"getShots failed: {e}\")\n            return {'sequences': [], 'shots': [], 'shot_count': 0}\n\ndef register_node():\n    return PrismGetShotsNode\n",
+    "use_exec": false
+}

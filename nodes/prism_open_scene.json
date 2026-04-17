@@ -1,0 +1,33 @@
+{
+    "node_id": "prism_open_scene",
+    "name": "Prism: Open Scene",
+    "description": "Opens a scene file in the connected DCC. Wraps core.appPlugin.openScene(core, scenefile) or core.openScene(scenefile).",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "exec_in",
+            "type": "exec"
+        },
+        {
+            "name": "core",
+            "type": "any"
+        },
+        {
+            "name": "scene_path",
+            "type": "string",
+            "widget_type": "file"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "exec_out",
+            "type": "exec"
+        },
+        {
+            "name": "success",
+            "type": "bool"
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\nclass PrismOpenSceneNode(BaseNode):\n    name = \"Prism: Open Scene\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__()\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_input(\"scene_path\", \"string\", widget_type=\"file\")\n        self.add_output(\"success\", \"bool\")\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        path = inputs.get('scene_path') or ''\n        if core is None:\n            self.log_error(\"No PrismCore provided.\")\n            return {'success': False}\n        try:\n            opened = False\n            if hasattr(core, 'openScene'):\n                core.openScene(path)\n                opened = True\n            elif getattr(core, 'appPlugin', None) is not None and hasattr(core.appPlugin, 'openScene'):\n                core.appPlugin.openScene(core, path)\n                opened = True\n            else:\n                self.log_error(\"No openScene method available on this PrismCore.\")\n            if opened:\n                self.log_success(f\"Opened scene: {path}\")\n                await self.set_output('exec_out', True)\n            return {'success': opened}\n        except Exception as e:\n            self.log_error(f\"openScene failed: {e}\")\n            return {'success': False}\n\ndef register_node():\n    return PrismOpenSceneNode\n"
+}
