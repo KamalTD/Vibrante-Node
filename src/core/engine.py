@@ -25,7 +25,7 @@ class NetworkExecutor(QObject):
         self._currently_executing: Set[UUID] = set() # Nodes currently in the stack
         self._is_stopped = False
         self._active_tasks: Set[asyncio.Task] = set()
-        self._finished_event = asyncio.Event()
+        self._finished_event: Optional[asyncio.Event] = None
         
         # Pre-calculated lookup maps
         self._incoming_data_conns: Dict[UUID, List[Any]] = {} 
@@ -35,7 +35,8 @@ class NetworkExecutor(QObject):
         self._is_stopped = True
         for task in self._active_tasks:
             task.cancel()
-        self._finished_event.set()
+        if self._finished_event is not None:
+            self._finished_event.set()
 
     def _track_task(self, coro):
         """Helper to create and track a task in the current event loop."""
@@ -60,7 +61,7 @@ class NetworkExecutor(QObject):
         self._currently_executing.clear()
         self._is_stopped = False
         self._active_tasks.clear()
-        self._finished_event.clear()
+        self._finished_event = asyncio.Event()
         
         # 1. PRE-CALCULATE LOOKUP MAPS
         self._incoming_data_conns = {}
@@ -159,7 +160,13 @@ class NetworkExecutor(QObject):
                 return handler
             instance._on_output = create_output_handler(node_id)
 
-        # 2. IDENTIFY ENTRY NODES
+        # 2. PRISM BOOTSTRAP
+        # If any prism_core_init node exists, initialise PrismCore before the
+        # main execution loop so every prism_* node can resolve it from the
+        # shared cache without requiring an explicit 'core' wire.
+        await self._bootstrap_prism_if_needed()
+
+        # 3. IDENTIFY ENTRY NODES
         exec_conns = [c for c in self.graph_manager.connections if c.is_exec]
         
         try:
@@ -222,6 +229,28 @@ class NetworkExecutor(QObject):
 
         finally:
             self.execution_finished.emit(not self._is_stopped)
+
+    async def _bootstrap_prism_if_needed(self):
+        """Run bootstrap_prism_core before the main graph if a prism_core_init
+        node is present and PrismCore is not already cached."""
+        from src.utils.prism_core import resolve_prism_core, bootstrap_prism_core
+        if resolve_prism_core() is not None:
+            return
+        for node_id, node_model in self.graph_manager.nodes.items():
+            if node_model.node_id == "prism_core_init":
+                params = node_model.parameters
+                scripts_path = params.get("prism_scripts_path", "C:/Program Files/Prism2/Scripts")
+                load_project = bool(params.get("load_project", True))
+                show_ui = bool(params.get("show_ui", False))
+                try:
+                    bootstrap_prism_core(
+                        prism_scripts_path=scripts_path,
+                        load_project=load_project,
+                        show_ui=show_ui,
+                    )
+                except Exception as e:
+                    self.node_log.emit(node_id, f"Prism bootstrap failed: {e}", "error")
+                break
 
     async def _execute_flow(self, node_id: UUID):
         """Executes a single node. Flow continuation is handled EXCLUSIVELY by set_output calls."""

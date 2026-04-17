@@ -2,9 +2,8 @@ import sys
 import os
 import shutil
 import asyncio
-import threading
 from PyQt5.QtWidgets import QMainWindow, QAction, QFileDialog, QVBoxLayout, QWidget, QGraphicsView, QGraphicsScene, QToolBar, QMessageBox, QDockWidget, QMenu, QStyle, QTabWidget, QStatusBar, QLabel
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QCursor
 from src.ui.canvas.scene import NodeScene
 from src.ui.canvas.view import NodeView
@@ -18,6 +17,53 @@ from src.core.engine import NetworkExecutor
 from src.ui.node_widget import NodeWidget
 
 from src.ui.gemini_api_dialog import GeminiApiDialog
+
+
+class _EventLoopRunner:
+    """Drives the NetworkExecutor's asyncio event loop on the main Qt thread.
+
+    A zero-delay QTimer pumps the asyncio loop so every signal the executor
+    emits originates from the main thread.  No cross-thread machinery is
+    ever needed, which makes QBasicTimer warnings structurally impossible.
+    """
+
+    def __init__(self, executor):
+        self._executor = executor
+        self._loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(self._loop)
+        self._task = None
+        self._active = False
+        self._timer = QTimer()
+        self._timer.setInterval(0)
+        self._timer.timeout.connect(self._step)
+
+    def start(self):
+        self._active = True
+        self._task = self._loop.create_task(self._executor.run())
+        self._timer.start()
+
+    def _step(self):
+        if not self._active:
+            return
+        # Process one round of ready asyncio callbacks without blocking.
+        # call_soon(stop) ensures run_forever() returns after one _run_once().
+        self._loop.call_soon(self._loop.stop)
+        self._loop.run_forever()
+        if self._task is not None and self._task.done():
+            self._cleanup()
+
+    def _cleanup(self):
+        if not self._active:
+            return
+        self._active = False
+        self._timer.stop()
+        if not self._loop.is_closed():
+            self._loop.close()
+
+    def stop(self):
+        """Request a graceful stop; the loop keeps pumping until the task finishes."""
+        self._executor.stop()
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -537,21 +583,13 @@ class MainWindow(QMainWindow):
         self.current_executor.node_output.connect(self._on_node_output)
         self.current_executor.node_log.connect(self._on_node_log)
         self.current_executor.execution_finished.connect(self._on_execution_finished)
-        
-        def run_async_loop():
-            try:
-                loop = asyncio.new_event_loop()
-                asyncio.set_event_loop(loop)
-                loop.run_until_complete(self.current_executor.run())
-                loop.close()
-            except Exception as e:
-                self.current_executor.execution_finished.emit(False)
 
-        threading.Thread(target=run_async_loop, daemon=True).start()
+        self._runner = _EventLoopRunner(self.current_executor)
+        self._runner.start()
 
     def stop_execution(self):
-        if hasattr(self, 'current_executor') and self.current_executor:
-            self.current_executor.stop()
+        if hasattr(self, '_runner') and self._runner:
+            self._runner.stop()
             self.status_label.setText("Stopping...")
             self.log_panel.log("Stop requested...", "warning")
 
@@ -564,7 +602,6 @@ class MainWindow(QMainWindow):
         self.log_panel.log(f"Execution finished {status}.", "info" if success else "warning")
 
         # After a short delay, reset all nodes to 'idle' to clear status colors
-        from PyQt5.QtCore import QTimer
         QTimer.singleShot(2000, self._reset_node_statuses)
 
     def _reset_node_statuses(self):
