@@ -269,17 +269,29 @@ class NodeScene(QGraphicsScene):
         
         return new_items
 
+    @staticmethod
+    def _serializable_params(params: dict) -> dict:
+        import json
+        result = {}
+        for k, v in params.items():
+            try:
+                json.dumps(v)
+                result[k] = v
+            except (TypeError, ValueError):
+                pass
+        return result
+
     def to_workflow_model(self) -> WorkflowModel:
         model = WorkflowModel()
         for node_widget in self.nodes:
             # SYNC: Ensure the latest parameters from the UI are captured
             # Many parameters might have changed via widgets without triggering a full sync
-            
+
             node_model = NodeInstanceModel(
                 instance_id=node_widget.instance_id,
                 node_id=getattr(node_widget.node_definition, 'node_id', node_widget.node_definition.name),
                 position=(node_widget.pos().x(), node_widget.pos().y()),
-                parameters=node_widget.node_definition.parameters.copy(),
+                parameters=self._serializable_params(node_widget.node_definition.parameters),
                 bypassed=node_widget.bypassed
             )
             model.nodes.append(node_model)
