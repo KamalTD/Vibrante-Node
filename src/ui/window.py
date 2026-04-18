@@ -503,20 +503,35 @@ class MainWindow(QMainWindow):
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Failed to load node: {str(e)}")
 
+    @staticmethod
+    def _atomic_write(file_path: str, data: str):
+        """Write to a temp file then rename so a crash never corrupts the target."""
+        import tempfile
+        dir_name = os.path.dirname(os.path.abspath(file_path))
+        fd, tmp_path = tempfile.mkstemp(dir=dir_name, suffix=".tmp")
+        try:
+            with os.fdopen(fd, "w") as f:
+                f.write(data)
+            os.replace(tmp_path, file_path)
+        except Exception:
+            try:
+                os.remove(tmp_path)
+            except OSError:
+                pass
+            raise
+
     def save_workflow(self):
         scene = self.get_current_scene()
         if not scene: return
-        
+
         file_path = scene.file_path
         if not file_path:
             file_path, _ = QFileDialog.getSaveFileName(self, "Save Workflow", "workflows", "Workflow Files (*.json)")
-        
+
         if file_path:
             if not file_path.endswith(".json"): file_path += ".json"
             workflow_model = scene.to_workflow_model()
-            with open(file_path, "w") as f:
-                f.write(workflow_model.model_dump_json(indent=4))
-            
+            self._atomic_write(file_path, workflow_model.model_dump_json(indent=4))
             scene.file_path = file_path
             self.tabs.setTabText(self.tabs.currentIndex(), os.path.basename(file_path))
             self.log_panel.log(f"Workflow saved: {file_path}", "success")
@@ -525,17 +540,14 @@ class MainWindow(QMainWindow):
         """Save workflow to a new file, always prompting for location."""
         scene = self.get_current_scene()
         if not scene: return
-        
-        # Always prompt for a new file path
+
         default_dir = os.path.dirname(scene.file_path) if scene.file_path else "workflows"
         file_path, _ = QFileDialog.getSaveFileName(self, "Save Workflow As", default_dir, "Workflow Files (*.json)")
-        
+
         if file_path:
             if not file_path.endswith(".json"): file_path += ".json"
             workflow_model = scene.to_workflow_model()
-            with open(file_path, "w") as f:
-                f.write(workflow_model.model_dump_json(indent=4))
-            
+            self._atomic_write(file_path, workflow_model.model_dump_json(indent=4))
             scene.file_path = file_path
             self.tabs.setTabText(self.tabs.currentIndex(), os.path.basename(file_path))
             self.log_panel.log(f"Workflow saved as: {file_path}", "success")
@@ -545,13 +557,22 @@ class MainWindow(QMainWindow):
         if file_path:
             with open(file_path, "r") as f:
                 json_data = f.read()
-            workflow_model = WorkflowModel.model_validate_json(json_data)
-            
+            if not json_data.strip():
+                QMessageBox.critical(self, "Load Error", f"Workflow file is empty or corrupted:\n{file_path}")
+                self.log_panel.log(f"Failed to load workflow — file is empty: {file_path}", "error")
+                return
+            try:
+                workflow_model = WorkflowModel.model_validate_json(json_data)
+            except Exception as e:
+                QMessageBox.critical(self, "Load Error", f"Invalid workflow file:\n{e}")
+                self.log_panel.log(f"Failed to load workflow: {e}", "error")
+                return
+
             # Create a new tab for loaded workflow
             view = self.add_new_workflow(os.path.basename(file_path))
             scene = view.scene()
             scene.from_workflow_model(workflow_model)
-            scene.file_path = file_path # Track path for smart save
+            scene.file_path = file_path
             self.log_panel.log(f"Workflow loaded: {file_path}", "info")
 
     def execute_pipeline(self):
