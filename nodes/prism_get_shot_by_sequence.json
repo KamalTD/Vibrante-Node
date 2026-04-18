@@ -1,0 +1,55 @@
+{
+    "node_id": "prism_get_shot_by_sequence",
+    "name": "Prism: Get Shot by Sequence",
+    "description": "Find a shot by name within a sequence dict from prism_get_sequence_by_project.",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "core",
+            "type": "any",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "sequence",
+            "type": "dict",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "name",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": ""
+        }
+    ],
+    "outputs": [
+        {
+            "name": "shot",
+            "type": "dict",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "entity",
+            "type": "dict",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "found",
+            "type": "bool",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        }
+    ],
+    "python_code": "import os\nfrom src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\nclass PrismGetShotBySequenceNode(BaseNode):\n    name = \"Prism: Get Shot by Sequence\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__(use_exec=False)\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_input(\"sequence\", \"dict\")\n        self.add_input(\"name\", \"string\", widget_type=\"text\", default=\"\")\n        self.add_output(\"shot\", \"dict\")\n        self.add_output(\"entity\", \"dict\")\n        self.add_output(\"found\", \"bool\")\n\n    def _get_sequences_and_shots(self, core):\n        result = core.entities.getShots()\n        try:\n            sequences, shots = result\n            return list(sequences or []), list(shots or [])\n        except (TypeError, ValueError):\n            shots = list(result or [])\n            sequences = list(dict.fromkeys(str(s.get('sequence', '')) for s in shots if s.get('sequence')))\n            return sequences, shots\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        sequence = inputs.get('sequence') or {}\n        name = (inputs.get('name') or '').strip()\n        empty = {'shot': {}, 'entity': {}, 'found': False}\n        if core is None:\n            self.log_error('No PrismCore found.')\n            return empty\n        if not sequence:\n            self.log_error('No sequence provided.')\n            return empty\n        if not name:\n            self.log_error('No shot name provided.')\n            return empty\n        prj_path = sequence.get('project_path', '')\n        seq_name = sequence.get('name', '')\n        if not prj_path:\n            self.log_error('Sequence dict is missing project_path. Connect from prism_get_sequence_by_project.')\n            return empty\n        try:\n            core.changeProject(prj_path)\n        except Exception as e:\n            self.log_error(f'changeProject failed: {e}')\n            return empty\n        try:\n            _, shots = self._get_sequences_and_shots(core)\n        except Exception as e:\n            self.log_error(f'getShots failed: {e}')\n            return empty\n        if seq_name:\n            seq_lower = seq_name.lower()\n            shots = [s for s in shots if str(s.get('sequence', '')).lower() == seq_lower]\n        name_lower = name.lower()\n        for s in shots:\n            shot_val = str(s.get('shot', s.get('name', '')))\n            if shot_val.lower() == name_lower:\n                entity = {'type': 'shot', 'sequence': seq_name, 'shot': shot_val}\n                self.log_info(f\"Found shot '{seq_name}/{shot_val}'\")\n                return {'shot': s, 'entity': entity, 'found': True}\n        self.log_error(f\"Shot '{name}' not found in {len(shots)} shot(s) of sequence '{seq_name}'.\")\n        return empty\n\ndef register_node():\n    return PrismGetShotBySequenceNode\n",
+    "use_exec": false
+}
