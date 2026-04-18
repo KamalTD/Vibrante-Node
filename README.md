@@ -124,7 +124,7 @@ Detailed documentation is available for both users and developers:
 -   🤖 **[Automation API](AUTOMATION_API.md)**: Reference for Scripting Console automation.
 -   🛠️ **[Developer Documentation](DEVELOPER.md)**: Technical architecture and internal data flow.
 -   📄 **[Technical Feature List](DOCUMENTATION.md)**: Detailed breakdown of all platform features.
--   📋 **[Release Notes v1.6.0](RELEASE_v1.6.0.md)**: Full changelog for the current release.
+-   📋 **[Release Notes v1.6.1](RELEASE_v1.6.1.md)**: Full changelog for the current release.
 
 ---
 
