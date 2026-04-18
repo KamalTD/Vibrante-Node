@@ -1,0 +1,48 @@
+{
+    "node_id": "prism_get_shots_by_project_sequence",
+    "name": "Prism: Get Shots by Project+Sequence",
+    "description": "Switch to a project then return shots, optionally filtered by sequence.",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "core",
+            "type": "any",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "project",
+            "type": "dict",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "sequence",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": ""
+        }
+    ],
+    "outputs": [
+        {
+            "name": "shots",
+            "type": "list",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "count",
+            "type": "int",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        }
+    ],
+    "python_code": "import os\nfrom src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\nclass PrismGetShotsByProjectSequenceNode(BaseNode):\n    name = \"Prism: Get Shots by Project+Sequence\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__(use_exec=False)\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_input(\"project\", \"dict\")\n        self.add_input(\"sequence\", \"string\", widget_type=\"text\", default=\"\")\n        self.add_output(\"shots\", \"list\")\n        self.add_output(\"count\", \"int\")\n\n    def _project_path(self, project):\n        path = project.get('project_path', '')\n        if not path:\n            cfg = project.get('configPath', '')\n            if cfg:\n                path = os.path.dirname(os.path.dirname(cfg))\n        return path\n\n    def _get_sequences_and_shots(self, core):\n        result = core.entities.getShots()\n        try:\n            sequences, shots = result\n            return list(sequences or []), list(shots or [])\n        except (TypeError, ValueError):\n            shots = list(result or [])\n            sequences = list(dict.fromkeys(str(s.get('sequence', '')) for s in shots if s.get('sequence')))\n            return sequences, shots\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        project = inputs.get('project') or {}\n        sequence = (inputs.get('sequence') or '').strip()\n        if core is None:\n            self.log_error('No PrismCore found.')\n            return {'shots': [], 'count': 0}\n        if not project:\n            self.log_error('No project provided.')\n            return {'shots': [], 'count': 0}\n        prj_path = self._project_path(project)\n        if not prj_path:\n            self.log_error('Cannot determine project path from project dict.')\n            return {'shots': [], 'count': 0}\n        try:\n            core.changeProject(prj_path)\n        except Exception as e:\n            self.log_error(f'changeProject failed: {e}')\n            return {'shots': [], 'count': 0}\n        try:\n            _, shots = self._get_sequences_and_shots(core)\n            if sequence:\n                seq_lower = sequence.lower()\n                shots = [s for s in shots if str(s.get('sequence', '')).lower() == seq_lower]\n            label = sequence or '*'\n            self.log_info(f\"Found {len(shots)} shot(s) in '{project.get('name', '')}' / '{label}'\")\n            return {'shots': shots, 'count': len(shots)}\n        except Exception as e:\n            self.log_error(f'getShots failed: {e}')\n            return {'shots': [], 'count': 0}\n\ndef register_node():\n    return PrismGetShotsByProjectSequenceNode\n",
+    "use_exec": false
+}

@@ -1,0 +1,69 @@
+{
+    "node_id": "prism_get_entity_path",
+    "name": "Prism: Get Entity Path",
+    "description": "Resolve filesystem paths for an entity down to department and task level.",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "core",
+            "type": "any",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "entity",
+            "type": "dict",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "department",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": ""
+        },
+        {
+            "name": "task",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": ""
+        }
+    ],
+    "outputs": [
+        {
+            "name": "entity_root",
+            "type": "string",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "dept_path",
+            "type": "string",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "task_path",
+            "type": "string",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "found",
+            "type": "bool",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\nimport os\n\nclass PrismGetEntityPathNode(BaseNode):\n    name = \"Prism: Get Entity Path\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__(use_exec=False)\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_input(\"entity\", \"dict\")\n        self.add_input(\"department\", \"string\", widget_type=\"text\", default=\"\")\n        self.add_input(\"task\", \"string\", widget_type=\"text\", default=\"\")\n        self.add_output(\"entity_root\", \"string\")\n        self.add_output(\"dept_path\", \"string\")\n        self.add_output(\"task_path\", \"string\")\n        self.add_output(\"found\", \"bool\")\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        entity = inputs.get(\"entity\") or {}\n        dept = (inputs.get(\"department\") or \"\").strip()\n        task = (inputs.get(\"task\") or \"\").strip()\n        defaults = {\"entity_root\": \"\", \"dept_path\": \"\", \"task_path\": \"\", \"found\": False}\n        if core is None:\n            self.log_error(\"No PrismCore found.\")\n            return defaults\n        try:\n            entity_root = \"\"\n            for method in (\"getEntityPath\", \"getEntityBasePath\", \"getAssetPath\", \"getShotPath\"):\n                fn = getattr(core.entities, method, None)\n                if callable(fn):\n                    try:\n                        entity_root = str(fn(entity) or \"\")\n                        if entity_root:\n                            break\n                    except Exception:\n                        pass\n            dept_path = \"\"\n            if dept:\n                for method in (\"getDepartmentPath\", \"getStepPath\"):\n                    fn = getattr(core.entities, method, None)\n                    if callable(fn):\n                        try:\n                            dept_path = str(fn(entity, dept) or \"\")\n                            if dept_path:\n                                break\n                        except Exception:\n                            pass\n                if not dept_path and entity_root:\n                    dept_path = os.path.join(entity_root, dept)\n            task_path = \"\"\n            if task and dept:\n                for method in (\"getTaskPath\", \"getWorkPath\"):\n                    fn = getattr(core.entities, method, None)\n                    if callable(fn):\n                        try:\n                            task_path = str(fn(entity, dept, task) or \"\")\n                            if task_path:\n                                break\n                        except Exception:\n                            pass\n                if not task_path and dept_path:\n                    task_path = os.path.join(dept_path, task)\n            found = bool(entity_root)\n            self.log_info(f\"entity_root={entity_root!r}  dept={dept_path!r}  task={task_path!r}\")\n            return {\"entity_root\": entity_root, \"dept_path\": dept_path,\n                    \"task_path\": task_path, \"found\": found}\n        except Exception as e:\n            self.log_error(f\"getEntityPath failed: {e}\")\n            return defaults\n\ndef register_node():\n    return PrismGetEntityPathNode\n",
+    "use_exec": false
+}

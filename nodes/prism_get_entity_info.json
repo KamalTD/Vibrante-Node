@@ -1,0 +1,62 @@
+{
+    "node_id": "prism_get_entity_info",
+    "name": "Prism: Get Entity Info",
+    "description": "Unpack an entity dict into named output fields.",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "entity",
+            "type": "dict",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        }
+    ],
+    "outputs": [
+        {
+            "name": "type",
+            "type": "string",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "name",
+            "type": "string",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "sequence",
+            "type": "string",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "shot_name",
+            "type": "string",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "asset_path",
+            "type": "string",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "display_name",
+            "type": "string",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\n\nclass PrismGetEntityInfoNode(BaseNode):\n    name = \"Prism: Get Entity Info\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__(use_exec=False)\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"entity\", \"dict\")\n        self.add_output(\"type\", \"string\")\n        self.add_output(\"name\", \"string\")\n        self.add_output(\"sequence\", \"string\")\n        self.add_output(\"shot_name\", \"string\")\n        self.add_output(\"asset_path\", \"string\")\n        self.add_output(\"display_name\", \"string\")\n\n    async def execute(self, inputs):\n        entity = inputs.get(\"entity\") or {}\n        etype = str(entity.get(\"type\", \"\")).lower()\n        if etype == \"shot\":\n            seq = str(entity.get(\"sequence\", \"\"))\n            shot = str(entity.get(\"shot\", entity.get(\"name\", \"\")))\n            display = f\"{seq}/{shot}\" if seq else shot\n            return {\"type\": \"shot\", \"name\": shot, \"sequence\": seq,\n                    \"shot_name\": shot, \"asset_path\": \"\", \"display_name\": display}\n        elif etype == \"asset\":\n            path = str(entity.get(\"asset_path\", entity.get(\"name\", \"\")))\n            leaf = path.split(\"/\")[-1] if path else \"\"\n            return {\"type\": \"asset\", \"name\": leaf, \"sequence\": \"\",\n                    \"shot_name\": \"\", \"asset_path\": path, \"display_name\": path}\n        else:\n            return {\"type\": etype, \"name\": str(entity.get(\"name\", \"\")),\n                    \"sequence\": \"\", \"shot_name\": \"\", \"asset_path\": \"\", \"display_name\": str(entity)}\n\ndef register_node():\n    return PrismGetEntityInfoNode\n",
+    "use_exec": false
+}

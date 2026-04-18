@@ -1,0 +1,69 @@
+{
+    "node_id": "prism_get_shot_info",
+    "name": "Prism: Get Shot Info",
+    "description": "Get frame range, fps and filesystem path for a shot entity.",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "core",
+            "type": "any",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "entity",
+            "type": "dict",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        }
+    ],
+    "outputs": [
+        {
+            "name": "sequence",
+            "type": "string",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "shot_name",
+            "type": "string",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "frame_start",
+            "type": "int",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "frame_end",
+            "type": "int",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "fps",
+            "type": "float",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "entity_path",
+            "type": "string",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\nclass PrismGetShotInfoNode(BaseNode):\n    name = \"Prism: Get Shot Info\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__(use_exec=False)\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_input(\"entity\", \"dict\")\n        self.add_output(\"sequence\", \"string\")\n        self.add_output(\"shot_name\", \"string\")\n        self.add_output(\"frame_start\", \"int\")\n        self.add_output(\"frame_end\", \"int\")\n        self.add_output(\"fps\", \"float\")\n        self.add_output(\"entity_path\", \"string\")\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        entity = inputs.get(\"entity\") or {}\n        defaults = {\"sequence\": \"\", \"shot_name\": \"\", \"frame_start\": 1,\n                    \"frame_end\": 100, \"fps\": 24.0, \"entity_path\": \"\"}\n        if core is None:\n            self.log_error(\"No PrismCore found.\")\n            return defaults\n        seq = str(entity.get(\"sequence\", \"\"))\n        shot = str(entity.get(\"shot\", entity.get(\"name\", \"\")))\n        frame_start, frame_end = 1, 100\n        try:\n            for method in (\"getEntityFrameRange\", \"getShotRange\", \"getFrameRange\"):\n                fn = getattr(core.entities, method, None)\n                if callable(fn):\n                    r = fn(entity)\n                    if isinstance(r, (list, tuple)) and len(r) >= 2:\n                        frame_start, frame_end = int(r[0]), int(r[1])\n                    elif isinstance(r, dict):\n                        frame_start = int(r.get(\"start\", r.get(\"frameStart\", 1)))\n                        frame_end = int(r.get(\"end\", r.get(\"frameEnd\", 100)))\n                    break\n        except Exception:\n            pass\n        fps = 24.0\n        try:\n            fps = float(core.projects.getFps() or 24.0)\n        except Exception:\n            pass\n        entity_path = \"\"\n        try:\n            for method in (\"getEntityPath\", \"getShotPath\"):\n                fn = getattr(core.entities, method, None)\n                if callable(fn):\n                    entity_path = str(fn(entity) or \"\")\n                    if entity_path:\n                        break\n        except Exception:\n            pass\n        self.log_info(f\"Shot {seq}/{shot} | frames {frame_start}-{frame_end} | {fps}fps\")\n        return {\"sequence\": seq, \"shot_name\": shot, \"frame_start\": frame_start,\n                \"frame_end\": frame_end, \"fps\": fps, \"entity_path\": entity_path}\n\ndef register_node():\n    return PrismGetShotInfoNode\n",
+    "use_exec": false
+}

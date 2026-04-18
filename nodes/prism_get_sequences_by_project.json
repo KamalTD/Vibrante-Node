@@ -1,0 +1,41 @@
+{
+    "node_id": "prism_get_sequences_by_project",
+    "name": "Prism: Get Sequences by Project",
+    "description": "Switch to a project then return all its sequences.",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "core",
+            "type": "any",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "project",
+            "type": "dict",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        }
+    ],
+    "outputs": [
+        {
+            "name": "sequences",
+            "type": "list",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "count",
+            "type": "int",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        }
+    ],
+    "python_code": "import os\nfrom src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\nclass PrismGetSequencesByProjectNode(BaseNode):\n    name = \"Prism: Get Sequences by Project\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__(use_exec=False)\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_input(\"project\", \"dict\")\n        self.add_output(\"sequences\", \"list\")\n        self.add_output(\"count\", \"int\")\n\n    def _project_path(self, project):\n        path = project.get('project_path', '')\n        if not path:\n            cfg = project.get('configPath', '')\n            if cfg:\n                path = os.path.dirname(os.path.dirname(cfg))\n        return path\n\n    def _get_sequences_and_shots(self, core):\n        result = core.entities.getShots()\n        try:\n            sequences, shots = result\n            return list(sequences or []), list(shots or [])\n        except (TypeError, ValueError):\n            shots = list(result or [])\n            sequences = list(dict.fromkeys(str(s.get('sequence', '')) for s in shots if s.get('sequence')))\n            return sequences, shots\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        project = inputs.get('project') or {}\n        if core is None:\n            self.log_error('No PrismCore found.')\n            return {'sequences': [], 'count': 0}\n        if not project:\n            self.log_error('No project provided.')\n            return {'sequences': [], 'count': 0}\n        prj_path = self._project_path(project)\n        if not prj_path:\n            self.log_error('Cannot determine project path from project dict.')\n            return {'sequences': [], 'count': 0}\n        try:\n            core.changeProject(prj_path)\n        except Exception as e:\n            self.log_error(f'changeProject failed: {e}')\n            return {'sequences': [], 'count': 0}\n        try:\n            sequences, _ = self._get_sequences_and_shots(core)\n            self.log_info(f\"Found {len(sequences)} sequence(s) in '{project.get('name', '')}'\")\n            return {'sequences': sequences, 'count': len(sequences)}\n        except Exception as e:\n            self.log_error(f'getShots failed: {e}')\n            return {'sequences': [], 'count': 0}\n\ndef register_node():\n    return PrismGetSequencesByProjectNode\n",
+    "use_exec": false
+}

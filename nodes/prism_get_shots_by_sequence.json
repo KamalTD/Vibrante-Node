@@ -1,0 +1,48 @@
+{
+    "node_id": "prism_get_shots_by_sequence",
+    "name": "Prism: Get Shots by Sequence",
+    "description": "Filter shots by sequence name. Auto-fetches shots if input list is empty.",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "core",
+            "type": "any",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "shots",
+            "type": "list",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "sequence",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": ""
+        }
+    ],
+    "outputs": [
+        {
+            "name": "shots",
+            "type": "list",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "count",
+            "type": "int",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\nclass PrismGetShotsBySequenceNode(BaseNode):\n    name = \"Prism: Get Shots by Sequence\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__(use_exec=False)\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_input(\"shots\", \"list\")\n        self.add_input(\"sequence\", \"string\", widget_type=\"text\", default=\"\")\n        self.add_output(\"shots\", \"list\")\n        self.add_output(\"count\", \"int\")\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        sequence = (inputs.get(\"sequence\") or \"\").strip()\n        shots = list(inputs.get(\"shots\") or [])\n        if core is None:\n            self.log_error(\"No PrismCore found.\")\n            return {\"shots\": [], \"count\": 0}\n        if not shots:\n            try:\n                _, shots = core.entities.getShots()\n                shots = list(shots or [])\n            except Exception as e:\n                self.log_error(f\"getShots failed: {e}\")\n                return {\"shots\": [], \"count\": 0}\n        if sequence:\n            seq_lower = sequence.lower()\n            shots = [s for s in shots if str(s.get(\"sequence\", \"\")).lower() == seq_lower]\n        label = sequence or \"*\"\n        self.log_info(f\"Found {len(shots)} shot(s) in sequence '{label}'\")\n        return {\"shots\": shots, \"count\": len(shots)}\n\ndef register_node():\n    return PrismGetShotsBySequenceNode\n",
+    "use_exec": false
+}

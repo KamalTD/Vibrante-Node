@@ -1,0 +1,62 @@
+{
+    "node_id": "prism_get_shot_by_name",
+    "name": "Prism: Get Shot by Name",
+    "description": "Find a specific shot by sequence and shot name.",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "inputs": [
+        {
+            "name": "core",
+            "type": "any",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "shots",
+            "type": "list",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "sequence",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": ""
+        },
+        {
+            "name": "shot",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": ""
+        }
+    ],
+    "outputs": [
+        {
+            "name": "shot",
+            "type": "dict",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "entity",
+            "type": "dict",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "found",
+            "type": "bool",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\nclass PrismGetShotByNameNode(BaseNode):\n    name = \"Prism: Get Shot by Name\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__(use_exec=False)\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_input(\"shots\", \"list\")\n        self.add_input(\"sequence\", \"string\", widget_type=\"text\", default=\"\")\n        self.add_input(\"shot\", \"string\", widget_type=\"text\", default=\"\")\n        self.add_output(\"shot\", \"dict\")\n        self.add_output(\"entity\", \"dict\")\n        self.add_output(\"found\", \"bool\")\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        sequence = (inputs.get(\"sequence\") or \"\").strip()\n        shot_name = (inputs.get(\"shot\") or \"\").strip()\n        shots = list(inputs.get(\"shots\") or [])\n        if core is None:\n            self.log_error(\"No PrismCore found.\")\n            return {\"shot\": {}, \"entity\": {}, \"found\": False}\n        if not shots:\n            try:\n                _, shots = core.entities.getShots()\n                shots = list(shots or [])\n            except Exception as e:\n                self.log_error(f\"getShots failed: {e}\")\n                return {\"shot\": {}, \"entity\": {}, \"found\": False}\n        seq_lower = sequence.lower()\n        shot_lower = shot_name.lower()\n        for s in shots:\n            s_seq = str(s.get(\"sequence\", \"\")).lower()\n            s_shot = str(s.get(\"shot\", s.get(\"name\", \"\"))).lower()\n            seq_ok = (not sequence) or (s_seq == seq_lower)\n            shot_ok = (not shot_name) or (s_shot == shot_lower)\n            if seq_ok and shot_ok:\n                seq_val = s.get(\"sequence\", \"\")\n                shot_val = s.get(\"shot\", s.get(\"name\", \"\"))\n                entity = {\"type\": \"shot\", \"sequence\": seq_val, \"shot\": shot_val}\n                self.log_info(f\"Found shot {seq_val}/{shot_val}\")\n                return {\"shot\": s, \"entity\": entity, \"found\": True}\n        self.log_error(f\"Shot '{sequence}/{shot_name}' not found.\")\n        return {\"shot\": {}, \"entity\": {}, \"found\": False}\n\ndef register_node():\n    return PrismGetShotByNameNode\n",
+    "use_exec": false
+}
