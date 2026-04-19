@@ -1,0 +1,302 @@
+{
+  "schema_version": "1.0",
+  "last_updated": "2026-04-19",
+  "project": {
+    "name": "Vibrante-Node",
+    "version": "1.7.0",
+    "description": "Visual node-based pipeline automation tool for VFX studios. Connects Prism Pipeline, Blender, Houdini, Maya, and Deadline Render Farm through a Qt-based node graph UI.",
+    "repository": "https://github.com/KamalTD/Vibrante-Node.git",
+    "branch": "main",
+    "latest_commit": "f037509",
+    "build": {
+      "python": "3.10.11",
+      "python_executable": "C:/Python310/python310.exe",
+      "pyinstaller": "6.19.0",
+      "spec_file": "vibrante_node.spec",
+      "build_script": "build_py310.bat",
+      "output": "dist/Vibrante-Node/Vibrante-Node.exe",
+      "ui_framework": "PyQt5"
+    }
+  },
+
+  "architecture": {
+    "entry_point": "src/main.py",
+    "core_modules": {
+      "src/core/engine.py": "Async execution engine — runs the node graph, resolves execution order, fires execute()",
+      "src/core/graph.py": "Graph model — nodes, connections, serialization/deserialization",
+      "src/core/registry.py": "Node registry — discovers and loads all .json node definitions from nodes/",
+      "src/nodes/base.py": "BaseNode — all nodes inherit from this. Provides add_input, add_output, log_info, log_error",
+      "src/utils/prism_core.py": "resolve_prism_core() — checks inputs, global cache, shared memory. Auto-bootstrapped from prism_core_init node",
+      "src/utils/prism_config.py": "Dynamic Prism config reader — reads pipeline.json, resolves dept folders, NO hardcoded abbreviations",
+      "src/utils/hou_bridge.py": "TCP bridge to live Houdini session (JSON-RPC on localhost)",
+      "src/utils/qt_compat.py": "Qt5/Qt6 compatibility shim for Prism's shiboken requirements",
+      "src/utils/config_manager.py": "App-level config (window state, recent files, etc.)",
+      "src/utils/runtime.py": "Runtime utilities"
+    },
+    "node_format": {
+      "location": "nodes/*.json",
+      "fields": ["node_id", "name", "description", "category", "icon_path", "use_exec", "inputs", "outputs", "python_code"],
+      "exec_nodes": "use_exec=true — include exec_in/exec_out ports. super().__init__() adds them automatically — never add manually.",
+      "data_nodes": "use_exec=false — pure data transformation, no exec ports",
+      "port_types": ["string", "int", "float", "bool", "list", "dict", "any"],
+      "widget_types": ["text", "int", "float", "checkbox", null]
+    },
+    "plugin_location": "plugins/houdini/",
+    "workflow_location": "workflows/*.json",
+    "asset_locations": {
+      "icons": "icons/",
+      "splash": "splash.png",
+      "logo": "logo.png",
+      "node_examples": "node_examples/"
+    }
+  },
+
+  "node_categories": {
+    "Prism": {
+      "count": 61,
+      "key_nodes": [
+        "prism_core_init", "prism_get_project_by_name", "prism_list_projects",
+        "prism_get_sequences_by_project", "prism_get_sequence_by_project",
+        "prism_get_shots", "prism_get_shots_by_sequence", "prism_get_shots_by_project_sequence",
+        "prism_get_shot_by_sequence", "prism_get_shot_by_name",
+        "prism_get_assets", "prism_get_assets_by_project", "prism_get_asset_by_name",
+        "prism_get_departments", "prism_get_tasks",
+        "prism_get_scene_files", "prism_get_scene_path", "prism_get_export_path",
+        "prism_get_entity_path", "prism_get_entity_info", "prism_get_shot_info",
+        "prism_get_products", "prism_get_product_versions", "prism_get_latest_product_path",
+        "prism_import_product", "prism_save_scene_version", "prism_create_product_version",
+        "prism_get_media", "prism_get_media_versions", "prism_create_playblast",
+        "prism_create_project", "prism_create_entity", "prism_create_category",
+        "prism_create_scene_from_preset", "prism_get_preset_scenes",
+        "prism_change_project", "prism_open_scene", "prism_get_current_scene",
+        "prism_get_config", "prism_set_config", "prism_get_project_config_path",
+        "prism_build_entity", "prism_get_aovs",
+        "prism_register_callback", "prism_trigger_callback",
+        "prism_list_plugins", "prism_get_plugin", "prism_add_integration",
+        "prism_core_info", "prism_eval", "prism_send_cmd", "prism_monkey_patch",
+        "prism_login_token", "prism_popup", "prism_studio_assign_project",
+        "prism_usd_entity_path", "prism_usd_department_layer_path", "prism_usd_sublayer_path",
+        "prism_usd_update_department_layer", "prism_usd_update_sublayer"
+      ]
+    },
+    "Blender": {
+      "count": 17,
+      "pattern": "blender_headless + blender_action_* nodes (action-list builder pattern)",
+      "key_nodes": [
+        "blender_headless", "blender_get_action_result",
+        "blender_action_open_blend", "blender_action_new_blend", "blender_action_save_blend",
+        "blender_action_scene_info", "blender_action_set_frame_range",
+        "blender_action_set_render_settings", "blender_action_render",
+        "blender_action_bake_animation",
+        "blender_action_import_alembic", "blender_action_export_alembic",
+        "blender_action_import_fbx", "blender_action_export_fbx",
+        "blender_action_import_obj", "blender_action_export_obj",
+        "blender_action_import_gltf", "blender_action_export_gltf",
+        "blender_action_export_usd", "blender_action_custom"
+      ]
+    },
+    "Houdini": {
+      "count": 13,
+      "pattern": "houdini_headless (batch) + live TCP bridge via hou_bridge.py",
+      "key_nodes": [
+        "houdini_headless", "houdini_get_action_result",
+        "houdini_action_open_hip", "houdini_action_new_hip", "houdini_action_save_hip",
+        "houdini_action_scene_info", "houdini_action_set_frame_range",
+        "houdini_action_import_alembic", "houdini_action_export_alembic",
+        "houdini_action_import_camera", "houdini_action_export_camera_alembic",
+        "houdini_action_import_fbx", "houdini_action_export_fbx",
+        "houdini_action_import_obj", "houdini_action_bake_animation",
+        "houdini_action_custom"
+      ]
+    },
+    "Maya": {
+      "count": 20,
+      "pattern": "maya_headless (mayapy batch executor) + maya_action_* builder",
+      "key_nodes": [
+        "maya_headless", "maya_get_action_result",
+        "maya_action_open_scene", "maya_action_new_scene", "maya_action_save_scene",
+        "maya_action_scene_info", "maya_action_set_frame_range",
+        "maya_action_set_render_settings", "maya_action_create_render_layer", "maya_action_set_aovs",
+        "maya_action_playblast", "maya_action_assign_material",
+        "maya_action_import_alembic", "maya_action_export_alembic",
+        "maya_action_import_camera", "maya_action_export_camera_alembic",
+        "maya_action_import_fbx", "maya_action_export_fbx",
+        "maya_action_import_obj",
+        "maya_action_reference_alembic", "maya_action_reference_scene", "maya_action_list_references",
+        "maya_action_bake_animation", "maya_action_custom"
+      ]
+    },
+    "Deadline": {
+      "count": 4,
+      "key_nodes": [
+        "deadline_blender_submit", "deadline_houdini_submit", "deadline_maya_submit",
+        "deadline_job_status"
+      ],
+      "deadline_command_path": "C:/Program Files/Thinkbox/Deadline10/bin/deadlinecommand.exe"
+    },
+    "Logic": {
+      "key_nodes": [
+        "if_condition", "for_loop", "while_loop", "loop_body",
+        "logical_gate", "compare",
+        "variable_node", "list_item_picker", "delay_timer"
+      ]
+    },
+    "Data": {
+      "key_nodes": [
+        "create_dictionary", "get_dict_value", "set_dict_value",
+        "create_list", "get_list_item", "list_length",
+        "string_concat", "split", "replace", "concat", "uppercase", "lowercase", "string_length",
+        "add", "subtract", "multiply", "divide", "modulo", "math_multiply", "random_float",
+        "add_integers", "python_script", "console_print", "message_node"
+      ]
+    },
+    "FileSystem": {
+      "key_nodes": [
+        "create_folder", "list_directory", "write_file", "append_file"
+      ]
+    }
+  },
+
+  "prism_integration": {
+    "prism_version": "2.1.0",
+    "prism_scripts_path": "C:/Program Files/Prism2/Scripts",
+    "core_resolution": "resolve_prism_core(inputs) — checks inputs dict, global cache, then shared memory. Auto-shared, no wiring required.",
+    "entity_shapes": {
+      "shot": {
+        "required": ["type", "sequence", "shot", "path", "location", "paths"],
+        "example": {
+          "type": "shot",
+          "sequence": "seq_0001",
+          "shot": "shot_001",
+          "path": "G:/Prism/splash/03_Production/Shots/seq_0001/shot_001",
+          "location": "global",
+          "paths": [{"location": "global", "path": "G:/Prism/splash/03_Production/Shots/seq_0001/shot_001"}]
+        }
+      },
+      "asset": {
+        "required": ["type", "asset_path", "path"],
+        "example": {
+          "type": "asset",
+          "asset_path": "Characters/hero",
+          "path": "G:/Prism/splash/04_Assets/Characters/hero"
+        }
+      }
+    },
+    "pipeline_json": {
+      "location_pattern": "<project_root>/00_Pipeline/pipeline.json",
+      "key_globals": ["departments_shot", "departments_asset", "versionPadding", "versionFormat"],
+      "dept_entry_shape": {"name": "Animation", "abbreviation": "anm", "defaultTasks": ["Animation"]},
+      "folder_structure_keys": [
+        "departments", "tasks", "shotScenefiles", "assetScenefiles",
+        "products", "3drenders", "2drenders", "playblasts", "renderVersions"
+      ]
+    },
+    "disk_structure": {
+      "scenefiles": "<entity_path>/Scenefiles/<dept_abbrev>/<task>/<seq>-<shot>_<task>_v####<ext>",
+      "exports": "<entity_path>/Export/<identifier>/<version>/",
+      "renders_3d": "<entity_path>/Renders/3dRender/<identifier>/<version>/",
+      "renders_2d": "<entity_path>/Renders/2dRender/<identifier>/<version>/",
+      "playblasts": "<entity_path>/Playblasts/<identifier>/<version>/"
+    },
+    "known_api_issues": {
+      "getScenefiles": "Returns empty even with enriched entity — always use disk scan fallback",
+      "getDepartments": "Does not exist on ProjectEntities — read from pipeline.json globals",
+      "getTaskNames": "Decorator re-raises as BaseException, bypasses except Exception — removed",
+      "getEntityPath_getShotPath": "Do not exist — use entity.get('path') directly",
+      "getShots_unpack": "May return (sequences, shots) or single list — always use try/except unpack",
+      "getCategories": "Returns UI tabs (Scenefiles/Renders/Exports), NOT departments — do not use for dept listing"
+    },
+    "prism_config_py": {
+      "file": "src/utils/prism_config.py",
+      "key_functions": [
+        "resolve_cfg(core, entity, project, cfg_path) -> str | None",
+        "get_departments(core, cfg_path, entity_type) -> [{name, abbreviation, defaultTasks}]",
+        "resolve_dept_folder(dept_input, depts) -> str  # 'Animation' -> 'anm'",
+        "resolve_dept_name(abbrev, depts) -> str        # 'anm' -> 'Animation'",
+        "get_entity_scenefiles_root(entity, core, cfg_path) -> str | None",
+        "build_abbrev_map(depts) -> dict",
+        "read_pipeline_json(cfg_path) -> dict",
+        "find_pipeline_cfg(start_path) -> str | None"
+      ]
+    }
+  },
+
+  "workflows": {
+    "example_workflow_prism_demo_02": {
+      "file": "workflows/example_workflow_prism_demo_02.json",
+      "description": "Prism project traversal → scene path resolution → Deadline Blender submission",
+      "nodes": [
+        "prism_core_init",
+        "prism_get_project_by_name (splash)",
+        "prism_get_sequence_by_project (seq_0001)",
+        "prism_get_shot_by_sequence (shot_001)",
+        "prism_get_scene_path (animation dept, blender, v0003)",
+        "deadline_blender_submit"
+      ],
+      "status": "working — submitted job ID 69e48f28181ccc53d33c9669"
+    }
+  },
+
+  "tasks": {
+    "done": [
+      "Fix prism_get_tasks returning empty list — replaced getTaskNames with disk scan of Scenefiles/<dept>/",
+      "Fix prism_get_departments AttributeError — replaced getCategories with pipeline.json globals read",
+      "Fix prism_get_entity_path returning empty — removed broken API calls, use entity.get('path') directly",
+      "Fix task_path empty — dept folder = abbreviation (anm), task = full name subfolder (Animation)",
+      "Standardise all 58 Prism nodes to consistent structure and data flow",
+      "Create src/utils/prism_config.py — dynamic config reader, no hardcoded dept abbreviations",
+      "Fix entity dict enrichment — path/location/paths added to all shot-emitting nodes",
+      "Fix prism_get_scene_files disk fallback — scan Scenefiles/dept/task/ directly",
+      "Create prism_get_scene_path node — resolve scene file by entity/dept/task/app/version",
+      "Create prism_get_export_path node — resolve export/render/playblast output paths",
+      "Fix getShots() unpack crash — try/except pattern for (sequences, shots) vs single list",
+      "Fix prism_get_sequences_by_project — output list of dicts not strings",
+      "Fix None defaults in 12 misc nodes — changed to {} or ''",
+      "Fix prism_core_info stray exec_out on use_exec=False node",
+      "Fix prism_build_entity/prism_create_entity — include path/location/paths in entity dicts",
+      "Add prism_config and prism_core to vibrante_node.spec hiddenimports",
+      "Create RELEASE_v1.7.0.md — full changelog",
+      "Build v1.7.0 — Python 3.10.11 / PyInstaller 6.19.0 → dist/Vibrante-Node/Vibrante-Node.exe",
+      "Commit and push v1.7.0 release to main"
+    ],
+    "in_progress": [],
+    "pending": [
+      "YouTube tutorial video for example_workflow_prism_demo_02 (script written, recording pending)",
+      "YouTube video series — 62 video ideas planned (see ai_memory/video_series_plan.md)",
+      "Batch shot submission workflow — for_loop over prism_get_shots_by_sequence + deadline_blender_submit",
+      "Version bump workflow — detect latest, increment, register with prism_create_product_version",
+      "Project onboarding automation — prism_create_project + prism_create_entity for full sequence/shot setup"
+    ]
+  },
+
+  "known_issues": {
+    "google_generativeai_deprecation": "collect_all('google.generativeai') in spec triggers FutureWarning — package deprecated, migrate to google.genai when ready",
+    "tzdata_missing": "PyInstaller warns 'Hidden import tzdata not found' — non-critical, optional timezone data",
+    "sip_missing": "PyInstaller warns 'Hidden import sip not found' — non-critical, already bundled via PyQt5",
+    "python310_eol_warning": "google.api_core warns Python 3.10 EOL 2026-10-04 — plan upgrade to 3.11+ for next major release"
+  },
+
+  "dependencies": {
+    "runtime": ["PyQt5", "google-generativeai", "grpc", "pydantic", "toposort", "asyncio"],
+    "prism": "Prism Pipeline 2.1.0 — C:/Program Files/Prism2/Scripts",
+    "deadline": "Deadline 10.3 — C:/Program Files/Thinkbox/Deadline10/bin/deadlinecommand.exe",
+    "dcc_paths": {
+      "blender": "configured per-node in blender_headless",
+      "houdini": "hython path configured per-node in houdini_headless",
+      "maya": "mayapy path configured per-node in maya_headless"
+    },
+    "build_only": ["PyInstaller==6.19.0"]
+  },
+
+  "patterns": {
+    "prism_node_skeleton": "from src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\nfrom src.utils.prism_config import resolve_cfg, get_departments, resolve_dept_folder\n\nclass MyPrismNode(BaseNode):\n    def __init__(self):\n        super().__init__(use_exec=False)\n        self.add_input('core', 'any')\n        self.add_input('entity', 'dict')\n        self.add_output('result', 'string')\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        entity = inputs.get('entity') or {}\n        defaults = {'result': ''}\n        cfg_path = resolve_cfg(core=core, entity=entity)\n        return defaults\n\ndef register_node():\n    return MyPrismNode",
+
+    "getShots_safe_unpack": "result = core.entities.getShots()\ntry:\n    sequences, shots = result\nexcept (TypeError, ValueError):\n    shots = list(result or [])\n    sequences = []",
+
+    "version_format": "f'v{n:0{padding}d}'  # padding from pipeline.json globals.versionPadding, default 4",
+
+    "disk_scan_scene_files": "Use os.scandir(task_dir), filter by SCENE_EXTS, exclude META_SUFFIXES ('versioninfo.json', 'preview.jpg')",
+
+    "dept_resolution": "resolve_dept_folder(user_input, dept_defs)  # 'Animation' -> 'anm'. Never hardcode."
+  }
+}
