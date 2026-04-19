@@ -62,6 +62,9 @@ a = Analysis(
         'src.core.engine',
         'src.core.graph',
         'src.core.registry',
+        # Prism utilities
+        'src.utils.prism_core',
+        'src.utils.prism_config',
     ],
     hookspath=[],
     hooksconfig={},
