@@ -1,0 +1,188 @@
+{
+    "nodes": [
+        {
+            "instance_id": "b7824f6f-28d2-4c41-885a-8e0a2c4a28b4",
+            "node_id": "prism_core_init",
+            "position": [
+                -544.0,
+                -129.0
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "prism_scripts_path": "C:/Program Files/Prism2/Scripts",
+                "load_project": true,
+                "show_ui": false,
+                "version": "v2.1.0"
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "7acb4158-564a-4f2a-a7f9-05dc0c39e019",
+            "node_id": "prism_get_project_by_name",
+            "position": [
+                -267.0,
+                74.0
+            ],
+            "parameters": {
+                "core": null,
+                "name": "splash",
+                "project": {
+                    "configPath": "G:\\Prism\\splash\\00_Pipeline\\pipeline.json",
+                    "name": "splash",
+                    "source": "disk"
+                },
+                "project_path": "G:\\Prism\\splash",
+                "config_path": "G:\\Prism\\splash\\00_Pipeline\\pipeline.json",
+                "found": true
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "83eddc55-2140-4b53-851e-15f3f13b1738",
+            "node_id": "prism_get_sequence_by_project",
+            "position": [
+                111.0,
+                46.0
+            ],
+            "parameters": {
+                "core": null,
+                "project": {
+                    "configPath": "G:\\Prism\\splash\\00_Pipeline\\pipeline.json",
+                    "name": "splash",
+                    "source": "disk"
+                },
+                "name": "seq_0001",
+                "sequence": {
+                    "name": "seq_0001",
+                    "project_path": "G:\\Prism\\splash",
+                    "project_name": "splash"
+                },
+                "found": true
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "2ec3b0dd-d715-40f4-90aa-461ea70485a1",
+            "node_id": "prism_get_shot_by_sequence",
+            "position": [
+                491.0,
+                -49.0
+            ],
+            "parameters": {
+                "core": null,
+                "sequence": {
+                    "name": "seq_0001",
+                    "project_path": "G:\\Prism\\splash",
+                    "project_name": "splash"
+                },
+                "name": "shot_001",
+                "shot": {
+                    "sequence": "seq_0001",
+                    "shot": "shot_001",
+                    "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001",
+                    "location": "global",
+                    "type": "shot",
+                    "paths": [
+                        {
+                            "location": "global",
+                            "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001"
+                        }
+                    ]
+                },
+                "entity": {
+                    "type": "shot",
+                    "sequence": "seq_0001",
+                    "shot": "shot_001"
+                },
+                "found": true
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "9f172ce1-6e2b-4e28-9b57-7c7ff7b8027a",
+            "node_id": "prism_get_tasks",
+            "position": [
+                1126.0,
+                -152.0
+            ],
+            "parameters": {
+                "entity": {
+                    "type": "shot",
+                    "sequence": "seq_0001",
+                    "shot": "shot_001"
+                },
+                "department": "Animation",
+                "tasks": [],
+                "count": 0
+            },
+            "state": "idle",
+            "bypassed": false
+        }
+    ],
+    "connections": [
+        {
+            "id": "7d515d68-8040-4af6-b2ae-8cc03e5531e8",
+            "from_node": "b7824f6f-28d2-4c41-885a-8e0a2c4a28b4",
+            "from_port": "core",
+            "to_node": "7acb4158-564a-4f2a-a7f9-05dc0c39e019",
+            "to_port": "core",
+            "is_exec": false
+        },
+        {
+            "id": "6cf44534-a4ee-4970-a042-8bd5014d8d82",
+            "from_node": "7acb4158-564a-4f2a-a7f9-05dc0c39e019",
+            "from_port": "project",
+            "to_node": "83eddc55-2140-4b53-851e-15f3f13b1738",
+            "to_port": "project",
+            "is_exec": false
+        },
+        {
+            "id": "c2da7987-d175-4917-a552-e54900be90ba",
+            "from_node": "b7824f6f-28d2-4c41-885a-8e0a2c4a28b4",
+            "from_port": "core",
+            "to_node": "83eddc55-2140-4b53-851e-15f3f13b1738",
+            "to_port": "core",
+            "is_exec": false
+        },
+        {
+            "id": "f28da14d-0d8d-419a-8be4-4aadcfa77b64",
+            "from_node": "83eddc55-2140-4b53-851e-15f3f13b1738",
+            "from_port": "sequence",
+            "to_node": "2ec3b0dd-d715-40f4-90aa-461ea70485a1",
+            "to_port": "sequence",
+            "is_exec": false
+        },
+        {
+            "id": "40d9989b-a9a4-4b94-a9b9-4a310a096bfb",
+            "from_node": "b7824f6f-28d2-4c41-885a-8e0a2c4a28b4",
+            "from_port": "core",
+            "to_node": "2ec3b0dd-d715-40f4-90aa-461ea70485a1",
+            "to_port": "core",
+            "is_exec": false
+        },
+        {
+            "id": "4d28e87b-5230-4969-b33b-39eca40db230",
+            "from_node": "b7824f6f-28d2-4c41-885a-8e0a2c4a28b4",
+            "from_port": "core",
+            "to_node": "9f172ce1-6e2b-4e28-9b57-7c7ff7b8027a",
+            "to_port": "core",
+            "is_exec": false
+        },
+        {
+            "id": "d55a5d07-6447-404d-ac71-70969a0dec22",
+            "from_node": "2ec3b0dd-d715-40f4-90aa-461ea70485a1",
+            "from_port": "entity",
+            "to_node": "9f172ce1-6e2b-4e28-9b57-7c7ff7b8027a",
+            "to_port": "entity",
+            "is_exec": false
+        }
+    ],
+    "sticky_notes": [],
+    "backdrops": [],
+    "metadata": {}
+}
