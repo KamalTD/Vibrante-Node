@@ -1,0 +1,69 @@
+{
+    "node_id": "prism_get_assets_by_type",
+    "name": "Prism: Get Assets by Type",
+    "description": "Switch to a project then return all assets matching the given asset type object.",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "use_exec": false,
+    "inputs": [
+        {
+            "name": "core",
+            "type": "any",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "project",
+            "type": "dict",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "asset_type",
+            "type": "dict",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        }
+    ],
+    "outputs": [
+        {
+            "name": "assets",
+            "type": "list",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "asset",
+            "type": "dict",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "entity",
+            "type": "dict",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "count",
+            "type": "int",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "found",
+            "type": "bool",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        }
+    ],
+    "python_code": "import os\nfrom src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\nfrom src.utils.prism_config import get_asset_entity_path, resolve_cfg\n\nclass PrismGetAssetsByTypeNode(BaseNode):\n    name = \"Prism: Get Assets by Type\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__(use_exec=False)\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_input(\"project\", \"dict\")\n        self.add_input(\"asset_type\", \"dict\")\n        self.add_output(\"assets\", \"list\")\n        self.add_output(\"asset\", \"dict\")\n        self.add_output(\"entity\", \"dict\")\n        self.add_output(\"count\", \"int\")\n        self.add_output(\"found\", \"bool\")\n\n    def _project_path(self, project):\n        path = project.get('project_path', '')\n        if not path:\n            cfg = project.get('configPath', '')\n            if cfg:\n                path = os.path.dirname(os.path.dirname(cfg))\n        return path\n\n    def _switch_project(self, core, project):\n        path = self._project_path(project)\n        if not path:\n            self.log_error('Cannot determine project path from project dict.')\n            return False\n        try:\n            core.changeProject(path)\n            return True\n        except Exception as e:\n            self.log_error(f'changeProject failed: {e}')\n            return False\n\n    def _asset_category(self, asset):\n        asset_path = asset.get('asset_path', asset.get('name', ''))\n        if asset_path:\n            return asset_path.replace('\\\\', '/').split('/')[0].lower()\n        return ''\n\n    def _build_entity(self, asset, core=None, project_path=''):\n        asset_path = asset.get('asset_path', asset.get('name', ''))\n        path = asset.get('path', '')\n        if not path:\n            for key in ('localPath', 'global_path', 'filepath', 'entity_path'):\n                path = asset.get(key, '')\n                if path:\n                    break\n        if not path:\n            paths_dict = asset.get('paths', {})\n            if isinstance(paths_dict, dict):\n                path = (paths_dict.get('global', '')\n                        or paths_dict.get('local', '')\n                        or next((v for v in paths_dict.values() if isinstance(v, str) and v), ''))\n        if not path and project_path:\n            cfg = resolve_cfg(core=core)\n            path = get_asset_entity_path(asset, project_path, core=core, cfg_path=cfg)\n        return {\n            'type': 'asset',\n            'asset_path': asset_path,\n            'path': path,\n            'location': asset.get('location', 'global'),\n            'paths': asset.get('paths', {}),\n        }\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        project = inputs.get('project') or {}\n        asset_type_obj = inputs.get('asset_type') or {}\n        asset_type = (asset_type_obj.get('name', '') or '').strip().lower()\n\n        empty = {'assets': [], 'asset': {}, 'entity': {}, 'count': 0, 'found': False}\n        if core is None:\n            self.log_error('No PrismCore found.')\n            return empty\n        if not project:\n            self.log_error('No project provided.')\n            return empty\n        if not asset_type:\n            self.log_error('No asset_type provided or missing name field.')\n            return empty\n        if not self._switch_project(core, project):\n            return empty\n\n        try:\n            all_assets = list(core.entities.getAssets() or [])\n        except Exception as e:\n            self.log_error(f'getAssets failed: {e}')\n            return empty\n\n        matches = [a for a in all_assets if self._asset_category(a) == asset_type]\n        best = matches[0] if matches else {}\n        proj_path = self._project_path(project)\n        entity = self._build_entity(best, core=core, project_path=proj_path) if best else {}\n        self.log_info(\n            f\"Found {len(matches)} '{asset_type}' asset(s) in '{project.get('name', '')}' \"\n            f\"(total: {len(all_assets)})\"\n        )\n        return {'assets': matches, 'asset': best, 'entity': entity,\n                'count': len(matches), 'found': bool(matches)}\n\ndef register_node():\n    return PrismGetAssetsByTypeNode\n"
+}

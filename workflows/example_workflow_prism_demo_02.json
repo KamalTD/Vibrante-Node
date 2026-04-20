@@ -4,8 +4,8 @@
             "instance_id": "b7824f6f-28d2-4c41-885a-8e0a2c4a28b4",
             "node_id": "prism_core_init",
             "position": [
-                -544.0,
-                -129.0
+                -594.0,
+                -138.375
             ],
             "parameters": {
                 "exec_in": null,
@@ -22,11 +22,10 @@
             "instance_id": "7acb4158-564a-4f2a-a7f9-05dc0c39e019",
             "node_id": "prism_get_project_by_name",
             "position": [
-                -267.0,
-                74.0
+                -319.875,
+                -98.07749999999999
             ],
             "parameters": {
-                "core": null,
                 "name": "splash",
                 "project": {
                     "configPath": "G:\\Prism\\splash\\00_Pipeline\\pipeline.json",
@@ -44,8 +43,8 @@
             "instance_id": "83eddc55-2140-4b53-851e-15f3f13b1738",
             "node_id": "prism_get_sequence_by_project",
             "position": [
-                111.0,
-                46.0
+                -64.3125,
+                -95.87499999999999
             ],
             "parameters": {
                 "core": null,
@@ -69,8 +68,8 @@
             "instance_id": "2ec3b0dd-d715-40f4-90aa-461ea70485a1",
             "node_id": "prism_get_shot_by_sequence",
             "position": [
-                492.25,
-                -16.5
+                198.9375,
+                -99.06249999999999
             ],
             "parameters": {
                 "core": null,
@@ -115,17 +114,25 @@
             "instance_id": "0b67936f-e085-4254-a552-8fda44f11780",
             "node_id": "prism_get_scene_path",
             "position": [
-                925.25,
-                -139.5
+                465.3125000000002,
+                -109.00000000000001
             ],
             "parameters": {
                 "core": null,
                 "entity": {
                     "type": "shot",
                     "sequence": "seq_0001",
-                    "shot": "shot_001"
+                    "shot": "shot_001",
+                    "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001",
+                    "location": "global",
+                    "paths": [
+                        {
+                            "location": "global",
+                            "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001"
+                        }
+                    ]
                 },
-                "department": "animation",
+                "department": "anm",
                 "task": "animation",
                 "application": "blender",
                 "version": "v0003",
@@ -137,18 +144,18 @@
             "bypassed": false
         },
         {
-            "instance_id": "40018393-af08-424b-bc37-e1f0a16b5aca",
+            "instance_id": "8c37167b-fb8c-4c1b-9074-5d0559faca21",
             "node_id": "deadline_blender_submit",
             "position": [
-                1272.9328125,
-                -233.33828124999997
+                742.0,
+                -106.0
             ],
             "parameters": {
                 "exec_in": null,
                 "exec_out": true,
                 "deadlinecommand": "C:/Program Files/Thinkbox/Deadline10/bin/deadlinecommand.exe",
                 "blend_file": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Scenefiles\\anm\\animation\\seq_0001-shot_001_Animation_v0003.blend",
-                "job_name": "Blender Render Job",
+                "job_name": "splash_seq0001_shot001_anm",
                 "batch_name": "",
                 "comment": "",
                 "pool": "none",
@@ -157,17 +164,17 @@
                 "priority": 50,
                 "chunk_size": 1,
                 "frame_start": 1,
-                "frame_end": 2,
+                "frame_end": 100,
                 "frame_step": 1,
                 "blender_version": "4.2",
                 "renderer": "BLENDER_EEVEE",
-                "output_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Scenefiles\\anm\\Animation\\render",
+                "output_path": "",
                 "output_format": "PNG",
                 "gpu_enable": false,
                 "extra_job_args": "",
                 "success": true,
-                "job_id": "69e48f28181ccc53d33c9669",
-                "stdout": "Deadline Command 10.3 [v10.3.2.1 Release (1a66fe40f)]\n\nSubmitting to Repository: C:/DeadlineRepository10\n\nSubmission Contains No Auxiliary Files.\n\nResult=Success\nJobID=69e48f28181ccc53d33c9669\n\nThe job was submitted successfully.\n",
+                "job_id": "69e4c473855f00c21363453b",
+                "stdout": "Deadline Command 10.3 [v10.3.2.1 Release (1a66fe40f)]\n\nSubmitting to Repository: C:/DeadlineRepository10\n\nSubmission Contains No Auxiliary Files.\n\nResult=Success\nJobID=69e4c473855f00c21363453b\n\nThe job was submitted successfully.\n",
                 "stderr": ""
             },
             "state": "idle",
@@ -176,15 +183,7 @@
     ],
     "connections": [
         {
-            "id": "20b9f572-0d0f-4d8f-958d-e3e3705574d1",
-            "from_node": "b7824f6f-28d2-4c41-885a-8e0a2c4a28b4",
-            "from_port": "core",
-            "to_node": "7acb4158-564a-4f2a-a7f9-05dc0c39e019",
-            "to_port": "core",
-            "is_exec": false
-        },
-        {
-            "id": "b5860440-d061-4d78-a255-690aee6d9d86",
+            "id": "817b0de9-caa1-46de-9eb1-3ed488c4df08",
             "from_node": "7acb4158-564a-4f2a-a7f9-05dc0c39e019",
             "from_port": "project",
             "to_node": "83eddc55-2140-4b53-851e-15f3f13b1738",
@@ -192,15 +191,7 @@
             "is_exec": false
         },
         {
-            "id": "5c2bd270-7b00-462b-b3bc-e0a656ab8b4f",
-            "from_node": "b7824f6f-28d2-4c41-885a-8e0a2c4a28b4",
-            "from_port": "core",
-            "to_node": "83eddc55-2140-4b53-851e-15f3f13b1738",
-            "to_port": "core",
-            "is_exec": false
-        },
-        {
-            "id": "e6952891-02b8-4cf5-9049-5cca5c54d2ec",
+            "id": "8be6c481-37bc-4be5-98f2-2f45b7f5e9e0",
             "from_node": "83eddc55-2140-4b53-851e-15f3f13b1738",
             "from_port": "sequence",
             "to_node": "2ec3b0dd-d715-40f4-90aa-461ea70485a1",
@@ -208,15 +199,7 @@
             "is_exec": false
         },
         {
-            "id": "d68c41cf-dab1-4db8-a2ad-1eac8d990ed0",
-            "from_node": "b7824f6f-28d2-4c41-885a-8e0a2c4a28b4",
-            "from_port": "core",
-            "to_node": "2ec3b0dd-d715-40f4-90aa-461ea70485a1",
-            "to_port": "core",
-            "is_exec": false
-        },
-        {
-            "id": "b4c79e0f-9c46-4bbc-a8a1-afffd894257d",
+            "id": "fbc76d76-803c-4df3-85e2-5e7a7cd6db4e",
             "from_node": "2ec3b0dd-d715-40f4-90aa-461ea70485a1",
             "from_port": "entity",
             "to_node": "0b67936f-e085-4254-a552-8fda44f11780",
@@ -224,18 +207,10 @@
             "is_exec": false
         },
         {
-            "id": "a9ab3304-46b2-4a33-96e6-55719640a46d",
-            "from_node": "b7824f6f-28d2-4c41-885a-8e0a2c4a28b4",
-            "from_port": "core",
-            "to_node": "0b67936f-e085-4254-a552-8fda44f11780",
-            "to_port": "core",
-            "is_exec": false
-        },
-        {
-            "id": "1c299062-7289-443c-816e-0773a852ccf5",
+            "id": "a0cf8ff1-2d66-4633-a668-9bb917595736",
             "from_node": "0b67936f-e085-4254-a552-8fda44f11780",
             "from_port": "scene_path",
-            "to_node": "40018393-af08-424b-bc37-e1f0a16b5aca",
+            "to_node": "8c37167b-fb8c-4c1b-9074-5d0559faca21",
             "to_port": "blend_file",
             "is_exec": false
         }

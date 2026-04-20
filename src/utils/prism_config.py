@@ -185,6 +185,8 @@ def resolve_dept_name(folder_name, depts):
 # ---------------------------------------------------------------------------
 
 _SCENEFILES_KEYS = ("scenesFolder", "scenefilesFolder", "sceneFolder", "pipeline_folder")
+_ASSETS_KEYS     = ("assetFolder", "assetsFolder", "asset_folder", "assetsPath", "assetPath")
+_ASSETS_DEFAULTS = ("04_Assets", "03_Assets", "Assets", "assets")
 
 
 def get_scenefiles_folder_name(core, cfg_path):
@@ -226,3 +228,73 @@ def get_entity_scenefiles_root(entity, core=None, cfg_path=None):
     except OSError:
         pass
     return None
+
+
+def get_asset_folder_path(project_path, core=None, cfg_path=None):
+    """
+    Return the ABSOLUTE path of the assets folder for this project.
+    Resolution order:
+      1. core.assetPath attribute
+      2. pipeline.json asset folder keys (absolute or relative)
+      3. Common single-level names under project root
+      4. Two-level scan: project_root/<any>/<Assets|assets>
+    """
+    # 1. core attribute
+    if core:
+        try:
+            p = getattr(core, "assetPath", None)
+            if p and isinstance(p, str) and os.path.isdir(p):
+                return p
+        except Exception:
+            pass
+
+    # 2. pipeline.json
+    if cfg_path is None:
+        cfg_path = find_pipeline_cfg(project_path)
+    if cfg_path and os.path.exists(cfg_path):
+        data = read_pipeline_json(cfg_path)
+        g = data.get("globals", {})
+        for key in _ASSETS_KEYS:
+            val = g.get(key, "")
+            if not val and core:
+                val = _getconfig(core, "globals", key, cfg_path) or ""
+            if val:
+                candidate = val if os.path.isabs(val) else os.path.join(project_path, val)
+                if os.path.isdir(candidate):
+                    return candidate
+
+    # 3. Single-level common names
+    for name in _ASSETS_DEFAULTS:
+        full = os.path.join(project_path, name)
+        if os.path.isdir(full):
+            return full
+
+    # 4. Two-level scan: project_root/<subdir>/<assets-name>
+    try:
+        for entry in os.scandir(project_path):
+            if not entry.is_dir():
+                continue
+            for name in ("Assets", "assets", "ASSETS", "Asset"):
+                candidate = os.path.join(entry.path, name)
+                if os.path.isdir(candidate):
+                    return candidate
+    except OSError:
+        pass
+
+    return ""
+
+
+def get_asset_entity_path(asset, project_path, core=None, cfg_path=None):
+    """
+    Construct the absolute filesystem path for an asset entity dict.
+    Returns a constructed path even when the directory doesn't exist yet.
+    """
+    asset_rel = asset.get("asset_path", asset.get("name", "")) if isinstance(asset, dict) else ""
+    if not asset_rel or not project_path:
+        return ""
+
+    assets_root = get_asset_folder_path(project_path, core=core, cfg_path=cfg_path)
+    if assets_root:
+        return os.path.join(assets_root, asset_rel)
+
+    return os.path.join(project_path, _ASSETS_DEFAULTS[0], asset_rel)

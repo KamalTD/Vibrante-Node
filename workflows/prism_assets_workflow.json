@@ -1,0 +1,131 @@
+{
+    "nodes": [
+        {
+            "instance_id": "db0dcc28-b0d2-4950-85ea-feefa32aa398",
+            "node_id": "prism_get_asset_by_name",
+            "position": [
+                206.22499999999997,
+                88.8
+            ],
+            "parameters": {
+                "core": null,
+                "project": {
+                    "configPath": "G:\\Prism\\Vibrante-Project\\00_Pipeline\\pipeline.json",
+                    "name": "Vibrante-Project",
+                    "source": "disk"
+                },
+                "asset_type": null,
+                "name": "mouse",
+                "asset": {
+                    "type": "asset",
+                    "asset_path": "mouse"
+                },
+                "entity": {
+                    "type": "asset",
+                    "asset_path": "mouse",
+                    "path": "G:\\Prism\\Vibrante-Project\\03_Production\\Assets\\mouse",
+                    "location": "global",
+                    "paths": {}
+                },
+                "matches": [
+                    {
+                        "type": "asset",
+                        "asset_path": "mouse"
+                    }
+                ],
+                "found": true
+            },
+            "state": "idle",
+            "bypassed": true
+        },
+        {
+            "instance_id": "0a407f8c-e7d3-4682-94d6-ecb2b8a71705",
+            "node_id": "prism_get_project_by_name",
+            "position": [
+                -179.03750000000002,
+                86.27499999999998
+            ],
+            "parameters": {
+                "core": null,
+                "name": "Vibrante-Project",
+                "project": {
+                    "configPath": "G:\\Prism\\Vibrante-Project\\00_Pipeline\\pipeline.json",
+                    "name": "Vibrante-Project",
+                    "date": 1776689884.9075544,
+                    "source": "recent"
+                },
+                "project_path": "G:\\Prism\\Vibrante-Project",
+                "config_path": "G:\\Prism\\Vibrante-Project\\00_Pipeline\\pipeline.json",
+                "found": true
+            },
+            "state": "idle",
+            "bypassed": true
+        },
+        {
+            "instance_id": "0f1518af-b0a7-441a-9a29-34f9fcc4d8ea",
+            "node_id": "prism_core_init",
+            "position": [
+                -503.69999999999993,
+                61.13750000000002
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "prism_scripts_path": "C:/Program Files/Prism2/Scripts",
+                "load_project": true,
+                "show_ui": false,
+                "version": "v2.1.0"
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "e95892a2-c95b-49e2-ba98-b0d7472c89e0",
+            "node_id": "prism_get_scene_path",
+            "position": [
+                612.0,
+                62.0
+            ],
+            "parameters": {
+                "core": null,
+                "entity": {
+                    "type": "asset",
+                    "asset_path": "mouse",
+                    "path": "G:\\Prism\\Vibrante-Project\\03_Production\\Assets\\mouse",
+                    "location": "global",
+                    "paths": {}
+                },
+                "department": "animation",
+                "task": "animation",
+                "application": "blender",
+                "version": "v0003",
+                "scene_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Scenefiles\\anm\\animation\\seq_0001-shot_001_Animation_v0003.blend",
+                "task_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Scenefiles\\anm\\animation",
+                "exists": true
+            },
+            "state": "idle",
+            "bypassed": false
+        }
+    ],
+    "connections": [
+        {
+            "id": "004f5662-fdf4-433f-a113-b8fe0ac6a2c0",
+            "from_node": "0a407f8c-e7d3-4682-94d6-ecb2b8a71705",
+            "from_port": "project",
+            "to_node": "db0dcc28-b0d2-4950-85ea-feefa32aa398",
+            "to_port": "project",
+            "is_exec": false
+        },
+        {
+            "id": "67241cd9-e182-4773-887d-a5ae91da3239",
+            "from_node": "db0dcc28-b0d2-4950-85ea-feefa32aa398",
+            "from_port": "entity",
+            "to_node": "e95892a2-c95b-49e2-ba98-b0d7472c89e0",
+            "to_port": "entity",
+            "is_exec": false
+        }
+    ],
+    "sticky_notes": [],
+    "backdrops": [],
+    "metadata": {}
+}
