@@ -1,0 +1,582 @@
+{
+    "nodes": [
+
+        {
+            "instance_id": "c1a00001-face-4001-b001-a00000000001",
+            "node_id": "prism_core_init",
+            "position": [-760.0, -60.0],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "prism_scripts_path": "C:/Program Files/Prism2/Scripts",
+                "load_project": true,
+                "show_ui": false,
+                "core": null,
+                "version": "v2.1.0"
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+
+        {
+            "instance_id": "c1a00002-face-4001-b001-a00000000002",
+            "node_id": "prism_get_project_by_name",
+            "position": [-460.0, -60.0],
+            "parameters": {
+                "core": null,
+                "name": "splash",
+                "project": {
+                    "configPath": "G:\\Prism\\splash\\00_Pipeline\\pipeline.json",
+                    "name": "splash",
+                    "source": "disk"
+                },
+                "project_path": "G:\\Prism\\splash",
+                "config_path": "G:\\Prism\\splash\\00_Pipeline\\pipeline.json",
+                "found": true
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+
+        {
+            "instance_id": "c1a00003-face-4001-b001-a00000000003",
+            "node_id": "prism_get_assets_by_type",
+            "position": [-100.0, -60.0],
+            "parameters": {
+                "core": null,
+                "project": {
+                    "configPath": "G:\\Prism\\splash\\00_Pipeline\\pipeline.json",
+                    "name": "splash",
+                    "source": "disk"
+                },
+                "asset_type": {"name": "chars"},
+                "assets": [
+                    {"type": "asset", "asset_path": "dog"}
+                ],
+                "asset": {"type": "asset", "asset_path": "dog"},
+                "entity": {
+                    "type": "asset",
+                    "asset_path": "dog",
+                    "path": "G:\\Prism\\splash\\03_Production\\Assets\\dog",
+                    "location": "global",
+                    "paths": {}
+                },
+                "count": 1,
+                "found": true
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+
+        {
+            "instance_id": "c1a00004-face-4001-b001-a00000000004",
+            "node_id": "prism_get_asset_by_name",
+            "position": [280.0, -60.0],
+            "parameters": {
+                "core": null,
+                "project": {
+                    "configPath": "G:\\Prism\\splash\\00_Pipeline\\pipeline.json",
+                    "name": "splash",
+                    "source": "disk"
+                },
+                "asset_type": {"name": "chars"},
+                "name": "dog",
+                "asset": {"type": "asset", "asset_path": "dog"},
+                "entity": {
+                    "type": "asset",
+                    "asset_path": "dog",
+                    "path": "G:\\Prism\\splash\\03_Production\\Assets\\dog",
+                    "location": "global",
+                    "paths": {}
+                },
+                "matches": [{"type": "asset", "asset_path": "dog"}],
+                "found": true
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+
+        {
+            "instance_id": "c1a00005-face-4001-b001-a00000000005",
+            "node_id": "prism_get_scene_path",
+            "position": [660.0, -60.0],
+            "parameters": {
+                "core": null,
+                "entity": {
+                    "type": "asset",
+                    "asset_path": "dog",
+                    "path": "G:\\Prism\\splash\\03_Production\\Assets\\dog",
+                    "location": "global",
+                    "paths": {}
+                },
+                "department": "modeling",
+                "task": "modeling",
+                "application": "maya",
+                "version": "latest",
+                "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0007.ma",
+                "task_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling",
+                "version": "v0007",
+                "exists": true
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+
+        {
+            "instance_id": "c1a00006-face-4001-b001-a00000000006",
+            "node_id": "prism_save_scene_version",
+            "position": [660.0, 340.0],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "core": null,
+                "entity": {
+                    "type": "asset",
+                    "asset_path": "dog",
+                    "path": "G:\\Prism\\splash\\03_Production\\Assets\\dog",
+                    "location": "global",
+                    "paths": {}
+                },
+                "department": "modeling",
+                "task": "modeling",
+                "application": "maya",
+                "saved_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0008.ma",
+                "version": "v0008",
+                "task_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling",
+                "success": true
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+
+        {
+            "instance_id": "c1a00007-face-4001-b001-a00000000007",
+            "node_id": "maya_action_open_scene",
+            "position": [1060.0, 340.0],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "actions_in": [],
+                "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0007.ma",
+                "force": true,
+                "actions_out": [
+                    {
+                        "type": "open_scene",
+                        "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0007.ma",
+                        "force": true
+                    }
+                ]
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+
+        {
+            "instance_id": "c1a00008-face-4001-b001-a00000000008",
+            "node_id": "maya_action_scene_info",
+            "position": [1400.0, 340.0],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "actions_in": [
+                    {
+                        "type": "open_scene",
+                        "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0007.ma",
+                        "force": true
+                    }
+                ],
+                "actions_out": [
+                    {
+                        "type": "open_scene",
+                        "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0007.ma",
+                        "force": true
+                    },
+                    {
+                        "type": "scene_info"
+                    }
+                ]
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+
+        {
+            "instance_id": "c1a00009-face-4001-b001-a00000000009",
+            "node_id": "maya_action_save_scene",
+            "position": [1760.0, 340.0],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "actions_in": [
+                    {
+                        "type": "open_scene",
+                        "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0007.ma",
+                        "force": true
+                    },
+                    {
+                        "type": "scene_info"
+                    }
+                ],
+                "save_scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0008.ma",
+                "file_type": "mayaAscii",
+                "actions_out": [
+                    {
+                        "type": "open_scene",
+                        "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0007.ma",
+                        "force": true
+                    },
+                    {
+                        "type": "scene_info"
+                    },
+                    {
+                        "type": "save_scene",
+                        "save_scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0008.ma",
+                        "file_type": "mayaAscii"
+                    }
+                ]
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+
+        {
+            "instance_id": "c1a00010-face-4001-b001-a00000000010",
+            "node_id": "maya_headless",
+            "position": [2180.0, 320.0],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "maya_version": "2024",
+                "mayapy.exe": "C:/Program Files/Autodesk/Maya2024/bin/mayapy.exe",
+                "bat_file": "",
+                "maya_env_file": "",
+                "scene_file": "",
+                "actions": [
+                    {
+                        "type": "open_scene",
+                        "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0007.ma",
+                        "force": true
+                    },
+                    {
+                        "type": "scene_info"
+                    },
+                    {
+                        "type": "save_scene",
+                        "save_scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0008.ma",
+                        "file_type": "mayaAscii"
+                    }
+                ],
+                "success": true,
+                "stdout": "",
+                "stderr": "",
+                "exit_code": 0,
+                "executed_actions": [
+                    {
+                        "type": "open_scene",
+                        "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0007.ma",
+                        "force": true
+                    },
+                    {
+                        "type": "scene_info",
+                        "info": {
+                            "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0007.ma",
+                            "frame_start": 1.0,
+                            "frame_end": 100.0,
+                            "fps": "film",
+                            "linear_unit": "cm",
+                            "renderer": "arnold",
+                            "project_path": "G:\\Prism\\splash\\"
+                        }
+                    },
+                    {
+                        "type": "save_scene",
+                        "save_scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0008.ma",
+                        "file_type": "mayaAscii"
+                    }
+                ],
+                "skipped_actions": []
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+
+        {
+            "instance_id": "c1a00011-face-4001-b001-a00000000011",
+            "node_id": "maya_get_action_result",
+            "position": [2580.0, 320.0],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "executed_actions": [],
+                "action_type": "scene_info",
+                "index": 0,
+                "found": true,
+                "action": {
+                    "type": "scene_info",
+                    "info": {
+                        "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0007.ma",
+                        "frame_start": 1.0,
+                        "frame_end": 100.0,
+                        "fps": "film",
+                        "linear_unit": "cm",
+                        "renderer": "arnold"
+                    }
+                },
+                "info": {
+                    "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0007.ma",
+                    "frame_start": 1.0,
+                    "frame_end": 100.0,
+                    "fps": "film",
+                    "linear_unit": "cm",
+                    "renderer": "arnold"
+                },
+                "path": ""
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+
+        {
+            "instance_id": "c1a00012-face-4001-b001-a00000000012",
+            "node_id": "console_print",
+            "position": [2580.0, 520.0],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "data": "Pipeline complete — dog_modeling_v0008.ma saved successfully.",
+                "out": "Pipeline complete — dog_modeling_v0008.ma saved successfully."
+            },
+            "state": "idle",
+            "bypassed": false
+        }
+
+    ],
+
+    "connections": [
+
+        {
+            "id": "conn-exec-001",
+            "from_node": "c1a00001-face-4001-b001-a00000000001",
+            "from_port": "exec_out",
+            "to_node": "c1a00006-face-4001-b001-a00000000006",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "conn-exec-002",
+            "from_node": "c1a00006-face-4001-b001-a00000000006",
+            "from_port": "exec_out",
+            "to_node": "c1a00007-face-4001-b001-a00000000007",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "conn-exec-003",
+            "from_node": "c1a00007-face-4001-b001-a00000000007",
+            "from_port": "exec_out",
+            "to_node": "c1a00008-face-4001-b001-a00000000008",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "conn-exec-004",
+            "from_node": "c1a00008-face-4001-b001-a00000000008",
+            "from_port": "exec_out",
+            "to_node": "c1a00009-face-4001-b001-a00000000009",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "conn-exec-005",
+            "from_node": "c1a00009-face-4001-b001-a00000000009",
+            "from_port": "exec_out",
+            "to_node": "c1a00010-face-4001-b001-a00000000010",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "conn-exec-006",
+            "from_node": "c1a00010-face-4001-b001-a00000000010",
+            "from_port": "exec_out",
+            "to_node": "c1a00011-face-4001-b001-a00000000011",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "conn-exec-007",
+            "from_node": "c1a00011-face-4001-b001-a00000000011",
+            "from_port": "exec_out",
+            "to_node": "c1a00012-face-4001-b001-a00000000012",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+
+        {
+            "id": "conn-data-001",
+            "from_node": "c1a00002-face-4001-b001-a00000000002",
+            "from_port": "project",
+            "to_node": "c1a00003-face-4001-b001-a00000000003",
+            "to_port": "project",
+            "is_exec": false
+        },
+        {
+            "id": "conn-data-002",
+            "from_node": "c1a00002-face-4001-b001-a00000000002",
+            "from_port": "project",
+            "to_node": "c1a00004-face-4001-b001-a00000000004",
+            "to_port": "project",
+            "is_exec": false
+        },
+
+        {
+            "id": "conn-data-004",
+            "from_node": "c1a00004-face-4001-b001-a00000000004",
+            "from_port": "entity",
+            "to_node": "c1a00005-face-4001-b001-a00000000005",
+            "to_port": "entity",
+            "is_exec": false
+        },
+        {
+            "id": "conn-data-005",
+            "from_node": "c1a00004-face-4001-b001-a00000000004",
+            "from_port": "entity",
+            "to_node": "c1a00006-face-4001-b001-a00000000006",
+            "to_port": "entity",
+            "is_exec": false
+        },
+        {
+            "id": "conn-data-006",
+            "from_node": "c1a00005-face-4001-b001-a00000000005",
+            "from_port": "scene_path",
+            "to_node": "c1a00007-face-4001-b001-a00000000007",
+            "to_port": "scene_path",
+            "is_exec": false
+        },
+        {
+            "id": "conn-data-007",
+            "from_node": "c1a00006-face-4001-b001-a00000000006",
+            "from_port": "saved_path",
+            "to_node": "c1a00009-face-4001-b001-a00000000009",
+            "to_port": "save_scene_path",
+            "is_exec": false
+        },
+        {
+            "id": "conn-data-008",
+            "from_node": "c1a00007-face-4001-b001-a00000000007",
+            "from_port": "actions_out",
+            "to_node": "c1a00008-face-4001-b001-a00000000008",
+            "to_port": "actions_in",
+            "is_exec": false
+        },
+        {
+            "id": "conn-data-009",
+            "from_node": "c1a00008-face-4001-b001-a00000000008",
+            "from_port": "actions_out",
+            "to_node": "c1a00009-face-4001-b001-a00000000009",
+            "to_port": "actions_in",
+            "is_exec": false
+        },
+        {
+            "id": "conn-data-010",
+            "from_node": "c1a00009-face-4001-b001-a00000000009",
+            "from_port": "actions_out",
+            "to_node": "c1a00010-face-4001-b001-a00000000010",
+            "to_port": "actions",
+            "is_exec": false
+        },
+        {
+            "id": "conn-data-011",
+            "from_node": "c1a00010-face-4001-b001-a00000000010",
+            "from_port": "executed_actions",
+            "to_node": "c1a00011-face-4001-b001-a00000000011",
+            "to_port": "executed_actions",
+            "is_exec": false
+        },
+        {
+            "id": "conn-data-012",
+            "from_node": "c1a00010-face-4001-b001-a00000000010",
+            "from_port": "success",
+            "to_node": "c1a00012-face-4001-b001-a00000000012",
+            "to_port": "data",
+            "is_exec": false
+        },
+        {
+            "id": "conn-data-013",
+            "from_node": "c1a00006-face-4001-b001-a00000000006",
+            "from_port": "version",
+            "to_node": "c1a00012-face-4001-b001-a00000000012",
+            "to_port": "data",
+            "is_exec": false
+        }
+
+    ],
+
+    "sticky_notes": [
+        {
+            "id": "note-001",
+            "position": [-760.0, -200.0],
+            "size": [380.0, 80.0],
+            "text": "STEP 1 — Init Prism core\nLoad project context on startup",
+            "color": "#1e3a5f"
+        },
+        {
+            "id": "note-002",
+            "position": [-460.0, -200.0],
+            "size": [860.0, 80.0],
+            "text": "STEP 2–4 — Prism Traversal: Project → Asset Type → Asset → Scene Path",
+            "color": "#1e3a5f"
+        },
+        {
+            "id": "note-003",
+            "position": [660.0, 240.0],
+            "size": [380.0, 60.0],
+            "text": "STEP 5 — Reserve next version\nCreates folder, returns v0008 path",
+            "color": "#1a3a00"
+        },
+        {
+            "id": "note-004",
+            "position": [1060.0, 240.0],
+            "size": [1080.0, 60.0],
+            "text": "STEP 6 — Build Maya action list: open existing → capture scene info → save as new version",
+            "color": "#3a1a00"
+        },
+        {
+            "id": "note-005",
+            "position": [2180.0, 240.0],
+            "size": [780.0, 60.0],
+            "text": "STEP 7–8 — Execute headless + read results back into graph",
+            "color": "#1a003a"
+        }
+    ],
+
+    "backdrops": [
+        {
+            "id": "backdrop-prism",
+            "position": [-800.0, -230.0],
+            "size": [1620.0, 320.0],
+            "title": "Prism Pipeline  —  Asset Traversal Chain",
+            "color": "#1a2540"
+        },
+        {
+            "id": "backdrop-maya",
+            "position": [600.0, 220.0],
+            "size": [1640.0, 260.0],
+            "title": "Maya Action Builder  —  Describe the Work",
+            "color": "#2a1400"
+        },
+        {
+            "id": "backdrop-exec",
+            "position": [2140.0, 220.0],
+            "size": [820.0, 380.0],
+            "title": "Execute + Read Results",
+            "color": "#1a0030"
+        }
+    ],
+
+    "metadata": {
+        "name": "Tutorial — Maya Headless + Prism Full Pipeline",
+        "description": "Complete tutorial workflow: Prism traversal chain drives Maya headless automation. Finds asset → locates latest scene → reserves next version → opens, captures info, saves — all without touching the Maya UI.",
+        "version": "1.0",
+        "tutorial": true
+    }
+}
