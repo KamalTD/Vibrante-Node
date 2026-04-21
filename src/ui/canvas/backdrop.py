@@ -93,15 +93,20 @@ class Backdrop(QGraphicsRectItem):
 
     def contextMenuEvent(self, event):
         menu = QtWidgets.QMenu()
-        
+
+        color_act = menu.addAction("Change Color")
+        color_act.triggered.connect(self._pick_color)
+
+        menu.addSeparator()
+
         fit_act = menu.addAction("Fit to Contained Nodes")
         fit_act.triggered.connect(self.fit_to_nodes)
-        
+
         select_act = menu.addAction("Select Contained Nodes")
         select_act.triggered.connect(self.select_contained_nodes)
-        
+
         menu.addSeparator()
-        
+
         delete_act = menu.addAction("Delete Network Box")
         def delete_self():
             if self.scene():
@@ -117,6 +122,16 @@ class Backdrop(QGraphicsRectItem):
         delete_act.triggered.connect(delete_self)
         
         menu.exec_(event.screenPos())
+
+    def _pick_color(self):
+        opaque = QColor(self.bg_color)
+        opaque.setAlpha(255)
+        color = QtWidgets.QColorDialog.getColor(opaque, None, "Choose Network Box Color")
+        if color.isValid():
+            self.bg_color = QColor(color)
+            self.bg_color.setAlpha(100)
+            self.setBrush(QBrush(self.bg_color))
+            self.update()
 
     def fit_to_nodes(self):
         """Resizes the backdrop to fit all nodes currently inside or partially inside it."""

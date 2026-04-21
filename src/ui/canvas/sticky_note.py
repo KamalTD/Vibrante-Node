@@ -88,6 +88,34 @@ class StickyNote(QGraphicsRectItem):
             painter.setBrush(Qt.NoBrush)
             painter.drawRect(self.rect().adjusted(-2, -2, 2, 2))
 
+    def contextMenuEvent(self, event):
+        menu = QtWidgets.QMenu()
+
+        color_act = menu.addAction("Change Color")
+        color_act.triggered.connect(self._pick_color)
+
+        menu.addSeparator()
+
+        delete_act = menu.addAction("Delete Sticky Note")
+        def delete_self():
+            if self.scene():
+                self.setSelected(True)
+                from src.utils.qt_compat import QtGui
+                QKeyEvent = QtGui.QKeyEvent
+                QEvent = QtCore.QEvent
+                ev = QKeyEvent(QEvent.KeyPress, Qt.Key_Delete, Qt.NoModifier)
+                self.scene().keyPressEvent(ev)
+        delete_act.triggered.connect(delete_self)
+
+        menu.exec_(event.screenPos())
+
+    def _pick_color(self):
+        color = QtWidgets.QColorDialog.getColor(self.bg_color, None, "Choose Sticky Note Color")
+        if color.isValid():
+            self.bg_color = color
+            self.setBrush(QBrush(self.bg_color))
+            self.update()
+
     def get_text(self):
         return self.text_item.toPlainText()
 
