@@ -38,8 +38,8 @@
                 "department": "modeling",
                 "task": "modeling",
                 "application": "maya",
-                "version": "v0005",
-                "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0005.ma",
+                "version": "v0008",
+                "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0008.ma",
                 "task_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling",
                 "exists": true
             },
@@ -50,19 +50,19 @@
             "instance_id": "8c35c439-6b65-42dc-ac49-a75591ec2c67",
             "node_id": "maya_action_open_scene",
             "position": [
-                699.14453125,
-                548.6249999999999
+                646.8984374999999,
+                437.78515624999994
             ],
             "parameters": {
                 "exec_in": null,
                 "exec_out": true,
                 "actions_in": [],
-                "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling",
+                "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0007.ma",
                 "force": true,
                 "actions_out": [
                     {
                         "type": "open_scene",
-                        "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling",
+                        "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0008.ma",
                         "force": true
                     }
                 ]
@@ -134,8 +134,8 @@
             "instance_id": "08ed91fd-09a9-4d9c-b23c-2d1c067b1abd",
             "node_id": "maya_headless",
             "position": [
-                2039.0195312500002,
-                362.1249999999999
+                2027.3007812500005,
+                393.3749999999999
             ],
             "parameters": {
                 "exec_in": true,
@@ -148,7 +148,7 @@
                 "actions": [
                     {
                         "type": "open_scene",
-                        "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling",
+                        "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0007.ma",
                         "force": true
                     },
                     {
@@ -157,22 +157,27 @@
                     },
                     {
                         "type": "save_scene",
-                        "save_scene_path": "",
+                        "save_scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0008.ma",
                         "file_type": "mayaAscii"
                     }
                 ],
-                "success": false,
+                "success": true,
                 "stdout": "Cannot create Prism instance because no QApplication exists. To load Prism you can create a QApplication before initilizing mayapy like this: import sys;from PySide2 import QtWidgets;QtWidgets.QApplication(sys.argv)\n",
-                "stderr": "Qt WebEngine seems to be initialized from a plugin. Please set Qt::AA_ShareOpenGLContexts using QCoreApplication::setAttribute before constructing QGuiApplication.\nFile read in  0.026 seconds.\nViewport 2.0 floating point render target is turned on for color management.\nFile read in  1.2 seconds.\nError: Failed to open IFF file for reading : C:/Users/Mahmoud/AppData/Local/Temp//maya393600000193FAF93E50.iff\n",
+                "stderr": "Qt WebEngine seems to be initialized from a plugin. Please set Qt::AA_ShareOpenGLContexts using QCoreApplication::setAttribute before constructing QGuiApplication.\nFile read in  0.87 seconds.\nWarning: The node 'mesh (1)_Mesh' still clashed with a node in the main scene.  Renaming to 'mesh__1__Mesh2'.\nWarning: Edits on 'mesh (1)_Mesh' may have been lost as a result of renaming. We strongly recommend the use of Namespaces to resolve Name Clashes.\nFile read in  1.1 seconds.\nError: Failed to open IFF file for reading : C:/Users/Mahmoud/AppData/Local/Temp//maya3872000001C14D986820.iff\n",
                 "exit_code": 0,
                 "executed_actions": [
+                    {
+                        "type": "open_scene",
+                        "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0008.ma",
+                        "force": true
+                    },
                     {
                         "type": "import_obj",
                         "obj_path": "C:/Users/Mahmoud/Documents/mesh (1).obj"
                     },
                     {
                         "type": "save_scene",
-                        "save_scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0006.ma",
+                        "save_scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0009.ma",
                         "file_type": "mayaAscii"
                     }
                 ],
@@ -185,21 +190,41 @@
             "instance_id": "0f902b18-7e40-43da-b37f-0a69a01e25c0",
             "node_id": "maya_action_scene_info",
             "position": [
-                2392.01953125,
-                395.1249999999999
+                2411.5507812500005,
+                408.7968749999999
             ],
             "parameters": {
                 "exec_in": true,
                 "exec_out": true,
-                "actions_in": [],
-                "actions_out": [
+                "actions_in": [
+                    {
+                        "type": "open_scene",
+                        "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0007.ma",
+                        "force": true
+                    },
                     {
                         "type": "import_obj",
                         "obj_path": "C:/Users/Mahmoud/Documents/mesh (1).obj"
                     },
                     {
                         "type": "save_scene",
-                        "save_scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0006.ma",
+                        "save_scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0008.ma",
+                        "file_type": "mayaAscii"
+                    }
+                ],
+                "actions_out": [
+                    {
+                        "type": "open_scene",
+                        "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0008.ma",
+                        "force": true
+                    },
+                    {
+                        "type": "import_obj",
+                        "obj_path": "C:/Users/Mahmoud/Documents/mesh (1).obj"
+                    },
+                    {
+                        "type": "save_scene",
+                        "save_scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0009.ma",
                         "file_type": "mayaAscii"
                     },
                     {
@@ -214,8 +239,8 @@
             "instance_id": "8a02b549-47fe-442b-b03a-382a6d091d33",
             "node_id": "maya_action_save_scene",
             "position": [
-                1769.0195312500002,
-                433.1249999999999
+                1713.8437500000007,
+                412.61718749999994
             ],
             "parameters": {
                 "exec_in": true,
@@ -223,7 +248,7 @@
                 "actions_in": [
                     {
                         "type": "open_scene",
-                        "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling",
+                        "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0007.ma",
                         "force": true
                     },
                     {
@@ -231,12 +256,12 @@
                         "obj_path": "C:/Users/Mahmoud/Documents/mesh (1).obj"
                     }
                 ],
-                "save_scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0003.ma",
+                "save_scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0006.ma",
                 "file_type": "mayaAscii",
                 "actions_out": [
                     {
                         "type": "open_scene",
-                        "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling",
+                        "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0008.ma",
                         "force": true
                     },
                     {
@@ -245,7 +270,7 @@
                     },
                     {
                         "type": "save_scene",
-                        "save_scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0006.ma",
+                        "save_scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0009.ma",
                         "file_type": "mayaAscii"
                     }
                 ]
@@ -257,8 +282,8 @@
             "instance_id": "f9c03da3-81f9-480f-8b74-b2e3aea543a9",
             "node_id": "maya_action_import_obj",
             "position": [
-                993.14453125,
-                543.6249999999999
+                933.0859375000003,
+                438.15624999999994
             ],
             "parameters": {
                 "exec_in": true,
@@ -266,7 +291,7 @@
                 "actions_in": [
                     {
                         "type": "open_scene",
-                        "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling",
+                        "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0007.ma",
                         "force": true
                     }
                 ],
@@ -274,7 +299,7 @@
                 "actions_out": [
                     {
                         "type": "open_scene",
-                        "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling",
+                        "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0008.ma",
                         "force": true
                     },
                     {
@@ -290,8 +315,8 @@
             "instance_id": "e780f1fe-06fe-46ce-981b-3cff54e3fbf4",
             "node_id": "prism_save_scene_version",
             "position": [
-                1323.5625,
-                153.5624999999999
+                1213.3085937500005,
+                -121.82812500000006
             ],
             "parameters": {
                 "exec_in": true,
@@ -307,8 +332,8 @@
                 "department": "modeling",
                 "task": "modeling",
                 "application": "maya",
-                "saved_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0006.ma",
-                "version": "v0006",
+                "saved_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0009.ma",
+                "version": "v0009",
                 "task_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling",
                 "success": true,
                 "comment": "",
@@ -320,7 +345,7 @@
     ],
     "connections": [
         {
-            "id": "30dc3012-e08b-4ec7-9520-67446308dcd8",
+            "id": "7c734069-fc56-4748-a84a-1d35534d681b",
             "from_node": "0b463f7f-9cd4-4a48-9dc9-2dfd75407c5d",
             "from_port": "project",
             "to_node": "0b71ed53-24c1-4c36-bfe1-7eaa44e5fd51",
@@ -328,7 +353,7 @@
             "is_exec": false
         },
         {
-            "id": "82649cf9-9b96-4501-927b-29ed52cb4382",
+            "id": "11fa8242-cce3-41d9-9627-e28ba8ad88e3",
             "from_node": "0b71ed53-24c1-4c36-bfe1-7eaa44e5fd51",
             "from_port": "entity",
             "to_node": "0b67936f-e085-4254-a552-8fda44f11780",
@@ -336,15 +361,7 @@
             "is_exec": false
         },
         {
-            "id": "9a97e308-a079-4bc4-b39c-ed343ea2afec",
-            "from_node": "0b67936f-e085-4254-a552-8fda44f11780",
-            "from_port": "scene_path",
-            "to_node": "8c35c439-6b65-42dc-ac49-a75591ec2c67",
-            "to_port": "scene_path",
-            "is_exec": false
-        },
-        {
-            "id": "d915e539-19c3-4995-bcde-acd1cd9f790b",
+            "id": "f81ba90a-f3de-470c-996c-011404d16e9f",
             "from_node": "08ed91fd-09a9-4d9c-b23c-2d1c067b1abd",
             "from_port": "executed_actions",
             "to_node": "0f902b18-7e40-43da-b37f-0a69a01e25c0",
@@ -352,7 +369,7 @@
             "is_exec": false
         },
         {
-            "id": "e3135765-cc30-49b4-a5f2-b668aa5be517",
+            "id": "afc01b0f-2065-4360-b6a9-4e7404600fa2",
             "from_node": "08ed91fd-09a9-4d9c-b23c-2d1c067b1abd",
             "from_port": "exec_out",
             "to_node": "0f902b18-7e40-43da-b37f-0a69a01e25c0",
@@ -360,7 +377,7 @@
             "is_exec": true
         },
         {
-            "id": "bc41e9a2-cef7-4ffd-9613-a9feddf9b39e",
+            "id": "6632252c-aa9a-4302-b4eb-8b049bc6da96",
             "from_node": "8c35c439-6b65-42dc-ac49-a75591ec2c67",
             "from_port": "exec_out",
             "to_node": "f9c03da3-81f9-480f-8b74-b2e3aea543a9",
@@ -368,7 +385,7 @@
             "is_exec": true
         },
         {
-            "id": "57e5a6ca-ca4a-4a66-aaf1-0a2a7b5dcf52",
+            "id": "81405885-55a8-4144-85cb-29f7ef5a6a81",
             "from_node": "8c35c439-6b65-42dc-ac49-a75591ec2c67",
             "from_port": "actions_out",
             "to_node": "f9c03da3-81f9-480f-8b74-b2e3aea543a9",
@@ -376,7 +393,7 @@
             "is_exec": false
         },
         {
-            "id": "76c9d334-df6a-42d7-97b1-84cbe99cbaa0",
+            "id": "f9f701a7-d1b4-4214-b378-2abfa52b7946",
             "from_node": "f9c03da3-81f9-480f-8b74-b2e3aea543a9",
             "from_port": "actions_out",
             "to_node": "8a02b549-47fe-442b-b03a-382a6d091d33",
@@ -384,7 +401,7 @@
             "is_exec": false
         },
         {
-            "id": "a170f921-208c-4f67-88cf-a95e575567d5",
+            "id": "33d9c1f3-e123-46ff-9c8b-7dcb0698d3c2",
             "from_node": "8a02b549-47fe-442b-b03a-382a6d091d33",
             "from_port": "exec_out",
             "to_node": "08ed91fd-09a9-4d9c-b23c-2d1c067b1abd",
@@ -392,7 +409,7 @@
             "is_exec": true
         },
         {
-            "id": "eb2898fa-94c5-464d-8ecd-f3eff6834dcd",
+            "id": "a2b87094-fd9c-4e6a-b12a-40f60c2c635a",
             "from_node": "8a02b549-47fe-442b-b03a-382a6d091d33",
             "from_port": "actions_out",
             "to_node": "08ed91fd-09a9-4d9c-b23c-2d1c067b1abd",
@@ -400,7 +417,7 @@
             "is_exec": false
         },
         {
-            "id": "9a5f49c8-d373-4392-a0b8-58982af511d2",
+            "id": "d39ddbb2-b886-4a38-ace9-8a1009527725",
             "from_node": "0b71ed53-24c1-4c36-bfe1-7eaa44e5fd51",
             "from_port": "entity",
             "to_node": "e780f1fe-06fe-46ce-981b-3cff54e3fbf4",
@@ -408,7 +425,7 @@
             "is_exec": false
         },
         {
-            "id": "4de59e5a-63ec-46bb-a68b-fac41015c51a",
+            "id": "31664c42-6438-4c09-b358-1c56afc9a9b9",
             "from_node": "e780f1fe-06fe-46ce-981b-3cff54e3fbf4",
             "from_port": "saved_path",
             "to_node": "8a02b549-47fe-442b-b03a-382a6d091d33",
@@ -416,7 +433,7 @@
             "is_exec": false
         },
         {
-            "id": "216aa2c9-923c-4034-86b5-7282f1cdf092",
+            "id": "70d2eca1-0271-4157-88ac-0d8361f0caff",
             "from_node": "f9c03da3-81f9-480f-8b74-b2e3aea543a9",
             "from_port": "exec_out",
             "to_node": "e780f1fe-06fe-46ce-981b-3cff54e3fbf4",
@@ -424,12 +441,20 @@
             "is_exec": true
         },
         {
-            "id": "985df7da-7060-488a-96c9-0146a4450e2a",
+            "id": "b799e901-3b19-41bb-9c55-886da597f1d4",
             "from_node": "e780f1fe-06fe-46ce-981b-3cff54e3fbf4",
             "from_port": "exec_out",
             "to_node": "8a02b549-47fe-442b-b03a-382a6d091d33",
             "to_port": "exec_in",
             "is_exec": true
+        },
+        {
+            "id": "caa185e9-b59f-43ed-a7dd-24ff108d318d",
+            "from_node": "0b67936f-e085-4254-a552-8fda44f11780",
+            "from_port": "scene_path",
+            "to_node": "8c35c439-6b65-42dc-ac49-a75591ec2c67",
+            "to_port": "scene_path",
+            "is_exec": false
         }
     ],
     "sticky_notes": [],
@@ -445,6 +470,32 @@
                 504.25
             ],
             "title": "Prism to get asset scene path",
+            "color": "#444444"
+        },
+        {
+            "id": "57c7ffcf-b1fe-4cdd-a5a0-d17eca767115",
+            "position": [
+                1173.3085937500005,
+                -181.82812500000006
+            ],
+            "size": [
+                300.0,
+                438.0
+            ],
+            "title": "Prism save version up",
+            "color": "#444444"
+        },
+        {
+            "id": "dd597f6f-0bdd-4531-a8bf-ad5f81cc0429",
+            "position": [
+                501.91796875,
+                333.3749999999999
+            ],
+            "size": [
+                2170.6328125000005,
+                566.0
+            ],
+            "title": "Grouped Nodes",
             "color": "#444444"
         }
     ],

@@ -2,7 +2,7 @@
     "nodes": [
 
         {
-            "instance_id": "c1a00001-face-4001-b001-a00000000001",
+            "instance_id": "a1b2c3d4-1111-4000-8000-a1b2c3d40001",
             "node_id": "prism_core_init",
             "position": [-760.0, -60.0],
             "parameters": {
@@ -19,7 +19,7 @@
         },
 
         {
-            "instance_id": "c1a00002-face-4001-b001-a00000000002",
+            "instance_id": "a1b2c3d4-2222-4000-8000-a1b2c3d40002",
             "node_id": "prism_get_project_by_name",
             "position": [-460.0, -60.0],
             "parameters": {
@@ -39,7 +39,7 @@
         },
 
         {
-            "instance_id": "c1a00003-face-4001-b001-a00000000003",
+            "instance_id": "a1b2c3d4-3333-4000-8000-a1b2c3d40003",
             "node_id": "prism_get_assets_by_type",
             "position": [-100.0, -60.0],
             "parameters": {
@@ -50,9 +50,7 @@
                     "source": "disk"
                 },
                 "asset_type": {"name": "chars"},
-                "assets": [
-                    {"type": "asset", "asset_path": "dog"}
-                ],
+                "assets": [{"type": "asset", "asset_path": "dog"}],
                 "asset": {"type": "asset", "asset_path": "dog"},
                 "entity": {
                     "type": "asset",
@@ -69,7 +67,7 @@
         },
 
         {
-            "instance_id": "c1a00004-face-4001-b001-a00000000004",
+            "instance_id": "a1b2c3d4-4444-4000-8000-a1b2c3d40004",
             "node_id": "prism_get_asset_by_name",
             "position": [280.0, -60.0],
             "parameters": {
@@ -97,7 +95,7 @@
         },
 
         {
-            "instance_id": "c1a00005-face-4001-b001-a00000000005",
+            "instance_id": "a1b2c3d4-5555-4000-8000-a1b2c3d40005",
             "node_id": "prism_get_scene_path",
             "position": [660.0, -60.0],
             "parameters": {
@@ -115,7 +113,6 @@
                 "version": "latest",
                 "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0007.ma",
                 "task_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling",
-                "version": "v0007",
                 "exists": true
             },
             "state": "idle",
@@ -123,7 +120,7 @@
         },
 
         {
-            "instance_id": "c1a00006-face-4001-b001-a00000000006",
+            "instance_id": "a1b2c3d4-6666-4000-8000-a1b2c3d40006",
             "node_id": "prism_save_scene_version",
             "position": [660.0, 340.0],
             "parameters": {
@@ -150,7 +147,7 @@
         },
 
         {
-            "instance_id": "c1a00007-face-4001-b001-a00000000007",
+            "instance_id": "a1b2c3d4-7777-4000-8000-a1b2c3d40007",
             "node_id": "maya_action_open_scene",
             "position": [1060.0, 340.0],
             "parameters": {
@@ -172,7 +169,7 @@
         },
 
         {
-            "instance_id": "c1a00008-face-4001-b001-a00000000008",
+            "instance_id": "a1b2c3d4-8888-4000-8000-a1b2c3d40008",
             "node_id": "maya_action_scene_info",
             "position": [1400.0, 340.0],
             "parameters": {
@@ -191,9 +188,7 @@
                         "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0007.ma",
                         "force": true
                     },
-                    {
-                        "type": "scene_info"
-                    }
+                    {"type": "scene_info"}
                 ]
             },
             "state": "idle",
@@ -201,7 +196,7 @@
         },
 
         {
-            "instance_id": "c1a00009-face-4001-b001-a00000000009",
+            "instance_id": "a1b2c3d4-9999-4000-8000-a1b2c3d40009",
             "node_id": "maya_action_save_scene",
             "position": [1760.0, 340.0],
             "parameters": {
@@ -213,9 +208,7 @@
                         "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0007.ma",
                         "force": true
                     },
-                    {
-                        "type": "scene_info"
-                    }
+                    {"type": "scene_info"}
                 ],
                 "save_scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0008.ma",
                 "file_type": "mayaAscii",
@@ -225,9 +218,7 @@
                         "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0007.ma",
                         "force": true
                     },
-                    {
-                        "type": "scene_info"
-                    },
+                    {"type": "scene_info"},
                     {
                         "type": "save_scene",
                         "save_scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0008.ma",
@@ -240,7 +231,7 @@
         },
 
         {
-            "instance_id": "c1a00010-face-4001-b001-a00000000010",
+            "instance_id": "a1b2c3d4-aaaa-4000-8000-a1b2c3d400a0",
             "node_id": "maya_headless",
             "position": [2180.0, 320.0],
             "parameters": {
@@ -257,9 +248,7 @@
                         "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0007.ma",
                         "force": true
                     },
-                    {
-                        "type": "scene_info"
-                    },
+                    {"type": "scene_info"},
                     {
                         "type": "save_scene",
                         "save_scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0008.ma",
@@ -301,7 +290,7 @@
         },
 
         {
-            "instance_id": "c1a00011-face-4001-b001-a00000000011",
+            "instance_id": "a1b2c3d4-bbbb-4000-8000-a1b2c3d400b0",
             "node_id": "maya_get_action_result",
             "position": [2580.0, 320.0],
             "parameters": {
@@ -337,14 +326,14 @@
         },
 
         {
-            "instance_id": "c1a00012-face-4001-b001-a00000000012",
+            "instance_id": "a1b2c3d4-cccc-4000-8000-a1b2c3d400c0",
             "node_id": "console_print",
-            "position": [2580.0, 520.0],
+            "position": [2580.0, 560.0],
             "parameters": {
                 "exec_in": null,
                 "exec_out": true,
-                "data": "Pipeline complete — dog_modeling_v0008.ma saved successfully.",
-                "out": "Pipeline complete — dog_modeling_v0008.ma saved successfully."
+                "data": "Pipeline complete — dog_modeling_v0008.ma saved.",
+                "out": "Pipeline complete — dog_modeling_v0008.ma saved."
             },
             "state": "idle",
             "bypassed": false
@@ -355,156 +344,147 @@
     "connections": [
 
         {
-            "id": "conn-exec-001",
-            "from_node": "c1a00001-face-4001-b001-a00000000001",
+            "id": "e1000001-ec01-4000-8ec0-e1ec00000001",
+            "from_node": "a1b2c3d4-1111-4000-8000-a1b2c3d40001",
             "from_port": "exec_out",
-            "to_node": "c1a00006-face-4001-b001-a00000000006",
+            "to_node": "a1b2c3d4-6666-4000-8000-a1b2c3d40006",
             "to_port": "exec_in",
             "is_exec": true
         },
         {
-            "id": "conn-exec-002",
-            "from_node": "c1a00006-face-4001-b001-a00000000006",
+            "id": "e1000002-ec01-4000-8ec0-e1ec00000002",
+            "from_node": "a1b2c3d4-6666-4000-8000-a1b2c3d40006",
             "from_port": "exec_out",
-            "to_node": "c1a00007-face-4001-b001-a00000000007",
+            "to_node": "a1b2c3d4-7777-4000-8000-a1b2c3d40007",
             "to_port": "exec_in",
             "is_exec": true
         },
         {
-            "id": "conn-exec-003",
-            "from_node": "c1a00007-face-4001-b001-a00000000007",
+            "id": "e1000003-ec01-4000-8ec0-e1ec00000003",
+            "from_node": "a1b2c3d4-7777-4000-8000-a1b2c3d40007",
             "from_port": "exec_out",
-            "to_node": "c1a00008-face-4001-b001-a00000000008",
+            "to_node": "a1b2c3d4-8888-4000-8000-a1b2c3d40008",
             "to_port": "exec_in",
             "is_exec": true
         },
         {
-            "id": "conn-exec-004",
-            "from_node": "c1a00008-face-4001-b001-a00000000008",
+            "id": "e1000004-ec01-4000-8ec0-e1ec00000004",
+            "from_node": "a1b2c3d4-8888-4000-8000-a1b2c3d40008",
             "from_port": "exec_out",
-            "to_node": "c1a00009-face-4001-b001-a00000000009",
+            "to_node": "a1b2c3d4-9999-4000-8000-a1b2c3d40009",
             "to_port": "exec_in",
             "is_exec": true
         },
         {
-            "id": "conn-exec-005",
-            "from_node": "c1a00009-face-4001-b001-a00000000009",
+            "id": "e1000005-ec01-4000-8ec0-e1ec00000005",
+            "from_node": "a1b2c3d4-9999-4000-8000-a1b2c3d40009",
             "from_port": "exec_out",
-            "to_node": "c1a00010-face-4001-b001-a00000000010",
+            "to_node": "a1b2c3d4-aaaa-4000-8000-a1b2c3d400a0",
             "to_port": "exec_in",
             "is_exec": true
         },
         {
-            "id": "conn-exec-006",
-            "from_node": "c1a00010-face-4001-b001-a00000000010",
+            "id": "e1000006-ec01-4000-8ec0-e1ec00000006",
+            "from_node": "a1b2c3d4-aaaa-4000-8000-a1b2c3d400a0",
             "from_port": "exec_out",
-            "to_node": "c1a00011-face-4001-b001-a00000000011",
+            "to_node": "a1b2c3d4-bbbb-4000-8000-a1b2c3d400b0",
             "to_port": "exec_in",
             "is_exec": true
         },
         {
-            "id": "conn-exec-007",
-            "from_node": "c1a00011-face-4001-b001-a00000000011",
+            "id": "e1000007-ec01-4000-8ec0-e1ec00000007",
+            "from_node": "a1b2c3d4-bbbb-4000-8000-a1b2c3d400b0",
             "from_port": "exec_out",
-            "to_node": "c1a00012-face-4001-b001-a00000000012",
+            "to_node": "a1b2c3d4-cccc-4000-8000-a1b2c3d400c0",
             "to_port": "exec_in",
             "is_exec": true
         },
 
         {
-            "id": "conn-data-001",
-            "from_node": "c1a00002-face-4001-b001-a00000000002",
+            "id": "d1000001-da01-4000-8da0-d1da00000001",
+            "from_node": "a1b2c3d4-2222-4000-8000-a1b2c3d40002",
             "from_port": "project",
-            "to_node": "c1a00003-face-4001-b001-a00000000003",
+            "to_node": "a1b2c3d4-3333-4000-8000-a1b2c3d40003",
             "to_port": "project",
             "is_exec": false
         },
         {
-            "id": "conn-data-002",
-            "from_node": "c1a00002-face-4001-b001-a00000000002",
+            "id": "d1000002-da01-4000-8da0-d1da00000002",
+            "from_node": "a1b2c3d4-2222-4000-8000-a1b2c3d40002",
             "from_port": "project",
-            "to_node": "c1a00004-face-4001-b001-a00000000004",
+            "to_node": "a1b2c3d4-4444-4000-8000-a1b2c3d40004",
             "to_port": "project",
             "is_exec": false
         },
-
         {
-            "id": "conn-data-004",
-            "from_node": "c1a00004-face-4001-b001-a00000000004",
+            "id": "d1000003-da01-4000-8da0-d1da00000003",
+            "from_node": "a1b2c3d4-4444-4000-8000-a1b2c3d40004",
             "from_port": "entity",
-            "to_node": "c1a00005-face-4001-b001-a00000000005",
+            "to_node": "a1b2c3d4-5555-4000-8000-a1b2c3d40005",
             "to_port": "entity",
             "is_exec": false
         },
         {
-            "id": "conn-data-005",
-            "from_node": "c1a00004-face-4001-b001-a00000000004",
+            "id": "d1000004-da01-4000-8da0-d1da00000004",
+            "from_node": "a1b2c3d4-4444-4000-8000-a1b2c3d40004",
             "from_port": "entity",
-            "to_node": "c1a00006-face-4001-b001-a00000000006",
+            "to_node": "a1b2c3d4-6666-4000-8000-a1b2c3d40006",
             "to_port": "entity",
             "is_exec": false
         },
         {
-            "id": "conn-data-006",
-            "from_node": "c1a00005-face-4001-b001-a00000000005",
+            "id": "d1000005-da01-4000-8da0-d1da00000005",
+            "from_node": "a1b2c3d4-5555-4000-8000-a1b2c3d40005",
             "from_port": "scene_path",
-            "to_node": "c1a00007-face-4001-b001-a00000000007",
+            "to_node": "a1b2c3d4-7777-4000-8000-a1b2c3d40007",
             "to_port": "scene_path",
             "is_exec": false
         },
         {
-            "id": "conn-data-007",
-            "from_node": "c1a00006-face-4001-b001-a00000000006",
+            "id": "d1000006-da01-4000-8da0-d1da00000006",
+            "from_node": "a1b2c3d4-6666-4000-8000-a1b2c3d40006",
             "from_port": "saved_path",
-            "to_node": "c1a00009-face-4001-b001-a00000000009",
+            "to_node": "a1b2c3d4-9999-4000-8000-a1b2c3d40009",
             "to_port": "save_scene_path",
             "is_exec": false
         },
         {
-            "id": "conn-data-008",
-            "from_node": "c1a00007-face-4001-b001-a00000000007",
+            "id": "d1000007-da01-4000-8da0-d1da00000007",
+            "from_node": "a1b2c3d4-7777-4000-8000-a1b2c3d40007",
             "from_port": "actions_out",
-            "to_node": "c1a00008-face-4001-b001-a00000000008",
+            "to_node": "a1b2c3d4-8888-4000-8000-a1b2c3d40008",
             "to_port": "actions_in",
             "is_exec": false
         },
         {
-            "id": "conn-data-009",
-            "from_node": "c1a00008-face-4001-b001-a00000000008",
+            "id": "d1000008-da01-4000-8da0-d1da00000008",
+            "from_node": "a1b2c3d4-8888-4000-8000-a1b2c3d40008",
             "from_port": "actions_out",
-            "to_node": "c1a00009-face-4001-b001-a00000000009",
+            "to_node": "a1b2c3d4-9999-4000-8000-a1b2c3d40009",
             "to_port": "actions_in",
             "is_exec": false
         },
         {
-            "id": "conn-data-010",
-            "from_node": "c1a00009-face-4001-b001-a00000000009",
+            "id": "d1000009-da01-4000-8da0-d1da00000009",
+            "from_node": "a1b2c3d4-9999-4000-8000-a1b2c3d40009",
             "from_port": "actions_out",
-            "to_node": "c1a00010-face-4001-b001-a00000000010",
+            "to_node": "a1b2c3d4-aaaa-4000-8000-a1b2c3d400a0",
             "to_port": "actions",
             "is_exec": false
         },
         {
-            "id": "conn-data-011",
-            "from_node": "c1a00010-face-4001-b001-a00000000010",
+            "id": "d100000a-da01-4000-8da0-d1da0000000a",
+            "from_node": "a1b2c3d4-aaaa-4000-8000-a1b2c3d400a0",
             "from_port": "executed_actions",
-            "to_node": "c1a00011-face-4001-b001-a00000000011",
+            "to_node": "a1b2c3d4-bbbb-4000-8000-a1b2c3d400b0",
             "to_port": "executed_actions",
             "is_exec": false
         },
         {
-            "id": "conn-data-012",
-            "from_node": "c1a00010-face-4001-b001-a00000000010",
+            "id": "d100000b-da01-4000-8da0-d1da0000000b",
+            "from_node": "a1b2c3d4-aaaa-4000-8000-a1b2c3d400a0",
             "from_port": "success",
-            "to_node": "c1a00012-face-4001-b001-a00000000012",
-            "to_port": "data",
-            "is_exec": false
-        },
-        {
-            "id": "conn-data-013",
-            "from_node": "c1a00006-face-4001-b001-a00000000006",
-            "from_port": "version",
-            "to_node": "c1a00012-face-4001-b001-a00000000012",
+            "to_node": "a1b2c3d4-cccc-4000-8000-a1b2c3d400c0",
             "to_port": "data",
             "is_exec": false
         }
@@ -513,61 +493,61 @@
 
     "sticky_notes": [
         {
-            "id": "note-001",
+            "id": "f1a2b3c4-1111-4000-8f1a-f1a2b3c40001",
             "position": [-760.0, -200.0],
             "size": [380.0, 80.0],
             "text": "STEP 1 — Init Prism core\nLoad project context on startup",
             "color": "#1e3a5f"
         },
         {
-            "id": "note-002",
+            "id": "f1a2b3c4-2222-4000-8f1a-f1a2b3c40002",
             "position": [-460.0, -200.0],
-            "size": [860.0, 80.0],
-            "text": "STEP 2–4 — Prism Traversal: Project → Asset Type → Asset → Scene Path",
+            "size": [1200.0, 80.0],
+            "text": "STEP 2–5 — Prism Traversal: Project → Asset Type (chars) → Asset (dog) → Scene Path (v0007, latest)",
             "color": "#1e3a5f"
         },
         {
-            "id": "note-003",
+            "id": "f1a2b3c4-3333-4000-8f1a-f1a2b3c40003",
             "position": [660.0, 240.0],
             "size": [380.0, 60.0],
-            "text": "STEP 5 — Reserve next version\nCreates folder, returns v0008 path",
+            "text": "STEP 6 — Reserve next version\nScans disk → returns v0008 path",
             "color": "#1a3a00"
         },
         {
-            "id": "note-004",
+            "id": "f1a2b3c4-4444-4000-8f1a-f1a2b3c40004",
             "position": [1060.0, 240.0],
             "size": [1080.0, 60.0],
-            "text": "STEP 6 — Build Maya action list: open existing → capture scene info → save as new version",
+            "text": "STEP 7 — Build Maya action list: open existing scene → capture scene info → save as new version",
             "color": "#3a1a00"
         },
         {
-            "id": "note-005",
+            "id": "f1a2b3c4-5555-4000-8f1a-f1a2b3c40005",
             "position": [2180.0, 240.0],
-            "size": [780.0, 60.0],
-            "text": "STEP 7–8 — Execute headless + read results back into graph",
+            "size": [760.0, 60.0],
+            "text": "STEP 8–9 — Execute headless + read scene_info result back into graph",
             "color": "#1a003a"
         }
     ],
 
     "backdrops": [
         {
-            "id": "backdrop-prism",
+            "id": "b1c2d3e4-1111-4000-8b1c-b1c2d3e40001",
             "position": [-800.0, -230.0],
-            "size": [1620.0, 320.0],
+            "size": [1680.0, 320.0],
             "title": "Prism Pipeline  —  Asset Traversal Chain",
             "color": "#1a2540"
         },
         {
-            "id": "backdrop-maya",
+            "id": "b1c2d3e4-2222-4000-8b1c-b1c2d3e40002",
             "position": [600.0, 220.0],
             "size": [1640.0, 260.0],
             "title": "Maya Action Builder  —  Describe the Work",
             "color": "#2a1400"
         },
         {
-            "id": "backdrop-exec",
+            "id": "b1c2d3e4-3333-4000-8b1c-b1c2d3e40003",
             "position": [2140.0, 220.0],
-            "size": [820.0, 380.0],
+            "size": [820.0, 420.0],
             "title": "Execute + Read Results",
             "color": "#1a0030"
         }
