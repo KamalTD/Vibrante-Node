@@ -1,0 +1,55 @@
+{
+    "node_id": "prism_get_asset_types_by_project",
+    "name": "Prism: Get Asset Types by Project",
+    "description": "Switch to a project and return all unique asset-type categories found in its asset library. Outputs the full list, the first type, a count, and a found flag.",
+    "category": "DCCs",
+    "icon_path": "icons/prism_icon.png",
+    "use_exec": false,
+    "inputs": [
+        {
+            "name": "core",
+            "type": "any",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "project",
+            "type": "dict",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        }
+    ],
+    "outputs": [
+        {
+            "name": "asset_types",
+            "type": "list",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "asset_type",
+            "type": "dict",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "count",
+            "type": "int",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "found",
+            "type": "bool",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        }
+    ],
+    "python_code": "import os\nfrom src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\nfrom src.utils.prism_config import get_asset_folder_path, resolve_cfg\n\nclass PrismGetAssetTypesByProjectNode(BaseNode):\n    name = 'Prism: Get Asset Types by Project'\n    category = 'DCCs'\n\n    def __init__(self):\n        super().__init__(use_exec=False)\n        self.icon_path = 'icons/prism_icon.png'\n        self.add_input('core',    'any')\n        self.add_input('project', 'dict')\n        self.add_output('asset_types', 'list')\n        self.add_output('asset_type',  'dict')\n        self.add_output('count',       'int')\n        self.add_output('found',       'bool')\n\n    def _project_path(self, project):\n        path = project.get('project_path', '')\n        if not path:\n            cfg = project.get('configPath', '')\n            if cfg:\n                path = os.path.dirname(os.path.dirname(cfg))\n        return path\n\n    def _switch_project(self, core, project):\n        path = self._project_path(project)\n        if not path:\n            self.log_error('Cannot determine project path from project dict.')\n            return False\n        try:\n            core.changeProject(path)\n            return True\n        except Exception as e:\n            self.log_error(f'changeProject failed: {e}')\n            return False\n\n    def _category(self, asset):\n        p = asset.get('asset_path', asset.get('name', ''))\n        return p.replace('\\\\\\\\', '/').split('/')[0] if p else ''\n\n    def _build_asset_type(self, cat_name, project_path, core=None, cfg_path=None):\n        assets_root = get_asset_folder_path(project_path, core=core, cfg_path=cfg_path)\n        folder_path = os.path.join(assets_root, cat_name) if assets_root else ''\n        return {'type': 'asset_type', 'name': cat_name, 'path': folder_path}\n\n    async def execute(self, inputs):\n        core    = resolve_prism_core(inputs)\n        project = inputs.get('project') or {}\n\n        empty = {'asset_types': [], 'asset_type': {}, 'count': 0, 'found': False}\n        if core is None:\n            self.log_error('No PrismCore found.')\n            return empty\n        if not project:\n            self.log_error('No project provided.')\n            return empty\n        if not self._switch_project(core, project):\n            return empty\n\n        try:\n            all_assets = list(core.entities.getAssets() or [])\n        except Exception as e:\n            self.log_error(f'getAssets failed: {e}')\n            return empty\n\n        # Collect unique categories preserving original casing from first occurrence\n        seen = {}\n        for a in all_assets:\n            cat = self._category(a)\n            if cat and cat.lower() not in seen:\n                seen[cat.lower()] = cat\n\n        proj_path = self._project_path(project)\n        cfg_path  = resolve_cfg(core=core)\n\n        asset_types = [\n            self._build_asset_type(orig, proj_path, core=core, cfg_path=cfg_path)\n            for orig in seen.values()\n        ]\n\n        if not asset_types:\n            self.log_error('No asset types found in project.')\n            return empty\n\n        self.log_info(f\"Found {len(asset_types)} asset type(s): {[t['name'] for t in asset_types]}\")\n        return {'asset_types': asset_types, 'asset_type': asset_types[0],\n                'count': len(asset_types), 'found': True}\n\ndef register_node():\n    return PrismGetAssetTypesByProjectNode\n"
+}
