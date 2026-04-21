@@ -535,6 +535,12 @@ class NodeScene(QGraphicsScene):
         self.removeItem(node_widget)
 
     def contextMenuEvent(self, event):
+        # Delegate to item-level context menus first
+        for item in self.items(event.scenePos()):
+            if isinstance(item, (StickyNote, Backdrop)):
+                item.contextMenuEvent(event)
+                return
+
         menu = QMenu()
         pos = event.scenePos()
         
