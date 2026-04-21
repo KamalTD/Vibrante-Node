@@ -1,44 +1,90 @@
 {
     "node_id": "prism_save_scene_version",
     "name": "Prism: Save Scene Version",
-    "description": "Saves the currently open DCC scene as the next Prism version with an optional comment. Wraps core.saveScene(comment=...) / core.saveSceneVersion(comment=...).",
+    "description": "Resolve the next versioned scene path for an entity + dept + task + app, create the folder, and return the path. Starts at v0001 if no versions exist, otherwise increments the latest.",
     "category": "DCCs",
     "icon_path": "icons/prism_icon.png",
+    "use_exec": true,
     "inputs": [
         {
             "name": "exec_in",
-            "type": "exec"
+            "type": "exec",
+            "widget_type": null,
+            "options": null,
+            "default": null
         },
         {
             "name": "core",
-            "type": "any"
+            "type": "any",
+            "widget_type": null,
+            "options": null,
+            "default": null
         },
         {
-            "name": "comment",
+            "name": "entity",
+            "type": "dict",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "department",
             "type": "string",
             "widget_type": "text",
+            "options": null,
             "default": ""
         },
         {
-            "name": "publish",
-            "type": "bool",
-            "widget_type": "bool",
-            "default": false
+            "name": "task",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": ""
+        },
+        {
+            "name": "application",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": ""
         }
     ],
     "outputs": [
         {
             "name": "exec_out",
-            "type": "exec"
-        },
-        {
-            "name": "success",
-            "type": "bool"
+            "type": "exec",
+            "widget_type": null,
+            "options": null,
+            "default": null
         },
         {
             "name": "saved_path",
-            "type": "string"
+            "type": "string",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "version",
+            "type": "string",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "task_path",
+            "type": "string",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "success",
+            "type": "bool",
+            "widget_type": null,
+            "options": null,
+            "default": null
         }
     ],
-    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\nclass PrismSaveSceneVersionNode(BaseNode):\n    name = \"Prism: Save Scene Version\"\n    category = \"DCCs\"\n\n    def __init__(self):\n        super().__init__()\n        self.icon_path = \"icons/prism_icon.png\"\n        self.add_input(\"core\", \"any\")\n        self.add_input(\"comment\", \"string\", widget_type=\"text\", default=\"\")\n        self.add_input(\"publish\", \"bool\", widget_type=\"bool\", default=False)\n        self.add_output(\"success\", \"bool\")\n        self.add_output(\"saved_path\", \"string\")\n\n    async def execute(self, inputs):\n        core = resolve_prism_core(inputs)\n        comment = inputs.get('comment') or ''\n        publish = bool(inputs.get('publish', False))\n        if core is None:\n            self.log_error(\"No PrismCore found. Add a prism_core_init node to your graph and connect its exec_out before this node.\")\n            return {'success': False, 'saved_path': ''}\n        try:\n            saved = None\n            for attr in ('saveSceneVersion', 'saveScene'):\n                if hasattr(core, attr):\n                    fn = getattr(core, attr)\n                    try:\n                        saved = fn(comment=comment, publish=publish)\n                    except TypeError:\n                        saved = fn(comment=comment)\n                    break\n            if saved is None:\n                self.log_error(\"No saveScene/saveSceneVersion method on this PrismCore.\")\n                return {'success': False, 'saved_path': ''}\n            saved_path = str(saved) if isinstance(saved, (str, bytes)) else ''\n            self.log_success(f\"Saved scene version: {saved_path or '(ok)'}\")\n            await self.set_output('exec_out', True)\n            return {'success': True, 'saved_path': saved_path}\n        except Exception as e:\n            self.log_error(f\"saveScene failed: {e}\")\n            return {'success': False, 'saved_path': ''}\n\ndef register_node():\n    return PrismSaveSceneVersionNode\n"
+    "python_code": "import os\nimport re\nfrom src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\nfrom src.utils.prism_config import (\n    resolve_cfg, get_departments, resolve_dept_folder,\n    get_entity_scenefiles_root, read_pipeline_json\n)\n\nAPP_EXTS = {\n    'blender':       ['.blend'],\n    'houdini':       ['.hip', '.hiplc', '.hipnc'],\n    'maya':          ['.ma', '.mb'],\n    'nuke':          ['.nk', '.nuke'],\n    'aftereffects':  ['.aep'],\n    'after effects': ['.aep'],\n    'cinema4d':      ['.c4d'],\n    '3dsmax':        ['.max'],\n    'max':           ['.max'],\n    'katana':        ['.katana'],\n    'modo':          ['.lxo'],\n    'usd':           ['.usd', '.usda', '.usdc'],\n}\nMETA_SUFFIXES = ('versioninfo.json', 'preview.jpg', 'preview.png', 'preview.jpeg')\nSCENE_EXTS = set(e for exts in APP_EXTS.values() for e in exts)\n\ndef _is_scene_file(name):\n    nl = name.lower()\n    if any(nl.endswith(s) for s in META_SUFFIXES):\n        return False\n    return os.path.splitext(nl)[1] in SCENE_EXTS\n\ndef _ver_num(name):\n    m = re.search(r'_v(\\d+)', name, re.IGNORECASE)\n    return int(m.group(1)) if m else -1\n\nclass PrismSaveSceneVersionNode(BaseNode):\n    name = 'Prism: Save Scene Version'\n    category = 'DCCs'\n\n    def __init__(self):\n        super().__init__(use_exec=True)\n        self.icon_path = 'icons/prism_icon.png'\n        self.add_input('core',        'any')\n        self.add_input('entity',      'dict')\n        self.add_input('department',  'string', widget_type='text', default='')\n        self.add_input('task',        'string', widget_type='text', default='')\n        self.add_input('application', 'string', widget_type='text', default='')\n        self.add_output('saved_path', 'string')\n        self.add_output('version',    'string')\n        self.add_output('task_path',  'string')\n        self.add_output('success',    'bool')\n\n    async def _done(self, saved_path='', version='', task_path='', success=False):\n        await self.set_output('saved_path', saved_path)\n        await self.set_output('version',    version)\n        await self.set_output('task_path',  task_path)\n        await self.set_output('success',    success)\n        await self.set_output('exec_out',   True)\n        return {'saved_path': saved_path, 'version': version,\n                'task_path': task_path, 'success': success, 'exec_out': True}\n\n    async def execute(self, inputs):\n        core       = resolve_prism_core(inputs)\n        entity     = inputs.get('entity')      or {}\n        dept_input = (inputs.get('department')  or '').strip()\n        task_input = (inputs.get('task')        or '').strip()\n        app_input  = (inputs.get('application') or '').strip().lower()\n\n        if core is None:\n            self.log_error('No PrismCore found.')\n            return await self._done()\n        if not entity:\n            self.log_error('No entity provided.')\n            return await self._done()\n        if not dept_input:\n            self.log_error('No department provided.')\n            return await self._done()\n        if not task_input:\n            self.log_error('No task provided.')\n            return await self._done()\n        if not app_input:\n            self.log_error('No application provided.')\n            return await self._done()\n\n        app_exts = APP_EXTS.get(app_input, [])\n        if not app_exts:\n            self.log_error(f\"Unknown application '{app_input}'. Supported: {sorted(APP_EXTS)}\")\n            return await self._done()\n\n        entity_path = entity.get('path', '').strip()\n        if not entity_path:\n            self.log_error('Entity has no path. Connect entity output from prism_get_asset_by_name or prism_get_shot_by_sequence.')\n            return await self._done()\n\n        cfg_path = resolve_cfg(core=core, entity=entity)\n        data     = read_pipeline_json(cfg_path) if cfg_path else {}\n        padding  = int((data.get('globals') or {}).get('versionPadding', 4))\n\n        dept_defs   = get_departments(core, cfg_path, entity.get('type', 'shot'))\n        dept_abbrev = resolve_dept_folder(dept_input, dept_defs) or dept_input.lower()\n\n        scenes_root = get_entity_scenefiles_root(entity, core, cfg_path)\n        if not scenes_root:\n            self.log_error(f'No Scenefiles folder found under: {entity_path}')\n            return await self._done()\n\n        task_dir = os.path.join(scenes_root, dept_abbrev, task_input)\n\n        # ── Determine next version ──────────────────────────────────\n        next_ver = 1\n        if os.path.isdir(task_dir):\n            exts_lower = [e.lower() for e in app_exts]\n            candidates = [\n                f for f in os.scandir(task_dir)\n                if f.is_file()\n                and _is_scene_file(f.name)\n                and os.path.splitext(f.name.lower())[1] in exts_lower\n            ]\n            if candidates:\n                max_ver = max(_ver_num(f.name) for f in candidates)\n                if max_ver >= 0:\n                    next_ver = max_ver + 1\n\n        ver_str = f'v{next_ver:0{padding}d}'\n        ext     = app_exts[0]\n\n        # ── Build filename using Prism convention ───────────────────\n        etype = entity.get('type', 'shot')\n        if etype == 'shot':\n            seq      = entity.get('sequence', '')\n            shot     = entity.get('shot', entity.get('name', ''))\n            filename = f'{seq}-{shot}_{task_input}_{ver_str}{ext}'\n        else:\n            asset_name = (entity.get('asset_path') or '').replace('\\\\', '/').split('/')[-1]\n            filename   = f'{asset_name}_{task_input}_{ver_str}{ext}'\n\n        saved_path = os.path.join(task_dir, filename)\n\n        # ── Create folder ───────────────────────────────────────────\n        try:\n            os.makedirs(task_dir, exist_ok=True)\n        except OSError as e:\n            self.log_error(f'Could not create task folder: {e}')\n            return await self._done()\n\n        self.log_success(f'[{ver_str}] {saved_path}')\n        return await self._done(saved_path=saved_path, version=ver_str,\n                                task_path=task_dir, success=True)\n\ndef register_node():\n    return PrismSaveSceneVersionNode\n"
 }
