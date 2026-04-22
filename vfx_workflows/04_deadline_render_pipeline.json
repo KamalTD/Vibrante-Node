@@ -1,0 +1,250 @@
+{
+    "nodes": [
+        {
+            "instance_id": "40010000-4000-4400-8400-400000010000",
+            "node_id": "prism_core_init",
+            "position": [60.0, 100.0],
+            "parameters": { "prism_scripts_path": "", "load_project": false, "show_ui": false },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "40020000-4000-4400-8400-400000020000",
+            "node_id": "prism_get_project_by_name",
+            "position": [500.0, 100.0],
+            "parameters": { "name": "MyProject" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "40030000-4000-4400-8400-400000030000",
+            "node_id": "prism_get_shots",
+            "position": [500.0, 320.0],
+            "parameters": {},
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "40040000-4000-4400-8400-400000040000",
+            "node_id": "prism_get_shot_by_name",
+            "position": [950.0, 320.0],
+            "parameters": { "sequence": "EP01", "shot": "0030" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "40050000-4000-4400-8400-400000050000",
+            "node_id": "prism_get_shot_info",
+            "position": [1400.0, 320.0],
+            "parameters": {},
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "40060000-4000-4400-8400-400000060000",
+            "node_id": "prism_get_scene_path",
+            "position": [1400.0, 560.0],
+            "parameters": { "department": "lighting", "task": "lighting", "application": "maya", "version": "" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "40070000-4000-4400-8400-400000070000",
+            "node_id": "prism_save_scene_version",
+            "position": [60.0, 560.0],
+            "parameters": { "department": "lighting", "task": "lighting", "application": "maya" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "40080000-4000-4400-8400-400000080000",
+            "node_id": "maya_action_open_scene",
+            "position": [60.0, 820.0],
+            "parameters": { "force": true },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "40090000-4000-4400-8400-400000090000",
+            "node_id": "maya_action_set_frame_range",
+            "position": [460.0, 820.0],
+            "parameters": {},
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "400a0000-4000-4400-8400-4000000a0000",
+            "node_id": "maya_action_set_render_settings",
+            "position": [860.0, 820.0],
+            "parameters": { "renderer": "arnold", "width": 1920, "height": 1080, "image_format": "exr", "file_prefix": "<Scene>/<RenderLayer>/<Scene>" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "400b0000-4000-4400-8400-4000000b0000",
+            "node_id": "maya_action_save_scene",
+            "position": [1260.0, 820.0],
+            "parameters": { "file_type": "mayaAscii" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "400c0000-4000-4400-8400-4000000c0000",
+            "node_id": "maya_headless",
+            "position": [1660.0, 820.0],
+            "parameters": { "maya_version": "2024", "mayapy.exe": "C:/Program Files/Autodesk/Maya2024/bin/mayapy.exe", "bat_file": "", "maya_env_file": "", "scene_file": "" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "400d0000-4000-4400-8400-4000000d0000",
+            "node_id": "if_condition",
+            "position": [1660.0, 1080.0],
+            "parameters": { "data": "" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "400e0000-4000-4400-8400-4000000e0000",
+            "node_id": "deadline_maya_submit",
+            "position": [60.0, 1340.0],
+            "parameters": {
+                "deadlinecommand": "C:/Program Files/Thinkbox/Deadline10/bin/deadlinecommand.exe",
+                "job_name": "EP01_0030_lighting",
+                "batch_name": "EP01_lighting_batch",
+                "comment": "Submitted via Vibrante-Node",
+                "pool": "maya",
+                "secondary_pool": "",
+                "group": "none",
+                "priority": 50,
+                "chunk_size": 5,
+                "frame_step": 1,
+                "maya_version": "2024",
+                "renderer": "arnold",
+                "output_path": "C:/renders/EP01/0030",
+                "output_prefix": "<Scene>/<RenderLayer>/<Scene>",
+                "camera": "renderCam",
+                "strict_error_check": false,
+                "extra_job_args": ""
+            },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "400f0000-4000-4400-8400-4000000f0000",
+            "node_id": "deadline_job_status",
+            "position": [600.0, 1340.0],
+            "parameters": { "deadline_api_url": "http://deadline-server:8082" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "40100000-4000-4400-8400-400000100000",
+            "node_id": "console_print",
+            "position": [1100.0, 1340.0],
+            "parameters": { "data": "" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "40110000-4000-4400-8400-400000110000",
+            "node_id": "console_print",
+            "position": [1660.0, 1200.0],
+            "parameters": { "data": "Maya prep failed — scene not submitted to Deadline." },
+            "state": "idle", "bypassed": false
+        }
+    ],
+    "connections": [
+        { "id": "4e010000-4e00-4e00-8e00-4e0000010000", "from_node": "40010000-4000-4400-8400-400000010000", "from_port": "exec_out", "to_node": "40070000-4000-4400-8400-400000070000", "to_port": "exec_in", "is_exec": true },
+        { "id": "4e020000-4e00-4e00-8e00-4e0000020000", "from_node": "40070000-4000-4400-8400-400000070000", "from_port": "exec_out", "to_node": "40080000-4000-4400-8400-400000080000", "to_port": "exec_in", "is_exec": true },
+        { "id": "4e030000-4e00-4e00-8e00-4e0000030000", "from_node": "40080000-4000-4400-8400-400000080000", "from_port": "exec_out", "to_node": "40090000-4000-4400-8400-400000090000", "to_port": "exec_in", "is_exec": true },
+        { "id": "4e040000-4e00-4e00-8e00-4e0000040000", "from_node": "40090000-4000-4400-8400-400000090000", "from_port": "exec_out", "to_node": "400a0000-4000-4400-8400-4000000a0000", "to_port": "exec_in", "is_exec": true },
+        { "id": "4e050000-4e00-4e00-8e00-4e0000050000", "from_node": "400a0000-4000-4400-8400-4000000a0000", "from_port": "exec_out", "to_node": "400b0000-4000-4400-8400-4000000b0000", "to_port": "exec_in", "is_exec": true },
+        { "id": "4e060000-4e00-4e00-8e00-4e0000060000", "from_node": "400b0000-4000-4400-8400-4000000b0000", "from_port": "exec_out", "to_node": "400c0000-4000-4400-8400-4000000c0000", "to_port": "exec_in", "is_exec": true },
+        { "id": "4e070000-4e00-4e00-8e00-4e0000070000", "from_node": "400c0000-4000-4400-8400-4000000c0000", "from_port": "exec_out", "to_node": "400d0000-4000-4400-8400-4000000d0000", "to_port": "exec_in", "is_exec": true },
+        { "id": "4e080000-4e00-4e00-8e00-4e0000080000", "from_node": "400d0000-4000-4400-8400-4000000d0000", "from_port": "exec_out", "to_node": "400e0000-4000-4400-8400-4000000e0000", "to_port": "exec_in", "is_exec": true },
+        { "id": "4e090000-4e00-4e00-8e00-4e0000090000", "from_node": "400e0000-4000-4400-8400-4000000e0000", "from_port": "exec_out", "to_node": "400f0000-4000-4400-8400-4000000f0000", "to_port": "exec_in", "is_exec": true },
+        { "id": "4e0a0000-4e00-4e00-8e00-4e00000a0000", "from_node": "400f0000-4000-4400-8400-4000000f0000", "from_port": "exec_out", "to_node": "40100000-4000-4400-8400-400000100000", "to_port": "exec_in", "is_exec": true },
+        { "id": "4e0b0000-4e00-4e00-8e00-4e00000b0000", "from_node": "400d0000-4000-4400-8400-4000000d0000", "from_port": "exec_false", "to_node": "40110000-4000-4400-8400-400000110000", "to_port": "exec_in", "is_exec": true },
+
+        { "id": "4d010000-4d00-4d00-8d00-4d0000010000", "from_node": "40010000-4000-4400-8400-400000010000", "from_port": "core", "to_node": "40020000-4000-4400-8400-400000020000", "to_port": "core", "is_exec": false },
+        { "id": "4d020000-4d00-4d00-8d00-4d0000020000", "from_node": "40010000-4000-4400-8400-400000010000", "from_port": "core", "to_node": "40030000-4000-4400-8400-400000030000", "to_port": "core", "is_exec": false },
+        { "id": "4d030000-4d00-4d00-8d00-4d0000030000", "from_node": "40010000-4000-4400-8400-400000010000", "from_port": "core", "to_node": "40050000-4000-4400-8400-400000050000", "to_port": "core", "is_exec": false },
+        { "id": "4d040000-4d00-4d00-8d00-4d0000040000", "from_node": "40010000-4000-4400-8400-400000010000", "from_port": "core", "to_node": "40060000-4000-4400-8400-400000060000", "to_port": "core", "is_exec": false },
+        { "id": "4d050000-4d00-4d00-8d00-4d0000050000", "from_node": "40010000-4000-4400-8400-400000010000", "from_port": "core", "to_node": "40070000-4000-4400-8400-400000070000", "to_port": "core", "is_exec": false },
+
+        { "id": "4d060000-4d00-4d00-8d00-4d0000060000", "from_node": "40030000-4000-4400-8400-400000030000", "from_port": "shots", "to_node": "40040000-4000-4400-8400-400000040000", "to_port": "shots", "is_exec": false },
+        { "id": "4d070000-4d00-4d00-8d00-4d0000070000", "from_node": "40040000-4000-4400-8400-400000040000", "from_port": "entity", "to_node": "40050000-4000-4400-8400-400000050000", "to_port": "entity", "is_exec": false },
+        { "id": "4d080000-4d00-4d00-8d00-4d0000080000", "from_node": "40040000-4000-4400-8400-400000040000", "from_port": "entity", "to_node": "40060000-4000-4400-8400-400000060000", "to_port": "entity", "is_exec": false },
+        { "id": "4d090000-4d00-4d00-8d00-4d0000090000", "from_node": "40040000-4000-4400-8400-400000040000", "from_port": "entity", "to_node": "40070000-4000-4400-8400-400000070000", "to_port": "entity", "is_exec": false },
+
+        { "id": "4d0a0000-4d00-4d00-8d00-4d00000a0000", "from_node": "40050000-4000-4400-8400-400000050000", "from_port": "frame_start", "to_node": "40090000-4000-4400-8400-400000090000", "to_port": "frame_start", "is_exec": false },
+        { "id": "4d0b0000-4d00-4d00-8d00-4d00000b0000", "from_node": "40050000-4000-4400-8400-400000050000", "from_port": "frame_end", "to_node": "40090000-4000-4400-8400-400000090000", "to_port": "frame_end", "is_exec": false },
+        { "id": "4d0c0000-4d00-4d00-8d00-4d00000c0000", "from_node": "40050000-4000-4400-8400-400000050000", "from_port": "frame_start", "to_node": "400a0000-4000-4400-8400-4000000a0000", "to_port": "frame_start", "is_exec": false },
+        { "id": "4d0d0000-4d00-4d00-8d00-4d00000d0000", "from_node": "40050000-4000-4400-8400-400000050000", "from_port": "frame_end", "to_node": "400a0000-4000-4400-8400-4000000a0000", "to_port": "frame_end", "is_exec": false },
+        { "id": "4d0e0000-4d00-4d00-8d00-4d00000e0000", "from_node": "40050000-4000-4400-8400-400000050000", "from_port": "frame_start", "to_node": "400e0000-4000-4400-8400-4000000e0000", "to_port": "frame_start", "is_exec": false },
+        { "id": "4d0f0000-4d00-4d00-8d00-4d00000f0000", "from_node": "40050000-4000-4400-8400-400000050000", "from_port": "frame_end", "to_node": "400e0000-4000-4400-8400-4000000e0000", "to_port": "frame_end", "is_exec": false },
+
+        { "id": "4d100000-4d00-4d00-8d00-4d0000100000", "from_node": "40060000-4000-4400-8400-400000060000", "from_port": "scene_path", "to_node": "40080000-4000-4400-8400-400000080000", "to_port": "scene_path", "is_exec": false },
+        { "id": "4d110000-4d00-4d00-8d00-4d0000110000", "from_node": "40070000-4000-4400-8400-400000070000", "from_port": "saved_path", "to_node": "400b0000-4000-4400-8400-4000000b0000", "to_port": "save_scene_path", "is_exec": false },
+        { "id": "4d120000-4d00-4d00-8d00-4d0000120000", "from_node": "40070000-4000-4400-8400-400000070000", "from_port": "saved_path", "to_node": "400e0000-4000-4400-8400-4000000e0000", "to_port": "scene_file", "is_exec": false },
+
+        { "id": "4d130000-4d00-4d00-8d00-4d0000130000", "from_node": "40080000-4000-4400-8400-400000080000", "from_port": "actions_out", "to_node": "40090000-4000-4400-8400-400000090000", "to_port": "actions_in", "is_exec": false },
+        { "id": "4d140000-4d00-4d00-8d00-4d0000140000", "from_node": "40090000-4000-4400-8400-400000090000", "from_port": "actions_out", "to_node": "400a0000-4000-4400-8400-4000000a0000", "to_port": "actions_in", "is_exec": false },
+        { "id": "4d150000-4d00-4d00-8d00-4d0000150000", "from_node": "400a0000-4000-4400-8400-4000000a0000", "from_port": "actions_out", "to_node": "400b0000-4000-4400-8400-4000000b0000", "to_port": "actions_in", "is_exec": false },
+        { "id": "4d160000-4d00-4d00-8d00-4d0000160000", "from_node": "400b0000-4000-4400-8400-4000000b0000", "from_port": "actions_out", "to_node": "400c0000-4000-4400-8400-4000000c0000", "to_port": "actions", "is_exec": false },
+
+        { "id": "4d170000-4d00-4d00-8d00-4d0000170000", "from_node": "400c0000-4000-4400-8400-4000000c0000", "from_port": "success", "to_node": "400d0000-4000-4400-8400-4000000d0000", "to_port": "condition", "is_exec": false },
+        { "id": "4d180000-4d00-4d00-8d00-4d0000180000", "from_node": "400e0000-4000-4400-8400-4000000e0000", "from_port": "job_id", "to_node": "400f0000-4000-4400-8400-4000000f0000", "to_port": "job_id", "is_exec": false },
+        { "id": "4d190000-4d00-4d00-8d00-4d0000190000", "from_node": "400f0000-4000-4400-8400-4000000f0000", "from_port": "status", "to_node": "40100000-4000-4400-8400-400000100000", "to_port": "data", "is_exec": false }
+    ],
+    "sticky_notes": [
+        {
+            "id": "4f010000-4f00-4f00-8f00-4f0000010000",
+            "position": [60.0, 40.0], "size": [1200.0, 50.0],
+            "text": "WORKFLOW: Prism shot -> Get frame range -> Maya render prep (lighting scene) -> Save render-ready file -> Submit to Deadline -> Monitor job.",
+            "color": "#1a1a2a"
+        },
+        {
+            "id": "4f020000-4f00-4f00-8f00-4f0000020000",
+            "position": [460.0, 460.0], "size": [880.0, 80.0],
+            "text": "prism_get_scene_path finds the latest lighting scene.\nprism_save_scene_version reserves a fresh render-ready slot (v0001, v0002…).\nThe saved path goes to both save_scene and deadline_submit.",
+            "color": "#ffffcc"
+        },
+        {
+            "id": "4f030000-4f00-4f00-8f00-4f0000030000",
+            "position": [60.0, 1280.0], "size": [500.0, 80.0],
+            "text": "Set deadlinecommand path and render output path.\nFrame range flows automatically from prism_get_shot_info.",
+            "color": "#ffffcc"
+        },
+        {
+            "id": "4f040000-4f00-4f00-8f00-4f0000040000",
+            "position": [600.0, 1280.0], "size": [460.0, 80.0],
+            "text": "deadline_job_status polls the job immediately.\nIn production add a delay_timer node before polling.",
+            "color": "#2a3a5a"
+        }
+    ],
+    "backdrops": [
+        {
+            "id": "4b010000-4b00-4b00-8b00-4b0000010000",
+            "position": [20.0, 20.0], "size": [380.0, 220.0],
+            "title": "Prism Initialization",
+            "color": "#1a2850"
+        },
+        {
+            "id": "4b020000-4b00-4b00-8b00-4b0000020000",
+            "position": [460.0, 20.0], "size": [1380.0, 220.0],
+            "title": "Project Discovery",
+            "color": "#1a2850"
+        },
+        {
+            "id": "4b030000-4b00-4b00-8b00-4b0000030000",
+            "position": [460.0, 260.0], "size": [1380.0, 450.0],
+            "title": "Shot Data — Frame Range + Scene Path + Version Slot",
+            "color": "#201040"
+        },
+        {
+            "id": "4b040000-4b00-4b00-8b00-4b0000040000",
+            "position": [20.0, 500.0], "size": [380.0, 220.0],
+            "title": "Version Management",
+            "color": "#301a1a"
+        },
+        {
+            "id": "4b050000-4b00-4b00-8b00-4b0000050000",
+            "position": [20.0, 750.0], "size": [2100.0, 420.0],
+            "title": "Maya Headless — Render Prep (open, set frame range, render settings, save)",
+            "color": "#2a1800"
+        },
+        {
+            "id": "4b060000-4b00-4b00-8b00-4b0000060000",
+            "position": [20.0, 1260.0], "size": [1500.0, 220.0],
+            "title": "Deadline — Submit + Monitor",
+            "color": "#1a1a30"
+        }
+    ],
+    "metadata": {}
+}

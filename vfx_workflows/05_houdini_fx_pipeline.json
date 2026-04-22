@@ -1,0 +1,253 @@
+{
+    "nodes": [
+        {
+            "instance_id": "50010000-5000-4500-8500-500000010000",
+            "node_id": "prism_core_init",
+            "position": [60.0, 100.0],
+            "parameters": { "prism_scripts_path": "", "load_project": false, "show_ui": false },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "50020000-5000-4500-8500-500000020000",
+            "node_id": "prism_get_project_by_name",
+            "position": [500.0, 100.0],
+            "parameters": { "name": "MyProject" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "50030000-5000-4500-8500-500000030000",
+            "node_id": "prism_get_shots",
+            "position": [500.0, 320.0],
+            "parameters": {},
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "50040000-5000-4500-8500-500000040000",
+            "node_id": "prism_get_shot_by_name",
+            "position": [950.0, 320.0],
+            "parameters": { "sequence": "EP01", "shot": "0050" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "50050000-5000-4500-8500-500000050000",
+            "node_id": "prism_get_shot_info",
+            "position": [1400.0, 320.0],
+            "parameters": {},
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "50060000-5000-4500-8500-500000060000",
+            "node_id": "prism_get_export_path",
+            "position": [1400.0, 560.0],
+            "parameters": { "output_type": "3d", "identifier": "anim_cache", "version": "" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "50070000-5000-4500-8500-500000070000",
+            "node_id": "prism_save_scene_version",
+            "position": [60.0, 560.0],
+            "parameters": { "department": "fx", "task": "fx_sim", "application": "houdini" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "50080000-5000-4500-8500-500000080000",
+            "node_id": "prism_create_product_version",
+            "position": [500.0, 560.0],
+            "parameters": { "task": "fx_sim", "department": "fx", "product_name": "fx_sim_cache", "comment": "FX alembic from Vibrante-Node", "extension": ".abc" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "50090000-5000-4500-8500-500000090000",
+            "node_id": "houdini_action_open_hip",
+            "position": [60.0, 820.0],
+            "parameters": {},
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "500a0000-5000-4500-8500-5000000a0000",
+            "node_id": "houdini_action_import_alembic",
+            "position": [460.0, 820.0],
+            "parameters": { "context": "/obj" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "500b0000-5000-4500-8500-5000000b0000",
+            "node_id": "houdini_action_custom",
+            "position": [860.0, 820.0],
+            "parameters": {
+                "action_name": "set_frame_range",
+                "python_code": "hou.playbar.setFrameRange(int(param1), int(param2)); hou.playbar.setAnimationRange(int(param1), int(param2))"
+            },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "500c0000-5000-4500-8500-5000000c0000",
+            "node_id": "houdini_action_export_alembic",
+            "position": [1260.0, 820.0],
+            "parameters": { "root_nodes": "/obj/fx_sim" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "500d0000-5000-4500-8500-5000000d0000",
+            "node_id": "houdini_action_save_hip",
+            "position": [1660.0, 820.0],
+            "parameters": {},
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "500e0000-5000-4500-8500-5000000e0000",
+            "node_id": "houdini_headless",
+            "position": [60.0, 1080.0],
+            "parameters": { "houdini_version": "20.5", "hython.exe": "C:/Program Files/Side Effects Software/Houdini 20.5.445/bin/hython.exe", "bat_file": "", "houdini_env_file": "", "hip_file": "" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "500f0000-5000-4500-8500-5000000f0000",
+            "node_id": "if_condition",
+            "position": [560.0, 1080.0],
+            "parameters": { "data": "" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "50100000-5000-4500-8500-500000100000",
+            "node_id": "deadline_houdini_submit",
+            "position": [60.0, 1340.0],
+            "parameters": {
+                "deadlinecommand": "C:/Program Files/Thinkbox/Deadline10/bin/deadlinecommand.exe",
+                "job_name": "EP01_0050_fx_sim",
+                "pool": "houdini",
+                "group": "none",
+                "priority": 60,
+                "chunk_size": 1
+            },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "50110000-5000-4500-8500-500000110000",
+            "node_id": "console_print",
+            "position": [560.0, 1340.0],
+            "parameters": { "data": "" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "50120000-5000-4500-8500-500000120000",
+            "node_id": "console_print",
+            "position": [560.0, 1200.0],
+            "parameters": { "data": "Houdini FX session failed — check logs." },
+            "state": "idle", "bypassed": false
+        }
+    ],
+    "connections": [
+        { "id": "5e010000-5e00-4e00-8e00-5e0000010000", "from_node": "50010000-5000-4500-8500-500000010000", "from_port": "exec_out", "to_node": "50070000-5000-4500-8500-500000070000", "to_port": "exec_in", "is_exec": true },
+        { "id": "5e020000-5e00-4e00-8e00-5e0000020000", "from_node": "50070000-5000-4500-8500-500000070000", "from_port": "exec_out", "to_node": "50080000-5000-4500-8500-500000080000", "to_port": "exec_in", "is_exec": true },
+        { "id": "5e030000-5e00-4e00-8e00-5e0000030000", "from_node": "50080000-5000-4500-8500-500000080000", "from_port": "exec_out", "to_node": "50090000-5000-4500-8500-500000090000", "to_port": "exec_in", "is_exec": true },
+        { "id": "5e040000-5e00-4e00-8e00-5e0000040000", "from_node": "50090000-5000-4500-8500-500000090000", "from_port": "exec_out", "to_node": "500a0000-5000-4500-8500-5000000a0000", "to_port": "exec_in", "is_exec": true },
+        { "id": "5e050000-5e00-4e00-8e00-5e0000050000", "from_node": "500a0000-5000-4500-8500-5000000a0000", "from_port": "exec_out", "to_node": "500b0000-5000-4500-8500-5000000b0000", "to_port": "exec_in", "is_exec": true },
+        { "id": "5e060000-5e00-4e00-8e00-5e0000060000", "from_node": "500b0000-5000-4500-8500-5000000b0000", "from_port": "exec_out", "to_node": "500c0000-5000-4500-8500-5000000c0000", "to_port": "exec_in", "is_exec": true },
+        { "id": "5e070000-5e00-4e00-8e00-5e0000070000", "from_node": "500c0000-5000-4500-8500-5000000c0000", "from_port": "exec_out", "to_node": "500d0000-5000-4500-8500-5000000d0000", "to_port": "exec_in", "is_exec": true },
+        { "id": "5e080000-5e00-4e00-8e00-5e0000080000", "from_node": "500d0000-5000-4500-8500-5000000d0000", "from_port": "exec_out", "to_node": "500e0000-5000-4500-8500-5000000e0000", "to_port": "exec_in", "is_exec": true },
+        { "id": "5e090000-5e00-4e00-8e00-5e0000090000", "from_node": "500e0000-5000-4500-8500-5000000e0000", "from_port": "exec_out", "to_node": "500f0000-5000-4500-8500-5000000f0000", "to_port": "exec_in", "is_exec": true },
+        { "id": "5e0a0000-5e00-4e00-8e00-5e00000a0000", "from_node": "500f0000-5000-4500-8500-5000000f0000", "from_port": "exec_out", "to_node": "50100000-5000-4500-8500-500000100000", "to_port": "exec_in", "is_exec": true },
+        { "id": "5e0b0000-5e00-4e00-8e00-5e00000b0000", "from_node": "50100000-5000-4500-8500-500000100000", "from_port": "exec_out", "to_node": "50110000-5000-4500-8500-500000110000", "to_port": "exec_in", "is_exec": true },
+        { "id": "5e0c0000-5e00-4e00-8e00-5e00000c0000", "from_node": "500f0000-5000-4500-8500-5000000f0000", "from_port": "exec_false", "to_node": "50120000-5000-4500-8500-500000120000", "to_port": "exec_in", "is_exec": true },
+
+        { "id": "5d010000-5d00-4d00-8d00-5d0000010000", "from_node": "50010000-5000-4500-8500-500000010000", "from_port": "core", "to_node": "50020000-5000-4500-8500-500000020000", "to_port": "core", "is_exec": false },
+        { "id": "5d020000-5d00-4d00-8d00-5d0000020000", "from_node": "50010000-5000-4500-8500-500000010000", "from_port": "core", "to_node": "50030000-5000-4500-8500-500000030000", "to_port": "core", "is_exec": false },
+        { "id": "5d030000-5d00-4d00-8d00-5d0000030000", "from_node": "50010000-5000-4500-8500-500000010000", "from_port": "core", "to_node": "50050000-5000-4500-8500-500000050000", "to_port": "core", "is_exec": false },
+        { "id": "5d040000-5d00-4d00-8d00-5d0000040000", "from_node": "50010000-5000-4500-8500-500000040000", "from_port": "core", "to_node": "50060000-5000-4500-8500-500000060000", "to_port": "core", "is_exec": false },
+        { "id": "5d050000-5d00-4d00-8d00-5d0000050000", "from_node": "50010000-5000-4500-8500-500000010000", "from_port": "core", "to_node": "50070000-5000-4500-8500-500000070000", "to_port": "core", "is_exec": false },
+        { "id": "5d060000-5d00-4d00-8d00-5d0000060000", "from_node": "50010000-5000-4500-8500-500000010000", "from_port": "core", "to_node": "50080000-5000-4500-8500-500000080000", "to_port": "core", "is_exec": false },
+
+        { "id": "5d070000-5d00-4d00-8d00-5d0000070000", "from_node": "50030000-5000-4500-8500-500000030000", "from_port": "shots", "to_node": "50040000-5000-4500-8500-500000040000", "to_port": "shots", "is_exec": false },
+        { "id": "5d080000-5d00-4d00-8d00-5d0000080000", "from_node": "50040000-5000-4500-8500-500000040000", "from_port": "entity", "to_node": "50050000-5000-4500-8500-500000050000", "to_port": "entity", "is_exec": false },
+        { "id": "5d090000-5d00-4d00-8d00-5d0000090000", "from_node": "50040000-5000-4500-8500-500000040000", "from_port": "entity", "to_node": "50060000-5000-4500-8500-500000060000", "to_port": "entity", "is_exec": false },
+        { "id": "5d0a0000-5d00-4d00-8d00-5d00000a0000", "from_node": "50040000-5000-4500-8500-500000040000", "from_port": "entity", "to_node": "50070000-5000-4500-8500-500000070000", "to_port": "entity", "is_exec": false },
+        { "id": "5d0b0000-5d00-4d00-8d00-5d00000b0000", "from_node": "50040000-5000-4500-8500-500000040000", "from_port": "entity", "to_node": "50080000-5000-4500-8500-500000080000", "to_port": "entity", "is_exec": false },
+
+        { "id": "5d0c0000-5d00-4d00-8d00-5d00000c0000", "from_node": "50050000-5000-4500-8500-500000050000", "from_port": "frame_start", "to_node": "500b0000-5000-4500-8500-5000000b0000", "to_port": "param1", "is_exec": false },
+        { "id": "5d0d0000-5d00-4d00-8d00-5d00000d0000", "from_node": "50050000-5000-4500-8500-500000050000", "from_port": "frame_end", "to_node": "500b0000-5000-4500-8500-5000000b0000", "to_port": "param2", "is_exec": false },
+        { "id": "5d0e0000-5d00-4d00-8d00-5d00000e0000", "from_node": "50050000-5000-4500-8500-500000050000", "from_port": "frame_start", "to_node": "500c0000-5000-4500-8500-5000000c0000", "to_port": "frame_start", "is_exec": false },
+        { "id": "5d0f0000-5d00-4d00-8d00-5d00000f0000", "from_node": "50050000-5000-4500-8500-500000050000", "from_port": "frame_end", "to_node": "500c0000-5000-4500-8500-5000000c0000", "to_port": "frame_end", "is_exec": false },
+        { "id": "5d100000-5d00-4d00-8d00-5d0000100000", "from_node": "50050000-5000-4500-8500-500000050000", "from_port": "frame_start", "to_node": "50100000-5000-4500-8500-500000100000", "to_port": "frame_start", "is_exec": false },
+        { "id": "5d110000-5d00-4d00-8d00-5d0000110000", "from_node": "50050000-5000-4500-8500-500000050000", "from_port": "frame_end", "to_node": "50100000-5000-4500-8500-500000100000", "to_port": "frame_end", "is_exec": false },
+
+        { "id": "5d120000-5d00-4d00-8d00-5d0000120000", "from_node": "50060000-5000-4500-8500-500000060000", "from_port": "version_path", "to_node": "500a0000-5000-4500-8500-5000000a0000", "to_port": "abc_path", "is_exec": false },
+        { "id": "5d130000-5d00-4d00-8d00-5d0000130000", "from_node": "50070000-5000-4500-8500-500000070000", "from_port": "saved_path", "to_node": "50090000-5000-4500-8500-500000090000", "to_port": "hip_path", "is_exec": false },
+        { "id": "5d140000-5d00-4d00-8d00-5d0000140000", "from_node": "50070000-5000-4500-8500-500000070000", "from_port": "saved_path", "to_node": "500d0000-5000-4500-8500-5000000d0000", "to_port": "hip_path", "is_exec": false },
+        { "id": "5d150000-5d00-4d00-8d00-5d0000150000", "from_node": "50080000-5000-4500-8500-500000080000", "from_port": "version_path", "to_node": "500c0000-5000-4500-8500-5000000c0000", "to_port": "abc_path", "is_exec": false },
+
+        { "id": "5d160000-5d00-4d00-8d00-5d0000160000", "from_node": "50090000-5000-4500-8500-500000090000", "from_port": "actions_out", "to_node": "500a0000-5000-4500-8500-5000000a0000", "to_port": "actions_in", "is_exec": false },
+        { "id": "5d170000-5d00-4d00-8d00-5d0000170000", "from_node": "500a0000-5000-4500-8500-5000000a0000", "from_port": "actions_out", "to_node": "500b0000-5000-4500-8500-5000000b0000", "to_port": "actions_in", "is_exec": false },
+        { "id": "5d180000-5d00-4d00-8d00-5d0000180000", "from_node": "500b0000-5000-4500-8500-5000000b0000", "from_port": "actions_out", "to_node": "500c0000-5000-4500-8500-5000000c0000", "to_port": "actions_in", "is_exec": false },
+        { "id": "5d190000-5d00-4d00-8d00-5d0000190000", "from_node": "500c0000-5000-4500-8500-5000000c0000", "from_port": "actions_out", "to_node": "500d0000-5000-4500-8500-5000000d0000", "to_port": "actions_in", "is_exec": false },
+        { "id": "5d1a0000-5d00-4d00-8d00-5d00001a0000", "from_node": "500d0000-5000-4500-8500-5000000d0000", "from_port": "actions_out", "to_node": "500e0000-5000-4500-8500-5000000e0000", "to_port": "actions", "is_exec": false },
+
+        { "id": "5d1b0000-5d00-4d00-8d00-5d00001b0000", "from_node": "500e0000-5000-4500-8500-5000000e0000", "from_port": "success", "to_node": "500f0000-5000-4500-8500-5000000f0000", "to_port": "condition", "is_exec": false },
+        { "id": "5d1c0000-5d00-4d00-8d00-5d00001c0000", "from_node": "50100000-5000-4500-8500-500000100000", "from_port": "job_id", "to_node": "50110000-5000-4500-8500-500000110000", "to_port": "data", "is_exec": false }
+    ],
+    "sticky_notes": [
+        {
+            "id": "5f010000-5f00-4f00-8f00-5f0000010000",
+            "position": [60.0, 40.0], "size": [1400.0, 50.0],
+            "text": "WORKFLOW: Import Maya animation alembic -> run FX simulation in Houdini -> export FX cache -> register in Prism -> submit Houdini sim to Deadline.",
+            "color": "#0a2010"
+        },
+        {
+            "id": "5f020000-5f00-4f00-8f00-5f0000020000",
+            "position": [460.0, 460.0], "size": [880.0, 90.0],
+            "text": "prism_get_export_path (identifier='anim_cache') finds the Maya anim alembic\nexported in a previous step. Connect this path to import_alembic.\nCreate product version slot for the outgoing FX cache.",
+            "color": "#ffffcc"
+        },
+        {
+            "id": "5f030000-5f00-4f00-8f00-5f0000030000",
+            "position": [860.0, 760.0], "size": [380.0, 80.0],
+            "text": "houdini_action_custom sets frame range\nvia inline Python code. param1=frame_start,\nparam2=frame_end from shot info.",
+            "color": "#2a3a5a"
+        },
+        {
+            "id": "5f040000-5f00-4f00-8f00-5f0000040000",
+            "position": [60.0, 1280.0], "size": [480.0, 80.0],
+            "text": "Houdini sim submission to Deadline.\nFrame range flows from prism_get_shot_info.\nPriority=60 — FX typically above lighting.",
+            "color": "#ffffcc"
+        }
+    ],
+    "backdrops": [
+        {
+            "id": "5b010000-5b00-4b00-8b00-5b0000010000",
+            "position": [20.0, 20.0], "size": [380.0, 220.0],
+            "title": "Prism Initialization",
+            "color": "#1a2850"
+        },
+        {
+            "id": "5b020000-5b00-4b00-8b00-5b0000020000",
+            "position": [460.0, 20.0], "size": [1380.0, 220.0],
+            "title": "Project Discovery",
+            "color": "#1a2850"
+        },
+        {
+            "id": "5b030000-5b00-4b00-8b00-5b0000030000",
+            "position": [460.0, 260.0], "size": [1380.0, 450.0],
+            "title": "Shot Data — Frame Range + Anim Cache Path + HIP Version Slot",
+            "color": "#201040"
+        },
+        {
+            "id": "5b040000-5b00-4b00-8b00-5b0000040000",
+            "position": [20.0, 490.0], "size": [380.0, 220.0],
+            "title": "Houdini Version + FX Product",
+            "color": "#1a3020"
+        },
+        {
+            "id": "5b050000-5b00-4b00-8b00-5b0000050000",
+            "position": [20.0, 750.0], "size": [2100.0, 420.0],
+            "title": "Houdini Headless — FX Pipeline (open HIP, import anim ABC, set range, export FX ABC, save)",
+            "color": "#0a2010"
+        },
+        {
+            "id": "5b060000-5b00-4b00-8b00-5b0000060000",
+            "position": [20.0, 1260.0], "size": [1000.0, 220.0],
+            "title": "Deadline — Houdini Sim Submission",
+            "color": "#1a1a30"
+        }
+    ],
+    "metadata": {}
+}

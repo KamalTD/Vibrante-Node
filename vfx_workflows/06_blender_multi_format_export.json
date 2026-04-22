@@ -1,0 +1,288 @@
+{
+    "nodes": [
+        {
+            "instance_id": "60010000-6000-4600-8600-600000010000",
+            "node_id": "prism_core_init",
+            "position": [60.0, 100.0],
+            "parameters": { "prism_scripts_path": "", "load_project": false, "show_ui": false },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "60020000-6000-4600-8600-600000020000",
+            "node_id": "prism_get_project_by_name",
+            "position": [500.0, 100.0],
+            "parameters": { "name": "MyProject" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "60030000-6000-4600-8600-600000030000",
+            "node_id": "prism_get_asset_type_by_name",
+            "position": [500.0, 320.0],
+            "parameters": { "name": "props" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "60040000-6000-4600-8600-600000040000",
+            "node_id": "prism_get_asset_by_name",
+            "position": [950.0, 320.0],
+            "parameters": { "name": "sword" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "60050000-6000-4600-8600-600000050000",
+            "node_id": "prism_get_scene_path",
+            "position": [1400.0, 320.0],
+            "parameters": { "department": "modeling", "task": "modeling", "application": "blender", "version": "" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "60060000-6000-4600-8600-600000060000",
+            "node_id": "prism_get_export_path",
+            "position": [500.0, 560.0],
+            "parameters": { "output_type": "3d", "identifier": "fbx_export", "version": "" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "60070000-6000-4600-8600-600000070000",
+            "node_id": "prism_get_export_path",
+            "position": [950.0, 560.0],
+            "parameters": { "output_type": "3d", "identifier": "alembic_export", "version": "" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "60080000-6000-4600-8600-600000080000",
+            "node_id": "prism_get_export_path",
+            "position": [1400.0, 560.0],
+            "parameters": { "output_type": "3d", "identifier": "usd_export", "version": "" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "60090000-6000-4600-8600-600000090000",
+            "node_id": "prism_save_scene_version",
+            "position": [60.0, 560.0],
+            "parameters": { "department": "modeling", "task": "modeling", "application": "blender" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "600a0000-6000-4600-8600-6000000a0000",
+            "node_id": "blender_action_open_blend",
+            "position": [60.0, 820.0],
+            "parameters": {},
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "600b0000-6000-4600-8600-6000000b0000",
+            "node_id": "blender_action_export_fbx",
+            "position": [460.0, 820.0],
+            "parameters": { "selection_only": false, "frame_start": 1, "frame_end": 1, "bake_anim": false, "add_leaf_bones": false },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "600c0000-6000-4600-8600-6000000c0000",
+            "node_id": "blender_action_export_alembic",
+            "position": [860.0, 820.0],
+            "parameters": { "frame_start": 1, "frame_end": 1, "export_hair": false, "export_particles": false },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "600d0000-6000-4600-8600-6000000d0000",
+            "node_id": "blender_action_export_usd",
+            "position": [1260.0, 820.0],
+            "parameters": { "export_animation": false, "export_hair": false, "export_uvmaps": true, "export_normals": true, "export_materials": true },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "600e0000-6000-4600-8600-6000000e0000",
+            "node_id": "blender_action_save_blend",
+            "position": [1660.0, 820.0],
+            "parameters": {},
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "600f0000-6000-4600-8600-6000000f0000",
+            "node_id": "blender_headless",
+            "position": [60.0, 1080.0],
+            "parameters": { "blender_version": "4.2", "blender.exe": "C:/Program Files/Blender Foundation/Blender 4.2/blender.exe", "bat_file": "", "blender_env_file": "", "blend_file": "" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "60100000-6000-4600-8600-600000100000",
+            "node_id": "if_condition",
+            "position": [560.0, 1080.0],
+            "parameters": { "data": "" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "60110000-6000-4600-8600-600000110000",
+            "node_id": "blender_get_action_result",
+            "position": [60.0, 1340.0],
+            "parameters": { "action_type": "export_fbx", "index": 1 },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "60120000-6000-4600-8600-600000120000",
+            "node_id": "blender_get_action_result",
+            "position": [500.0, 1340.0],
+            "parameters": { "action_type": "export_alembic", "index": 2 },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "60130000-6000-4600-8600-600000130000",
+            "node_id": "blender_get_action_result",
+            "position": [940.0, 1340.0],
+            "parameters": { "action_type": "export_usd", "index": 3 },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "60140000-6000-4600-8600-600000140000",
+            "node_id": "console_print",
+            "position": [60.0, 1560.0],
+            "parameters": { "data": "" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "60150000-6000-4600-8600-600000150000",
+            "node_id": "console_print",
+            "position": [500.0, 1560.0],
+            "parameters": { "data": "" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "60160000-6000-4600-8600-600000160000",
+            "node_id": "console_print",
+            "position": [940.0, 1560.0],
+            "parameters": { "data": "" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "60170000-6000-4600-8600-600000170000",
+            "node_id": "console_print",
+            "position": [560.0, 1180.0],
+            "parameters": { "data": "Blender session failed — check stdout/stderr." },
+            "state": "idle", "bypassed": false
+        }
+    ],
+    "connections": [
+        { "id": "6e010000-6e00-4e00-8e00-6e0000010000", "from_node": "60010000-6000-4600-8600-600000010000", "from_port": "exec_out", "to_node": "60090000-6000-4600-8600-600000090000", "to_port": "exec_in", "is_exec": true },
+        { "id": "6e020000-6e00-4e00-8e00-6e0000020000", "from_node": "60090000-6000-4600-8600-600000090000", "from_port": "exec_out", "to_node": "600a0000-6000-4600-8600-6000000a0000", "to_port": "exec_in", "is_exec": true },
+        { "id": "6e030000-6e00-4e00-8e00-6e0000030000", "from_node": "600a0000-6000-4600-8600-6000000a0000", "from_port": "exec_out", "to_node": "600b0000-6000-4600-8600-6000000b0000", "to_port": "exec_in", "is_exec": true },
+        { "id": "6e040000-6e00-4e00-8e00-6e0000040000", "from_node": "600b0000-6000-4600-8600-6000000b0000", "from_port": "exec_out", "to_node": "600c0000-6000-4600-8600-6000000c0000", "to_port": "exec_in", "is_exec": true },
+        { "id": "6e050000-6e00-4e00-8e00-6e0000050000", "from_node": "600c0000-6000-4600-8600-6000000c0000", "from_port": "exec_out", "to_node": "600d0000-6000-4600-8600-6000000d0000", "to_port": "exec_in", "is_exec": true },
+        { "id": "6e060000-6e00-4e00-8e00-6e0000060000", "from_node": "600d0000-6000-4600-8600-6000000d0000", "from_port": "exec_out", "to_node": "600e0000-6000-4600-8600-6000000e0000", "to_port": "exec_in", "is_exec": true },
+        { "id": "6e070000-6e00-4e00-8e00-6e0000070000", "from_node": "600e0000-6000-4600-8600-6000000e0000", "from_port": "exec_out", "to_node": "600f0000-6000-4600-8600-6000000f0000", "to_port": "exec_in", "is_exec": true },
+        { "id": "6e080000-6e00-4e00-8e00-6e0000080000", "from_node": "600f0000-6000-4600-8600-6000000f0000", "from_port": "exec_out", "to_node": "60100000-6000-4600-8600-600000100000", "to_port": "exec_in", "is_exec": true },
+        { "id": "6e090000-6e00-4e00-8e00-6e0000090000", "from_node": "60100000-6000-4600-8600-600000100000", "from_port": "exec_out", "to_node": "60110000-6000-4600-8600-600000110000", "to_port": "exec_in", "is_exec": true },
+        { "id": "6e0a0000-6e00-4e00-8e00-6e00000a0000", "from_node": "60110000-6000-4600-8600-600000110000", "from_port": "exec_out", "to_node": "60120000-6000-4600-8600-600000120000", "to_port": "exec_in", "is_exec": true },
+        { "id": "6e0b0000-6e00-4e00-8e00-6e00000b0000", "from_node": "60120000-6000-4600-8600-600000120000", "from_port": "exec_out", "to_node": "60130000-6000-4600-8600-600000130000", "to_port": "exec_in", "is_exec": true },
+        { "id": "6e0c0000-6e00-4e00-8e00-6e00000c0000", "from_node": "60130000-6000-4600-8600-600000130000", "from_port": "exec_out", "to_node": "60140000-6000-4600-8600-600000140000", "to_port": "exec_in", "is_exec": true },
+        { "id": "6e0d0000-6e00-4e00-8e00-6e00000d0000", "from_node": "60140000-6000-4600-8600-600000140000", "from_port": "exec_out", "to_node": "60150000-6000-4600-8600-600000150000", "to_port": "exec_in", "is_exec": true },
+        { "id": "6e0e0000-6e00-4e00-8e00-6e00000e0000", "from_node": "60150000-6000-4600-8600-600000150000", "from_port": "exec_out", "to_node": "60160000-6000-4600-8600-600000160000", "to_port": "exec_in", "is_exec": true },
+        { "id": "6e0f0000-6e00-4e00-8e00-6e00000f0000", "from_node": "60100000-6000-4600-8600-600000100000", "from_port": "exec_false", "to_node": "60170000-6000-4600-8600-600000170000", "to_port": "exec_in", "is_exec": true },
+
+        { "id": "6d010000-6d00-4d00-8d00-6d0000010000", "from_node": "60010000-6000-4600-8600-600000010000", "from_port": "core", "to_node": "60020000-6000-4600-8600-600000020000", "to_port": "core", "is_exec": false },
+        { "id": "6d020000-6d00-4d00-8d00-6d0000020000", "from_node": "60010000-6000-4600-8600-600000010000", "from_port": "core", "to_node": "60030000-6000-4600-8600-600000030000", "to_port": "core", "is_exec": false },
+        { "id": "6d030000-6d00-4d00-8d00-6d0000030000", "from_node": "60010000-6000-4600-8600-600000010000", "from_port": "core", "to_node": "60040000-6000-4600-8600-600000040000", "to_port": "core", "is_exec": false },
+        { "id": "6d040000-6d00-4d00-8d00-6d0000040000", "from_node": "60010000-6000-4600-8600-600000010000", "from_port": "core", "to_node": "60050000-6000-4600-8600-600000050000", "to_port": "core", "is_exec": false },
+        { "id": "6d050000-6d00-4d00-8d00-6d0000050000", "from_node": "60010000-6000-4600-8600-600000010000", "from_port": "core", "to_node": "60060000-6000-4600-8600-600000060000", "to_port": "core", "is_exec": false },
+        { "id": "6d060000-6d00-4d00-8d00-6d0000060000", "from_node": "60010000-6000-4600-8600-600000010000", "from_port": "core", "to_node": "60070000-6000-4600-8600-600000070000", "to_port": "core", "is_exec": false },
+        { "id": "6d070000-6d00-4d00-8d00-6d0000070000", "from_node": "60010000-6000-4600-8600-600000010000", "from_port": "core", "to_node": "60080000-6000-4600-8600-600000080000", "to_port": "core", "is_exec": false },
+        { "id": "6d080000-6d00-4d00-8d00-6d0000080000", "from_node": "60010000-6000-4600-8600-600000010000", "from_port": "core", "to_node": "60090000-6000-4600-8600-600000090000", "to_port": "core", "is_exec": false },
+
+        { "id": "6d090000-6d00-4d00-8d00-6d0000090000", "from_node": "60020000-6000-4600-8600-600000020000", "from_port": "project", "to_node": "60030000-6000-4600-8600-600000030000", "to_port": "project", "is_exec": false },
+        { "id": "6d0a0000-6d00-4d00-8d00-6d00000a0000", "from_node": "60020000-6000-4600-8600-600000020000", "from_port": "project", "to_node": "60040000-6000-4600-8600-600000040000", "to_port": "project", "is_exec": false },
+
+        { "id": "6d0b0000-6d00-4d00-8d00-6d00000b0000", "from_node": "60030000-6000-4600-8600-600000030000", "from_port": "asset_type", "to_node": "60040000-6000-4600-8600-600000040000", "to_port": "asset_type", "is_exec": false },
+        { "id": "6d0c0000-6d00-4d00-8d00-6d00000c0000", "from_node": "60040000-6000-4600-8600-600000040000", "from_port": "entity", "to_node": "60050000-6000-4600-8600-600000050000", "to_port": "entity", "is_exec": false },
+        { "id": "6d0d0000-6d00-4d00-8d00-6d00000d0000", "from_node": "60040000-6000-4600-8600-600000040000", "from_port": "entity", "to_node": "60060000-6000-4600-8600-600000060000", "to_port": "entity", "is_exec": false },
+        { "id": "6d0e0000-6d00-4d00-8d00-6d00000e0000", "from_node": "60040000-6000-4600-8600-600000040000", "from_port": "entity", "to_node": "60070000-6000-4600-8600-600000070000", "to_port": "entity", "is_exec": false },
+        { "id": "6d0f0000-6d00-4d00-8d00-6d00000f0000", "from_node": "60040000-6000-4600-8600-600000040000", "from_port": "entity", "to_node": "60080000-6000-4600-8600-600000080000", "to_port": "entity", "is_exec": false },
+        { "id": "6d100000-6d00-4d00-8d00-6d0000100000", "from_node": "60040000-6000-4600-8600-600000040000", "from_port": "entity", "to_node": "60090000-6000-4600-8600-600000090000", "to_port": "entity", "is_exec": false },
+
+        { "id": "6d110000-6d00-4d00-8d00-6d0000110000", "from_node": "60050000-6000-4600-8600-600000050000", "from_port": "scene_path", "to_node": "600a0000-6000-4600-8600-6000000a0000", "to_port": "blend_path", "is_exec": false },
+        { "id": "6d120000-6d00-4d00-8d00-6d0000120000", "from_node": "60090000-6000-4600-8600-600000090000", "from_port": "saved_path", "to_node": "600e0000-6000-4600-8600-6000000e0000", "to_port": "blend_path", "is_exec": false },
+
+        { "id": "6d130000-6d00-4d00-8d00-6d0000130000", "from_node": "60060000-6000-4600-8600-600000060000", "from_port": "version_path", "to_node": "600b0000-6000-4600-8600-6000000b0000", "to_port": "fbx_path", "is_exec": false },
+        { "id": "6d140000-6d00-4d00-8d00-6d0000140000", "from_node": "60070000-6000-4600-8600-600000070000", "from_port": "version_path", "to_node": "600c0000-6000-4600-8600-6000000c0000", "to_port": "abc_path", "is_exec": false },
+        { "id": "6d150000-6d00-4d00-8d00-6d0000150000", "from_node": "60080000-6000-4600-8600-600000080000", "from_port": "version_path", "to_node": "600d0000-6000-4600-8600-6000000d0000", "to_port": "usd_path", "is_exec": false },
+
+        { "id": "6d160000-6d00-4d00-8d00-6d0000160000", "from_node": "600a0000-6000-4600-8600-6000000a0000", "from_port": "actions_out", "to_node": "600b0000-6000-4600-8600-6000000b0000", "to_port": "actions_in", "is_exec": false },
+        { "id": "6d170000-6d00-4d00-8d00-6d0000170000", "from_node": "600b0000-6000-4600-8600-6000000b0000", "from_port": "actions_out", "to_node": "600c0000-6000-4600-8600-6000000c0000", "to_port": "actions_in", "is_exec": false },
+        { "id": "6d180000-6d00-4d00-8d00-6d0000180000", "from_node": "600c0000-6000-4600-8600-6000000c0000", "from_port": "actions_out", "to_node": "600d0000-6000-4600-8600-6000000d0000", "to_port": "actions_in", "is_exec": false },
+        { "id": "6d190000-6d00-4d00-8d00-6d0000190000", "from_node": "600d0000-6000-4600-8600-6000000d0000", "from_port": "actions_out", "to_node": "600e0000-6000-4600-8600-6000000e0000", "to_port": "actions_in", "is_exec": false },
+        { "id": "6d1a0000-6d00-4d00-8d00-6d00001a0000", "from_node": "600e0000-6000-4600-8600-6000000e0000", "from_port": "actions_out", "to_node": "600f0000-6000-4600-8600-6000000f0000", "to_port": "actions", "is_exec": false },
+
+        { "id": "6d1b0000-6d00-4d00-8d00-6d00001b0000", "from_node": "600f0000-6000-4600-8600-6000000f0000", "from_port": "success", "to_node": "60100000-6000-4600-8600-600000100000", "to_port": "condition", "is_exec": false },
+        { "id": "6d1c0000-6d00-4d00-8d00-6d00001c0000", "from_node": "600f0000-6000-4600-8600-6000000f0000", "from_port": "executed_actions", "to_node": "60110000-6000-4600-8600-600000110000", "to_port": "executed_actions", "is_exec": false },
+        { "id": "6d1d0000-6d00-4d00-8d00-6d00001d0000", "from_node": "600f0000-6000-4600-8600-6000000f0000", "from_port": "executed_actions", "to_node": "60120000-6000-4600-8600-600000120000", "to_port": "executed_actions", "is_exec": false },
+        { "id": "6d1e0000-6d00-4d00-8d00-6d00001e0000", "from_node": "600f0000-6000-4600-8600-6000000f0000", "from_port": "executed_actions", "to_node": "60130000-6000-4600-8600-600000130000", "to_port": "executed_actions", "is_exec": false },
+
+        { "id": "6d1f0000-6d00-4d00-8d00-6d00001f0000", "from_node": "60110000-6000-4600-8600-600000110000", "from_port": "path", "to_node": "60140000-6000-4600-8600-600000140000", "to_port": "data", "is_exec": false },
+        { "id": "6d200000-6d00-4d00-8d00-6d0000200000", "from_node": "60120000-6000-4600-8600-600000120000", "from_port": "path", "to_node": "60150000-6000-4600-8600-600000150000", "to_port": "data", "is_exec": false },
+        { "id": "6d210000-6d00-4d00-8d00-6d0000210000", "from_node": "60130000-6000-4600-8600-600000130000", "from_port": "path", "to_node": "60160000-6000-4600-8600-600000160000", "to_port": "data", "is_exec": false }
+    ],
+    "sticky_notes": [
+        {
+            "id": "6f010000-6f00-4f00-8f00-6f0000010000",
+            "position": [60.0, 40.0], "size": [1400.0, 50.0],
+            "text": "WORKFLOW: Blender asset -> export FBX + Alembic + USD in a single headless session. Paths resolved from Prism product versions.",
+            "color": "#200a20"
+        },
+        {
+            "id": "6f020000-6f00-4f00-8f00-6f0000020000",
+            "position": [500.0, 460.0], "size": [1360.0, 90.0],
+            "text": "Three prism_get_export_path nodes resolve the versioned output paths from Prism products.\nChange 'identifier' values to match your pipeline product names (e.g. 'fbx_export', 'alembic_export', 'usd_export').\nVersion is empty = Prism creates the next version automatically.",
+            "color": "#ffffcc"
+        },
+        {
+            "id": "6f030000-6f00-4f00-8f00-6f0000030000",
+            "position": [60.0, 760.0], "size": [1960.0, 50.0],
+            "text": "Blender Action Chain: open .blend -> export FBX -> export Alembic -> export USD -> save versioned .blend -> run headless",
+            "color": "#200a20"
+        },
+        {
+            "id": "6f040000-6f00-4f00-8f00-6f0000040000",
+            "position": [60.0, 1280.0], "size": [1360.0, 80.0],
+            "text": "blender_get_action_result unpacks each export result by index position in the actions list:\nindex 1=FBX (action 0=open_blend), index 2=Alembic, index 3=USD, index 4=save_blend.\nThe 'path' output gives you the exported file path to verify or log.",
+            "color": "#2a3a5a"
+        }
+    ],
+    "backdrops": [
+        {
+            "id": "6b010000-6b00-4b00-8b00-6b0000010000",
+            "position": [20.0, 20.0], "size": [380.0, 220.0],
+            "title": "Prism Initialization",
+            "color": "#1a2850"
+        },
+        {
+            "id": "6b020000-6b00-4b00-8b00-6b0000020000",
+            "position": [460.0, 20.0], "size": [1380.0, 220.0],
+            "title": "Project + Asset Discovery",
+            "color": "#1a2850"
+        },
+        {
+            "id": "6b030000-6b00-4b00-8b00-6b0000030000",
+            "position": [20.0, 500.0], "size": [380.0, 220.0],
+            "title": "Scene Version Slot",
+            "color": "#301a1a"
+        },
+        {
+            "id": "6b040000-6b00-4b00-8b00-6b0000040000",
+            "position": [460.0, 260.0], "size": [1380.0, 450.0],
+            "title": "Export Path Resolution — FBX + Alembic + USD (Prism Products)",
+            "color": "#201040"
+        },
+        {
+            "id": "6b050000-6b00-4b00-8b00-6b0000050000",
+            "position": [20.0, 760.0], "size": [2040.0, 400.0],
+            "title": "Blender Headless — Multi-Format Export (open, FBX, ABC, USD, save)",
+            "color": "#1a0820"
+        },
+        {
+            "id": "6b060000-6b00-4b00-8b00-6b0000060000",
+            "position": [20.0, 1260.0], "size": [1400.0, 420.0],
+            "title": "Results — Unpack Export Paths per Format",
+            "color": "#102020"
+        }
+    ],
+    "metadata": {}
+}

@@ -1,0 +1,213 @@
+{
+    "nodes": [
+        {
+            "instance_id": "20010000-2000-4200-8200-200000010000",
+            "node_id": "prism_core_init",
+            "position": [60.0, 100.0],
+            "parameters": { "prism_scripts_path": "", "load_project": false, "show_ui": false },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "20020000-2000-4200-8200-200000020000",
+            "node_id": "prism_get_project_by_name",
+            "position": [500.0, 100.0],
+            "parameters": { "name": "MyProject" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "20030000-2000-4200-8200-200000030000",
+            "node_id": "prism_get_asset_type_by_name",
+            "position": [500.0, 320.0],
+            "parameters": { "name": "chars" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "20040000-2000-4200-8200-200000040000",
+            "node_id": "prism_get_asset_by_name",
+            "position": [950.0, 320.0],
+            "parameters": { "name": "dog" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "20050000-2000-4200-8200-200000050000",
+            "node_id": "prism_get_scene_path",
+            "position": [1400.0, 320.0],
+            "parameters": { "department": "modeling", "task": "modeling", "application": "maya", "version": "" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "20060000-2000-4200-8200-200000060000",
+            "node_id": "prism_save_scene_version",
+            "position": [60.0, 560.0],
+            "parameters": { "department": "modeling", "task": "modeling", "application": "maya" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "20070000-2000-4200-8200-200000070000",
+            "node_id": "prism_create_product_version",
+            "position": [500.0, 560.0],
+            "parameters": { "task": "modeling", "department": "modeling", "product_name": "alembic_cache", "comment": "Published from Vibrante-Node", "extension": ".abc" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "20080000-2000-4200-8200-200000080000",
+            "node_id": "maya_action_open_scene",
+            "position": [60.0, 820.0],
+            "parameters": { "force": true },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "20090000-2000-4200-8200-200000090000",
+            "node_id": "maya_action_export_alembic",
+            "position": [460.0, 820.0],
+            "parameters": { "root_nodes": "", "frame_start": 1, "frame_end": 100, "uvWrite": true, "worldSpace": true },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "200a0000-2000-4200-8200-2000000a0000",
+            "node_id": "maya_action_save_scene",
+            "position": [860.0, 820.0],
+            "parameters": { "file_type": "mayaAscii" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "200b0000-2000-4200-8200-2000000b0000",
+            "node_id": "maya_headless",
+            "position": [1260.0, 820.0],
+            "parameters": { "maya_version": "2024", "mayapy.exe": "C:/Program Files/Autodesk/Maya2024/bin/mayapy.exe", "bat_file": "", "maya_env_file": "", "scene_file": "" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "200c0000-2000-4200-8200-2000000c0000",
+            "node_id": "if_condition",
+            "position": [1700.0, 820.0],
+            "parameters": { "data": "" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "200d0000-2000-4200-8200-2000000d0000",
+            "node_id": "maya_get_action_result",
+            "position": [1260.0, 1060.0],
+            "parameters": { "action_type": "export_alembic", "index": 1 },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "200e0000-2000-4200-8200-2000000e0000",
+            "node_id": "console_print",
+            "position": [1700.0, 1060.0],
+            "parameters": { "data": "" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "200f0000-2000-4200-8200-2000000f0000",
+            "node_id": "console_print",
+            "position": [1700.0, 1000.0],
+            "parameters": { "data": "Maya session failed — check stdout/stderr" },
+            "state": "idle", "bypassed": false
+        }
+    ],
+    "connections": [
+        { "id": "2e010000-2e00-4e00-8e00-2e0000010000", "from_node": "20010000-2000-4200-8200-200000010000", "from_port": "exec_out", "to_node": "20060000-2000-4200-8200-200000060000", "to_port": "exec_in", "is_exec": true },
+        { "id": "2e020000-2e00-4e00-8e00-2e0000020000", "from_node": "20060000-2000-4200-8200-200000060000", "from_port": "exec_out", "to_node": "20070000-2000-4200-8200-200000070000", "to_port": "exec_in", "is_exec": true },
+        { "id": "2e030000-2e00-4e00-8e00-2e0000030000", "from_node": "20070000-2000-4200-8200-200000070000", "from_port": "exec_out", "to_node": "20080000-2000-4200-8200-200000080000", "to_port": "exec_in", "is_exec": true },
+        { "id": "2e040000-2e00-4e00-8e00-2e0000040000", "from_node": "20080000-2000-4200-8200-200000080000", "from_port": "exec_out", "to_node": "20090000-2000-4200-8200-200000090000", "to_port": "exec_in", "is_exec": true },
+        { "id": "2e050000-2e00-4e00-8e00-2e0000050000", "from_node": "20090000-2000-4200-8200-200000090000", "from_port": "exec_out", "to_node": "200a0000-2000-4200-8200-2000000a0000", "to_port": "exec_in", "is_exec": true },
+        { "id": "2e060000-2e00-4e00-8e00-2e0000060000", "from_node": "200a0000-2000-4200-8200-2000000a0000", "from_port": "exec_out", "to_node": "200b0000-2000-4200-8200-2000000b0000", "to_port": "exec_in", "is_exec": true },
+        { "id": "2e070000-2e00-4e00-8e00-2e0000070000", "from_node": "200b0000-2000-4200-8200-2000000b0000", "from_port": "exec_out", "to_node": "200c0000-2000-4200-8200-2000000c0000", "to_port": "exec_in", "is_exec": true },
+        { "id": "2e080000-2e00-4e00-8e00-2e0000080000", "from_node": "200c0000-2000-4200-8200-2000000c0000", "from_port": "exec_out", "to_node": "200d0000-2000-4200-8200-2000000d0000", "to_port": "exec_in", "is_exec": true },
+        { "id": "2e090000-2e00-4e00-8e00-2e0000090000", "from_node": "200d0000-2000-4200-8200-2000000d0000", "from_port": "exec_out", "to_node": "200e0000-2000-4200-8200-2000000e0000", "to_port": "exec_in", "is_exec": true },
+        { "id": "2e0a0000-2e00-4e00-8e00-2e00000a0000", "from_node": "200c0000-2000-4200-8200-2000000c0000", "from_port": "exec_false", "to_node": "200f0000-2000-4200-8200-2000000f0000", "to_port": "exec_in", "is_exec": true },
+
+        { "id": "2d010000-2d00-4d00-8d00-2d0000010000", "from_node": "20010000-2000-4200-8200-200000010000", "from_port": "core", "to_node": "20020000-2000-4200-8200-200000020000", "to_port": "core", "is_exec": false },
+        { "id": "2d020000-2d00-4d00-8d00-2d0000020000", "from_node": "20010000-2000-4200-8200-200000010000", "from_port": "core", "to_node": "20030000-2000-4200-8200-200000030000", "to_port": "core", "is_exec": false },
+        { "id": "2d030000-2d00-4d00-8d00-2d0000030000", "from_node": "20010000-2000-4200-8200-200000010000", "from_port": "core", "to_node": "20040000-2000-4200-8200-200000040000", "to_port": "core", "is_exec": false },
+        { "id": "2d040000-2d00-4d00-8d00-2d0000040000", "from_node": "20010000-2000-4200-8200-200000010000", "from_port": "core", "to_node": "20050000-2000-4200-8200-200000050000", "to_port": "core", "is_exec": false },
+        { "id": "2d050000-2d00-4d00-8d00-2d0000050000", "from_node": "20010000-2000-4200-8200-200000010000", "from_port": "core", "to_node": "20060000-2000-4200-8200-200000060000", "to_port": "core", "is_exec": false },
+        { "id": "2d060000-2d00-4d00-8d00-2d0000060000", "from_node": "20010000-2000-4200-8200-200000010000", "from_port": "core", "to_node": "20070000-2000-4200-8200-200000070000", "to_port": "core", "is_exec": false },
+
+        { "id": "2d070000-2d00-4d00-8d00-2d0000070000", "from_node": "20020000-2000-4200-8200-200000020000", "from_port": "project", "to_node": "20030000-2000-4200-8200-200000030000", "to_port": "project", "is_exec": false },
+        { "id": "2d080000-2d00-4d00-8d00-2d0000080000", "from_node": "20020000-2000-4200-8200-200000020000", "from_port": "project", "to_node": "20040000-2000-4200-8200-200000040000", "to_port": "project", "is_exec": false },
+
+        { "id": "2d090000-2d00-4d00-8d00-2d0000090000", "from_node": "20030000-2000-4200-8200-200000030000", "from_port": "asset_type", "to_node": "20040000-2000-4200-8200-200000040000", "to_port": "asset_type", "is_exec": false },
+        { "id": "2d0a0000-2d00-4d00-8d00-2d00000a0000", "from_node": "20040000-2000-4200-8200-200000040000", "from_port": "entity", "to_node": "20050000-2000-4200-8200-200000050000", "to_port": "entity", "is_exec": false },
+        { "id": "2d0b0000-2d00-4d00-8d00-2d00000b0000", "from_node": "20040000-2000-4200-8200-200000040000", "from_port": "entity", "to_node": "20060000-2000-4200-8200-200000060000", "to_port": "entity", "is_exec": false },
+        { "id": "2d0c0000-2d00-4d00-8d00-2d00000c0000", "from_node": "20040000-2000-4200-8200-200000040000", "from_port": "entity", "to_node": "20070000-2000-4200-8200-200000070000", "to_port": "entity", "is_exec": false },
+
+        { "id": "2d0d0000-2d00-4d00-8d00-2d00000d0000", "from_node": "20050000-2000-4200-8200-200000050000", "from_port": "scene_path", "to_node": "20080000-2000-4200-8200-200000080000", "to_port": "scene_path", "is_exec": false },
+        { "id": "2d0e0000-2d00-4d00-8d00-2d00000e0000", "from_node": "20060000-2000-4200-8200-200000060000", "from_port": "saved_path", "to_node": "200a0000-2000-4200-8200-2000000a0000", "to_port": "save_scene_path", "is_exec": false },
+        { "id": "2d0f0000-2d00-4d00-8d00-2d00000f0000", "from_node": "20070000-2000-4200-8200-200000070000", "from_port": "version_path", "to_node": "20090000-2000-4200-8200-200000090000", "to_port": "abc_path", "is_exec": false },
+
+        { "id": "2d100000-2d00-4d00-8d00-2d0000100000", "from_node": "20080000-2000-4200-8200-200000080000", "from_port": "actions_out", "to_node": "20090000-2000-4200-8200-200000090000", "to_port": "actions_in", "is_exec": false },
+        { "id": "2d110000-2d00-4d00-8d00-2d0000110000", "from_node": "20090000-2000-4200-8200-200000090000", "from_port": "actions_out", "to_node": "200a0000-2000-4200-8200-2000000a0000", "to_port": "actions_in", "is_exec": false },
+        { "id": "2d120000-2d00-4d00-8d00-2d0000120000", "from_node": "200a0000-2000-4200-8200-2000000a0000", "from_port": "actions_out", "to_node": "200b0000-2000-4200-8200-2000000b0000", "to_port": "actions", "is_exec": false },
+
+        { "id": "2d130000-2d00-4d00-8d00-2d0000130000", "from_node": "200b0000-2000-4200-8200-2000000b0000", "from_port": "success", "to_node": "200c0000-2000-4200-8200-2000000c0000", "to_port": "condition", "is_exec": false },
+        { "id": "2d140000-2d00-4d00-8d00-2d0000140000", "from_node": "200b0000-2000-4200-8200-2000000b0000", "from_port": "executed_actions", "to_node": "200d0000-2000-4200-8200-2000000d0000", "to_port": "executed_actions", "is_exec": false },
+        { "id": "2d150000-2d00-4d00-8d00-2d0000150000", "from_node": "200d0000-2000-4200-8200-2000000d0000", "from_port": "path", "to_node": "200e0000-2000-4200-8200-2000000e0000", "to_port": "data", "is_exec": false }
+    ],
+    "sticky_notes": [
+        {
+            "id": "2f010000-2f00-4f00-8f00-2f0000010000",
+            "position": [60.0, 40.0], "size": [380.0, 50.0],
+            "text": "WORKFLOW: Open latest asset scene in Maya, export alembic, save new versioned file.",
+            "color": "#2a1a0a"
+        },
+        {
+            "id": "2f020000-2f00-4f00-8f00-2f0000020000",
+            "position": [500.0, 230.0], "size": [400.0, 70.0],
+            "text": "Set asset type and asset name.\nChange department/task to match your pipeline.",
+            "color": "#ffffcc"
+        },
+        {
+            "id": "2f030000-2f00-4f00-8f00-2f0000030000",
+            "position": [1400.0, 230.0], "size": [380.0, 70.0],
+            "text": "Gets latest existing scene file.\nLeave 'version' empty for latest.",
+            "color": "#ffffcc"
+        },
+        {
+            "id": "2f040000-2f00-4f00-8f00-2f0000040000",
+            "position": [60.0, 490.0], "size": [840.0, 60.0],
+            "text": "Reserves the next version slot in Prism AND creates a product entry for the alembic before Maya runs.",
+            "color": "#3a2a0a"
+        },
+        {
+            "id": "2f050000-2f00-4f00-8f00-2f0000050000",
+            "position": [60.0, 760.0], "size": [1640.0, 50.0],
+            "text": "Maya Action Chain: open existing scene  ->  export alembic to product path  ->  save versioned .ma  ->  execute headless",
+            "color": "#1a1a2a"
+        }
+    ],
+    "backdrops": [
+        {
+            "id": "2b010000-2b00-4b00-8b00-2b0000010000",
+            "position": [20.0, 20.0], "size": [380.0, 220.0],
+            "title": "Prism Initialization",
+            "color": "#1a2850"
+        },
+        {
+            "id": "2b020000-2b00-4b00-8b00-2b0000020000",
+            "position": [460.0, 20.0], "size": [1380.0, 450.0],
+            "title": "Asset Discovery — Prism Data Layer",
+            "color": "#1a2850"
+        },
+        {
+            "id": "2b030000-2b00-4b00-8b00-2b0000030000",
+            "position": [20.0, 490.0], "size": [840.0, 220.0],
+            "title": "Version Management",
+            "color": "#301a1a"
+        },
+        {
+            "id": "2b040000-2b00-4b00-8b00-2b0000040000",
+            "position": [20.0, 750.0], "size": [1680.0, 400.0],
+            "title": "Maya Headless — Action Builder + Execution",
+            "color": "#2a1800"
+        },
+        {
+            "id": "2b050000-2b00-4b00-8b00-2b0000050000",
+            "position": [1220.0, 1020.0], "size": [560.0, 200.0],
+            "title": "Results",
+            "color": "#102020"
+        }
+    ],
+    "metadata": {}
+}

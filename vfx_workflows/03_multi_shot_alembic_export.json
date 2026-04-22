@@ -1,0 +1,224 @@
+{
+    "nodes": [
+        {
+            "instance_id": "30010000-3000-4300-8300-300000010000",
+            "node_id": "prism_core_init",
+            "position": [60.0, 100.0],
+            "parameters": { "prism_scripts_path": "", "load_project": false, "show_ui": false },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "30020000-3000-4300-8300-300000020000",
+            "node_id": "prism_get_project_by_name",
+            "position": [500.0, 100.0],
+            "parameters": { "name": "MyProject" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "30030000-3000-4300-8300-300000030000",
+            "node_id": "prism_get_shots",
+            "position": [500.0, 320.0],
+            "parameters": {},
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "30040000-3000-4300-8300-300000040000",
+            "node_id": "prism_get_shots_by_sequence",
+            "position": [950.0, 320.0],
+            "parameters": { "sequence": "EP01" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "30050000-3000-4300-8300-300000050000",
+            "node_id": "list_length",
+            "position": [60.0, 340.0],
+            "parameters": { "list_name": "shots" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "30060000-3000-4300-8300-300000060000",
+            "node_id": "for_loop",
+            "position": [60.0, 560.0],
+            "parameters": { "start": 0, "step": 1 },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "30070000-3000-4300-8300-300000070000",
+            "node_id": "get_list_item",
+            "position": [500.0, 560.0],
+            "parameters": { "list_name": "shots" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "30080000-3000-4300-8300-300000080000",
+            "node_id": "prism_get_shot_info",
+            "position": [950.0, 560.0],
+            "parameters": {},
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "30090000-3000-4300-8300-300000090000",
+            "node_id": "prism_get_scene_path",
+            "position": [1400.0, 560.0],
+            "parameters": { "department": "anim", "task": "anim", "application": "maya", "version": "" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "300a0000-3000-4300-8300-3000000a0000",
+            "node_id": "string_concat",
+            "position": [500.0, 800.0],
+            "parameters": { "a": "C:/abc_exports/" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "300b0000-3000-4300-8300-3000000b0000",
+            "node_id": "string_concat",
+            "position": [900.0, 800.0],
+            "parameters": { "b": ".abc" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "300c0000-3000-4300-8300-3000000c0000",
+            "node_id": "maya_action_open_scene",
+            "position": [60.0, 1060.0],
+            "parameters": { "force": true },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "300d0000-3000-4300-8300-3000000d0000",
+            "node_id": "maya_action_set_frame_range",
+            "position": [460.0, 1060.0],
+            "parameters": {},
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "300e0000-3000-4300-8300-3000000e0000",
+            "node_id": "maya_action_export_alembic",
+            "position": [860.0, 1060.0],
+            "parameters": { "root_nodes": "", "uvWrite": true, "worldSpace": true },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "300f0000-3000-4300-8300-3000000f0000",
+            "node_id": "maya_headless",
+            "position": [1260.0, 1060.0],
+            "parameters": { "maya_version": "2024", "mayapy.exe": "C:/Program Files/Autodesk/Maya2024/bin/mayapy.exe", "bat_file": "", "maya_env_file": "", "scene_file": "" },
+            "state": "idle", "bypassed": false
+        },
+        {
+            "instance_id": "30100000-3000-4300-8300-300000100000",
+            "node_id": "console_print",
+            "position": [1700.0, 1060.0],
+            "parameters": { "data": "" },
+            "state": "idle", "bypassed": false
+        }
+    ],
+    "connections": [
+        { "id": "3e010000-3e00-4e00-8e00-3e0000010000", "from_node": "30010000-3000-4300-8300-300000010000", "from_port": "exec_out", "to_node": "30050000-3000-4300-8300-300000050000", "to_port": "exec_in", "is_exec": true },
+        { "id": "3e020000-3e00-4e00-8e00-3e0000020000", "from_node": "30050000-3000-4300-8300-300000050000", "from_port": "exec_out", "to_node": "30060000-3000-4300-8300-300000060000", "to_port": "exec_in", "is_exec": true },
+        { "id": "3e030000-3e00-4e00-8e00-3e0000030000", "from_node": "30060000-3000-4300-8300-300000060000", "from_port": "exec_out", "to_node": "30070000-3000-4300-8300-300000070000", "to_port": "exec_in", "is_exec": true },
+        { "id": "3e040000-3e00-4e00-8e00-3e0000040000", "from_node": "30070000-3000-4300-8300-300000070000", "from_port": "exec_out", "to_node": "300a0000-3000-4300-8300-3000000a0000", "to_port": "exec_in", "is_exec": true },
+        { "id": "3e050000-3e00-4e00-8e00-3e0000050000", "from_node": "300a0000-3000-4300-8300-3000000a0000", "from_port": "exec_out", "to_node": "300b0000-3000-4300-8300-3000000b0000", "to_port": "exec_in", "is_exec": true },
+        { "id": "3e060000-3e00-4e00-8e00-3e0000060000", "from_node": "300b0000-3000-4300-8300-3000000b0000", "from_port": "exec_out", "to_node": "300c0000-3000-4300-8300-3000000c0000", "to_port": "exec_in", "is_exec": true },
+        { "id": "3e070000-3e00-4e00-8e00-3e0000070000", "from_node": "300c0000-3000-4300-8300-3000000c0000", "from_port": "exec_out", "to_node": "300d0000-3000-4300-8300-3000000d0000", "to_port": "exec_in", "is_exec": true },
+        { "id": "3e080000-3e00-4e00-8e00-3e0000080000", "from_node": "300d0000-3000-4300-8300-3000000d0000", "from_port": "exec_out", "to_node": "300e0000-3000-4300-8300-3000000e0000", "to_port": "exec_in", "is_exec": true },
+        { "id": "3e090000-3e00-4e00-8e00-3e0000090000", "from_node": "300e0000-3000-4300-8300-3000000e0000", "from_port": "exec_out", "to_node": "300f0000-3000-4300-8300-3000000f0000", "to_port": "exec_in", "is_exec": true },
+        { "id": "3e0a0000-3e00-4e00-8e00-3e00000a0000", "from_node": "300f0000-3000-4300-8300-3000000f0000", "from_port": "exec_out", "to_node": "30100000-3000-4300-8300-300000100000", "to_port": "exec_in", "is_exec": true },
+
+        { "id": "3d010000-3d00-4d00-8d00-3d0000010000", "from_node": "30010000-3000-4300-8300-300000010000", "from_port": "core", "to_node": "30020000-3000-4300-8300-300000020000", "to_port": "core", "is_exec": false },
+        { "id": "3d020000-3d00-4d00-8d00-3d0000020000", "from_node": "30010000-3000-4300-8300-300000010000", "from_port": "core", "to_node": "30030000-3000-4300-8300-300000030000", "to_port": "core", "is_exec": false },
+        { "id": "3d030000-3d00-4d00-8d00-3d0000030000", "from_node": "30010000-3000-4300-8300-300000010000", "from_port": "core", "to_node": "30080000-3000-4300-8300-300000080000", "to_port": "core", "is_exec": false },
+        { "id": "3d040000-3d00-4d00-8d00-3d0000040000", "from_node": "30010000-3000-4300-8300-300000010000", "from_port": "core", "to_node": "30090000-3000-4300-8300-300000090000", "to_port": "core", "is_exec": false },
+
+        { "id": "3d050000-3d00-4d00-8d00-3d0000050000", "from_node": "30030000-3000-4300-8300-300000030000", "from_port": "shots", "to_node": "30040000-3000-4300-8300-300000040000", "to_port": "shots", "is_exec": false },
+        { "id": "3d060000-3d00-4d00-8d00-3d0000060000", "from_node": "30040000-3000-4300-8300-300000040000", "from_port": "shots", "to_node": "30050000-3000-4300-8300-300000050000", "to_port": "list", "is_exec": false },
+        { "id": "3d070000-3d00-4d00-8d00-3d0000070000", "from_node": "30040000-3000-4300-8300-300000040000", "from_port": "shots", "to_node": "30070000-3000-4300-8300-300000070000", "to_port": "list", "is_exec": false },
+        { "id": "3d080000-3d00-4d00-8d00-3d0000080000", "from_node": "30050000-3000-4300-8300-300000050000", "from_port": "length", "to_node": "30060000-3000-4300-8300-300000060000", "to_port": "end", "is_exec": false },
+        { "id": "3d090000-3d00-4d00-8d00-3d0000090000", "from_node": "30060000-3000-4300-8300-300000060000", "from_port": "current_index", "to_node": "30070000-3000-4300-8300-300000070000", "to_port": "index", "is_exec": false },
+
+        { "id": "3d0a0000-3d00-4d00-8d00-3d00000a0000", "from_node": "30070000-3000-4300-8300-300000070000", "from_port": "item", "to_node": "30080000-3000-4300-8300-300000080000", "to_port": "entity", "is_exec": false },
+        { "id": "3d0b0000-3d00-4d00-8d00-3d00000b0000", "from_node": "30070000-3000-4300-8300-300000070000", "from_port": "item", "to_node": "30090000-3000-4300-8300-300000090000", "to_port": "entity", "is_exec": false },
+
+        { "id": "3d0c0000-3d00-4d00-8d00-3d00000c0000", "from_node": "30080000-3000-4300-8300-300000080000", "from_port": "shot_name", "to_node": "300a0000-3000-4300-8300-3000000a0000", "to_port": "b", "is_exec": false },
+        { "id": "3d0d0000-3d00-4d00-8d00-3d00000d0000", "from_node": "30080000-3000-4300-8300-300000080000", "from_port": "frame_start", "to_node": "300d0000-3000-4300-8300-3000000d0000", "to_port": "frame_start", "is_exec": false },
+        { "id": "3d0e0000-3d00-4d00-8d00-3d00000e0000", "from_node": "30080000-3000-4300-8300-300000080000", "from_port": "frame_end", "to_node": "300d0000-3000-4300-8300-3000000d0000", "to_port": "frame_end", "is_exec": false },
+        { "id": "3d0f0000-3d00-4d00-8d00-3d00000f0000", "from_node": "30080000-3000-4300-8300-300000080000", "from_port": "frame_start", "to_node": "300e0000-3000-4300-8300-3000000e0000", "to_port": "frame_start", "is_exec": false },
+        { "id": "3d100000-3d00-4d00-8d00-3d0000100000", "from_node": "30080000-3000-4300-8300-300000080000", "from_port": "frame_end", "to_node": "300e0000-3000-4300-8300-3000000e0000", "to_port": "frame_end", "is_exec": false },
+
+        { "id": "3d110000-3d00-4d00-8d00-3d0000110000", "from_node": "30090000-3000-4300-8300-300000090000", "from_port": "scene_path", "to_node": "300c0000-3000-4300-8300-3000000c0000", "to_port": "scene_path", "is_exec": false },
+
+        { "id": "3d120000-3d00-4d00-8d00-3d0000120000", "from_node": "300a0000-3000-4300-8300-3000000a0000", "from_port": "result", "to_node": "300b0000-3000-4300-8300-3000000b0000", "to_port": "a", "is_exec": false },
+        { "id": "3d130000-3d00-4d00-8d00-3d0000130000", "from_node": "300b0000-3000-4300-8300-3000000b0000", "from_port": "result", "to_node": "300e0000-3000-4300-8300-3000000e0000", "to_port": "abc_path", "is_exec": false },
+
+        { "id": "3d140000-3d00-4d00-8d00-3d0000140000", "from_node": "300c0000-3000-4300-8300-3000000c0000", "from_port": "actions_out", "to_node": "300d0000-3000-4300-8300-3000000d0000", "to_port": "actions_in", "is_exec": false },
+        { "id": "3d150000-3d00-4d00-8d00-3d0000150000", "from_node": "300d0000-3000-4300-8300-3000000d0000", "from_port": "actions_out", "to_node": "300e0000-3000-4300-8300-3000000e0000", "to_port": "actions_in", "is_exec": false },
+        { "id": "3d160000-3d00-4d00-8d00-3d0000160000", "from_node": "300e0000-3000-4300-8300-3000000e0000", "from_port": "actions_out", "to_node": "300f0000-3000-4300-8300-3000000f0000", "to_port": "actions", "is_exec": false },
+
+        { "id": "3d170000-3d00-4d00-8d00-3d0000170000", "from_node": "300f0000-3000-4300-8300-3000000f0000", "from_port": "success", "to_node": "30100000-3000-4300-8300-300000100000", "to_port": "data", "is_exec": false }
+    ],
+    "sticky_notes": [
+        {
+            "id": "3f010000-3f00-4f00-8f00-3f0000010000",
+            "position": [60.0, 40.0], "size": [880.0, 50.0],
+            "text": "WORKFLOW: Iterate over every shot in a sequence — open its anim scene and export an alembic cache per shot automatically.",
+            "color": "#2a1a00"
+        },
+        {
+            "id": "3f020000-3f00-4f00-8f00-3f0000020000",
+            "position": [500.0, 440.0], "size": [840.0, 80.0],
+            "text": "Change 'EP01' in prism_get_shots_by_sequence to target a specific sequence.\nAll shots in that sequence are passed into the loop.",
+            "color": "#ffffcc"
+        },
+        {
+            "id": "3f030000-3f00-4f00-8f00-3f0000030000",
+            "position": [60.0, 480.0], "size": [390.0, 80.0],
+            "text": "for_loop iterates 0 to shot_count.\nEach iteration: get one shot dict,\nlook up its scene path and frame range.",
+            "color": "#2a3a5a"
+        },
+        {
+            "id": "3f040000-3f00-4f00-8f00-3f0000040000",
+            "position": [460.0, 740.0], "size": [640.0, 80.0],
+            "text": "Build abc path: 'C:/abc_exports/' + shot_name + '.abc'\nChange base path in string_concat_1 parameter 'a'.",
+            "color": "#ffffcc"
+        },
+        {
+            "id": "3f050000-3f00-4f00-8f00-3f0000050000",
+            "position": [60.0, 1000.0], "size": [1700.0, 50.0],
+            "text": "Per-shot Maya action chain (runs N times — once per shot): open scene -> set frame range -> export alembic -> execute headless",
+            "color": "#1a1a2a"
+        }
+    ],
+    "backdrops": [
+        {
+            "id": "3b010000-3b00-4b00-8b00-3b0000010000",
+            "position": [20.0, 20.0], "size": [380.0, 220.0],
+            "title": "Prism Initialization",
+            "color": "#1a2850"
+        },
+        {
+            "id": "3b020000-3b00-4b00-8b00-3b0000020000",
+            "position": [460.0, 20.0], "size": [880.0, 450.0],
+            "title": "Shot Discovery — Get All Shots in Sequence",
+            "color": "#1a2850"
+        },
+        {
+            "id": "3b030000-3b00-4b00-8b00-3b0000030000",
+            "position": [20.0, 310.0], "size": [380.0, 420.0],
+            "title": "Loop Control",
+            "color": "#1a3020"
+        },
+        {
+            "id": "3b040000-3b00-4b00-8b00-3b0000040000",
+            "position": [460.0, 500.0], "size": [1380.0, 450.0],
+            "title": "Per-Shot Data — Scene Path + Frame Range + ABC Path",
+            "color": "#201030"
+        },
+        {
+            "id": "3b050000-3b00-4b00-8b00-3b0000050000",
+            "position": [20.0, 1000.0], "size": [1800.0, 220.0],
+            "title": "Maya Headless — Per-Shot Execution (runs N times)",
+            "color": "#2a1800"
+        }
+    ],
+    "metadata": {}
+}
