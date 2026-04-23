@@ -334,6 +334,7 @@ class NetworkExecutor(QObject):
 
             if success:
                 self._executed_nodes.add(node_id)
+                result = result or {}
                 self.node_results[node_id].update(result)
                 self.node_output.emit(node_id, result)
                 self.node_finished.emit(node_id, "success")

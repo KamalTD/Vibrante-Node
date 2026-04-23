@@ -1,102 +1,416 @@
 {
     "nodes": [
         {
-            "instance_id": "40010000-4000-4400-8400-400000010000",
-            "node_id": "prism_core_init",
-            "position": [60.0, 100.0],
-            "parameters": { "prism_scripts_path": "", "load_project": false, "show_ui": false },
-            "state": "idle", "bypassed": false
-        },
-        {
             "instance_id": "40020000-4000-4400-8400-400000020000",
             "node_id": "prism_get_project_by_name",
-            "position": [500.0, 100.0],
-            "parameters": { "name": "MyProject" },
-            "state": "idle", "bypassed": false
-        },
-        {
-            "instance_id": "40030000-4000-4400-8400-400000030000",
-            "node_id": "prism_get_shots",
-            "position": [500.0, 320.0],
-            "parameters": {},
-            "state": "idle", "bypassed": false
-        },
-        {
-            "instance_id": "40040000-4000-4400-8400-400000040000",
-            "node_id": "prism_get_shot_by_name",
-            "position": [950.0, 320.0],
-            "parameters": { "sequence": "EP01", "shot": "0030" },
-            "state": "idle", "bypassed": false
+            "position": [
+                -3883.1495666503893,
+                363.4466552734373
+            ],
+            "parameters": {
+                "core": null,
+                "name": "splash",
+                "project": {
+                    "configPath": "G:\\Prism\\splash\\00_Pipeline\\pipeline.json",
+                    "name": "splash",
+                    "source": "disk"
+                },
+                "project_path": "G:\\Prism\\splash",
+                "config_path": "G:\\Prism\\splash\\00_Pipeline\\pipeline.json",
+                "found": true
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "40050000-4000-4400-8400-400000050000",
             "node_id": "prism_get_shot_info",
-            "position": [1400.0, 320.0],
-            "parameters": {},
-            "state": "idle", "bypassed": false
+            "position": [
+                -2579.8927307128884,
+                424.11071777343756
+            ],
+            "parameters": {
+                "core": null,
+                "entity": {
+                    "type": "shot",
+                    "sequence": "seq_0001",
+                    "shot": "shot_002",
+                    "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002",
+                    "location": "global",
+                    "paths": [
+                        {
+                            "location": "global",
+                            "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002"
+                        }
+                    ]
+                },
+                "sequence": "seq_0001",
+                "shot_name": "shot_002",
+                "frame_start": 1001,
+                "frame_end": 1100,
+                "fps": 24.0,
+                "entity_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002"
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "40060000-4000-4400-8400-400000060000",
             "node_id": "prism_get_scene_path",
-            "position": [1400.0, 560.0],
-            "parameters": { "department": "lighting", "task": "lighting", "application": "maya", "version": "" },
-            "state": "idle", "bypassed": false
+            "position": [
+                -2567.2584533691393,
+                691.3323974609381
+            ],
+            "parameters": {
+                "core": null,
+                "entity": {
+                    "type": "shot",
+                    "sequence": "seq_0001",
+                    "shot": "shot_002",
+                    "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002",
+                    "location": "global",
+                    "paths": [
+                        {
+                            "location": "global",
+                            "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002"
+                        }
+                    ]
+                },
+                "department": "lighting",
+                "task": "lighting",
+                "application": "maya",
+                "version": "v0004",
+                "scene_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002\\Scenefiles\\lgt\\lighting\\seq_0001-shot_002_lighting_v0004.ma",
+                "task_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002\\Scenefiles\\lgt\\lighting",
+                "exists": true
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "40070000-4000-4400-8400-400000070000",
             "node_id": "prism_save_scene_version",
-            "position": [60.0, 560.0],
-            "parameters": { "department": "lighting", "task": "lighting", "application": "maya" },
-            "state": "idle", "bypassed": false
+            "position": [
+                -1380.3526916503902,
+                119.75466308593764
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "core": null,
+                "entity": {
+                    "type": "shot",
+                    "sequence": "seq_0001",
+                    "shot": "shot_002",
+                    "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002",
+                    "location": "global",
+                    "paths": [
+                        {
+                            "location": "global",
+                            "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002"
+                        }
+                    ]
+                },
+                "department": "lighting",
+                "task": "lighting",
+                "application": "maya",
+                "saved_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002\\Scenefiles\\lgt\\lighting\\seq_0001-shot_002_lighting_v0005.ma",
+                "version": "v0005",
+                "task_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002\\Scenefiles\\lgt\\lighting",
+                "success": true
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "40080000-4000-4400-8400-400000080000",
             "node_id": "maya_action_open_scene",
-            "position": [60.0, 820.0],
-            "parameters": { "force": true },
-            "state": "idle", "bypassed": false
+            "position": [
+                -566.6212463378902,
+                1220.1312255859375
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "actions_in": [],
+                "scene_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002\\Scenefiles\\lgt\\lighting\\seq_0001-shot_002_lighting_v0002.ma",
+                "force": false,
+                "actions_out": [
+                    {
+                        "type": "open_scene",
+                        "scene_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002\\Scenefiles\\lgt\\lighting\\seq_0001-shot_002_lighting_v0004.ma",
+                        "force": false
+                    }
+                ]
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "40090000-4000-4400-8400-400000090000",
             "node_id": "maya_action_set_frame_range",
-            "position": [460.0, 820.0],
-            "parameters": {},
-            "state": "idle", "bypassed": false
+            "position": [
+                -184.4435119628901,
+                1080.9710693359373
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "actions_in": [
+                    {
+                        "type": "open_scene",
+                        "scene_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002\\Scenefiles\\lgt\\lighting\\seq_0001-shot_002_lighting_v0002.ma",
+                        "force": true
+                    }
+                ],
+                "frame_start": 1001,
+                "frame_end": 1100,
+                "actions_out": [
+                    {
+                        "type": "open_scene",
+                        "scene_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002\\Scenefiles\\lgt\\lighting\\seq_0001-shot_002_lighting_v0004.ma",
+                        "force": false
+                    },
+                    {
+                        "type": "set_frame_range",
+                        "frame_start": 1001,
+                        "frame_end": 1100
+                    }
+                ]
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "400a0000-4000-4400-8400-4000000a0000",
             "node_id": "maya_action_set_render_settings",
-            "position": [860.0, 820.0],
-            "parameters": { "renderer": "arnold", "width": 1920, "height": 1080, "image_format": "exr", "file_prefix": "<Scene>/<RenderLayer>/<Scene>" },
-            "state": "idle", "bypassed": false
+            "position": [
+                227.88558959961034,
+                873.8177490234374
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "actions_in": [
+                    {
+                        "type": "open_scene",
+                        "scene_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002\\Scenefiles\\lgt\\lighting\\seq_0001-shot_002_lighting_v0002.ma",
+                        "force": true
+                    },
+                    {
+                        "type": "set_frame_range",
+                        "frame_start": 1001,
+                        "frame_end": 1100
+                    }
+                ],
+                "renderer": "arnold",
+                "width": 1920,
+                "height": 1080,
+                "frame_start": 1001,
+                "frame_end": 1100,
+                "image_format": "exr",
+                "file_prefix": "<Scene>/<RenderLayer>/<Scene>",
+                "actions_out": [
+                    {
+                        "type": "open_scene",
+                        "scene_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002\\Scenefiles\\lgt\\lighting\\seq_0001-shot_002_lighting_v0004.ma",
+                        "force": false
+                    },
+                    {
+                        "type": "set_frame_range",
+                        "frame_start": 1001,
+                        "frame_end": 1100
+                    },
+                    {
+                        "type": "set_render_settings",
+                        "renderer": "arnold",
+                        "width": 1920,
+                        "height": 1080,
+                        "frame_start": 1001,
+                        "frame_end": 1100,
+                        "image_format": "exr",
+                        "file_prefix": "<Scene>/<RenderLayer>/<Scene>"
+                    }
+                ]
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "400b0000-4000-4400-8400-4000000b0000",
             "node_id": "maya_action_save_scene",
-            "position": [1260.0, 820.0],
-            "parameters": { "file_type": "mayaAscii" },
-            "state": "idle", "bypassed": false
+            "position": [
+                599.6873474121098,
+                774.452514648437
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "actions_in": [
+                    {
+                        "type": "open_scene",
+                        "scene_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002\\Scenefiles\\lgt\\lighting\\seq_0001-shot_002_lighting_v0002.ma",
+                        "force": true
+                    },
+                    {
+                        "type": "set_frame_range",
+                        "frame_start": 1001,
+                        "frame_end": 1100
+                    },
+                    {
+                        "type": "set_render_settings",
+                        "renderer": "arnold",
+                        "width": 1920,
+                        "height": 1080,
+                        "frame_start": 1001,
+                        "frame_end": 1100,
+                        "image_format": "exr",
+                        "file_prefix": "<Scene>/<RenderLayer>/<Scene>"
+                    }
+                ],
+                "save_scene_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002\\Scenefiles\\lgt\\lighting\\seq_0001-shot_002_lighting_v0003.ma",
+                "file_type": "mayaAscii",
+                "actions_out": [
+                    {
+                        "type": "open_scene",
+                        "scene_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002\\Scenefiles\\lgt\\lighting\\seq_0001-shot_002_lighting_v0004.ma",
+                        "force": false
+                    },
+                    {
+                        "type": "set_frame_range",
+                        "frame_start": 1001,
+                        "frame_end": 1100
+                    },
+                    {
+                        "type": "set_render_settings",
+                        "renderer": "arnold",
+                        "width": 1920,
+                        "height": 1080,
+                        "frame_start": 1001,
+                        "frame_end": 1100,
+                        "image_format": "exr",
+                        "file_prefix": "<Scene>/<RenderLayer>/<Scene>"
+                    },
+                    {
+                        "type": "save_scene",
+                        "save_scene_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002\\Scenefiles\\lgt\\lighting\\seq_0001-shot_002_lighting_v0005.ma",
+                        "file_type": "mayaAscii"
+                    }
+                ]
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "400c0000-4000-4400-8400-4000000c0000",
             "node_id": "maya_headless",
-            "position": [1660.0, 820.0],
-            "parameters": { "maya_version": "2024", "mayapy.exe": "C:/Program Files/Autodesk/Maya2024/bin/mayapy.exe", "bat_file": "", "maya_env_file": "", "scene_file": "" },
-            "state": "idle", "bypassed": false
+            "position": [
+                994.8045349121098,
+                784.8284912109374
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "maya_version": "2024",
+                "mayapy.exe": "C:/Program Files/Autodesk/Maya2024/bin/mayapy.exe",
+                "bat_file": "",
+                "maya_env_file": "",
+                "scene_file": "",
+                "actions": [
+                    {
+                        "type": "open_scene",
+                        "scene_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002\\Scenefiles\\lgt\\lighting\\seq_0001-shot_002_lighting_v0002.ma",
+                        "force": true
+                    },
+                    {
+                        "type": "set_frame_range",
+                        "frame_start": 1001,
+                        "frame_end": 1100
+                    },
+                    {
+                        "type": "set_render_settings",
+                        "renderer": "arnold",
+                        "width": 1920,
+                        "height": 1080,
+                        "frame_start": 1001,
+                        "frame_end": 1100,
+                        "image_format": "exr",
+                        "file_prefix": "<Scene>/<RenderLayer>/<Scene>"
+                    },
+                    {
+                        "type": "save_scene",
+                        "save_scene_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002\\Scenefiles\\lgt\\lighting\\seq_0001-shot_002_lighting_v0003.ma",
+                        "file_type": "mayaAscii"
+                    }
+                ],
+                "success": true,
+                "stdout": "Cannot create Prism instance because no QApplication exists. To load Prism you can create a QApplication before initilizing mayapy like this: import sys;from PySide2 import QtWidgets;QtWidgets.QApplication(sys.argv)\n00:00:00   385MB         | log started Thu Apr 23 12:13:58 2026\n00:00:00   385MB         | Arnold 7.2.4.1 [1fee86c4] windows x86_64 clang-15.0.7 oiio-2.4.1 osl-1.12.9 vdb-7.1.1 adlsdk-7.4.2.47 clmhub-3.1.1.43 rlm-14.2.5 optix-6.6.0 2023/10/17 03:22:02\n00:00:00   385MB         | running on Kamal, pid=24764\n00:00:00   385MB         |  2 x Intel(R) Xeon(R) CPU X5650 @ 2.67GHz (12 cores, 12 logical) with 32751MB\n00:00:00   385MB         |  NVIDIA driver version 580.97 (Optix 60810)\n00:00:00   385MB         |  GPU 0: NVIDIA GeForce GTX 950 @ 1278MHz (compute 5.2) with 2047MB (185MB available) (NVLink:0)\n00:00:00   385MB         |  Windows 10 (version 10.0, build 19045)\n00:00:00   385MB         |  soft limit for open files changed from 512 to 2048\n00:00:00   385MB         |  \n00:00:00   385MB         | Installing system handler with mask 255\n00:00:02   545MB         | [metadata] loading metadata file: C:\\Program Files\\Autodesk\\Arnold\\maya2024\\bin\\arnold.mtd\n00:00:02   547MB         | [color_manager_ocio] default ocio.config found in C:\\Program Files\\Autodesk\\Arnold\\maya2024\\bin\\../ocio/configs/arnold/config.ocio\n00:00:02   547MB         | loading plugins from C:\\Program Files\\Autodesk\\Arnold\\maya2024\\bin\\..\\plugins ...\n00:00:02   547MB         |  alembic_proc.dll: alembic uses Arnold 7.2.4.1\n00:00:02   547MB         |  cryptomatte.dll: cryptomatte uses Arnold 7.2.4.1\n00:00:02   547MB         |  cryptomatte.dll: cryptomatte_filter uses Arnold 7.2.4.1\n00:00:02   547MB         |  cryptomatte.dll: cryptomatte_manifest_driver uses Arnold 7.2.4.1\n00:00:02   547MB         |  [metadata] loading metadata file: C:\\Program Files\\Autodesk\\Arnold\\maya2024\\bin\\..\\plugins\\cryptomatte.mtd\n00:00:02   561MB         |  usd_proc.dll: usd uses Arnold 7.2.4.1\n00:00:02   561MB         | loaded 5 plugins from 3 lib(s) in 0:00.10\n00:00:11   671MB         |  unloading 10 plugins\n00:00:11   671MB         |   closing alembic_proc.dll ...\n00:00:11   671MB         |   closing cryptomatte.dll ...\n00:00:11   671MB         |   closing usd_proc.dll ...\n00:00:11   671MB         |   closing hairPhysicalShader_shaders.dll ...\n00:00:11   671MB         |   closing lookdevkit_shaders.dll ...\n00:00:11   671MB         |   closing mtoa_shaders.dll ...\n00:00:11   671MB         |   closing renderSetup_shaders.dll ...\n00:00:11   671MB         |   closing xgenSpline_shaders.dll ...\n00:00:11   671MB         |   closing xgenSpline_procedural.dll ...\n00:00:11   671MB         |   closing xgen_procedural.dll ...\n00:00:11   671MB         |  unloading plugins done\n00:00:11   671MB         | Arnold shutdown\n",
+                "stderr": "Qt WebEngine seems to be initialized from a plugin. Please set Qt::AA_ShareOpenGLContexts using QCoreApplication::setAttribute before constructing QGuiApplication.\nqt.svg: Cannot open file ':/expression.svg', because: No such file or directory\nqt.svg: Cannot open file ':/expression.svg', because: No such file or directory\nWarning: line 1: displayRGBColor is unavailable in batch mode\nFile read in  11.2 seconds.\n",
+                "exit_code": 0,
+                "executed_actions": [
+                    {
+                        "type": "open_scene",
+                        "scene_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002\\Scenefiles\\lgt\\lighting\\seq_0001-shot_002_lighting_v0004.ma",
+                        "force": false
+                    },
+                    {
+                        "type": "set_frame_range",
+                        "frame_start": 1001,
+                        "frame_end": 1100
+                    },
+                    {
+                        "type": "set_render_settings",
+                        "renderer": "arnold",
+                        "width": 1920,
+                        "height": 1080,
+                        "frame_start": 1001,
+                        "frame_end": 1100,
+                        "image_format": "exr",
+                        "file_prefix": "<Scene>/<RenderLayer>/<Scene>"
+                    },
+                    {
+                        "type": "save_scene",
+                        "save_scene_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002\\Scenefiles\\lgt\\lighting\\seq_0001-shot_002_lighting_v0005.ma",
+                        "file_type": "mayaAscii"
+                    }
+                ],
+                "skipped_actions": []
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "400d0000-4000-4400-8400-4000000d0000",
             "node_id": "if_condition",
-            "position": [1660.0, 1080.0],
-            "parameters": { "data": "" },
-            "state": "idle", "bypassed": false
+            "position": [
+                1315.2391052246098,
+                889.1888427734374
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "condition": true,
+                "data": "",
+                "exec_false": false,
+                "on_true": "",
+                "on_false": null,
+                "result": true
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "400e0000-4000-4400-8400-4000000e0000",
             "node_id": "deadline_maya_submit",
-            "position": [60.0, 1340.0],
+            "position": [
+                2006.498870849609,
+                323.1390380859382
+            ],
             "parameters": {
+                "exec_in": true,
+                "exec_out": true,
                 "deadlinecommand": "C:/Program Files/Thinkbox/Deadline10/bin/deadlinecommand.exe",
+                "scene_file": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002\\Scenefiles\\lgt\\lighting\\seq_0001-shot_002_lighting_v0003.ma",
                 "job_name": "EP01_0030_lighting",
                 "batch_name": "EP01_lighting_batch",
                 "comment": "Submitted via Vibrante-Node",
@@ -104,144 +418,557 @@
                 "secondary_pool": "",
                 "group": "none",
                 "priority": 50,
-                "chunk_size": 5,
+                "chunk_size": 1,
+                "frame_start": 1001,
+                "frame_end": 1100,
                 "frame_step": 1,
                 "maya_version": "2024",
                 "renderer": "arnold",
-                "output_path": "C:/renders/EP01/0030",
+                "project_path": "",
+                "output_path": "G:/Prism/splash/images",
                 "output_prefix": "<Scene>/<RenderLayer>/<Scene>",
                 "camera": "renderCam",
                 "strict_error_check": false,
-                "extra_job_args": ""
+                "extra_job_args": "",
+                "success": true,
+                "job_id": "69e9f0f79d40a8b608bcc0fe",
+                "stdout": "Deadline Command 10.3 [v10.3.2.1 Release (1a66fe40f)]\n\nSubmitting to Repository: C:/DeadlineRepository10\n\nSubmission Contains No Auxiliary Files.\n\nResult=Success\nJobID=69e9f0f79d40a8b608bcc0fe\n\nThe job was submitted successfully.\n",
+                "stderr": ""
             },
-            "state": "idle", "bypassed": false
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "400f0000-4000-4400-8400-4000000f0000",
             "node_id": "deadline_job_status",
-            "position": [600.0, 1340.0],
-            "parameters": { "deadline_api_url": "http://deadline-server:8082" },
-            "state": "idle", "bypassed": false
+            "position": [
+                2546.498870849609,
+                323.1390380859382
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "deadlinecommand": "C:/Program Files/Thinkbox/Deadline10/bin/deadlinecommand.exe",
+                "job_id": "69e9ef12045e4bc1852e2c15",
+                "poll_until_done": false,
+                "poll_interval": 15,
+                "timeout_minutes": 120,
+                "status": "Unknown",
+                "progress": 0,
+                "tasks_total": 0,
+                "tasks_complete": 0,
+                "tasks_failed": 0,
+                "is_complete": false,
+                "is_failed": false,
+                "details": "\nDetails for \"69e9f0f79d40a8b608bcc0fe\":\n\n\tJob\n\t\tID:69e9f0f79d40a8b608bcc0fe\n\t\tName:EP01_0030_lighting\n\t\tUser:kamal\n\t\tSubmit Date:2026/04/23 12:14:15\n\t\tSubmit Machine:Kamal\n\t\tPlugin:MayaBatch\n\t\tMode:Normal\n\t\tFrames:1001-1100\n\t\tFrames Per Task:1\n\t\tProgress:0 %   (0/100)\n\t\tErrors:0\n\t\tStatus:Queued\n\t\tStart Date:\n\t\tFinish Date:\n\tTask States\n\t\tCompleted:0\n\t\tFailed:0\n\t\tPending:0\n\t\tQueued:100\n\t\tRendering:0\n\t\tSuspended:0\n\tAuxiliary Files\n\t\tNo auxiliary files.:\n\tOutput Directories\n\t\tOutput Path 1:G:/Prism/splash/images\n\tOutput Filenames\n\t\tNo output filenames.:\n\tStatistics\n\t\tRunning Time:00:00:00:00\n\t\tEstimated Time Remaining:unknown\n\t\tTotal Task Time:00:00:00:00\n\t\tTotal Task Startup Time:00:00:00:00\n\t\tTotal Task Render Time:00:00:00:00\n\t\tTotal Normalized Task Render Time:00:00:00:00\n\t\tAverage Task Time:00:00:00:00\n\t\tAverage Task Startup Time:00:00:00:00\n\t\tAverage Task Render Time:00:00:00:00\n\t\tAverage Normalized Task Render Time:00:00:00:00\n\t\tAverage Frame Time:00:00:00:00\n\t\tAverage Normalized Frame Time:00:00:00:00\n\t\tPeak RAM Usage:0 Bytes\n\t\tPeak CPU Usage:0 %\n\t\tAverage RAM Usage:0 Bytes\n\t\tAverage CPU Usage:0 %\n\t\tTotal Output File Size:0 Bytes\n\t\tAverage Output File Size:0 Bytes\n\tGeneral Properties\n\t\tComment:Submitted via Vibrante-Node\n\t\tDepartment:\n\t\tPool:none\n\t\tSecondary Pool:\n\t\tGroup:none\n\t\tBatch Name:EP01_lighting_batch\n\t\tPriority:50\n\t\tConcurrent Tasks:1\n\t\tLimit Tasks to Worker's Task Limit:Yes\n\t\tOn Job Complete:Do nothing\n\t\tJob Is Uneditable:No\n\t\tRe-synchronize Auxiliary Files Between Tasks:No\n\t\tReload Plugin Between Tasks:No\n\t\tEnforce Sequential Rendering:No\n\t\tJob Is Interruptible:No\n\t\tProgress cut-off for Job Interruption:100\n\t\tRemaining Time Threshold for Job Interruption:0\n\t\tSuppress Event Plugins:No\n\tTimeouts\n\t\tMinimum Render Time:(no minimum)\n\t\tMaximum Render Time:(no maximum)\n\t\tEnable Timeouts for Pre/Post Job Scripts:No\n\t\tUse the Timeouts for Frames instead of Tasks.:No\n\t\tAuto Task Timeout:No\n\t\tOn Task Timeout:Error\n\tNotifications\n\t\tOverride Notification Method:No\n\t\tNotification Method:No Notification\n\tNotification Users\n\t\tUser 1:kamal\n\tNotification Email Addresses\n\t\tNo notification emails:\n\tMachine Limit\n\t\tMachine Limit:(disabled)\n\t\tLimit Stub Release Progress:(disabled)\n\tWorkers On Deny List\n\t\tNo listed Workers:\n\tLimits\n\t\tNo limits:\n\tDependency Properties\n\t\tResume on Completed Dependencies:Yes\n\t\tResume on Failed Dependencies:No\n\t\tResume on Deleted Dependencies:No\n\t\tUse Frame Dependencies:No\n\t\tDependency Release Percentage:\n\tJob Dependencies\n\t\tNo job dependencies:\n\tRequired Assets\n\t\tNo assets:\n\tFailure Detection\n\t\tOverride Failed Job Detection:No\n\t\tOverride Failed Task Detection:No\n\t\tSend Warning For Job Errors:Yes\n\t\tIgnore Bad Worker Detection:No\n\tScheduling\n\t\tMode:Disabled\n\tScripts\n\t\tPre Job Script:\n\t\tPost Job Script:\n\t\tPre Task Script:\n\t\tPost Task Script:\n\tScript Dependencies\n\t\tNo script dependencies:\n\tEnvironment Variables\n\t\tNo environment variables:\n\tExtra Info\n\t\tExtra Info 0:\n\t\tExtra Info 1:\n\t\tExtra Info 2:\n\t\tExtra Info 3:\n\t\tExtra Info 4:\n\t\tExtra Info 5:\n\t\tExtra Info 6:\n\t\tExtra Info 7:\n\t\tExtra Info 8:\n\t\tExtra Info 9:\n\tExtra Info Key/Value Pairs\n\t\tNo extra info key/value pairs:\n\tMayaBatch Properties\n\t\tCamera:renderCam\n\t\tOutputFilePath:G:/Prism/splash/images\n\t\tOutputFilePrefix:<Scene>/<RenderLayer>/<Scene>\n\t\tRenderer:arnold\n\t\tSceneFile:G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002\\Scenefiles\\lgt\\lighting\\seq_0001-shot_002_lighting_v0005.ma\n\t\tStrictErrorChecking:False\n\t\tVersion:2024\n",
+                "deadline_api_url": "http://deadline-server:8082"
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "40100000-4000-4400-8400-400000100000",
             "node_id": "console_print",
-            "position": [1100.0, 1340.0],
-            "parameters": { "data": "" },
-            "state": "idle", "bypassed": false
+            "position": [
+                3046.498870849609,
+                323.1390380859382
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "data": "Unknown",
+                "out": "Unknown"
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "40110000-4000-4400-8400-400000110000",
             "node_id": "console_print",
-            "position": [1660.0, 1200.0],
-            "parameters": { "data": "Maya prep failed — scene not submitted to Deadline." },
-            "state": "idle", "bypassed": false
+            "position": [
+                1590.0193786621096,
+                955.1116943359375
+            ],
+            "parameters": {
+                "exec_in": false,
+                "exec_out": true,
+                "data": "Maya prep failed — scene not submitted to Deadline.",
+                "out": "Maya prep failed — scene not submitted to Deadline."
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "110df397-bbe2-4c54-ba8a-63ba4de161fd",
+            "node_id": "prism_get_shot_by_sequence",
+            "position": [
+                -3094.734375000001,
+                317.2500000000001
+            ],
+            "parameters": {
+                "core": null,
+                "sequence": {
+                    "name": "seq_0001",
+                    "project_path": "G:\\Prism\\splash",
+                    "project_name": "splash"
+                },
+                "name": "shot_002",
+                "shot": {
+                    "sequence": "seq_0001",
+                    "shot": "shot_002",
+                    "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002",
+                    "location": "global",
+                    "type": "shot",
+                    "paths": [
+                        {
+                            "location": "global",
+                            "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002"
+                        }
+                    ]
+                },
+                "entity": {
+                    "type": "shot",
+                    "sequence": "seq_0001",
+                    "shot": "shot_002",
+                    "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002",
+                    "location": "global",
+                    "paths": [
+                        {
+                            "location": "global",
+                            "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002"
+                        }
+                    ]
+                },
+                "found": true
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "32c17f55-51d9-4662-827e-36be18ba778f",
+            "node_id": "prism_get_sequence_by_project",
+            "position": [
+                -3420.9531250000005,
+                323.51562500000006
+            ],
+            "parameters": {
+                "core": null,
+                "project": {
+                    "configPath": "G:\\Prism\\splash\\00_Pipeline\\pipeline.json",
+                    "name": "splash",
+                    "source": "disk"
+                },
+                "name": "seq_0001",
+                "sequence": {
+                    "name": "seq_0001",
+                    "project_path": "G:\\Prism\\splash",
+                    "project_name": "splash"
+                },
+                "found": true
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "7fd158ec-d379-44c6-af16-3f5e74519727",
+            "node_id": "prism_core_init",
+            "position": [
+                -4256.640000000001,
+                377.6
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": null,
+                "prism_scripts_path": "C:/Program Files/Prism2/Scripts",
+                "load_project": true,
+                "show_ui": false,
+                "core": null,
+                "version": ""
+            },
+            "state": "idle",
+            "bypassed": false
         }
     ],
     "connections": [
-        { "id": "4e010000-4e00-4e00-8e00-4e0000010000", "from_node": "40010000-4000-4400-8400-400000010000", "from_port": "exec_out", "to_node": "40070000-4000-4400-8400-400000070000", "to_port": "exec_in", "is_exec": true },
-        { "id": "4e020000-4e00-4e00-8e00-4e0000020000", "from_node": "40070000-4000-4400-8400-400000070000", "from_port": "exec_out", "to_node": "40080000-4000-4400-8400-400000080000", "to_port": "exec_in", "is_exec": true },
-        { "id": "4e030000-4e00-4e00-8e00-4e0000030000", "from_node": "40080000-4000-4400-8400-400000080000", "from_port": "exec_out", "to_node": "40090000-4000-4400-8400-400000090000", "to_port": "exec_in", "is_exec": true },
-        { "id": "4e040000-4e00-4e00-8e00-4e0000040000", "from_node": "40090000-4000-4400-8400-400000090000", "from_port": "exec_out", "to_node": "400a0000-4000-4400-8400-4000000a0000", "to_port": "exec_in", "is_exec": true },
-        { "id": "4e050000-4e00-4e00-8e00-4e0000050000", "from_node": "400a0000-4000-4400-8400-4000000a0000", "from_port": "exec_out", "to_node": "400b0000-4000-4400-8400-4000000b0000", "to_port": "exec_in", "is_exec": true },
-        { "id": "4e060000-4e00-4e00-8e00-4e0000060000", "from_node": "400b0000-4000-4400-8400-4000000b0000", "from_port": "exec_out", "to_node": "400c0000-4000-4400-8400-4000000c0000", "to_port": "exec_in", "is_exec": true },
-        { "id": "4e070000-4e00-4e00-8e00-4e0000070000", "from_node": "400c0000-4000-4400-8400-4000000c0000", "from_port": "exec_out", "to_node": "400d0000-4000-4400-8400-4000000d0000", "to_port": "exec_in", "is_exec": true },
-        { "id": "4e080000-4e00-4e00-8e00-4e0000080000", "from_node": "400d0000-4000-4400-8400-4000000d0000", "from_port": "exec_out", "to_node": "400e0000-4000-4400-8400-4000000e0000", "to_port": "exec_in", "is_exec": true },
-        { "id": "4e090000-4e00-4e00-8e00-4e0000090000", "from_node": "400e0000-4000-4400-8400-4000000e0000", "from_port": "exec_out", "to_node": "400f0000-4000-4400-8400-4000000f0000", "to_port": "exec_in", "is_exec": true },
-        { "id": "4e0a0000-4e00-4e00-8e00-4e00000a0000", "from_node": "400f0000-4000-4400-8400-4000000f0000", "from_port": "exec_out", "to_node": "40100000-4000-4400-8400-400000100000", "to_port": "exec_in", "is_exec": true },
-        { "id": "4e0b0000-4e00-4e00-8e00-4e00000b0000", "from_node": "400d0000-4000-4400-8400-4000000d0000", "from_port": "exec_false", "to_node": "40110000-4000-4400-8400-400000110000", "to_port": "exec_in", "is_exec": true },
-
-        { "id": "4d010000-4d00-4d00-8d00-4d0000010000", "from_node": "40010000-4000-4400-8400-400000010000", "from_port": "core", "to_node": "40020000-4000-4400-8400-400000020000", "to_port": "core", "is_exec": false },
-        { "id": "4d020000-4d00-4d00-8d00-4d0000020000", "from_node": "40010000-4000-4400-8400-400000010000", "from_port": "core", "to_node": "40030000-4000-4400-8400-400000030000", "to_port": "core", "is_exec": false },
-        { "id": "4d030000-4d00-4d00-8d00-4d0000030000", "from_node": "40010000-4000-4400-8400-400000010000", "from_port": "core", "to_node": "40050000-4000-4400-8400-400000050000", "to_port": "core", "is_exec": false },
-        { "id": "4d040000-4d00-4d00-8d00-4d0000040000", "from_node": "40010000-4000-4400-8400-400000010000", "from_port": "core", "to_node": "40060000-4000-4400-8400-400000060000", "to_port": "core", "is_exec": false },
-        { "id": "4d050000-4d00-4d00-8d00-4d0000050000", "from_node": "40010000-4000-4400-8400-400000010000", "from_port": "core", "to_node": "40070000-4000-4400-8400-400000070000", "to_port": "core", "is_exec": false },
-
-        { "id": "4d060000-4d00-4d00-8d00-4d0000060000", "from_node": "40030000-4000-4400-8400-400000030000", "from_port": "shots", "to_node": "40040000-4000-4400-8400-400000040000", "to_port": "shots", "is_exec": false },
-        { "id": "4d070000-4d00-4d00-8d00-4d0000070000", "from_node": "40040000-4000-4400-8400-400000040000", "from_port": "entity", "to_node": "40050000-4000-4400-8400-400000050000", "to_port": "entity", "is_exec": false },
-        { "id": "4d080000-4d00-4d00-8d00-4d0000080000", "from_node": "40040000-4000-4400-8400-400000040000", "from_port": "entity", "to_node": "40060000-4000-4400-8400-400000060000", "to_port": "entity", "is_exec": false },
-        { "id": "4d090000-4d00-4d00-8d00-4d0000090000", "from_node": "40040000-4000-4400-8400-400000040000", "from_port": "entity", "to_node": "40070000-4000-4400-8400-400000070000", "to_port": "entity", "is_exec": false },
-
-        { "id": "4d0a0000-4d00-4d00-8d00-4d00000a0000", "from_node": "40050000-4000-4400-8400-400000050000", "from_port": "frame_start", "to_node": "40090000-4000-4400-8400-400000090000", "to_port": "frame_start", "is_exec": false },
-        { "id": "4d0b0000-4d00-4d00-8d00-4d00000b0000", "from_node": "40050000-4000-4400-8400-400000050000", "from_port": "frame_end", "to_node": "40090000-4000-4400-8400-400000090000", "to_port": "frame_end", "is_exec": false },
-        { "id": "4d0c0000-4d00-4d00-8d00-4d00000c0000", "from_node": "40050000-4000-4400-8400-400000050000", "from_port": "frame_start", "to_node": "400a0000-4000-4400-8400-4000000a0000", "to_port": "frame_start", "is_exec": false },
-        { "id": "4d0d0000-4d00-4d00-8d00-4d00000d0000", "from_node": "40050000-4000-4400-8400-400000050000", "from_port": "frame_end", "to_node": "400a0000-4000-4400-8400-4000000a0000", "to_port": "frame_end", "is_exec": false },
-        { "id": "4d0e0000-4d00-4d00-8d00-4d00000e0000", "from_node": "40050000-4000-4400-8400-400000050000", "from_port": "frame_start", "to_node": "400e0000-4000-4400-8400-4000000e0000", "to_port": "frame_start", "is_exec": false },
-        { "id": "4d0f0000-4d00-4d00-8d00-4d00000f0000", "from_node": "40050000-4000-4400-8400-400000050000", "from_port": "frame_end", "to_node": "400e0000-4000-4400-8400-4000000e0000", "to_port": "frame_end", "is_exec": false },
-
-        { "id": "4d100000-4d00-4d00-8d00-4d0000100000", "from_node": "40060000-4000-4400-8400-400000060000", "from_port": "scene_path", "to_node": "40080000-4000-4400-8400-400000080000", "to_port": "scene_path", "is_exec": false },
-        { "id": "4d110000-4d00-4d00-8d00-4d0000110000", "from_node": "40070000-4000-4400-8400-400000070000", "from_port": "saved_path", "to_node": "400b0000-4000-4400-8400-4000000b0000", "to_port": "save_scene_path", "is_exec": false },
-        { "id": "4d120000-4d00-4d00-8d00-4d0000120000", "from_node": "40070000-4000-4400-8400-400000070000", "from_port": "saved_path", "to_node": "400e0000-4000-4400-8400-4000000e0000", "to_port": "scene_file", "is_exec": false },
-
-        { "id": "4d130000-4d00-4d00-8d00-4d0000130000", "from_node": "40080000-4000-4400-8400-400000080000", "from_port": "actions_out", "to_node": "40090000-4000-4400-8400-400000090000", "to_port": "actions_in", "is_exec": false },
-        { "id": "4d140000-4d00-4d00-8d00-4d0000140000", "from_node": "40090000-4000-4400-8400-400000090000", "from_port": "actions_out", "to_node": "400a0000-4000-4400-8400-4000000a0000", "to_port": "actions_in", "is_exec": false },
-        { "id": "4d150000-4d00-4d00-8d00-4d0000150000", "from_node": "400a0000-4000-4400-8400-4000000a0000", "from_port": "actions_out", "to_node": "400b0000-4000-4400-8400-4000000b0000", "to_port": "actions_in", "is_exec": false },
-        { "id": "4d160000-4d00-4d00-8d00-4d0000160000", "from_node": "400b0000-4000-4400-8400-4000000b0000", "from_port": "actions_out", "to_node": "400c0000-4000-4400-8400-4000000c0000", "to_port": "actions", "is_exec": false },
-
-        { "id": "4d170000-4d00-4d00-8d00-4d0000170000", "from_node": "400c0000-4000-4400-8400-4000000c0000", "from_port": "success", "to_node": "400d0000-4000-4400-8400-4000000d0000", "to_port": "condition", "is_exec": false },
-        { "id": "4d180000-4d00-4d00-8d00-4d0000180000", "from_node": "400e0000-4000-4400-8400-4000000e0000", "from_port": "job_id", "to_node": "400f0000-4000-4400-8400-4000000f0000", "to_port": "job_id", "is_exec": false },
-        { "id": "4d190000-4d00-4d00-8d00-4d0000190000", "from_node": "400f0000-4000-4400-8400-4000000f0000", "from_port": "status", "to_node": "40100000-4000-4400-8400-400000100000", "to_port": "data", "is_exec": false }
+        {
+            "id": "68a69d5d-1e66-45c7-b31e-2a1266c170f1",
+            "from_node": "40070000-4000-4400-8400-400000070000",
+            "from_port": "exec_out",
+            "to_node": "40080000-4000-4400-8400-400000080000",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "b30d326a-a910-4d8f-ac0e-9ad5194bfa44",
+            "from_node": "40080000-4000-4400-8400-400000080000",
+            "from_port": "exec_out",
+            "to_node": "40090000-4000-4400-8400-400000090000",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "abd1f3e9-1426-4f2c-8d6b-cd393949f3b5",
+            "from_node": "40090000-4000-4400-8400-400000090000",
+            "from_port": "exec_out",
+            "to_node": "400a0000-4000-4400-8400-4000000a0000",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "8f053084-1ab2-4781-bb19-3a8d2ee5f657",
+            "from_node": "400a0000-4000-4400-8400-4000000a0000",
+            "from_port": "exec_out",
+            "to_node": "400b0000-4000-4400-8400-4000000b0000",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "af693b1d-a29e-486f-a5f0-f8583b0f5814",
+            "from_node": "400b0000-4000-4400-8400-4000000b0000",
+            "from_port": "exec_out",
+            "to_node": "400c0000-4000-4400-8400-4000000c0000",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "f8ea9057-e6c6-46c3-8708-255a95805430",
+            "from_node": "400c0000-4000-4400-8400-4000000c0000",
+            "from_port": "exec_out",
+            "to_node": "400d0000-4000-4400-8400-4000000d0000",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "1abf27ab-496b-40d8-bd7b-7ee9d3c462a3",
+            "from_node": "400d0000-4000-4400-8400-4000000d0000",
+            "from_port": "exec_out",
+            "to_node": "400e0000-4000-4400-8400-4000000e0000",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "357091f0-10c0-406f-a988-7c0293b9c37a",
+            "from_node": "400e0000-4000-4400-8400-4000000e0000",
+            "from_port": "exec_out",
+            "to_node": "400f0000-4000-4400-8400-4000000f0000",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "3db21fba-ca07-4867-9ae4-3a67f716763d",
+            "from_node": "400f0000-4000-4400-8400-4000000f0000",
+            "from_port": "exec_out",
+            "to_node": "40100000-4000-4400-8400-400000100000",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "fafaba9e-233e-41fd-a9eb-2ee13adb7ee7",
+            "from_node": "400d0000-4000-4400-8400-4000000d0000",
+            "from_port": "exec_false",
+            "to_node": "40110000-4000-4400-8400-400000110000",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "9bcbb089-a442-451c-b5c8-c23681f509f9",
+            "from_node": "40050000-4000-4400-8400-400000050000",
+            "from_port": "frame_start",
+            "to_node": "40090000-4000-4400-8400-400000090000",
+            "to_port": "frame_start",
+            "is_exec": false
+        },
+        {
+            "id": "38bf933d-18ab-4f9c-b720-792319981740",
+            "from_node": "40050000-4000-4400-8400-400000050000",
+            "from_port": "frame_end",
+            "to_node": "40090000-4000-4400-8400-400000090000",
+            "to_port": "frame_end",
+            "is_exec": false
+        },
+        {
+            "id": "95ee1496-bb98-4122-886a-24b1c3e1ebe1",
+            "from_node": "40050000-4000-4400-8400-400000050000",
+            "from_port": "frame_start",
+            "to_node": "400a0000-4000-4400-8400-4000000a0000",
+            "to_port": "frame_start",
+            "is_exec": false
+        },
+        {
+            "id": "cb793737-978c-479e-bc4a-c2a9187195c4",
+            "from_node": "40050000-4000-4400-8400-400000050000",
+            "from_port": "frame_start",
+            "to_node": "400e0000-4000-4400-8400-4000000e0000",
+            "to_port": "frame_start",
+            "is_exec": false
+        },
+        {
+            "id": "9359ce7e-7182-4ff1-b863-f6cbc90b8d9d",
+            "from_node": "40070000-4000-4400-8400-400000070000",
+            "from_port": "saved_path",
+            "to_node": "400b0000-4000-4400-8400-4000000b0000",
+            "to_port": "save_scene_path",
+            "is_exec": false
+        },
+        {
+            "id": "3d658161-6f44-4c0d-b145-35b25039ea71",
+            "from_node": "40070000-4000-4400-8400-400000070000",
+            "from_port": "saved_path",
+            "to_node": "400e0000-4000-4400-8400-4000000e0000",
+            "to_port": "scene_file",
+            "is_exec": false
+        },
+        {
+            "id": "e3f54fd8-6564-4836-b820-3ebc6656fd8a",
+            "from_node": "40080000-4000-4400-8400-400000080000",
+            "from_port": "actions_out",
+            "to_node": "40090000-4000-4400-8400-400000090000",
+            "to_port": "actions_in",
+            "is_exec": false
+        },
+        {
+            "id": "bfc47bac-0f1c-49ea-944f-e98336583e02",
+            "from_node": "40090000-4000-4400-8400-400000090000",
+            "from_port": "actions_out",
+            "to_node": "400a0000-4000-4400-8400-4000000a0000",
+            "to_port": "actions_in",
+            "is_exec": false
+        },
+        {
+            "id": "fb02d7c8-4ceb-4f32-940b-032b65ba0849",
+            "from_node": "400a0000-4000-4400-8400-4000000a0000",
+            "from_port": "actions_out",
+            "to_node": "400b0000-4000-4400-8400-4000000b0000",
+            "to_port": "actions_in",
+            "is_exec": false
+        },
+        {
+            "id": "dce57d81-860e-4b9b-aa8d-b856e5ea9be5",
+            "from_node": "400b0000-4000-4400-8400-4000000b0000",
+            "from_port": "actions_out",
+            "to_node": "400c0000-4000-4400-8400-4000000c0000",
+            "to_port": "actions",
+            "is_exec": false
+        },
+        {
+            "id": "88b04f15-2226-4a60-b6bf-cc44f26e5933",
+            "from_node": "400c0000-4000-4400-8400-4000000c0000",
+            "from_port": "success",
+            "to_node": "400d0000-4000-4400-8400-4000000d0000",
+            "to_port": "condition",
+            "is_exec": false
+        },
+        {
+            "id": "98c8bd20-e244-4401-aaaa-8d7c2a38e7a0",
+            "from_node": "400e0000-4000-4400-8400-4000000e0000",
+            "from_port": "job_id",
+            "to_node": "400f0000-4000-4400-8400-4000000f0000",
+            "to_port": "job_id",
+            "is_exec": false
+        },
+        {
+            "id": "b58474c9-bfd8-42d9-bf57-a6d73b384e6c",
+            "from_node": "400f0000-4000-4400-8400-4000000f0000",
+            "from_port": "status",
+            "to_node": "40100000-4000-4400-8400-400000100000",
+            "to_port": "data",
+            "is_exec": false
+        },
+        {
+            "id": "0804e5ca-daa6-40a8-b55b-a326902114c8",
+            "from_node": "32c17f55-51d9-4662-827e-36be18ba778f",
+            "from_port": "sequence",
+            "to_node": "110df397-bbe2-4c54-ba8a-63ba4de161fd",
+            "to_port": "sequence",
+            "is_exec": false
+        },
+        {
+            "id": "7cf01099-021c-4845-99ef-e829801c1643",
+            "from_node": "110df397-bbe2-4c54-ba8a-63ba4de161fd",
+            "from_port": "entity",
+            "to_node": "40050000-4000-4400-8400-400000050000",
+            "to_port": "entity",
+            "is_exec": false
+        },
+        {
+            "id": "556452e7-6b41-4e64-a3c0-ebaaf7f151e0",
+            "from_node": "110df397-bbe2-4c54-ba8a-63ba4de161fd",
+            "from_port": "entity",
+            "to_node": "40060000-4000-4400-8400-400000060000",
+            "to_port": "entity",
+            "is_exec": false
+        },
+        {
+            "id": "f486e7c9-12b1-46ba-a76b-f15879ddc7e4",
+            "from_node": "110df397-bbe2-4c54-ba8a-63ba4de161fd",
+            "from_port": "entity",
+            "to_node": "40070000-4000-4400-8400-400000070000",
+            "to_port": "entity",
+            "is_exec": false
+        },
+        {
+            "id": "b30420b2-ed33-4906-be51-628c5ea2ba6f",
+            "from_node": "40020000-4000-4400-8400-400000020000",
+            "from_port": "project",
+            "to_node": "32c17f55-51d9-4662-827e-36be18ba778f",
+            "to_port": "project",
+            "is_exec": false
+        },
+        {
+            "id": "91e79fe8-5a35-422a-8bfd-77a50b8050a6",
+            "from_node": "40050000-4000-4400-8400-400000050000",
+            "from_port": "frame_end",
+            "to_node": "400a0000-4000-4400-8400-4000000a0000",
+            "to_port": "frame_end",
+            "is_exec": false
+        },
+        {
+            "id": "9b009c5c-11f2-4b4f-acf3-9f09a56f7219",
+            "from_node": "40050000-4000-4400-8400-400000050000",
+            "from_port": "frame_end",
+            "to_node": "400e0000-4000-4400-8400-4000000e0000",
+            "to_port": "frame_end",
+            "is_exec": false
+        },
+        {
+            "id": "be0b283f-c527-4c1e-944d-54dd7151896a",
+            "from_node": "40060000-4000-4400-8400-400000060000",
+            "from_port": "scene_path",
+            "to_node": "40080000-4000-4400-8400-400000080000",
+            "to_port": "scene_path",
+            "is_exec": false
+        }
     ],
     "sticky_notes": [
         {
             "id": "4f010000-4f00-4f00-8f00-4f0000010000",
-            "position": [60.0, 40.0], "size": [1200.0, 50.0],
+            "position": [
+                -4298.921051025388,
+                159.61364746093741
+            ],
+            "size": [
+                1200.0,
+                50.0
+            ],
             "text": "WORKFLOW: Prism shot -> Get frame range -> Maya render prep (lighting scene) -> Save render-ready file -> Submit to Deadline -> Monitor job.",
-            "color": "#1a1a2a"
+            "color": "#ffff7f"
         },
         {
             "id": "4f020000-4f00-4f00-8f00-4f0000020000",
-            "position": [460.0, 460.0], "size": [880.0, 80.0],
-            "text": "prism_get_scene_path finds the latest lighting scene.\nprism_save_scene_version reserves a fresh render-ready slot (v0001, v0002…).\nThe saved path goes to both save_scene and deadline_submit.",
+            "position": [
+                -3242.3831604003885,
+                1104.5798583984372
+            ],
+            "size": [
+                880.0,
+                80.0
+            ],
+            "text": "prism_get_scene_path finds the latest lighting scene.\nprism_save_scene_version reserves a fresh render-ready slot (v0001, v0002).\nThe saved path goes to both save_scene and deadline_submit.",
             "color": "#ffffcc"
         },
         {
             "id": "4f030000-4f00-4f00-8f00-4f0000030000",
-            "position": [60.0, 1280.0], "size": [500.0, 80.0],
+            "position": [
+                2028.471527099609,
+                2016.0687255859377
+            ],
+            "size": [
+                500.0,
+                80.0
+            ],
             "text": "Set deadlinecommand path and render output path.\nFrame range flows automatically from prism_get_shot_info.",
             "color": "#ffffcc"
         },
         {
             "id": "4f040000-4f00-4f00-8f00-4f0000040000",
-            "position": [600.0, 1280.0], "size": [460.0, 80.0],
+            "position": [
+                2575.109100341797,
+                909.3106079101565
+            ],
+            "size": [
+                460.0,
+                80.0
+            ],
             "text": "deadline_job_status polls the job immediately.\nIn production add a delay_timer node before polling.",
-            "color": "#2a3a5a"
+            "color": "#ffff7f"
         }
     ],
     "backdrops": [
         {
             "id": "4b010000-4b00-4b00-8b00-4b0000010000",
-            "position": [20.0, 20.0], "size": [380.0, 220.0],
+            "position": [
+                -4321.220855712889,
+                272.9144287109373
+            ],
+            "size": [
+                391.9873046875,
+                517.1093749999998
+            ],
             "title": "Prism Initialization",
             "color": "#1a2850"
         },
         {
             "id": "4b020000-4b00-4b00-8b00-4b0000020000",
-            "position": [460.0, 20.0], "size": [1380.0, 220.0],
+            "position": [
+                -3905.2589416503884,
+                272.4310302734374
+            ],
+            "size": [
+                275.0,
+                423.75
+            ],
             "title": "Project Discovery",
             "color": "#1a2850"
         },
         {
             "id": "4b030000-4b00-4b00-8b00-4b0000030000",
-            "position": [460.0, 260.0], "size": [1380.0, 450.0],
-            "title": "Shot Data — Frame Range + Scene Path + Version Slot",
+            "position": [
+                -3506.220855712888,
+                272.31384277343756
+            ],
+            "size": [
+                1408.5646057128897,
+                969.8736572265614
+            ],
+            "title": "Shot Data + Frame Range + Scene Path + Version Slot",
             "color": "#201040"
         },
         {
             "id": "4b040000-4b00-4b00-8b00-4b0000040000",
-            "position": [20.0, 500.0], "size": [380.0, 220.0],
+            "position": [
+                -1417.9005432128895,
+                63.949584960937614
+            ],
+            "size": [
+                294.85366821289017,
+                791.5191650390618
+            ],
             "title": "Version Management",
             "color": "#301a1a"
         },
         {
             "id": "4b050000-4b00-4b00-8b00-4b0000050000",
-            "position": [20.0, 750.0], "size": [2100.0, 420.0],
+            "position": [
+                -655.0831604003902,
+                684.5550537109374
+            ],
+            "size": [
+                2498.833160400389,
+                915.0543212890615
+            ],
             "title": "Maya Headless — Render Prep (open, set frame range, render settings, save)",
             "color": "#2a1800"
         },
         {
             "id": "4b060000-4b00-4b00-8b00-4b0000060000",
-            "position": [20.0, 1260.0], "size": [1500.0, 220.0],
+            "position": [
+                1966.498870849609,
+                245.58044433593818
+            ],
+            "size": [
+                1452.4731445312495,
+                1915.201416015624
+            ],
             "title": "Deadline — Submit + Monitor",
             "color": "#1a1a30"
         }

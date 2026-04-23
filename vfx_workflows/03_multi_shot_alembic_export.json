@@ -292,7 +292,7 @@
                         "frame_end": 1100
                     }
                 ],
-                "abc_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\shot_0001_alembic\\v0001\\seq_0001-shot_001_shot_0001_alembic_v0001.abc",
+                "abc_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\shot_0001_alembic\\v0003\\seq_0001-shot_001_shot_0001_alembic_v0003.abc",
                 "root_nodes": "",
                 "frame_start": 1001,
                 "frame_end": 1100,
@@ -351,7 +351,7 @@
                     },
                     {
                         "type": "export_alembic",
-                        "abc_path": "",
+                        "abc_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\shot_0001_alembic\\v0002\\seq_0001-shot_001_shot_0001_alembic_v0002.abc",
                         "root_nodes": "",
                         "frame_start": 1001,
                         "frame_end": 1100,
@@ -399,8 +399,8 @@
             "parameters": {
                 "exec_in": true,
                 "exec_out": true,
-                "data": false,
-                "out": "True"
+                "data": true,
+                "out": true
             },
             "state": "idle",
             "bypassed": false
@@ -498,27 +498,11 @@
                 },
                 "task": "animation",
                 "department": "animation",
-                "product_name": "shot_0001_alembic",
+                "product_name": "alembic",
                 "comment": "",
                 "extension": ".abc",
                 "success": true,
-                "version_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\shot_0001_alembic\\v0002\\seq_0001-shot_001_shot_0001_alembic_v0002.abc"
-            },
-            "state": "idle",
-            "bypassed": false
-        },
-        {
-            "instance_id": "67e9cb92-6d7d-4847-b186-579e49b54dc6",
-            "node_id": "console_print",
-            "position": [
-                1130.0,
-                46.0
-            ],
-            "parameters": {
-                "exec_in": true,
-                "exec_out": true,
-                "data": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\shot_0001_alembic\\v0001\\seq_0001-shot_001_shot_0001_alembic_v0001.abc",
-                "out": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\shot_0001_alembic\\v0002\\seq_0001-shot_001_shot_0001_alembic_v0002.abc"
+                "version_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\shot_0001_alembic\\v0003\\seq_0001-shot_001_shot_0001_alembic_v0003.abc"
             },
             "state": "idle",
             "bypassed": false
@@ -526,7 +510,7 @@
     ],
     "connections": [
         {
-            "id": "5084c6d4-d1db-4305-bcd3-6ce1ffc23af7",
+            "id": "48fc286a-c645-4694-9aa4-e741438d1037",
             "from_node": "30050000-3000-4300-8300-300000050000",
             "from_port": "exec_out",
             "to_node": "30060000-3000-4300-8300-300000060000",
@@ -534,7 +518,7 @@
             "is_exec": true
         },
         {
-            "id": "837673ce-1919-4a55-94c1-8b06b32079d1",
+            "id": "7b9a8762-eb8e-4faf-b155-e56427637dcb",
             "from_node": "30060000-3000-4300-8300-300000060000",
             "from_port": "exec_out",
             "to_node": "30070000-3000-4300-8300-300000070000",
@@ -542,7 +526,7 @@
             "is_exec": true
         },
         {
-            "id": "8d698aef-2724-4f6f-9c1d-1a733f88621f",
+            "id": "e79f7356-bdb9-44d4-93ca-ee7d75d3fa5f",
             "from_node": "300c0000-3000-4300-8300-3000000c0000",
             "from_port": "exec_out",
             "to_node": "300d0000-3000-4300-8300-3000000d0000",
@@ -550,7 +534,7 @@
             "is_exec": true
         },
         {
-            "id": "2db395a6-9aa3-433b-9ceb-2ab138603ccc",
+            "id": "735becc0-30ef-4756-9db2-b8d6fd1deece",
             "from_node": "300d0000-3000-4300-8300-3000000d0000",
             "from_port": "exec_out",
             "to_node": "300e0000-3000-4300-8300-3000000e0000",
@@ -558,7 +542,7 @@
             "is_exec": true
         },
         {
-            "id": "f913ffd7-2a40-4329-bb55-742fdc34dbe6",
+            "id": "741485da-1a94-489e-80bf-76adbb0baa78",
             "from_node": "300e0000-3000-4300-8300-3000000e0000",
             "from_port": "exec_out",
             "to_node": "300f0000-3000-4300-8300-3000000f0000",
@@ -566,7 +550,7 @@
             "is_exec": true
         },
         {
-            "id": "7c46d5aa-6661-4a44-93df-92635102513d",
+            "id": "e6777695-9dee-454f-9329-1b1c7411fbf5",
             "from_node": "300f0000-3000-4300-8300-3000000f0000",
             "from_port": "exec_out",
             "to_node": "30100000-3000-4300-8300-300000100000",
@@ -574,7 +558,7 @@
             "is_exec": true
         },
         {
-            "id": "2ad16a46-d87f-4df7-9175-ccc57d1ddf95",
+            "id": "a3d45088-540e-4f41-a34e-065d9579b65f",
             "from_node": "30050000-3000-4300-8300-300000050000",
             "from_port": "length",
             "to_node": "30060000-3000-4300-8300-300000060000",
@@ -582,7 +566,7 @@
             "is_exec": false
         },
         {
-            "id": "f06c14ae-5a43-4a72-aa4d-0dfeb915bf0c",
+            "id": "2b7169f9-33f7-4808-88d9-6eb9f34ca965",
             "from_node": "30060000-3000-4300-8300-300000060000",
             "from_port": "current_index",
             "to_node": "30070000-3000-4300-8300-300000070000",
@@ -590,7 +574,7 @@
             "is_exec": false
         },
         {
-            "id": "6416d360-4e4f-49c9-9039-0fee8c9fa916",
+            "id": "583cb9d6-d52d-4dfa-9c43-53aee2d7bda6",
             "from_node": "30070000-3000-4300-8300-300000070000",
             "from_port": "item",
             "to_node": "30080000-3000-4300-8300-300000080000",
@@ -598,7 +582,7 @@
             "is_exec": false
         },
         {
-            "id": "a11aa449-c1b3-4222-9a55-055efbd86b4a",
+            "id": "86c7d342-0288-41af-88e5-fe2f7351fd62",
             "from_node": "30080000-3000-4300-8300-300000080000",
             "from_port": "frame_start",
             "to_node": "300d0000-3000-4300-8300-3000000d0000",
@@ -606,7 +590,7 @@
             "is_exec": false
         },
         {
-            "id": "11243446-df69-4880-9096-96330c3c8cba",
+            "id": "6b1a6799-ab14-4bd1-8385-1a4ce1c47cee",
             "from_node": "30080000-3000-4300-8300-300000080000",
             "from_port": "frame_end",
             "to_node": "300d0000-3000-4300-8300-3000000d0000",
@@ -614,7 +598,7 @@
             "is_exec": false
         },
         {
-            "id": "ecb3fe04-5f2b-40a3-b19c-7b74b1555a23",
+            "id": "e6c15d50-3819-4098-bd91-efc81a5cd757",
             "from_node": "30080000-3000-4300-8300-300000080000",
             "from_port": "frame_start",
             "to_node": "300e0000-3000-4300-8300-3000000e0000",
@@ -622,7 +606,7 @@
             "is_exec": false
         },
         {
-            "id": "9644a4bb-f885-429c-ac36-4c1e00fac446",
+            "id": "0275aa54-be7d-448c-962c-dbba23f97dfc",
             "from_node": "30080000-3000-4300-8300-300000080000",
             "from_port": "frame_end",
             "to_node": "300e0000-3000-4300-8300-3000000e0000",
@@ -630,7 +614,7 @@
             "is_exec": false
         },
         {
-            "id": "46b95f2c-0c34-4e50-a935-4603ed3c7e87",
+            "id": "c69191a1-61b3-4ba6-81ac-13e1544693e3",
             "from_node": "300c0000-3000-4300-8300-3000000c0000",
             "from_port": "actions_out",
             "to_node": "300d0000-3000-4300-8300-3000000d0000",
@@ -638,7 +622,7 @@
             "is_exec": false
         },
         {
-            "id": "5ede4aa1-60f4-4261-85a6-4e0adfc3e509",
+            "id": "2b319e90-0974-46df-9ad1-2d7f7707e876",
             "from_node": "300d0000-3000-4300-8300-3000000d0000",
             "from_port": "actions_out",
             "to_node": "300e0000-3000-4300-8300-3000000e0000",
@@ -646,7 +630,7 @@
             "is_exec": false
         },
         {
-            "id": "e00bf813-8bc1-4ec7-8eb1-522214867c88",
+            "id": "22dca958-8711-4703-a97e-d1722d93ee4f",
             "from_node": "300e0000-3000-4300-8300-3000000e0000",
             "from_port": "actions_out",
             "to_node": "300f0000-3000-4300-8300-3000000f0000",
@@ -654,7 +638,7 @@
             "is_exec": false
         },
         {
-            "id": "f80517b0-d1c4-48df-96d8-88048b861dec",
+            "id": "641cdedf-6fdf-42cf-b965-c147f5a999f8",
             "from_node": "300f0000-3000-4300-8300-3000000f0000",
             "from_port": "success",
             "to_node": "30100000-3000-4300-8300-300000100000",
@@ -662,7 +646,7 @@
             "is_exec": false
         },
         {
-            "id": "ac3ee411-288c-4e8e-b3f5-6dccaaea43bb",
+            "id": "c8214dd5-432e-4272-8a7f-3989d8a37223",
             "from_node": "30020000-3000-4300-8300-300000020000",
             "from_port": "project",
             "to_node": "9861ed90-aaa5-40f7-be71-38650ff4de7b",
@@ -670,7 +654,7 @@
             "is_exec": false
         },
         {
-            "id": "4bfe410f-d063-4eb2-8792-ed64503675e2",
+            "id": "54789c03-79d0-447c-978c-f668b8badeef",
             "from_node": "9861ed90-aaa5-40f7-be71-38650ff4de7b",
             "from_port": "shots",
             "to_node": "30070000-3000-4300-8300-300000070000",
@@ -678,7 +662,7 @@
             "is_exec": false
         },
         {
-            "id": "79a7df79-72d4-4725-a0c8-15784a38b202",
+            "id": "8adb1375-468e-49e0-93f3-f3d108922c7b",
             "from_node": "9861ed90-aaa5-40f7-be71-38650ff4de7b",
             "from_port": "shots",
             "to_node": "30050000-3000-4300-8300-300000050000",
@@ -686,7 +670,7 @@
             "is_exec": false
         },
         {
-            "id": "9541140a-f9fb-44a5-901a-39a8dbf431f1",
+            "id": "db0a79ac-ee01-41b1-bee1-6ac6e8b01596",
             "from_node": "30090000-3000-4300-8300-300000090000",
             "from_port": "scene_path",
             "to_node": "300c0000-3000-4300-8300-3000000c0000",
@@ -694,7 +678,7 @@
             "is_exec": false
         },
         {
-            "id": "c2fad52e-9ed6-484e-a6b8-11b2fa24c3fd",
+            "id": "1730780c-dd01-4dc3-ba2b-72bab0f4102a",
             "from_node": "30070000-3000-4300-8300-300000070000",
             "from_port": "item",
             "to_node": "30090000-3000-4300-8300-300000090000",
@@ -702,7 +686,7 @@
             "is_exec": false
         },
         {
-            "id": "1f19458b-d9bb-4163-a025-9f821fd1d9fc",
+            "id": "51bac04c-1599-477b-a53e-cc44b020671b",
             "from_node": "30070000-3000-4300-8300-300000070000",
             "from_port": "item",
             "to_node": "8015bc11-c826-4e8e-b531-4068e01e6233",
@@ -710,7 +694,7 @@
             "is_exec": false
         },
         {
-            "id": "55fccd85-b430-4137-809e-45f748bfd183",
+            "id": "99e72d6b-aeb6-49b7-a4e6-b4391bbe8862",
             "from_node": "30070000-3000-4300-8300-300000070000",
             "from_port": "exec_out",
             "to_node": "8015bc11-c826-4e8e-b531-4068e01e6233",
@@ -718,7 +702,7 @@
             "is_exec": true
         },
         {
-            "id": "8e13be63-57ef-4c0e-a113-32121de51072",
+            "id": "90d9f682-133d-4f8f-8a9e-2ea925dd27f6",
             "from_node": "8015bc11-c826-4e8e-b531-4068e01e6233",
             "from_port": "exec_out",
             "to_node": "300c0000-3000-4300-8300-3000000c0000",
@@ -726,27 +710,11 @@
             "is_exec": true
         },
         {
-            "id": "a78aed6f-aaed-4f66-96df-07bb510eedb2",
+            "id": "c0b0907f-1b15-4a02-abdd-c5efb89945f9",
             "from_node": "8015bc11-c826-4e8e-b531-4068e01e6233",
             "from_port": "version_path",
             "to_node": "300e0000-3000-4300-8300-3000000e0000",
             "to_port": "abc_path",
-            "is_exec": false
-        },
-        {
-            "id": "be81c783-b8e3-4c14-b08d-9e87f6bc3351",
-            "from_node": "8015bc11-c826-4e8e-b531-4068e01e6233",
-            "from_port": "exec_out",
-            "to_node": "67e9cb92-6d7d-4847-b186-579e49b54dc6",
-            "to_port": "exec_in",
-            "is_exec": true
-        },
-        {
-            "id": "3c16d57b-b169-49fd-a09d-4e933cef9e34",
-            "from_node": "8015bc11-c826-4e8e-b531-4068e01e6233",
-            "from_port": "version_path",
-            "to_node": "67e9cb92-6d7d-4847-b186-579e49b54dc6",
-            "to_port": "data",
             "is_exec": false
         }
     ],
@@ -774,7 +742,7 @@
                 488.5477012863903,
                 71.36987696082576
             ],
-            "text": "Change 'EP01' in prism_get_shots_by_sequence to target a specific sequence.\nAll shots in that sequence are passed into the loop.",
+            "text": "Change 'seq_0001' in prism_get_shots_by_project_sequence to target a specific sequence.\nAll shots in that sequence are passed into the loop.",
             "color": "#ffffcc"
         },
         {
@@ -867,7 +835,7 @@
                 1478.7120331180388,
                 922.4660386892783
             ],
-            "title": "Per-Shot Data — Scene Path + Frame Range + ABC Path",
+            "title": "Per-Shot Data  Scene Path + Frame Range + ABC Path",
             "color": "#201030"
         },
         {
