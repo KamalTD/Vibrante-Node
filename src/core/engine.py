@@ -278,13 +278,24 @@ class NetworkExecutor(QObject):
             return True
             
         self._currently_executing.add(node_id)
-        
+
         try:
             instance = self.node_instances[node_id]
+            node_model = self.graph_manager.nodes.get(node_id)
+
+            # BYPASS: skip execution but pass exec flow through so the chain continues.
+            if node_model and getattr(node_model, 'bypassed', False):
+                self.node_started.emit(node_id)
+                self.node_finished.emit(node_id, "success")
+                # Fire every exec_out so downstream nodes still run.
+                for conn in self.graph_manager.connections:
+                    if conn.from_node == node_id and conn.is_exec:
+                        await self._execute_flow(conn.to_node)
+                return True
 
             # 1. PULL UPSTREAM DATA NODES (In Port Order)
             incoming = self._incoming_data_conns.get(node_id, [])
-            
+
             for port_name in instance.inputs:
                 for conn in incoming:
                     if conn.to_port == port_name:
@@ -297,12 +308,12 @@ class NetworkExecutor(QObject):
                                 await self._run_single_node_impl(from_id, is_data_pull=True)
 
             self.node_started.emit(node_id)
-            
+
             # Reset all exec outputs
             for name, port in instance.outputs.items():
                 if port.data_type == 'exec':
                     instance.parameters[name] = None
-            
+
             # Sync all inputs
             for conn in incoming:
                 from_results = self.node_results.get(conn.from_node, {})
@@ -310,10 +321,10 @@ class NetworkExecutor(QObject):
                     val = from_results.get(conn.from_port)
                     instance.parameters[conn.to_port] = val
                     await instance.on_parameter_changed(conn.to_port, val)
-            
+
             inputs = instance.parameters.copy()
             success, result, error = await SafeRuntime.run_node_safe(instance.execute, inputs)
-            
+
             if success:
                 self._executed_nodes.add(node_id)
                 self.node_results[node_id].update(result)
