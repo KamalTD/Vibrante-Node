@@ -1,189 +1,818 @@
 {
     "nodes": [
         {
-            "instance_id": "30010000-3000-4300-8300-300000010000",
-            "node_id": "prism_core_init",
-            "position": [60.0, 100.0],
-            "parameters": { "prism_scripts_path": "", "load_project": false, "show_ui": false },
-            "state": "idle", "bypassed": false
-        },
-        {
             "instance_id": "30020000-3000-4300-8300-300000020000",
             "node_id": "prism_get_project_by_name",
-            "position": [500.0, 100.0],
-            "parameters": { "name": "MyProject" },
-            "state": "idle", "bypassed": false
-        },
-        {
-            "instance_id": "30030000-3000-4300-8300-300000030000",
-            "node_id": "prism_get_shots",
-            "position": [500.0, 320.0],
-            "parameters": {},
-            "state": "idle", "bypassed": false
-        },
-        {
-            "instance_id": "30040000-3000-4300-8300-300000040000",
-            "node_id": "prism_get_shots_by_sequence",
-            "position": [950.0, 320.0],
-            "parameters": { "sequence": "EP01" },
-            "state": "idle", "bypassed": false
+            "position": [
+                -2196.0601162206062,
+                -77.42227925819923
+            ],
+            "parameters": {
+                "core": null,
+                "name": "splash",
+                "project": {
+                    "configPath": "G:\\Prism\\splash\\00_Pipeline\\pipeline.json",
+                    "name": "splash",
+                    "source": "disk"
+                },
+                "project_path": "G:\\Prism\\splash",
+                "config_path": "G:\\Prism\\splash\\00_Pipeline\\pipeline.json",
+                "found": true
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "30050000-3000-4300-8300-300000050000",
             "node_id": "list_length",
-            "position": [60.0, 340.0],
-            "parameters": { "list_name": "shots" },
-            "state": "idle", "bypassed": false
+            "position": [
+                -1089.589217783107,
+                111.3033066793009
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "list_name": "shots",
+                "list": [
+                    {
+                        "sequence": "seq_0001",
+                        "shot": "shot_001",
+                        "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001",
+                        "location": "global",
+                        "type": "shot",
+                        "paths": [
+                            {
+                                "location": "global",
+                                "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001"
+                            }
+                        ]
+                    },
+                    {
+                        "sequence": "seq_0001",
+                        "shot": "shot_002",
+                        "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002",
+                        "location": "global",
+                        "type": "shot",
+                        "paths": [
+                            {
+                                "location": "global",
+                                "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002"
+                            }
+                        ]
+                    }
+                ],
+                "length": 2
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "30060000-3000-4300-8300-300000060000",
             "node_id": "for_loop",
-            "position": [60.0, 560.0],
-            "parameters": { "start": 0, "step": 1 },
-            "state": "idle", "bypassed": false
+            "position": [
+                -670.9907802831076,
+                -72.30606832069887
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "start": 0,
+                "end": 2,
+                "step": 1,
+                "current_index": 1,
+                "indices": [
+                    0,
+                    1
+                ]
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "30070000-3000-4300-8300-300000070000",
             "node_id": "get_list_item",
-            "position": [500.0, 560.0],
-            "parameters": { "list_name": "shots" },
-            "state": "idle", "bypassed": false
+            "position": [
+                -200.07500879873277,
+                85.94341898398866
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "list_name": "shots",
+                "list": [
+                    {
+                        "sequence": "seq_0001",
+                        "shot": "shot_001",
+                        "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001",
+                        "location": "global",
+                        "type": "shot",
+                        "paths": [
+                            {
+                                "location": "global",
+                                "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001"
+                            }
+                        ]
+                    },
+                    {
+                        "sequence": "seq_0001",
+                        "shot": "shot_002",
+                        "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002",
+                        "location": "global",
+                        "type": "shot",
+                        "paths": [
+                            {
+                                "location": "global",
+                                "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002"
+                            }
+                        ]
+                    }
+                ],
+                "index": 1,
+                "item": {
+                    "sequence": "seq_0001",
+                    "shot": "shot_001",
+                    "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001",
+                    "location": "global",
+                    "type": "shot",
+                    "paths": [
+                        {
+                            "location": "global",
+                            "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001"
+                        }
+                    ]
+                },
+                "success": true
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "30080000-3000-4300-8300-300000080000",
             "node_id": "prism_get_shot_info",
-            "position": [950.0, 560.0],
-            "parameters": {},
-            "state": "idle", "bypassed": false
+            "position": [
+                1702.40124813196,
+                -209.53635118927858
+            ],
+            "parameters": {
+                "core": null,
+                "entity": {
+                    "sequence": "seq_0001",
+                    "shot": "shot_001",
+                    "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001",
+                    "location": "global",
+                    "type": "shot",
+                    "paths": [
+                        {
+                            "location": "global",
+                            "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001"
+                        }
+                    ]
+                },
+                "sequence": "seq_0001",
+                "shot_name": "shot_001",
+                "frame_start": 1001,
+                "frame_end": 1100,
+                "fps": 24.0,
+                "entity_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001"
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "30090000-3000-4300-8300-300000090000",
             "node_id": "prism_get_scene_path",
-            "position": [1400.0, 560.0],
-            "parameters": { "department": "anim", "task": "anim", "application": "maya", "version": "" },
-            "state": "idle", "bypassed": false
-        },
-        {
-            "instance_id": "300a0000-3000-4300-8300-3000000a0000",
-            "node_id": "string_concat",
-            "position": [500.0, 800.0],
-            "parameters": { "a": "C:/abc_exports/" },
-            "state": "idle", "bypassed": false
-        },
-        {
-            "instance_id": "300b0000-3000-4300-8300-3000000b0000",
-            "node_id": "string_concat",
-            "position": [900.0, 800.0],
-            "parameters": { "b": ".abc" },
-            "state": "idle", "bypassed": false
+            "position": [
+                1128.2923379059512,
+                249.60510940327538
+            ],
+            "parameters": {
+                "core": null,
+                "entity": {
+                    "sequence": "seq_0001",
+                    "shot": "shot_001",
+                    "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001",
+                    "location": "global",
+                    "type": "shot",
+                    "paths": [
+                        {
+                            "location": "global",
+                            "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001"
+                        }
+                    ]
+                },
+                "department": "animation",
+                "task": "animation",
+                "application": "maya",
+                "version": "v0006",
+                "scene_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Scenefiles\\anm\\animation\\seq_0001-shot_001_Animation_v0006.ma",
+                "task_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Scenefiles\\anm\\animation",
+                "exists": true
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "300c0000-3000-4300-8300-3000000c0000",
             "node_id": "maya_action_open_scene",
-            "position": [60.0, 1060.0],
-            "parameters": { "force": true },
-            "state": "idle", "bypassed": false
+            "position": [
+                2352.9319454772553,
+                615.3927702742114
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "actions_in": [],
+                "scene_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Scenefiles\\anm\\animation\\seq_0001-shot_001_Animation_v0006.ma",
+                "force": true,
+                "actions_out": [
+                    {
+                        "type": "open_scene",
+                        "scene_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Scenefiles\\anm\\animation\\seq_0001-shot_001_Animation_v0006.ma",
+                        "force": true
+                    }
+                ]
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "300d0000-3000-4300-8300-3000000d0000",
             "node_id": "maya_action_set_frame_range",
-            "position": [460.0, 1060.0],
-            "parameters": {},
-            "state": "idle", "bypassed": false
+            "position": [
+                2774.9046017272553,
+                493.32245777421144
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "actions_in": [
+                    {
+                        "type": "open_scene",
+                        "scene_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Scenefiles\\anm\\animation\\seq_0001-shot_001_Animation_v0006.ma",
+                        "force": true
+                    }
+                ],
+                "frame_start": 1001,
+                "frame_end": 1100,
+                "actions_out": [
+                    {
+                        "type": "open_scene",
+                        "scene_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Scenefiles\\anm\\animation\\seq_0001-shot_001_Animation_v0006.ma",
+                        "force": true
+                    },
+                    {
+                        "type": "set_frame_range",
+                        "frame_start": 1001,
+                        "frame_end": 1100
+                    }
+                ]
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "300e0000-3000-4300-8300-3000000e0000",
             "node_id": "maya_action_export_alembic",
-            "position": [860.0, 1060.0],
-            "parameters": { "root_nodes": "", "uvWrite": true, "worldSpace": true },
-            "state": "idle", "bypassed": false
+            "position": [
+                3182.893664227256,
+                361.79823902421145
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "actions_in": [
+                    {
+                        "type": "open_scene",
+                        "scene_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Scenefiles\\anm\\animation\\seq_0001-shot_001_Animation_v0006.ma",
+                        "force": true
+                    },
+                    {
+                        "type": "set_frame_range",
+                        "frame_start": 1001,
+                        "frame_end": 1100
+                    }
+                ],
+                "abc_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\shot_0001_alembic\\v0001\\seq_0001-shot_001_shot_0001_alembic_v0001.abc",
+                "root_nodes": "",
+                "frame_start": 1001,
+                "frame_end": 1100,
+                "uvWrite": true,
+                "worldSpace": true,
+                "actions_out": [
+                    {
+                        "type": "open_scene",
+                        "scene_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Scenefiles\\anm\\animation\\seq_0001-shot_001_Animation_v0006.ma",
+                        "force": true
+                    },
+                    {
+                        "type": "set_frame_range",
+                        "frame_start": 1001,
+                        "frame_end": 1100
+                    },
+                    {
+                        "type": "export_alembic",
+                        "abc_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\shot_0001_alembic\\v0002\\seq_0001-shot_001_shot_0001_alembic_v0002.abc",
+                        "root_nodes": "",
+                        "frame_start": 1001,
+                        "frame_end": 1100,
+                        "uvWrite": true,
+                        "worldSpace": true
+                    }
+                ]
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "300f0000-3000-4300-8300-3000000f0000",
             "node_id": "maya_headless",
-            "position": [1260.0, 1060.0],
-            "parameters": { "maya_version": "2024", "mayapy.exe": "C:/Program Files/Autodesk/Maya2024/bin/mayapy.exe", "bat_file": "", "maya_env_file": "", "scene_file": "" },
-            "state": "idle", "bypassed": false
+            "position": [
+                3593.635851727257,
+                542.9505827742114
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "maya_version": "2024",
+                "mayapy.exe": "C:/Program Files/Autodesk/Maya2024/bin/mayapy.exe",
+                "bat_file": "",
+                "maya_env_file": "",
+                "scene_file": "",
+                "actions": [
+                    {
+                        "type": "open_scene",
+                        "scene_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Scenefiles\\anm\\animation\\seq_0001-shot_001_Animation_v0006.ma",
+                        "force": true
+                    },
+                    {
+                        "type": "set_frame_range",
+                        "frame_start": 1001,
+                        "frame_end": 1100
+                    },
+                    {
+                        "type": "export_alembic",
+                        "abc_path": "",
+                        "root_nodes": "",
+                        "frame_start": 1001,
+                        "frame_end": 1100,
+                        "uvWrite": true,
+                        "worldSpace": true
+                    }
+                ],
+                "success": true,
+                "stdout": "Cannot create Prism instance because no QApplication exists. To load Prism you can create a QApplication before initilizing mayapy like this: import sys;from PySide2 import QtWidgets;QtWidgets.QApplication(sys.argv)\n",
+                "stderr": "Qt WebEngine seems to be initialized from a plugin. Please set Qt::AA_ShareOpenGLContexts using QCoreApplication::setAttribute before constructing QGuiApplication.\nWarning: line 1: displayRGBColor is unavailable in batch mode\nFile read in  0.95 seconds.\nAbcExport v1.0 using Alembic 1.8.3 (built Oct 18 2023 13:02:50)\n",
+                "exit_code": 0,
+                "executed_actions": [
+                    {
+                        "type": "open_scene",
+                        "scene_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Scenefiles\\anm\\animation\\seq_0001-shot_001_Animation_v0006.ma",
+                        "force": true
+                    },
+                    {
+                        "type": "set_frame_range",
+                        "frame_start": 1001,
+                        "frame_end": 1100
+                    },
+                    {
+                        "type": "export_alembic",
+                        "abc_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\shot_0001_alembic\\v0002\\seq_0001-shot_001_shot_0001_alembic_v0002.abc",
+                        "root_nodes": "",
+                        "frame_start": 1001,
+                        "frame_end": 1100,
+                        "uvWrite": true,
+                        "worldSpace": true
+                    }
+                ],
+                "skipped_actions": []
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "30100000-3000-4300-8300-300000100000",
             "node_id": "console_print",
-            "position": [1700.0, 1060.0],
-            "parameters": { "data": "" },
-            "state": "idle", "bypassed": false
+            "position": [
+                3964.56921688196,
+                599.0427503732212
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "data": false,
+                "out": "True"
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "5f18f214-730e-4e7b-8215-885a3097b297",
+            "node_id": "prism_core_init",
+            "position": [
+                -3120.211691976236,
+                -94.81306246336632
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": null,
+                "prism_scripts_path": "C:/Program Files/Prism2/Scripts",
+                "load_project": true,
+                "show_ui": false,
+                "core": null,
+                "version": ""
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "9861ed90-aaa5-40f7-be71-38650ff4de7b",
+            "node_id": "prism_get_shots_by_project_sequence",
+            "position": [
+                -1845.6187500000003,
+                -74.68671875000001
+            ],
+            "parameters": {
+                "core": null,
+                "project": {
+                    "configPath": "G:\\Prism\\splash\\00_Pipeline\\pipeline.json",
+                    "name": "splash",
+                    "source": "disk"
+                },
+                "sequence": "seq_0001",
+                "shots": [
+                    {
+                        "sequence": "seq_0001",
+                        "shot": "shot_001",
+                        "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001",
+                        "location": "global",
+                        "type": "shot",
+                        "paths": [
+                            {
+                                "location": "global",
+                                "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001"
+                            }
+                        ]
+                    },
+                    {
+                        "sequence": "seq_0001",
+                        "shot": "shot_002",
+                        "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002",
+                        "location": "global",
+                        "type": "shot",
+                        "paths": [
+                            {
+                                "location": "global",
+                                "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002"
+                            }
+                        ]
+                    }
+                ],
+                "count": 2
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "8015bc11-c826-4e8e-b531-4068e01e6233",
+            "node_id": "prism_create_product_version",
+            "position": [
+                752.8420410156239,
+                -156.01318359374974
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "core": null,
+                "entity": {
+                    "sequence": "seq_0001",
+                    "shot": "shot_001",
+                    "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001",
+                    "location": "global",
+                    "type": "shot",
+                    "paths": [
+                        {
+                            "location": "global",
+                            "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001"
+                        }
+                    ]
+                },
+                "task": "animation",
+                "department": "animation",
+                "product_name": "shot_0001_alembic",
+                "comment": "",
+                "extension": ".abc",
+                "success": true,
+                "version_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\shot_0001_alembic\\v0002\\seq_0001-shot_001_shot_0001_alembic_v0002.abc"
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "67e9cb92-6d7d-4847-b186-579e49b54dc6",
+            "node_id": "console_print",
+            "position": [
+                1130.0,
+                46.0
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "data": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\shot_0001_alembic\\v0001\\seq_0001-shot_001_shot_0001_alembic_v0001.abc",
+                "out": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\shot_0001_alembic\\v0002\\seq_0001-shot_001_shot_0001_alembic_v0002.abc"
+            },
+            "state": "idle",
+            "bypassed": false
         }
     ],
     "connections": [
-        { "id": "3e010000-3e00-4e00-8e00-3e0000010000", "from_node": "30010000-3000-4300-8300-300000010000", "from_port": "exec_out", "to_node": "30050000-3000-4300-8300-300000050000", "to_port": "exec_in", "is_exec": true },
-        { "id": "3e020000-3e00-4e00-8e00-3e0000020000", "from_node": "30050000-3000-4300-8300-300000050000", "from_port": "exec_out", "to_node": "30060000-3000-4300-8300-300000060000", "to_port": "exec_in", "is_exec": true },
-        { "id": "3e030000-3e00-4e00-8e00-3e0000030000", "from_node": "30060000-3000-4300-8300-300000060000", "from_port": "exec_out", "to_node": "30070000-3000-4300-8300-300000070000", "to_port": "exec_in", "is_exec": true },
-        { "id": "3e040000-3e00-4e00-8e00-3e0000040000", "from_node": "30070000-3000-4300-8300-300000070000", "from_port": "exec_out", "to_node": "300a0000-3000-4300-8300-3000000a0000", "to_port": "exec_in", "is_exec": true },
-        { "id": "3e050000-3e00-4e00-8e00-3e0000050000", "from_node": "300a0000-3000-4300-8300-3000000a0000", "from_port": "exec_out", "to_node": "300b0000-3000-4300-8300-3000000b0000", "to_port": "exec_in", "is_exec": true },
-        { "id": "3e060000-3e00-4e00-8e00-3e0000060000", "from_node": "300b0000-3000-4300-8300-3000000b0000", "from_port": "exec_out", "to_node": "300c0000-3000-4300-8300-3000000c0000", "to_port": "exec_in", "is_exec": true },
-        { "id": "3e070000-3e00-4e00-8e00-3e0000070000", "from_node": "300c0000-3000-4300-8300-3000000c0000", "from_port": "exec_out", "to_node": "300d0000-3000-4300-8300-3000000d0000", "to_port": "exec_in", "is_exec": true },
-        { "id": "3e080000-3e00-4e00-8e00-3e0000080000", "from_node": "300d0000-3000-4300-8300-3000000d0000", "from_port": "exec_out", "to_node": "300e0000-3000-4300-8300-3000000e0000", "to_port": "exec_in", "is_exec": true },
-        { "id": "3e090000-3e00-4e00-8e00-3e0000090000", "from_node": "300e0000-3000-4300-8300-3000000e0000", "from_port": "exec_out", "to_node": "300f0000-3000-4300-8300-3000000f0000", "to_port": "exec_in", "is_exec": true },
-        { "id": "3e0a0000-3e00-4e00-8e00-3e00000a0000", "from_node": "300f0000-3000-4300-8300-3000000f0000", "from_port": "exec_out", "to_node": "30100000-3000-4300-8300-300000100000", "to_port": "exec_in", "is_exec": true },
-
-        { "id": "3d010000-3d00-4d00-8d00-3d0000010000", "from_node": "30010000-3000-4300-8300-300000010000", "from_port": "core", "to_node": "30020000-3000-4300-8300-300000020000", "to_port": "core", "is_exec": false },
-        { "id": "3d020000-3d00-4d00-8d00-3d0000020000", "from_node": "30010000-3000-4300-8300-300000010000", "from_port": "core", "to_node": "30030000-3000-4300-8300-300000030000", "to_port": "core", "is_exec": false },
-        { "id": "3d030000-3d00-4d00-8d00-3d0000030000", "from_node": "30010000-3000-4300-8300-300000010000", "from_port": "core", "to_node": "30080000-3000-4300-8300-300000080000", "to_port": "core", "is_exec": false },
-        { "id": "3d040000-3d00-4d00-8d00-3d0000040000", "from_node": "30010000-3000-4300-8300-300000010000", "from_port": "core", "to_node": "30090000-3000-4300-8300-300000090000", "to_port": "core", "is_exec": false },
-
-        { "id": "3d050000-3d00-4d00-8d00-3d0000050000", "from_node": "30030000-3000-4300-8300-300000030000", "from_port": "shots", "to_node": "30040000-3000-4300-8300-300000040000", "to_port": "shots", "is_exec": false },
-        { "id": "3d060000-3d00-4d00-8d00-3d0000060000", "from_node": "30040000-3000-4300-8300-300000040000", "from_port": "shots", "to_node": "30050000-3000-4300-8300-300000050000", "to_port": "list", "is_exec": false },
-        { "id": "3d070000-3d00-4d00-8d00-3d0000070000", "from_node": "30040000-3000-4300-8300-300000040000", "from_port": "shots", "to_node": "30070000-3000-4300-8300-300000070000", "to_port": "list", "is_exec": false },
-        { "id": "3d080000-3d00-4d00-8d00-3d0000080000", "from_node": "30050000-3000-4300-8300-300000050000", "from_port": "length", "to_node": "30060000-3000-4300-8300-300000060000", "to_port": "end", "is_exec": false },
-        { "id": "3d090000-3d00-4d00-8d00-3d0000090000", "from_node": "30060000-3000-4300-8300-300000060000", "from_port": "current_index", "to_node": "30070000-3000-4300-8300-300000070000", "to_port": "index", "is_exec": false },
-
-        { "id": "3d0a0000-3d00-4d00-8d00-3d00000a0000", "from_node": "30070000-3000-4300-8300-300000070000", "from_port": "item", "to_node": "30080000-3000-4300-8300-300000080000", "to_port": "entity", "is_exec": false },
-        { "id": "3d0b0000-3d00-4d00-8d00-3d00000b0000", "from_node": "30070000-3000-4300-8300-300000070000", "from_port": "item", "to_node": "30090000-3000-4300-8300-300000090000", "to_port": "entity", "is_exec": false },
-
-        { "id": "3d0c0000-3d00-4d00-8d00-3d00000c0000", "from_node": "30080000-3000-4300-8300-300000080000", "from_port": "shot_name", "to_node": "300a0000-3000-4300-8300-3000000a0000", "to_port": "b", "is_exec": false },
-        { "id": "3d0d0000-3d00-4d00-8d00-3d00000d0000", "from_node": "30080000-3000-4300-8300-300000080000", "from_port": "frame_start", "to_node": "300d0000-3000-4300-8300-3000000d0000", "to_port": "frame_start", "is_exec": false },
-        { "id": "3d0e0000-3d00-4d00-8d00-3d00000e0000", "from_node": "30080000-3000-4300-8300-300000080000", "from_port": "frame_end", "to_node": "300d0000-3000-4300-8300-3000000d0000", "to_port": "frame_end", "is_exec": false },
-        { "id": "3d0f0000-3d00-4d00-8d00-3d00000f0000", "from_node": "30080000-3000-4300-8300-300000080000", "from_port": "frame_start", "to_node": "300e0000-3000-4300-8300-3000000e0000", "to_port": "frame_start", "is_exec": false },
-        { "id": "3d100000-3d00-4d00-8d00-3d0000100000", "from_node": "30080000-3000-4300-8300-300000080000", "from_port": "frame_end", "to_node": "300e0000-3000-4300-8300-3000000e0000", "to_port": "frame_end", "is_exec": false },
-
-        { "id": "3d110000-3d00-4d00-8d00-3d0000110000", "from_node": "30090000-3000-4300-8300-300000090000", "from_port": "scene_path", "to_node": "300c0000-3000-4300-8300-3000000c0000", "to_port": "scene_path", "is_exec": false },
-
-        { "id": "3d120000-3d00-4d00-8d00-3d0000120000", "from_node": "300a0000-3000-4300-8300-3000000a0000", "from_port": "result", "to_node": "300b0000-3000-4300-8300-3000000b0000", "to_port": "a", "is_exec": false },
-        { "id": "3d130000-3d00-4d00-8d00-3d0000130000", "from_node": "300b0000-3000-4300-8300-3000000b0000", "from_port": "result", "to_node": "300e0000-3000-4300-8300-3000000e0000", "to_port": "abc_path", "is_exec": false },
-
-        { "id": "3d140000-3d00-4d00-8d00-3d0000140000", "from_node": "300c0000-3000-4300-8300-3000000c0000", "from_port": "actions_out", "to_node": "300d0000-3000-4300-8300-3000000d0000", "to_port": "actions_in", "is_exec": false },
-        { "id": "3d150000-3d00-4d00-8d00-3d0000150000", "from_node": "300d0000-3000-4300-8300-3000000d0000", "from_port": "actions_out", "to_node": "300e0000-3000-4300-8300-3000000e0000", "to_port": "actions_in", "is_exec": false },
-        { "id": "3d160000-3d00-4d00-8d00-3d0000160000", "from_node": "300e0000-3000-4300-8300-3000000e0000", "from_port": "actions_out", "to_node": "300f0000-3000-4300-8300-3000000f0000", "to_port": "actions", "is_exec": false },
-
-        { "id": "3d170000-3d00-4d00-8d00-3d0000170000", "from_node": "300f0000-3000-4300-8300-3000000f0000", "from_port": "success", "to_node": "30100000-3000-4300-8300-300000100000", "to_port": "data", "is_exec": false }
+        {
+            "id": "5084c6d4-d1db-4305-bcd3-6ce1ffc23af7",
+            "from_node": "30050000-3000-4300-8300-300000050000",
+            "from_port": "exec_out",
+            "to_node": "30060000-3000-4300-8300-300000060000",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "837673ce-1919-4a55-94c1-8b06b32079d1",
+            "from_node": "30060000-3000-4300-8300-300000060000",
+            "from_port": "exec_out",
+            "to_node": "30070000-3000-4300-8300-300000070000",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "8d698aef-2724-4f6f-9c1d-1a733f88621f",
+            "from_node": "300c0000-3000-4300-8300-3000000c0000",
+            "from_port": "exec_out",
+            "to_node": "300d0000-3000-4300-8300-3000000d0000",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "2db395a6-9aa3-433b-9ceb-2ab138603ccc",
+            "from_node": "300d0000-3000-4300-8300-3000000d0000",
+            "from_port": "exec_out",
+            "to_node": "300e0000-3000-4300-8300-3000000e0000",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "f913ffd7-2a40-4329-bb55-742fdc34dbe6",
+            "from_node": "300e0000-3000-4300-8300-3000000e0000",
+            "from_port": "exec_out",
+            "to_node": "300f0000-3000-4300-8300-3000000f0000",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "7c46d5aa-6661-4a44-93df-92635102513d",
+            "from_node": "300f0000-3000-4300-8300-3000000f0000",
+            "from_port": "exec_out",
+            "to_node": "30100000-3000-4300-8300-300000100000",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "2ad16a46-d87f-4df7-9175-ccc57d1ddf95",
+            "from_node": "30050000-3000-4300-8300-300000050000",
+            "from_port": "length",
+            "to_node": "30060000-3000-4300-8300-300000060000",
+            "to_port": "end",
+            "is_exec": false
+        },
+        {
+            "id": "f06c14ae-5a43-4a72-aa4d-0dfeb915bf0c",
+            "from_node": "30060000-3000-4300-8300-300000060000",
+            "from_port": "current_index",
+            "to_node": "30070000-3000-4300-8300-300000070000",
+            "to_port": "index",
+            "is_exec": false
+        },
+        {
+            "id": "6416d360-4e4f-49c9-9039-0fee8c9fa916",
+            "from_node": "30070000-3000-4300-8300-300000070000",
+            "from_port": "item",
+            "to_node": "30080000-3000-4300-8300-300000080000",
+            "to_port": "entity",
+            "is_exec": false
+        },
+        {
+            "id": "a11aa449-c1b3-4222-9a55-055efbd86b4a",
+            "from_node": "30080000-3000-4300-8300-300000080000",
+            "from_port": "frame_start",
+            "to_node": "300d0000-3000-4300-8300-3000000d0000",
+            "to_port": "frame_start",
+            "is_exec": false
+        },
+        {
+            "id": "11243446-df69-4880-9096-96330c3c8cba",
+            "from_node": "30080000-3000-4300-8300-300000080000",
+            "from_port": "frame_end",
+            "to_node": "300d0000-3000-4300-8300-3000000d0000",
+            "to_port": "frame_end",
+            "is_exec": false
+        },
+        {
+            "id": "ecb3fe04-5f2b-40a3-b19c-7b74b1555a23",
+            "from_node": "30080000-3000-4300-8300-300000080000",
+            "from_port": "frame_start",
+            "to_node": "300e0000-3000-4300-8300-3000000e0000",
+            "to_port": "frame_start",
+            "is_exec": false
+        },
+        {
+            "id": "9644a4bb-f885-429c-ac36-4c1e00fac446",
+            "from_node": "30080000-3000-4300-8300-300000080000",
+            "from_port": "frame_end",
+            "to_node": "300e0000-3000-4300-8300-3000000e0000",
+            "to_port": "frame_end",
+            "is_exec": false
+        },
+        {
+            "id": "46b95f2c-0c34-4e50-a935-4603ed3c7e87",
+            "from_node": "300c0000-3000-4300-8300-3000000c0000",
+            "from_port": "actions_out",
+            "to_node": "300d0000-3000-4300-8300-3000000d0000",
+            "to_port": "actions_in",
+            "is_exec": false
+        },
+        {
+            "id": "5ede4aa1-60f4-4261-85a6-4e0adfc3e509",
+            "from_node": "300d0000-3000-4300-8300-3000000d0000",
+            "from_port": "actions_out",
+            "to_node": "300e0000-3000-4300-8300-3000000e0000",
+            "to_port": "actions_in",
+            "is_exec": false
+        },
+        {
+            "id": "e00bf813-8bc1-4ec7-8eb1-522214867c88",
+            "from_node": "300e0000-3000-4300-8300-3000000e0000",
+            "from_port": "actions_out",
+            "to_node": "300f0000-3000-4300-8300-3000000f0000",
+            "to_port": "actions",
+            "is_exec": false
+        },
+        {
+            "id": "f80517b0-d1c4-48df-96d8-88048b861dec",
+            "from_node": "300f0000-3000-4300-8300-3000000f0000",
+            "from_port": "success",
+            "to_node": "30100000-3000-4300-8300-300000100000",
+            "to_port": "data",
+            "is_exec": false
+        },
+        {
+            "id": "ac3ee411-288c-4e8e-b3f5-6dccaaea43bb",
+            "from_node": "30020000-3000-4300-8300-300000020000",
+            "from_port": "project",
+            "to_node": "9861ed90-aaa5-40f7-be71-38650ff4de7b",
+            "to_port": "project",
+            "is_exec": false
+        },
+        {
+            "id": "4bfe410f-d063-4eb2-8792-ed64503675e2",
+            "from_node": "9861ed90-aaa5-40f7-be71-38650ff4de7b",
+            "from_port": "shots",
+            "to_node": "30070000-3000-4300-8300-300000070000",
+            "to_port": "list",
+            "is_exec": false
+        },
+        {
+            "id": "79a7df79-72d4-4725-a0c8-15784a38b202",
+            "from_node": "9861ed90-aaa5-40f7-be71-38650ff4de7b",
+            "from_port": "shots",
+            "to_node": "30050000-3000-4300-8300-300000050000",
+            "to_port": "list",
+            "is_exec": false
+        },
+        {
+            "id": "9541140a-f9fb-44a5-901a-39a8dbf431f1",
+            "from_node": "30090000-3000-4300-8300-300000090000",
+            "from_port": "scene_path",
+            "to_node": "300c0000-3000-4300-8300-3000000c0000",
+            "to_port": "scene_path",
+            "is_exec": false
+        },
+        {
+            "id": "c2fad52e-9ed6-484e-a6b8-11b2fa24c3fd",
+            "from_node": "30070000-3000-4300-8300-300000070000",
+            "from_port": "item",
+            "to_node": "30090000-3000-4300-8300-300000090000",
+            "to_port": "entity",
+            "is_exec": false
+        },
+        {
+            "id": "1f19458b-d9bb-4163-a025-9f821fd1d9fc",
+            "from_node": "30070000-3000-4300-8300-300000070000",
+            "from_port": "item",
+            "to_node": "8015bc11-c826-4e8e-b531-4068e01e6233",
+            "to_port": "entity",
+            "is_exec": false
+        },
+        {
+            "id": "55fccd85-b430-4137-809e-45f748bfd183",
+            "from_node": "30070000-3000-4300-8300-300000070000",
+            "from_port": "exec_out",
+            "to_node": "8015bc11-c826-4e8e-b531-4068e01e6233",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "8e13be63-57ef-4c0e-a113-32121de51072",
+            "from_node": "8015bc11-c826-4e8e-b531-4068e01e6233",
+            "from_port": "exec_out",
+            "to_node": "300c0000-3000-4300-8300-3000000c0000",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "a78aed6f-aaed-4f66-96df-07bb510eedb2",
+            "from_node": "8015bc11-c826-4e8e-b531-4068e01e6233",
+            "from_port": "version_path",
+            "to_node": "300e0000-3000-4300-8300-3000000e0000",
+            "to_port": "abc_path",
+            "is_exec": false
+        },
+        {
+            "id": "be81c783-b8e3-4c14-b08d-9e87f6bc3351",
+            "from_node": "8015bc11-c826-4e8e-b531-4068e01e6233",
+            "from_port": "exec_out",
+            "to_node": "67e9cb92-6d7d-4847-b186-579e49b54dc6",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "3c16d57b-b169-49fd-a09d-4e933cef9e34",
+            "from_node": "8015bc11-c826-4e8e-b531-4068e01e6233",
+            "from_port": "version_path",
+            "to_node": "67e9cb92-6d7d-4847-b186-579e49b54dc6",
+            "to_port": "data",
+            "is_exec": false
+        }
     ],
     "sticky_notes": [
         {
             "id": "3f010000-3f00-4f00-8f00-3f0000010000",
-            "position": [60.0, 40.0], "size": [880.0, 50.0],
-            "text": "WORKFLOW: Iterate over every shot in a sequence — open its anim scene and export an alembic cache per shot automatically.",
-            "color": "#2a1a00"
+            "position": [
+                -3214.564926181127,
+                -310.66200627948615
+            ],
+            "size": [
+                685.6793750000003,
+                50.0
+            ],
+            "text": "WORKFLOW: Iterate over every shot in a sequence , open its animation scene and export an alembic cache per shot automatically.",
+            "color": "#ffff7f"
         },
         {
             "id": "3f020000-3f00-4f00-8f00-3f0000020000",
-            "position": [500.0, 440.0], "size": [840.0, 80.0],
+            "position": [
+                -2121.8484825363894,
+                206.95043553917412
+            ],
+            "size": [
+                488.5477012863903,
+                71.36987696082576
+            ],
             "text": "Change 'EP01' in prism_get_shots_by_sequence to target a specific sequence.\nAll shots in that sequence are passed into the loop.",
             "color": "#ffffcc"
         },
         {
             "id": "3f030000-3f00-4f00-8f00-3f0000030000",
-            "position": [60.0, 480.0], "size": [390.0, 80.0],
+            "position": [
+                -2066.7368740331067,
+                292.2876816793009
+            ],
+            "size": [
+                390.0,
+                80.0
+            ],
             "text": "for_loop iterates 0 to shot_count.\nEach iteration: get one shot dict,\nlook up its scene path and frame range.",
-            "color": "#2a3a5a"
+            "color": "#ffff7f"
         },
         {
             "id": "3f040000-3f00-4f00-8f00-3f0000040000",
-            "position": [460.0, 740.0], "size": [640.0, 80.0],
+            "position": [
+                2345.1160918819605,
+                -61.27463243927862
+            ],
+            "size": [
+                640.0,
+                80.0
+            ],
             "text": "Build abc path: 'C:/abc_exports/' + shot_name + '.abc'\nChange base path in string_concat_1 parameter 'a'.",
             "color": "#ffffcc"
         },
         {
             "id": "3f050000-3f00-4f00-8f00-3f0000050000",
-            "position": [60.0, 1000.0], "size": [1700.0, 50.0],
+            "position": [
+                -2218.5923427831062,
+                1854.7681504293012
+            ],
+            "size": [
+                1700.0,
+                50.0
+            ],
             "text": "Per-shot Maya action chain (runs N times — once per shot): open scene -> set frame range -> export alembic -> execute headless",
             "color": "#1a1a2a"
         }
@@ -191,31 +820,66 @@
     "backdrops": [
         {
             "id": "3b010000-3b00-4b00-8b00-3b0000010000",
-            "position": [20.0, 20.0], "size": [380.0, 220.0],
+            "position": [
+                -3190.2329677831062,
+                -160.38809957069924
+            ],
+            "size": [
+                368.67187500000006,
+                394.06249999999994
+            ],
             "title": "Prism Initialization",
             "color": "#1a2850"
         },
         {
             "id": "3b020000-3b00-4b00-8b00-3b0000020000",
-            "position": [460.0, 20.0], "size": [880.0, 450.0],
-            "title": "Shot Discovery — Get All Shots in Sequence",
+            "position": [
+                -2384.9741787206067,
+                -154.69962300819924
+            ],
+            "size": [
+                1119.9741787206067,
+                584.6996230081993
+            ],
+            "title": "Shot Discovery Get All Shots in Sequence",
             "color": "#1a2850"
         },
         {
             "id": "3b030000-3b00-4b00-8b00-3b0000030000",
-            "position": [20.0, 310.0], "size": [380.0, 420.0],
+            "position": [
+                -1215.6235927831071,
+                -161.40372457069878
+            ],
+            "size": [
+                1659.5211124979585,
+                592.372190313273
+            ],
             "title": "Loop Control",
             "color": "#1a3020"
         },
         {
             "id": "3b040000-3b00-4b00-8b00-3b0000040000",
-            "position": [460.0, 500.0], "size": [1380.0, 450.0],
+            "position": [
+                647.7528106319603,
+                -270.6105699392786
+            ],
+            "size": [
+                1478.7120331180388,
+                922.4660386892783
+            ],
             "title": "Per-Shot Data — Scene Path + Frame Range + ABC Path",
             "color": "#201030"
         },
         {
             "id": "3b050000-3b00-4b00-8b00-3b0000050000",
-            "position": [20.0, 1000.0], "size": [1800.0, 220.0],
+            "position": [
+                2314.085070477256,
+                290.0794890242115
+            ],
+            "size": [
+                1907.106335772742,
+                776.815042225788
+            ],
             "title": "Maya Headless — Per-Shot Execution (runs N times)",
             "color": "#2a1800"
         }

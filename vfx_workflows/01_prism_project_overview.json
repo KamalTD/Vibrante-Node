@@ -3,167 +3,472 @@
         {
             "instance_id": "10010000-1000-4100-8100-100000010000",
             "node_id": "prism_core_init",
-            "position": [60.0, 60.0],
-            "parameters": { "prism_scripts_path": "", "load_project": false, "show_ui": false },
-            "state": "idle", "bypassed": false
+            "position": [
+                72.5,
+                -316.25
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "prism_scripts_path": "",
+                "load_project": false,
+                "show_ui": false,
+                "version": "v2.1.0"
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "10020000-1000-4100-8100-100000020000",
             "node_id": "prism_get_project_by_name",
-            "position": [500.0, 60.0],
-            "parameters": { "name": "MyProject" },
-            "state": "idle", "bypassed": false
+            "position": [
+                508.75,
+                -329.9999999999999
+            ],
+            "parameters": {
+                "core": null,
+                "name": "MyProject",
+                "project": {},
+                "project_path": "",
+                "config_path": "",
+                "found": false
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "10030000-1000-4100-8100-100000030000",
             "node_id": "prism_get_sequences_by_project",
-            "position": [950.0, 60.0],
-            "parameters": {},
-            "state": "idle", "bypassed": false
+            "position": [
+                1143.1093750000002,
+                -312.3749999999999
+            ],
+            "parameters": {
+                "core": null,
+                "project": null,
+                "sequences": [],
+                "count": 0
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "10040000-1000-4100-8100-100000040000",
             "node_id": "prism_get_asset_types_by_project",
-            "position": [500.0, 300.0],
-            "parameters": {},
-            "state": "idle", "bypassed": false
+            "position": [
+                1142.7500000000002,
+                -142.71874999999986
+            ],
+            "parameters": {
+                "core": null,
+                "project": null,
+                "asset_types": [],
+                "asset_type": {},
+                "count": 0,
+                "found": false
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "10050000-1000-4100-8100-100000050000",
             "node_id": "prism_get_asset_type_by_name",
-            "position": [950.0, 300.0],
-            "parameters": { "name": "chars" },
-            "state": "idle", "bypassed": false
+            "position": [
+                1130.3281250000002,
+                336.81249999999983
+            ],
+            "parameters": {
+                "core": null,
+                "project": null,
+                "name": "chars",
+                "asset_type": {},
+                "entity": {},
+                "matches": [],
+                "found": false
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "10060000-1000-4100-8100-100000060000",
             "node_id": "prism_get_assets_by_project",
-            "position": [1400.0, 300.0],
-            "parameters": {},
-            "state": "idle", "bypassed": false
+            "position": [
+                1130.746875,
+                582.115625
+            ],
+            "parameters": {
+                "core": null,
+                "project": null,
+                "assets": [],
+                "count": 0
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "10070000-1000-4100-8100-100000070000",
             "node_id": "prism_get_shots",
-            "position": [500.0, 540.0],
-            "parameters": {},
-            "state": "idle", "bypassed": false
+            "position": [
+                563.2656250000006,
+                882.7177734375002
+            ],
+            "parameters": {
+                "core": null,
+                "sequences": [],
+                "shots": [],
+                "shot_count": 0
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "10080000-1000-4100-8100-100000080000",
             "node_id": "prism_get_shot_by_name",
-            "position": [950.0, 540.0],
-            "parameters": { "sequence": "EP01", "shot": "0010" },
-            "state": "idle", "bypassed": false
+            "position": [
+                1118.1187500000003,
+                869.0427734375
+            ],
+            "parameters": {
+                "core": null,
+                "shots": [],
+                "sequence": "SEQ_001",
+                "shot": "{}",
+                "entity": {},
+                "found": false
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "10090000-1000-4100-8100-100000090000",
             "node_id": "console_print",
-            "position": [60.0, 300.0],
-            "parameters": { "data": "" },
-            "state": "idle", "bypassed": false
+            "position": [
+                1666.3703918457031,
+                -305.74111938476545
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "data": [],
+                "out": "[]"
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "100a0000-1000-4100-8100-1000000a0000",
             "node_id": "console_print",
-            "position": [60.0, 460.0],
-            "parameters": { "data": "" },
-            "state": "idle", "bypassed": false
+            "position": [
+                1670.0881958007803,
+                -109.64736938476547
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "data": [],
+                "out": "[]"
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "100b0000-1000-4100-8100-1000000b0000",
             "node_id": "console_print",
-            "position": [60.0, 620.0],
-            "parameters": { "data": "" },
-            "state": "idle", "bypassed": false
+            "position": [
+                1683.4291076660147,
+                579.6954345703126
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "data": 0,
+                "out": "0"
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "100c0000-1000-4100-8100-1000000c0000",
             "node_id": "console_print",
-            "position": [60.0, 780.0],
-            "parameters": { "data": "" },
-            "state": "idle", "bypassed": false
+            "position": [
+                1686.9105529785138,
+                892.5518798828123
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "data": null,
+                "out": "{}"
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "9429a334-2298-4d17-8528-6128483e54b7",
+            "node_id": "console_print",
+            "position": [
+                1673.4016418457031,
+                96.10263061523452
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "data": null,
+                "out": "{}"
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "5a00c599-b590-417a-8fd9-457efb1dbd66",
+            "node_id": "prism_get_sequence_by_project",
+            "position": [
+                1150.4726562500002,
+                48.29687500000032
+            ],
+            "parameters": {
+                "core": null,
+                "project": null,
+                "name": "SEQ_001",
+                "sequence": {},
+                "found": false
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "7de031ea-2796-4911-a340-c99df5ffb618",
+            "node_id": "console_print",
+            "position": [
+                1672.2572326660156,
+                337.82043457031267
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "data": [],
+                "out": "{}"
+            },
+            "state": "idle",
+            "bypassed": false
         }
     ],
     "connections": [
-        { "id": "1e010000-1e00-4e00-8e00-1e0000010000", "from_node": "10010000-1000-4100-8100-100000010000", "from_port": "exec_out", "to_node": "10090000-1000-4100-8100-100000090000", "to_port": "exec_in", "is_exec": true },
-        { "id": "1e020000-1e00-4e00-8e00-1e0000020000", "from_node": "10090000-1000-4100-8100-100000090000", "from_port": "exec_out", "to_node": "100a0000-1000-4100-8100-1000000a0000", "to_port": "exec_in", "is_exec": true },
-        { "id": "1e030000-1e00-4e00-8e00-1e0000030000", "from_node": "100a0000-1000-4100-8100-1000000a0000", "from_port": "exec_out", "to_node": "100b0000-1000-4100-8100-1000000b0000", "to_port": "exec_in", "is_exec": true },
-        { "id": "1e040000-1e00-4e00-8e00-1e0000040000", "from_node": "100b0000-1000-4100-8100-1000000b0000", "from_port": "exec_out", "to_node": "100c0000-1000-4100-8100-1000000c0000", "to_port": "exec_in", "is_exec": true },
-
-        { "id": "1d010000-1d00-4d00-8d00-1d0000010000", "from_node": "10010000-1000-4100-8100-100000010000", "from_port": "core", "to_node": "10020000-1000-4100-8100-100000020000", "to_port": "core", "is_exec": false },
-        { "id": "1d020000-1d00-4d00-8d00-1d0000020000", "from_node": "10010000-1000-4100-8100-100000010000", "from_port": "core", "to_node": "10040000-1000-4100-8100-100000040000", "to_port": "core", "is_exec": false },
-        { "id": "1d030000-1d00-4d00-8d00-1d0000030000", "from_node": "10010000-1000-4100-8100-100000010000", "from_port": "core", "to_node": "10050000-1000-4100-8100-100000050000", "to_port": "core", "is_exec": false },
-        { "id": "1d040000-1d00-4d00-8d00-1d0000040000", "from_node": "10010000-1000-4100-8100-100000010000", "from_port": "core", "to_node": "10060000-1000-4100-8100-100000060000", "to_port": "core", "is_exec": false },
-        { "id": "1d050000-1d00-4d00-8d00-1d0000050000", "from_node": "10010000-1000-4100-8100-100000010000", "from_port": "core", "to_node": "10070000-1000-4100-8100-100000070000", "to_port": "core", "is_exec": false },
-        { "id": "1d060000-1d00-4d00-8d00-1d0000060000", "from_node": "10010000-1000-4100-8100-100000010000", "from_port": "core", "to_node": "10080000-1000-4100-8100-100000080000", "to_port": "core", "is_exec": false },
-
-        { "id": "1d070000-1d00-4d00-8d00-1d0000070000", "from_node": "10020000-1000-4100-8100-100000020000", "from_port": "project", "to_node": "10030000-1000-4100-8100-100000030000", "to_port": "project", "is_exec": false },
-        { "id": "1d080000-1d00-4d00-8d00-1d0000080000", "from_node": "10020000-1000-4100-8100-100000020000", "from_port": "project", "to_node": "10040000-1000-4100-8100-100000040000", "to_port": "project", "is_exec": false },
-        { "id": "1d090000-1d00-4d00-8d00-1d0000090000", "from_node": "10020000-1000-4100-8100-100000020000", "from_port": "project", "to_node": "10050000-1000-4100-8100-100000050000", "to_port": "project", "is_exec": false },
-        { "id": "1d0a0000-1d00-4d00-8d00-1d00000a0000", "from_node": "10020000-1000-4100-8100-100000020000", "from_port": "project", "to_node": "10060000-1000-4100-8100-100000060000", "to_port": "project", "is_exec": false },
-
-        { "id": "1d0b0000-1d00-4d00-8d00-1d00000b0000", "from_node": "10030000-1000-4100-8100-100000030000", "from_port": "count", "to_node": "10090000-1000-4100-8100-100000090000", "to_port": "data", "is_exec": false },
-        { "id": "1d0c0000-1d00-4d00-8d00-1d00000c0000", "from_node": "10040000-1000-4100-8100-100000040000", "from_port": "count", "to_node": "100a0000-1000-4100-8100-1000000a0000", "to_port": "data", "is_exec": false },
-        { "id": "1d0d0000-1d00-4d00-8d00-1d00000d0000", "from_node": "10060000-1000-4100-8100-100000060000", "from_port": "count", "to_node": "100b0000-1000-4100-8100-1000000b0000", "to_port": "data", "is_exec": false },
-        { "id": "1d0e0000-1d00-4d00-8d00-1d00000e0000", "from_node": "10070000-1000-4100-8100-100000070000", "from_port": "shots", "to_node": "10080000-1000-4100-8100-100000080000", "to_port": "shots", "is_exec": false },
-        { "id": "1d0f0000-1d00-4d00-8d00-1d00000f0000", "from_node": "10080000-1000-4100-8100-100000080000", "from_port": "entity", "to_node": "100c0000-1000-4100-8100-1000000c0000", "to_port": "data", "is_exec": false }
+        {
+            "id": "33bb413e-283f-4d65-9dee-2d1f18210ef4",
+            "from_node": "10020000-1000-4100-8100-100000020000",
+            "from_port": "project",
+            "to_node": "10030000-1000-4100-8100-100000030000",
+            "to_port": "project",
+            "is_exec": false
+        },
+        {
+            "id": "fc6a0930-fd9d-47b6-9eb3-96f483b80e3d",
+            "from_node": "10020000-1000-4100-8100-100000020000",
+            "from_port": "project",
+            "to_node": "10040000-1000-4100-8100-100000040000",
+            "to_port": "project",
+            "is_exec": false
+        },
+        {
+            "id": "0962963f-7673-49b3-9fd7-629937db2766",
+            "from_node": "10020000-1000-4100-8100-100000020000",
+            "from_port": "project",
+            "to_node": "10050000-1000-4100-8100-100000050000",
+            "to_port": "project",
+            "is_exec": false
+        },
+        {
+            "id": "0192c351-8d2b-488b-ac83-08a2e5088430",
+            "from_node": "10020000-1000-4100-8100-100000020000",
+            "from_port": "project",
+            "to_node": "10060000-1000-4100-8100-100000060000",
+            "to_port": "project",
+            "is_exec": false
+        },
+        {
+            "id": "d7453979-ff13-4d44-91d3-611b5c54f04e",
+            "from_node": "10060000-1000-4100-8100-100000060000",
+            "from_port": "count",
+            "to_node": "100b0000-1000-4100-8100-1000000b0000",
+            "to_port": "data",
+            "is_exec": false
+        },
+        {
+            "id": "6cbb974f-02e1-460a-a58c-ef7e2898c619",
+            "from_node": "10070000-1000-4100-8100-100000070000",
+            "from_port": "shots",
+            "to_node": "10080000-1000-4100-8100-100000080000",
+            "to_port": "shots",
+            "is_exec": false
+        },
+        {
+            "id": "fe599fd8-88fd-41c5-9600-3899acaac5c2",
+            "from_node": "10080000-1000-4100-8100-100000080000",
+            "from_port": "entity",
+            "to_node": "100c0000-1000-4100-8100-1000000c0000",
+            "to_port": "data",
+            "is_exec": false
+        },
+        {
+            "id": "a3d7c94e-7461-40a3-a995-4a89453594e9",
+            "from_node": "10040000-1000-4100-8100-100000040000",
+            "from_port": "asset_types",
+            "to_node": "100a0000-1000-4100-8100-1000000a0000",
+            "to_port": "data",
+            "is_exec": false
+        },
+        {
+            "id": "4fd10c24-af4f-44eb-9d5e-7fe777dfcfa9",
+            "from_node": "10030000-1000-4100-8100-100000030000",
+            "from_port": "sequences",
+            "to_node": "10090000-1000-4100-8100-100000090000",
+            "to_port": "data",
+            "is_exec": false
+        },
+        {
+            "id": "59d668f6-e92c-498a-a581-4b9d320a6987",
+            "from_node": "10020000-1000-4100-8100-100000020000",
+            "from_port": "project",
+            "to_node": "5a00c599-b590-417a-8fd9-457efb1dbd66",
+            "to_port": "project",
+            "is_exec": false
+        },
+        {
+            "id": "e8f302aa-2b8b-47ad-97b4-dbbf0a755aeb",
+            "from_node": "5a00c599-b590-417a-8fd9-457efb1dbd66",
+            "from_port": "sequence",
+            "to_node": "9429a334-2298-4d17-8528-6128483e54b7",
+            "to_port": "data",
+            "is_exec": false
+        },
+        {
+            "id": "5f82a624-2e63-49c8-a7de-548dd359fe62",
+            "from_node": "10050000-1000-4100-8100-100000050000",
+            "from_port": "asset_type",
+            "to_node": "7de031ea-2796-4911-a340-c99df5ffb618",
+            "to_port": "data",
+            "is_exec": false
+        }
     ],
     "sticky_notes": [
         {
             "id": "1f010000-1f00-4f00-8f00-1f0000010000",
-            "position": [80.0, 200.0], "size": [360.0, 90.0],
+            "position": [
+                16.38954687499981,
+                -477.6224999999997
+            ],
+            "size": [
+                360.0,
+                90.0
+            ],
             "text": "Prism nodes auto-resolve core once\nprism_core_init runs. Core wires\nshown here for explicit clarity.",
-            "color": "#2a3a5a"
+            "color": "#00ff00"
         },
         {
             "id": "1f020000-1f00-4f00-8f00-1f0000020000",
-            "position": [500.0, 200.0], "size": [400.0, 80.0],
+            "position": [
+                495.46874999999994,
+                -88.82812499999983
+            ],
+            "size": [
+                278.28125000000006,
+                110.07812499999983
+            ],
             "text": "Set 'MyProject' to your actual\nPrism project name.",
             "color": "#ffffcc"
         },
         {
             "id": "1f030000-1f00-4f00-8f00-1f0000030000",
-            "position": [950.0, 440.0], "size": [400.0, 80.0],
+            "position": [
+                490.53375000000005,
+                388.0125000000001
+            ],
+            "size": [
+                400.0,
+                80.0
+            ],
             "text": "Change 'chars' to filter by a different\nasset type (e.g. props, envs, vehicles).",
             "color": "#ffffcc"
         },
         {
             "id": "1f040000-1f00-4f00-8f00-1f0000040000",
-            "position": [950.0, 680.0], "size": [400.0, 80.0],
-            "text": "Set sequence='EP01' and shot='0010'\nto find a specific shot by name.",
+            "position": [
+                512.2156250000004,
+                1047.4615234374999
+            ],
+            "size": [
+                400.0,
+                80.0
+            ],
+            "text": "Set sequence='SEQ_001' and shot='0010'\nto find a specific shot by name.",
             "color": "#ffffcc"
         }
     ],
     "backdrops": [
         {
             "id": "1b010000-1b00-4b00-8b00-1b0000010000",
-            "position": [20.0, 20.0], "size": [380.0, 200.0],
+            "position": [
+                12.5,
+                -363.75
+            ],
+            "size": [
+                403.75,
+                383.75
+            ],
             "title": "Prism Initialization",
             "color": "#1a2850"
         },
         {
             "id": "1b020000-1b00-4b00-8b00-1b0000020000",
-            "position": [460.0, 20.0], "size": [980.0, 200.0],
+            "position": [
+                468.75,
+                -369.9999999999999
+            ],
+            "size": [
+                938.7499999999998,
+                621.2499999999998
+            ],
             "title": "Project + Sequence Discovery",
             "color": "#1a2850"
         },
         {
             "id": "1b030000-1b00-4b00-8b00-1b0000030000",
-            "position": [460.0, 260.0], "size": [1380.0, 200.0],
+            "position": [
+                456.09375,
+                267.8125
+            ],
+            "size": [
+                952.1093749999998,
+                488.0468749999998
+            ],
             "title": "Asset Type + Asset Discovery",
             "color": "#201040"
         },
         {
             "id": "1b040000-1b00-4b00-8b00-1b0000040000",
-            "position": [460.0, 500.0], "size": [840.0, 200.0],
+            "position": [
+                462.73437500000034,
+                794.7021484375
+            ],
+            "size": [
+                1006.0156249999994,
+                654.5166015624998
+            ],
             "title": "Shot Discovery",
             "color": "#201040"
         },
         {
             "id": "1b050000-1b00-4b00-8b00-1b0000050000",
-            "position": [20.0, 260.0], "size": [400.0, 640.0],
-            "title": "Results — Console Output",
+            "position": [
+                1531.6184234619134,
+                -391.35116577148386
+            ],
+            "size": [
+                534.1545867919922,
+                1779.853286743163
+            ],
+            "title": "Results  Console Output",
             "color": "#102020"
         }
     ],

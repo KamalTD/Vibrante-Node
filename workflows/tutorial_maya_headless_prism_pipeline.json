@@ -1,10 +1,12 @@
 {
     "nodes": [
-
         {
             "instance_id": "a1b2c3d4-1111-4000-8000-a1b2c3d40001",
             "node_id": "prism_core_init",
-            "position": [-760.0, -60.0],
+            "position": [
+                -660.8203125,
+                -173.32031249999994
+            ],
             "parameters": {
                 "exec_in": null,
                 "exec_out": true,
@@ -17,149 +19,103 @@
             "state": "idle",
             "bypassed": false
         },
-
         {
             "instance_id": "a1b2c3d4-2222-4000-8000-a1b2c3d40002",
             "node_id": "prism_get_project_by_name",
-            "position": [-460.0, -60.0],
+            "position": [
+                -254.75046875000038,
+                -141.99078124999994
+            ],
             "parameters": {
                 "core": null,
-                "name": "splash",
+                "name": "Vibrante-Project",
                 "project": {
-                    "configPath": "G:\\Prism\\splash\\00_Pipeline\\pipeline.json",
-                    "name": "splash",
+                    "configPath": "G:\\Prism\\Vibrante-Project\\00_Pipeline\\pipeline.json",
+                    "name": "Vibrante-Project",
                     "source": "disk"
                 },
-                "project_path": "G:\\Prism\\splash",
-                "config_path": "G:\\Prism\\splash\\00_Pipeline\\pipeline.json",
+                "project_path": "G:\\Prism\\Vibrante-Project",
+                "config_path": "G:\\Prism\\Vibrante-Project\\00_Pipeline\\pipeline.json",
                 "found": true
             },
             "state": "idle",
             "bypassed": false
         },
-
-        {
-            "instance_id": "a1b2c3d4-3333-4000-8000-a1b2c3d40003",
-            "node_id": "prism_get_assets_by_type",
-            "position": [-100.0, -60.0],
-            "parameters": {
-                "core": null,
-                "project": {
-                    "configPath": "G:\\Prism\\splash\\00_Pipeline\\pipeline.json",
-                    "name": "splash",
-                    "source": "disk"
-                },
-                "asset_type": {"name": "chars"},
-                "assets": [{"type": "asset", "asset_path": "dog"}],
-                "asset": {"type": "asset", "asset_path": "dog"},
-                "entity": {
-                    "type": "asset",
-                    "asset_path": "dog",
-                    "path": "G:\\Prism\\splash\\03_Production\\Assets\\dog",
-                    "location": "global",
-                    "paths": {}
-                },
-                "count": 1,
-                "found": true
-            },
-            "state": "idle",
-            "bypassed": false
-        },
-
         {
             "instance_id": "a1b2c3d4-4444-4000-8000-a1b2c3d40004",
             "node_id": "prism_get_asset_by_name",
-            "position": [280.0, -60.0],
+            "position": [
+                282.44140625,
+                -150.33203124999997
+            ],
             "parameters": {
                 "core": null,
-                "project": {
-                    "configPath": "G:\\Prism\\splash\\00_Pipeline\\pipeline.json",
-                    "name": "splash",
-                    "source": "disk"
+                "project": {},
+                "asset_type": null,
+                "name": "mouse",
+                "asset": {
+                    "type": "asset",
+                    "asset_path": "mouse"
                 },
-                "asset_type": {"name": "chars"},
-                "name": "dog",
-                "asset": {"type": "asset", "asset_path": "dog"},
                 "entity": {
                     "type": "asset",
-                    "asset_path": "dog",
-                    "path": "G:\\Prism\\splash\\03_Production\\Assets\\dog",
+                    "asset_path": "mouse",
+                    "path": "G:\\Prism\\Vibrante-Project\\03_Production\\Assets\\mouse",
                     "location": "global",
                     "paths": {}
                 },
-                "matches": [{"type": "asset", "asset_path": "dog"}],
+                "matches": [
+                    {
+                        "type": "asset",
+                        "asset_path": "mouse"
+                    }
+                ],
                 "found": true
             },
             "state": "idle",
             "bypassed": false
         },
-
         {
             "instance_id": "a1b2c3d4-5555-4000-8000-a1b2c3d40005",
             "node_id": "prism_get_scene_path",
-            "position": [660.0, -60.0],
+            "position": [
+                668.69140625,
+                -217.2366181930693
+            ],
             "parameters": {
                 "core": null,
-                "entity": {
-                    "type": "asset",
-                    "asset_path": "dog",
-                    "path": "G:\\Prism\\splash\\03_Production\\Assets\\dog",
-                    "location": "global",
-                    "paths": {}
-                },
+                "entity": {},
                 "department": "modeling",
                 "task": "modeling",
                 "application": "maya",
-                "version": "latest",
-                "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0007.ma",
-                "task_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling",
+                "version": "v0001",
+                "scene_path": "G:\\Prism\\Vibrante-Project\\03_Production\\Assets\\mouse\\Scenefiles\\mod\\modeling\\mouse_modeling_v0001.ma",
+                "task_path": "G:\\Prism\\Vibrante-Project\\03_Production\\Assets\\mouse\\Scenefiles\\mod\\modeling",
                 "exists": true
             },
             "state": "idle",
             "bypassed": false
         },
-
-        {
-            "instance_id": "a1b2c3d4-6666-4000-8000-a1b2c3d40006",
-            "node_id": "prism_save_scene_version",
-            "position": [660.0, 340.0],
-            "parameters": {
-                "exec_in": null,
-                "exec_out": true,
-                "core": null,
-                "entity": {
-                    "type": "asset",
-                    "asset_path": "dog",
-                    "path": "G:\\Prism\\splash\\03_Production\\Assets\\dog",
-                    "location": "global",
-                    "paths": {}
-                },
-                "department": "modeling",
-                "task": "modeling",
-                "application": "maya",
-                "saved_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0008.ma",
-                "version": "v0008",
-                "task_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling",
-                "success": true
-            },
-            "state": "idle",
-            "bypassed": false
-        },
-
         {
             "instance_id": "a1b2c3d4-7777-4000-8000-a1b2c3d40007",
             "node_id": "maya_action_open_scene",
-            "position": [1060.0, 340.0],
+            "position": [
+                1078.1953898514857,
+                397.6469678217823
+            ],
             "parameters": {
-                "exec_in": null,
+                "exec_in": true,
                 "exec_out": true,
                 "actions_in": [],
-                "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0007.ma",
+                "scene_path": "G:\\Prism\\Vibrante-Project\\03_Production\\Assets\\mouse\\Scenefiles\\mod\\modeling\\mouse_modeling_v0001.ma",
                 "force": true,
                 "actions_out": [
                     {
+                        "type": "new_scene"
+                    },
+                    {
                         "type": "open_scene",
-                        "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0007.ma",
+                        "scene_path": "G:\\Prism\\Vibrante-Project\\03_Production\\Assets\\mouse\\Scenefiles\\mod\\modeling\\mouse_modeling_v0001.ma",
                         "force": true
                     }
                 ]
@@ -167,75 +123,15 @@
             "state": "idle",
             "bypassed": false
         },
-
-        {
-            "instance_id": "a1b2c3d4-8888-4000-8000-a1b2c3d40008",
-            "node_id": "maya_action_scene_info",
-            "position": [1400.0, 340.0],
-            "parameters": {
-                "exec_in": null,
-                "exec_out": true,
-                "actions_in": [
-                    {
-                        "type": "open_scene",
-                        "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0007.ma",
-                        "force": true
-                    }
-                ],
-                "actions_out": [
-                    {
-                        "type": "open_scene",
-                        "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0007.ma",
-                        "force": true
-                    },
-                    {"type": "scene_info"}
-                ]
-            },
-            "state": "idle",
-            "bypassed": false
-        },
-
-        {
-            "instance_id": "a1b2c3d4-9999-4000-8000-a1b2c3d40009",
-            "node_id": "maya_action_save_scene",
-            "position": [1760.0, 340.0],
-            "parameters": {
-                "exec_in": null,
-                "exec_out": true,
-                "actions_in": [
-                    {
-                        "type": "open_scene",
-                        "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0007.ma",
-                        "force": true
-                    },
-                    {"type": "scene_info"}
-                ],
-                "save_scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0008.ma",
-                "file_type": "mayaAscii",
-                "actions_out": [
-                    {
-                        "type": "open_scene",
-                        "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0007.ma",
-                        "force": true
-                    },
-                    {"type": "scene_info"},
-                    {
-                        "type": "save_scene",
-                        "save_scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0008.ma",
-                        "file_type": "mayaAscii"
-                    }
-                ]
-            },
-            "state": "idle",
-            "bypassed": false
-        },
-
         {
             "instance_id": "a1b2c3d4-aaaa-4000-8000-a1b2c3d400a0",
             "node_id": "maya_headless",
-            "position": [2180.0, 320.0],
+            "position": [
+                2180.0,
+                320.0
+            ],
             "parameters": {
-                "exec_in": null,
+                "exec_in": true,
                 "exec_out": true,
                 "maya_version": "2024",
                 "mayapy.exe": "C:/Program Files/Autodesk/Maya2024/bin/mayapy.exe",
@@ -244,42 +140,50 @@
                 "scene_file": "",
                 "actions": [
                     {
+                        "type": "new_scene"
+                    },
+                    {
                         "type": "open_scene",
-                        "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0007.ma",
+                        "scene_path": "G:\\Prism\\Vibrante-Project\\03_Production\\Assets\\mouse\\Scenefiles\\mod\\modeling\\mouse_modeling_v0001.ma",
                         "force": true
                     },
-                    {"type": "scene_info"},
+                    {
+                        "type": "scene_info"
+                    },
                     {
                         "type": "save_scene",
-                        "save_scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0008.ma",
+                        "save_scene_path": "",
                         "file_type": "mayaAscii"
                     }
                 ],
                 "success": true,
-                "stdout": "",
-                "stderr": "",
+                "stdout": "Cannot create Prism instance because no QApplication exists. To load Prism you can create a QApplication before initilizing mayapy like this: import sys;from PySide2 import QtWidgets;QtWidgets.QApplication(sys.argv)\n",
+                "stderr": "Qt WebEngine seems to be initialized from a plugin. Please set Qt::AA_ShareOpenGLContexts using QCoreApplication::setAttribute before constructing QGuiApplication.\nFile read in  0.018 seconds.\n",
                 "exit_code": 0,
                 "executed_actions": [
                     {
+                        "type": "new_scene"
+                    },
+                    {
                         "type": "open_scene",
-                        "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0007.ma",
+                        "scene_path": "G:\\Prism\\Vibrante-Project\\03_Production\\Assets\\mouse\\Scenefiles\\mod\\modeling\\mouse_modeling_v0001.ma",
                         "force": true
                     },
                     {
                         "type": "scene_info",
                         "info": {
-                            "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0007.ma",
+                            "scene_path": "G:/Prism/Vibrante-Project/03_Production/Assets/mouse/Scenefiles/mod/modeling/mouse_modeling_v0001.ma",
                             "frame_start": 1.0,
-                            "frame_end": 100.0,
+                            "frame_end": 120.0,
                             "fps": "film",
                             "linear_unit": "cm",
-                            "renderer": "arnold",
-                            "project_path": "G:\\Prism\\splash\\"
+                            "renderer": "mayaSoftware",
+                            "project_path": "C:/Users/Mahmoud/Documents/maya/projects/default/"
                         }
                     },
                     {
                         "type": "save_scene",
-                        "save_scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0008.ma",
+                        "save_scene_path": "G:\\Prism\\Vibrante-Project\\03_Production\\Assets\\mouse\\Scenefiles\\mod\\modeling\\mouse_modeling_v0001.ma",
                         "file_type": "mayaAscii"
                     }
                 ],
@@ -288,13 +192,15 @@
             "state": "idle",
             "bypassed": false
         },
-
         {
             "instance_id": "a1b2c3d4-bbbb-4000-8000-a1b2c3d400b0",
             "node_id": "maya_get_action_result",
-            "position": [2580.0, 320.0],
+            "position": [
+                2707.5477645420797,
+                316.6883895420792
+            ],
             "parameters": {
-                "exec_in": null,
+                "exec_in": true,
                 "exec_out": true,
                 "executed_actions": [],
                 "action_type": "scene_info",
@@ -303,88 +209,138 @@
                 "action": {
                     "type": "scene_info",
                     "info": {
-                        "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0007.ma",
+                        "scene_path": "G:/Prism/Vibrante-Project/03_Production/Assets/mouse/Scenefiles/mod/modeling/mouse_modeling_v0001.ma",
                         "frame_start": 1.0,
-                        "frame_end": 100.0,
+                        "frame_end": 120.0,
                         "fps": "film",
                         "linear_unit": "cm",
-                        "renderer": "arnold"
+                        "renderer": "mayaSoftware",
+                        "project_path": "C:/Users/Mahmoud/Documents/maya/projects/default/"
                     }
                 },
                 "info": {
-                    "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0007.ma",
+                    "scene_path": "G:/Prism/Vibrante-Project/03_Production/Assets/mouse/Scenefiles/mod/modeling/mouse_modeling_v0001.ma",
                     "frame_start": 1.0,
-                    "frame_end": 100.0,
+                    "frame_end": 120.0,
                     "fps": "film",
                     "linear_unit": "cm",
-                    "renderer": "arnold"
+                    "renderer": "mayaSoftware",
+                    "project_path": "C:/Users/Mahmoud/Documents/maya/projects/default/"
                 },
                 "path": ""
             },
             "state": "idle",
             "bypassed": false
         },
-
         {
             "instance_id": "a1b2c3d4-cccc-4000-8000-a1b2c3d400c0",
             "node_id": "console_print",
-            "position": [2580.0, 560.0],
+            "position": [
+                3062.4218749999995,
+                434.5467202970299
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "data": false,
+                "out": "True"
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "7b4ce8d1-8cef-45a9-b641-3a55935fde78",
+            "node_id": "maya_action_new_scene",
+            "position": [
+                721.6274752475243,
+                405.1547029702971
+            ],
             "parameters": {
                 "exec_in": null,
                 "exec_out": true,
-                "data": "Pipeline complete — dog_modeling_v0008.ma saved.",
-                "out": "Pipeline complete — dog_modeling_v0008.ma saved."
+                "actions_in": [],
+                "actions_out": [
+                    {
+                        "type": "new_scene"
+                    }
+                ]
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "b96e1567-22a9-4a4a-9a4a-fa4e2af3cfa8",
+            "node_id": "maya_action_scene_info",
+            "position": [
+                1386.7419554455446,
+                399.0686881188118
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "actions_in": [
+                    {
+                        "type": "open_scene",
+                        "scene_path": "G:\\Prism\\Vibrante-Project\\03_Production\\Assets\\mouse\\Scenefiles\\mod\\modeling\\mouse_modeling_v0001.ma",
+                        "force": true
+                    }
+                ],
+                "actions_out": [
+                    {
+                        "type": "new_scene"
+                    },
+                    {
+                        "type": "open_scene",
+                        "scene_path": "G:\\Prism\\Vibrante-Project\\03_Production\\Assets\\mouse\\Scenefiles\\mod\\modeling\\mouse_modeling_v0001.ma",
+                        "force": true
+                    },
+                    {
+                        "type": "scene_info"
+                    }
+                ]
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "18a5eda1-b45f-47eb-86fa-12717ca442dd",
+            "node_id": "maya_action_save_scene",
+            "position": [
+                1784.9412128712868,
+                389.50495049504934
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "actions_in": [],
+                "save_scene_path": "G:\\Prism\\Vibrante-Project\\03_Production\\Assets\\mouse\\Scenefiles\\mod\\modeling\\mouse_modeling_v0001.ma",
+                "file_type": "mayaAscii",
+                "actions_out": [
+                    {
+                        "type": "new_scene"
+                    },
+                    {
+                        "type": "open_scene",
+                        "scene_path": "G:\\Prism\\Vibrante-Project\\03_Production\\Assets\\mouse\\Scenefiles\\mod\\modeling\\mouse_modeling_v0001.ma",
+                        "force": true
+                    },
+                    {
+                        "type": "scene_info"
+                    },
+                    {
+                        "type": "save_scene",
+                        "save_scene_path": "G:\\Prism\\Vibrante-Project\\03_Production\\Assets\\mouse\\Scenefiles\\mod\\modeling\\mouse_modeling_v0001.ma",
+                        "file_type": "mayaAscii"
+                    }
+                ]
             },
             "state": "idle",
             "bypassed": false
         }
-
     ],
-
     "connections": [
-
         {
-            "id": "e1000001-ec01-4000-8ec0-e1ec00000001",
-            "from_node": "a1b2c3d4-1111-4000-8000-a1b2c3d40001",
-            "from_port": "exec_out",
-            "to_node": "a1b2c3d4-6666-4000-8000-a1b2c3d40006",
-            "to_port": "exec_in",
-            "is_exec": true
-        },
-        {
-            "id": "e1000002-ec01-4000-8ec0-e1ec00000002",
-            "from_node": "a1b2c3d4-6666-4000-8000-a1b2c3d40006",
-            "from_port": "exec_out",
-            "to_node": "a1b2c3d4-7777-4000-8000-a1b2c3d40007",
-            "to_port": "exec_in",
-            "is_exec": true
-        },
-        {
-            "id": "e1000003-ec01-4000-8ec0-e1ec00000003",
-            "from_node": "a1b2c3d4-7777-4000-8000-a1b2c3d40007",
-            "from_port": "exec_out",
-            "to_node": "a1b2c3d4-8888-4000-8000-a1b2c3d40008",
-            "to_port": "exec_in",
-            "is_exec": true
-        },
-        {
-            "id": "e1000004-ec01-4000-8ec0-e1ec00000004",
-            "from_node": "a1b2c3d4-8888-4000-8000-a1b2c3d40008",
-            "from_port": "exec_out",
-            "to_node": "a1b2c3d4-9999-4000-8000-a1b2c3d40009",
-            "to_port": "exec_in",
-            "is_exec": true
-        },
-        {
-            "id": "e1000005-ec01-4000-8ec0-e1ec00000005",
-            "from_node": "a1b2c3d4-9999-4000-8000-a1b2c3d40009",
-            "from_port": "exec_out",
-            "to_node": "a1b2c3d4-aaaa-4000-8000-a1b2c3d400a0",
-            "to_port": "exec_in",
-            "is_exec": true
-        },
-        {
-            "id": "e1000006-ec01-4000-8ec0-e1ec00000006",
+            "id": "3e477a96-31ff-4b98-8f08-cd4bc5e6eb53",
             "from_node": "a1b2c3d4-aaaa-4000-8000-a1b2c3d400a0",
             "from_port": "exec_out",
             "to_node": "a1b2c3d4-bbbb-4000-8000-a1b2c3d400b0",
@@ -392,24 +348,15 @@
             "is_exec": true
         },
         {
-            "id": "e1000007-ec01-4000-8ec0-e1ec00000007",
+            "id": "8cbe6055-5915-4e48-9906-51727cc7e6ed",
             "from_node": "a1b2c3d4-bbbb-4000-8000-a1b2c3d400b0",
             "from_port": "exec_out",
             "to_node": "a1b2c3d4-cccc-4000-8000-a1b2c3d400c0",
             "to_port": "exec_in",
             "is_exec": true
         },
-
         {
-            "id": "d1000001-da01-4000-8da0-d1da00000001",
-            "from_node": "a1b2c3d4-2222-4000-8000-a1b2c3d40002",
-            "from_port": "project",
-            "to_node": "a1b2c3d4-3333-4000-8000-a1b2c3d40003",
-            "to_port": "project",
-            "is_exec": false
-        },
-        {
-            "id": "d1000002-da01-4000-8da0-d1da00000002",
+            "id": "5f04e30e-dbb0-4740-9b96-564031a0723e",
             "from_node": "a1b2c3d4-2222-4000-8000-a1b2c3d40002",
             "from_port": "project",
             "to_node": "a1b2c3d4-4444-4000-8000-a1b2c3d40004",
@@ -417,7 +364,7 @@
             "is_exec": false
         },
         {
-            "id": "d1000003-da01-4000-8da0-d1da00000003",
+            "id": "6bed5f6d-19a1-49b0-9b3e-cedf03014879",
             "from_node": "a1b2c3d4-4444-4000-8000-a1b2c3d40004",
             "from_port": "entity",
             "to_node": "a1b2c3d4-5555-4000-8000-a1b2c3d40005",
@@ -425,55 +372,7 @@
             "is_exec": false
         },
         {
-            "id": "d1000004-da01-4000-8da0-d1da00000004",
-            "from_node": "a1b2c3d4-4444-4000-8000-a1b2c3d40004",
-            "from_port": "entity",
-            "to_node": "a1b2c3d4-6666-4000-8000-a1b2c3d40006",
-            "to_port": "entity",
-            "is_exec": false
-        },
-        {
-            "id": "d1000005-da01-4000-8da0-d1da00000005",
-            "from_node": "a1b2c3d4-5555-4000-8000-a1b2c3d40005",
-            "from_port": "scene_path",
-            "to_node": "a1b2c3d4-7777-4000-8000-a1b2c3d40007",
-            "to_port": "scene_path",
-            "is_exec": false
-        },
-        {
-            "id": "d1000006-da01-4000-8da0-d1da00000006",
-            "from_node": "a1b2c3d4-6666-4000-8000-a1b2c3d40006",
-            "from_port": "saved_path",
-            "to_node": "a1b2c3d4-9999-4000-8000-a1b2c3d40009",
-            "to_port": "save_scene_path",
-            "is_exec": false
-        },
-        {
-            "id": "d1000007-da01-4000-8da0-d1da00000007",
-            "from_node": "a1b2c3d4-7777-4000-8000-a1b2c3d40007",
-            "from_port": "actions_out",
-            "to_node": "a1b2c3d4-8888-4000-8000-a1b2c3d40008",
-            "to_port": "actions_in",
-            "is_exec": false
-        },
-        {
-            "id": "d1000008-da01-4000-8da0-d1da00000008",
-            "from_node": "a1b2c3d4-8888-4000-8000-a1b2c3d40008",
-            "from_port": "actions_out",
-            "to_node": "a1b2c3d4-9999-4000-8000-a1b2c3d40009",
-            "to_port": "actions_in",
-            "is_exec": false
-        },
-        {
-            "id": "d1000009-da01-4000-8da0-d1da00000009",
-            "from_node": "a1b2c3d4-9999-4000-8000-a1b2c3d40009",
-            "from_port": "actions_out",
-            "to_node": "a1b2c3d4-aaaa-4000-8000-a1b2c3d400a0",
-            "to_port": "actions",
-            "is_exec": false
-        },
-        {
-            "id": "d100000a-da01-4000-8da0-d1da0000000a",
+            "id": "5de93a2b-b660-49b9-936f-8041978ef4bb",
             "from_node": "a1b2c3d4-aaaa-4000-8000-a1b2c3d400a0",
             "from_port": "executed_actions",
             "to_node": "a1b2c3d4-bbbb-4000-8000-a1b2c3d400b0",
@@ -481,82 +380,214 @@
             "is_exec": false
         },
         {
-            "id": "d100000b-da01-4000-8da0-d1da0000000b",
+            "id": "2f84659c-7606-438c-93e8-7fd999096336",
             "from_node": "a1b2c3d4-aaaa-4000-8000-a1b2c3d400a0",
             "from_port": "success",
             "to_node": "a1b2c3d4-cccc-4000-8000-a1b2c3d400c0",
             "to_port": "data",
             "is_exec": false
+        },
+        {
+            "id": "09db9144-091a-4e9c-9470-fa5d143621d8",
+            "from_node": "7b4ce8d1-8cef-45a9-b641-3a55935fde78",
+            "from_port": "exec_out",
+            "to_node": "a1b2c3d4-7777-4000-8000-a1b2c3d40007",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "4321b711-dc4f-405c-b444-f78184bcfd15",
+            "from_node": "7b4ce8d1-8cef-45a9-b641-3a55935fde78",
+            "from_port": "actions_out",
+            "to_node": "a1b2c3d4-7777-4000-8000-a1b2c3d40007",
+            "to_port": "actions_in",
+            "is_exec": false
+        },
+        {
+            "id": "bca6bdda-2528-4a04-8976-8bab579cb02d",
+            "from_node": "a1b2c3d4-7777-4000-8000-a1b2c3d40007",
+            "from_port": "exec_out",
+            "to_node": "b96e1567-22a9-4a4a-9a4a-fa4e2af3cfa8",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "0224c254-d3c4-4e44-918d-406b9bfc901e",
+            "from_node": "a1b2c3d4-7777-4000-8000-a1b2c3d40007",
+            "from_port": "actions_out",
+            "to_node": "b96e1567-22a9-4a4a-9a4a-fa4e2af3cfa8",
+            "to_port": "actions_in",
+            "is_exec": false
+        },
+        {
+            "id": "7e57595e-6deb-4249-b122-09685addaaf0",
+            "from_node": "b96e1567-22a9-4a4a-9a4a-fa4e2af3cfa8",
+            "from_port": "exec_out",
+            "to_node": "18a5eda1-b45f-47eb-86fa-12717ca442dd",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "f8020e20-0e8c-4cc4-85f6-f3b3e1caa232",
+            "from_node": "b96e1567-22a9-4a4a-9a4a-fa4e2af3cfa8",
+            "from_port": "actions_out",
+            "to_node": "18a5eda1-b45f-47eb-86fa-12717ca442dd",
+            "to_port": "actions_in",
+            "is_exec": false
+        },
+        {
+            "id": "5744441c-6b60-4d61-b906-a44d49d172e8",
+            "from_node": "18a5eda1-b45f-47eb-86fa-12717ca442dd",
+            "from_port": "exec_out",
+            "to_node": "a1b2c3d4-aaaa-4000-8000-a1b2c3d400a0",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "90e86e73-b034-4b4c-bfde-d70b34f98ab1",
+            "from_node": "18a5eda1-b45f-47eb-86fa-12717ca442dd",
+            "from_port": "actions_out",
+            "to_node": "a1b2c3d4-aaaa-4000-8000-a1b2c3d400a0",
+            "to_port": "actions",
+            "is_exec": false
+        },
+        {
+            "id": "f1ed2bfa-2f18-4a52-b5cf-cfd5086ca025",
+            "from_node": "a1b2c3d4-5555-4000-8000-a1b2c3d40005",
+            "from_port": "scene_path",
+            "to_node": "a1b2c3d4-7777-4000-8000-a1b2c3d40007",
+            "to_port": "scene_path",
+            "is_exec": false
+        },
+        {
+            "id": "ca487a3d-0d94-4ab7-a6dc-d18ebeb03f86",
+            "from_node": "a1b2c3d4-5555-4000-8000-a1b2c3d40005",
+            "from_port": "scene_path",
+            "to_node": "18a5eda1-b45f-47eb-86fa-12717ca442dd",
+            "to_port": "save_scene_path",
+            "is_exec": false
         }
-
     ],
-
     "sticky_notes": [
         {
             "id": "f1a2b3c4-1111-4000-8f1a-f1a2b3c40001",
-            "position": [-760.0, -200.0],
-            "size": [380.0, 80.0],
-            "text": "STEP 1 — Init Prism core\nLoad project context on startup",
-            "color": "#1e3a5f"
+            "position": [
+                -64.14062500000057,
+                -319.04296875000006
+            ],
+            "size": [
+                380.0,
+                80.0
+            ],
+            "text": "STEP 1 : Init Prism core\nLoad project context on startup",
+            "color": "#ffff7f"
         },
         {
             "id": "f1a2b3c4-2222-4000-8f1a-f1a2b3c40002",
-            "position": [-460.0, -200.0],
-            "size": [1200.0, 80.0],
-            "text": "STEP 2–5 — Prism Traversal: Project → Asset Type (chars) → Asset (dog) → Scene Path (v0007, latest)",
-            "color": "#1e3a5f"
+            "position": [
+                385.70312499999983,
+                -326.46484375000006
+            ],
+            "size": [
+                610.3906249999999,
+                72.55859375000011
+            ],
+            "text": "STEP 2:  Prism Traversal: Project , Asset (dog) and Scene Path (latest)",
+            "color": "#ffff7f"
         },
         {
             "id": "f1a2b3c4-3333-4000-8f1a-f1a2b3c40003",
-            "position": [660.0, 240.0],
-            "size": [380.0, 60.0],
-            "text": "STEP 6 — Reserve next version\nScans disk → returns v0008 path",
-            "color": "#1a3a00"
+            "position": [
+                888.4374999999998,
+                725.0625000000001
+            ],
+            "size": [
+                380.0,
+                60.0
+            ],
+            "text": "STEP 6: Reserve next version\nScans disk and returns v0008 path",
+            "color": "#ffff7f"
         },
         {
             "id": "f1a2b3c4-4444-4000-8f1a-f1a2b3c40004",
-            "position": [1060.0, 240.0],
-            "size": [1080.0, 60.0],
-            "text": "STEP 7 — Build Maya action list: open existing scene → capture scene info → save as new version",
-            "color": "#3a1a00"
+            "position": [
+                1509.9375000000002,
+                713.7500000000001
+            ],
+            "size": [
+                555.6874999999995,
+                61.24999999999977
+            ],
+            "text": "STEP 7 : Build Maya action list: open existing scene , capture scene info and save as new version",
+            "color": "#ffff7f"
         },
         {
             "id": "f1a2b3c4-5555-4000-8f1a-f1a2b3c40005",
-            "position": [2180.0, 240.0],
-            "size": [760.0, 60.0],
-            "text": "STEP 8–9 — Execute headless + read scene_info result back into graph",
-            "color": "#1a003a"
+            "position": [
+                2178.4375000000005,
+                824.3750000000001
+            ],
+            "size": [
+                760.0,
+                60.0
+            ],
+            "text": "STEP 8: Execute headless + read scene_info result back into graph",
+            "color": "#ffff7f"
+        },
+        {
+            "id": "6fd65e49-0323-429f-b25e-cdeb2e88f01b",
+            "position": [
+                -657.4999999999994,
+                -263.7499999999997
+            ],
+            "size": [
+                217.49999999999972,
+                72.49999999999994
+            ],
+            "text": "Init Prism Core",
+            "color": "#ffffcc"
         }
     ],
-
     "backdrops": [
         {
             "id": "b1c2d3e4-1111-4000-8b1c-b1c2d3e40001",
-            "position": [-800.0, -230.0],
-            "size": [1680.0, 320.0],
-            "title": "Prism Pipeline  —  Asset Traversal Chain",
-            "color": "#1a2540"
+            "position": [
+                -760.9375,
+                -374.04296875
+            ],
+            "size": [
+                1781.4453124999995,
+                596.2109374999999
+            ],
+            "title": "Prism Pipeline  Asset Traversal Chain",
+            "color": "#ff7e80"
         },
         {
             "id": "b1c2d3e4-2222-4000-8b1c-b1c2d3e40002",
-            "position": [600.0, 220.0],
-            "size": [1640.0, 260.0],
-            "title": "Maya Action Builder  —  Describe the Work",
-            "color": "#2a1400"
+            "position": [
+                402.7343750000002,
+                300.07812500000006
+            ],
+            "size": [
+                1720.3124999999993,
+                504.6093749999997
+            ],
+            "title": "Maya Action Builder  , Describe the Work",
+            "color": "#61c8ff"
         },
         {
             "id": "b1c2d3e4-3333-4000-8b1c-b1c2d3e40003",
-            "position": [2140.0, 220.0],
-            "size": [820.0, 420.0],
+            "position": [
+                2140.0,
+                220.0
+            ],
+            "size": [
+                1319.3749999999995,
+                745.6249999999999
+            ],
             "title": "Execute + Read Results",
-            "color": "#1a0030"
+            "color": "#48ad46"
         }
     ],
-
-    "metadata": {
-        "name": "Tutorial — Maya Headless + Prism Full Pipeline",
-        "description": "Complete tutorial workflow: Prism traversal chain drives Maya headless automation. Finds asset → locates latest scene → reserves next version → opens, captures info, saves — all without touching the Maya UI.",
-        "version": "1.0",
-        "tutorial": true
-    }
+    "metadata": {}
 }
