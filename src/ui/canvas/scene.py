@@ -502,6 +502,11 @@ class NodeScene(QGraphicsScene):
             super().mouseReleaseEvent(event)
 
     def keyPressEvent(self, event):
+        from PyQt5.QtWidgets import QApplication, QLineEdit, QTextEdit, QPlainTextEdit
+        focus_widget = QApplication.focusWidget()
+        if isinstance(focus_widget, (QLineEdit, QTextEdit, QPlainTextEdit)):
+            super().keyPressEvent(event)
+            return
         if event.key() == Qt.Key_Delete:
             self.push_history()
             for item in self.selectedItems():

@@ -121,6 +121,11 @@ class NodeView(QGraphicsView):
         self.setDragMode(QGraphicsView.RubberBandDrag)
 
     def keyPressEvent(self, event: QKeyEvent):
+        from PyQt5.QtWidgets import QApplication, QLineEdit, QTextEdit, QPlainTextEdit
+        focus_widget = QApplication.focusWidget()
+        if isinstance(focus_widget, (QLineEdit, QTextEdit, QPlainTextEdit)):
+            super().keyPressEvent(event)
+            return
         if event.key() == Qt.Key_Space and not event.isAutoRepeat():
             self.setCursor(Qt.OpenHandCursor)
             # We don't start panning yet, just show the cursor
