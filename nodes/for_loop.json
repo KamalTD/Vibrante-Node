@@ -1,7 +1,7 @@
 {
     "node_id": "for_loop",
     "name": "For Loop",
-    "description": "Generates a sequence of numbers. Connect exec_out to start downstream processing.",
+    "description": "Iterates over a range. Fires exec_out once per index, updating current_index before each fire.",
     "category": "Flow",
     "icon_path": "icons/repeat.svg",
     "inputs": [
@@ -42,5 +42,5 @@
             "type": "list"
         }
     ],
-    "python_code": "async def execute(self, inputs):\n    # Robustly get integers with defaults to prevent NoneType errors\n    try: start = int(inputs.get('start', 0))\n    except: start = 0\n    \n    try: end = int(inputs.get('end', 10))\n    except: end = 10\n    \n    try: step = int(inputs.get('step', 1))\n    except: step = 1\n    \n    if step == 0: step = 1\n    \n    indices = list(range(start, end, step))\n    self.log_info(f'Generated {len(indices)} indices from {start} to {end}')\n    \n    await self.set_output('indices', indices)\n    \n    # Trigger ONLY exec_out to start the loop\n    # Downstream Loop Body will trigger its own finished pin\n    await self.set_output('exec_out', True)\n    \n    return {'indices': indices, 'current_index': indices[-1] if indices else 0}"
+    "python_code": "async def execute(self, inputs):\n    try: start = int(inputs.get('start', 0))\n    except: start = 0\n    try: end = int(inputs.get('end', 10))\n    except: end = 10\n    try: step = int(inputs.get('step', 1))\n    except: step = 1\n    if step == 0: step = 1\n\n    indices = list(range(start, end, step))\n    self.log_info(f'For loop: {len(indices)} iteration(s) ({start} to {end} step {step})')\n    await self.set_output('indices', indices)\n\n    last_index = indices[-1] if indices else 0\n    for i in indices:\n        # Push current_index BEFORE firing exec_out so downstream data\n        # nodes (get_list_item, etc.) receive the updated index first.\n        await self.set_output('current_index', i)\n        await self.set_output('exec_out', True)\n\n    return {'indices': indices, 'current_index': last_index}"
 }

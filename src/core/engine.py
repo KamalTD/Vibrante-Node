@@ -143,7 +143,14 @@ class NetworkExecutor(QObject):
                                 # Sync both parameter and result cache
                                 target_instance.parameters[conn.to_port] = value
                                 self.node_results[conn.to_node][conn.to_port] = value
-                                
+
+                                # Invalidate pure data nodes so they re-run next pull.
+                                # This is essential for loops: when upstream data changes
+                                # (e.g. current_index → get_list_item → entity → prism_get_shot_info)
+                                # the data node must recompute, not serve a stale cached result.
+                                if conn.to_node not in self._driven_by_flow:
+                                    self._executed_nodes.discard(conn.to_node)
+
                                 # ALWAYS trigger on_parameter_changed for data connections.
                                 # This allows nodes (like For Each) to react to data changes
                                 # even if they are primarily driven by flow pins.
