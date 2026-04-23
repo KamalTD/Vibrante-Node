@@ -10,10 +10,14 @@
             "parameters": {
                 "core": null,
                 "name": "splash",
-                "project": null,
-                "project_path": "",
-                "config_path": "",
-                "found": false
+                "project": {
+                    "configPath": "G:\\Prism\\splash\\00_Pipeline\\pipeline.json",
+                    "name": "splash",
+                    "source": "disk"
+                },
+                "project_path": "G:\\Prism\\splash",
+                "config_path": "G:\\Prism\\splash\\00_Pipeline\\pipeline.json",
+                "found": true
             },
             "state": "idle",
             "bypassed": false
@@ -27,34 +31,25 @@
             ],
             "parameters": {
                 "core": null,
-                "entity": null,
-                "sequence": "",
-                "shot_name": "",
-                "frame_start": 0,
-                "frame_end": 0,
-                "fps": 0,
-                "entity_path": ""
-            },
-            "state": "idle",
-            "bypassed": false
-        },
-        {
-            "instance_id": "50060000-5000-4500-8500-500000060000",
-            "node_id": "prism_get_export_path",
-            "position": [
-                -548.1343515977235,
-                1440.2153743165284
-            ],
-            "parameters": {
-                "core": null,
-                "entity": null,
-                "output_type": "3d",
-                "identifier": "anim_cache",
-                "version": "",
-                "identifier_path": "",
-                "version_path": "",
-                "file_pattern": "",
-                "exists": false
+                "entity": {
+                    "type": "shot",
+                    "sequence": "seq_0001",
+                    "shot": "shot_001",
+                    "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001",
+                    "location": "global",
+                    "paths": [
+                        {
+                            "location": "global",
+                            "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001"
+                        }
+                    ]
+                },
+                "sequence": "seq_0001",
+                "shot_name": "shot_001",
+                "frame_start": 1001,
+                "frame_end": 1100,
+                "fps": 24.0,
+                "entity_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001"
             },
             "state": "idle",
             "bypassed": false
@@ -68,16 +63,28 @@
             ],
             "parameters": {
                 "exec_in": null,
-                "exec_out": null,
+                "exec_out": true,
                 "core": null,
-                "entity": null,
+                "entity": {
+                    "type": "shot",
+                    "sequence": "seq_0001",
+                    "shot": "shot_001",
+                    "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001",
+                    "location": "global",
+                    "paths": [
+                        {
+                            "location": "global",
+                            "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001"
+                        }
+                    ]
+                },
                 "department": "fx",
                 "task": "fx_sim",
                 "application": "houdini",
-                "saved_path": "",
-                "version": "",
-                "task_path": "",
-                "success": false
+                "saved_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Scenefiles\\fx\\fx_sim\\seq_0001-shot_001_fx_sim_v0008.hip",
+                "version": "v0008",
+                "task_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Scenefiles\\fx\\fx_sim",
+                "success": true
             },
             "state": "idle",
             "bypassed": false
@@ -90,34 +97,29 @@
                 276.18975298528494
             ],
             "parameters": {
-                "exec_in": null,
-                "exec_out": null,
+                "exec_in": true,
+                "exec_out": true,
                 "core": null,
-                "entity": null,
+                "entity": {
+                    "type": "shot",
+                    "sequence": "seq_0001",
+                    "shot": "shot_001",
+                    "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001",
+                    "location": "global",
+                    "paths": [
+                        {
+                            "location": "global",
+                            "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001"
+                        }
+                    ]
+                },
                 "task": "fx_sim",
                 "department": "fx",
                 "product_name": "fx_sim_cache",
                 "comment": "FX alembic from Vibrante-Node",
                 "extension": ".abc",
-                "success": false,
-                "version_path": ""
-            },
-            "state": "idle",
-            "bypassed": false
-        },
-        {
-            "instance_id": "50090000-5000-4500-8500-500000090000",
-            "node_id": "houdini_action_open_hip",
-            "position": [
-                -794.2050056431992,
-                1208.8671838606274
-            ],
-            "parameters": {
-                "exec_in": null,
-                "exec_out": null,
-                "actions_in": [],
-                "hip_path": "",
-                "actions_out": []
+                "success": true,
+                "version_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\fx_sim_cache\\v0008\\seq_0001-shot_001_fx_sim_cache_v0008.abc"
             },
             "state": "idle",
             "bypassed": false
@@ -126,36 +128,29 @@
             "instance_id": "500a0000-5000-4500-8500-5000000a0000",
             "node_id": "houdini_action_import_alembic",
             "position": [
-                39.55283415400683,
-                1390.0018814396665
+                -262.0446773790259,
+                1426.269553043418
             ],
             "parameters": {
-                "exec_in": null,
-                "exec_out": null,
-                "actions_in": [],
-                "abc_path": "",
-                "context": "/obj",
-                "actions_out": []
-            },
-            "state": "idle",
-            "bypassed": false
-        },
-        {
-            "instance_id": "500b0000-5000-4500-8500-5000000b0000",
-            "node_id": "houdini_action_custom",
-            "position": [
-                456.9641947215769,
-                1150.0559516565158
-            ],
-            "parameters": {
-                "exec_in": null,
-                "exec_out": null,
-                "actions_in": [],
-                "action_name": "set_frame_range",
-                "python_code": "hou.playbar.setFrameRange(int(param1), int(param2)); hou.playbar.setAnimationRange(int(param1), int(param2))",
-                "param1": "0",
-                "param2": "0",
-                "actions_out": []
+                "exec_in": true,
+                "exec_out": true,
+                "actions_in": [
+                    {
+                        "type": "new_hip"
+                    }
+                ],
+                "abc_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\alembic\\v0001\\seq_0001-shot_001_alembic_v0001.abc",
+                "context": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\alembic\\v0001\\seq_0001-shot_001_alembic_v0001.abc",
+                "actions_out": [
+                    {
+                        "type": "new_hip"
+                    },
+                    {
+                        "type": "import_alembic",
+                        "abc_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\alembic\\v0001\\seq_0001-shot_001_alembic_v0001.abc",
+                        "context": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\alembic\\v0001\\seq_0001-shot_001_alembic_v0001.abc"
+                    }
+                ]
             },
             "state": "idle",
             "bypassed": false
@@ -168,14 +163,49 @@
                 331.58381396223444
             ],
             "parameters": {
-                "exec_in": null,
-                "exec_out": null,
-                "actions_in": [],
-                "abc_path": "",
-                "root_nodes": "/obj/fx_sim",
-                "frame_start": 0,
-                "frame_end": 0,
-                "actions_out": []
+                "exec_in": true,
+                "exec_out": true,
+                "actions_in": [
+                    {
+                        "type": "new_hip"
+                    },
+                    {
+                        "type": "import_alembic",
+                        "abc_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\alembic\\v0001\\seq_0001-shot_001_alembic_v0001.abc",
+                        "context": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\alembic\\v0001\\seq_0001-shot_001_alembic_v0001.abc"
+                    },
+                    {
+                        "type": "set_frame_range",
+                        "frame_start": 1001,
+                        "frame_end": 1100
+                    }
+                ],
+                "abc_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\fx_sim_cache\\v0006\\seq_0001-shot_001_fx_sim_cache_v0006.abc",
+                "root_nodes": "/obj",
+                "frame_start": 1001,
+                "frame_end": 1100,
+                "actions_out": [
+                    {
+                        "type": "new_hip"
+                    },
+                    {
+                        "type": "import_alembic",
+                        "abc_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\alembic\\v0001\\seq_0001-shot_001_alembic_v0001.abc",
+                        "context": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\alembic\\v0001\\seq_0001-shot_001_alembic_v0001.abc"
+                    },
+                    {
+                        "type": "set_frame_range",
+                        "frame_start": 1001,
+                        "frame_end": 1100
+                    },
+                    {
+                        "type": "export_alembic",
+                        "abc_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\fx_sim_cache\\v0008\\seq_0001-shot_001_fx_sim_cache_v0008.abc",
+                        "root_nodes": "/obj",
+                        "frame_start": 1001,
+                        "frame_end": 1100
+                    }
+                ]
             },
             "state": "idle",
             "bypassed": false
@@ -188,11 +218,57 @@
                 682.6038840248426
             ],
             "parameters": {
-                "exec_in": null,
-                "exec_out": null,
-                "actions_in": [],
-                "hip_path": "",
-                "actions_out": []
+                "exec_in": true,
+                "exec_out": true,
+                "actions_in": [
+                    {
+                        "type": "new_hip"
+                    },
+                    {
+                        "type": "import_alembic",
+                        "abc_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\alembic\\v0001\\seq_0001-shot_001_alembic_v0001.abc",
+                        "context": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\alembic\\v0001\\seq_0001-shot_001_alembic_v0001.abc"
+                    },
+                    {
+                        "type": "set_frame_range",
+                        "frame_start": 1001,
+                        "frame_end": 1100
+                    },
+                    {
+                        "type": "export_alembic",
+                        "abc_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\fx_sim_cache\\v0006\\seq_0001-shot_001_fx_sim_cache_v0006.abc",
+                        "root_nodes": "/obj",
+                        "frame_start": 1001,
+                        "frame_end": 1100
+                    }
+                ],
+                "hip_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Scenefiles\\fx\\fx_sim\\seq_0001-shot_001_fx_sim_v0006.hip",
+                "actions_out": [
+                    {
+                        "type": "new_hip"
+                    },
+                    {
+                        "type": "import_alembic",
+                        "abc_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\alembic\\v0001\\seq_0001-shot_001_alembic_v0001.abc",
+                        "context": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\alembic\\v0001\\seq_0001-shot_001_alembic_v0001.abc"
+                    },
+                    {
+                        "type": "set_frame_range",
+                        "frame_start": 1001,
+                        "frame_end": 1100
+                    },
+                    {
+                        "type": "export_alembic",
+                        "abc_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\fx_sim_cache\\v0008\\seq_0001-shot_001_fx_sim_cache_v0008.abc",
+                        "root_nodes": "/obj",
+                        "frame_start": 1001,
+                        "frame_end": 1100
+                    },
+                    {
+                        "type": "save_hip",
+                        "hip_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Scenefiles\\fx\\fx_sim\\seq_0001-shot_001_fx_sim_v0008.hip"
+                    }
+                ]
             },
             "state": "idle",
             "bypassed": false
@@ -205,19 +281,76 @@
                 391.0597126477246
             ],
             "parameters": {
-                "exec_in": null,
-                "exec_out": null,
-                "houdini_version": "20.5",
-                "hython.exe": "C:/Program Files/Side Effects Software/Houdini 20.5.445/bin/hython.exe",
+                "exec_in": true,
+                "exec_out": true,
+                "houdini_version": "20.5.278",
+                "hython.exe": "C:/Program Files/Side Effects Software/Houdini 20.5.278/bin/hython.exe",
                 "bat_file": "",
                 "houdini_env_file": "",
                 "hip_file": "",
-                "actions": [],
-                "success": false,
-                "stdout": "",
-                "stderr": "",
+                "actions": [
+                    {
+                        "type": "new_hip"
+                    },
+                    {
+                        "type": "import_alembic",
+                        "abc_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\alembic\\v0001\\seq_0001-shot_001_alembic_v0001.abc",
+                        "context": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\alembic\\v0001\\seq_0001-shot_001_alembic_v0001.abc"
+                    },
+                    {
+                        "type": "set_frame_range",
+                        "frame_start": 1001,
+                        "frame_end": 1100
+                    },
+                    {
+                        "type": "export_alembic",
+                        "abc_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\fx_sim_cache\\v0006\\seq_0001-shot_001_fx_sim_cache_v0006.abc",
+                        "root_nodes": "/obj",
+                        "frame_start": 1001,
+                        "frame_end": 1100
+                    },
+                    {
+                        "type": "save_hip",
+                        "hip_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Scenefiles\\fx\\fx_sim\\seq_0001-shot_001_fx_sim_v0006.hip"
+                    }
+                ],
+                "success": true,
+                "stdout": "00:00:00   385MB         | log started Thu Apr 23 13:48:34 2026\n00:00:00   385MB         | Arnold 7.3.3.0 [087035cc] windows x86_64 clang-15.0.7 oiio-2.4.1 osl-1.13.0 vdb-11.0.0 adlsdk-8.0.7.50 clmhub-3.1.1.43 rlm-14.2.5 optix-8.0.0 2024/07/24 16:03:02\n00:00:00   385MB         | running on Kamal, pid=28300\n00:00:00   385MB         |  2 x Intel(R) Xeon(R) CPU X5650 @ 2.67GHz (12 cores, 12 logical) with 32751MB\n00:00:00   385MB         |  NVIDIA driver version 580.97\n00:00:00   385MB         |  GPU 0: NVIDIA GeForce GTX 950 @ 1278MHz (compute 5.2) with 2047MB (108MB available) (NVLink:0)\n00:00:00   385MB         |  Windows 10 (version 10.0, build 19045)\n00:00:00   385MB         |  soft limit for open files changed from 8192 to 2048\n00:00:00   385MB         |  \n00:00:00   399MB         | loading plugins from C:\\htoa-6.3.3.0_re71e193_houdini-20.5.278\\htoa-6.3.3.0_re71e193_houdini-20.5.278\\scripts\\bin\\..\\plugins ...\n00:00:00   399MB         |  alembic_proc.dll: alembic uses Arnold 7.3.3.0\n00:00:00   399MB         |  cryptomatte.dll: cryptomatte uses Arnold 7.3.3.0\n00:00:00   399MB         |  cryptomatte.dll: cryptomatte_filter uses Arnold 7.3.3.0\n00:00:00   399MB         |  cryptomatte.dll: cryptomatte_manifest_driver uses Arnold 7.3.3.0\n00:00:00   399MB         |  htoa_mandelbulb_proc.dll: mandelbulb uses Arnold 7.3.3.0\n00:00:00   412MB         |  usd_proc.dll: usd uses Arnold 7.3.3.0\n00:00:00   412MB         | loaded 6 plugins from 4 lib(s) in 0:00.11\n00:00:00   414MB         | [htoa_op] Begin registration ...\n00:00:00   419MB         | [obj_procedurals] Registering procedurals ...\n00:00:00   417MB         | [obj_procedurals] procedural registration done.\n00:00:00   450MB         | [rop_operators] Registering operators ...\n00:00:00   450MB         | [rop_operators] operator registration done.\n00:00:03   493MB         | [vop_shaders] Registering shaders ...\n00:00:03   496MB         | [vop_shaders] shader registration done.\n00:00:03   497MB         | [vop_imagers] Registering imagers ...\n00:00:03   497MB         | [vop_imagers] imager registration done.\n00:00:03   497MB         | [htoa_op] USD shader translation registration\n00:00:03   512MB         | [htoa_op] End registration.\n00:00:03   512MB         |  \n00:00:03   512MB         | releasing resources\n00:00:03   498MB         | Arnold shutdown\n[Vibrante-Node] Plugin loaded. Use the Vibrante-Node menu or shelf to launch.\n",
+                "stderr": "C:\\Program Files\\Side Effects Software\\Houdini 20.5.278\\python311\\lib\\site-packages-forced\\shiboken2\\files.dir\\shibokensupport\\__feature__.py:142: PythonQtWarning: Selected binding 'pyqt5' could not be found; falling back to 'pyside2'\n  return original_import(name, *args, **kwargs)\n",
                 "exit_code": 0,
-                "executed_actions": [],
+                "executed_actions": [
+                    {
+                        "type": "new_hip"
+                    },
+                    {
+                        "type": "import_alembic",
+                        "abc_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\alembic\\v0001\\seq_0001-shot_001_alembic_v0001.abc",
+                        "context": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\alembic\\v0001\\seq_0001-shot_001_alembic_v0001.abc",
+                        "info": {
+                            "node": "/stage/abc_import"
+                        }
+                    },
+                    {
+                        "type": "set_frame_range",
+                        "frame_start": 1001,
+                        "frame_end": 1100
+                    },
+                    {
+                        "type": "export_alembic",
+                        "abc_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\fx_sim_cache\\v0008\\seq_0001-shot_001_fx_sim_cache_v0008.abc",
+                        "root_nodes": "/obj",
+                        "frame_start": 1001,
+                        "frame_end": 1100,
+                        "info": {
+                            "node": "/out/abc_export",
+                            "output": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\fx_sim_cache\\v0008\\seq_0001-shot_001_fx_sim_cache_v0008.abc"
+                        }
+                    },
+                    {
+                        "type": "save_hip",
+                        "hip_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Scenefiles\\fx\\fx_sim\\seq_0001-shot_001_fx_sim_v0008.hip"
+                    }
+                ],
                 "skipped_actions": []
             },
             "state": "idle",
@@ -231,14 +364,14 @@
                 417.0529250103467
             ],
             "parameters": {
-                "exec_in": null,
-                "exec_out": null,
-                "condition": false,
+                "exec_in": true,
+                "exec_out": true,
+                "condition": true,
                 "data": "",
-                "exec_false": null,
-                "on_true": null,
+                "exec_false": false,
+                "on_true": "",
                 "on_false": null,
-                "result": false
+                "result": true
             },
             "state": "idle",
             "bypassed": false
@@ -251,12 +384,12 @@
                 584.7816650281192
             ],
             "parameters": {
-                "exec_in": null,
-                "exec_out": null,
+                "exec_in": true,
+                "exec_out": true,
                 "deadlinecommand": "C:/Program Files/Thinkbox/Deadline10/bin/deadlinecommand.exe",
-                "hip_file": "",
+                "hip_file": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Scenefiles\\fx\\fx_sim\\seq_0001-shot_001_fx_sim_v0006.hip",
                 "rop_path": "/out/mantra1",
-                "job_name": "EP01_0050_fx_sim",
+                "job_name": "shot_001_fx_sim",
                 "batch_name": "",
                 "comment": "",
                 "pool": "houdini",
@@ -264,17 +397,17 @@
                 "group": "none",
                 "priority": 60,
                 "chunk_size": 1,
-                "frame_start": 0,
-                "frame_end": 0,
+                "frame_start": 1001,
+                "frame_end": 1100,
                 "frame_step": 1,
                 "houdini_version": "20.5.445",
                 "sim_job": false,
                 "ignore_inputs": false,
                 "auto_workitem": false,
                 "extra_job_args": "",
-                "success": false,
-                "job_id": "",
-                "stdout": "",
+                "success": true,
+                "job_id": "69ea0727af15a63bc155d042",
+                "stdout": "Deadline Command 10.3 [v10.3.2.1 Release (1a66fe40f)]\n\nSubmitting to Repository: C:/DeadlineRepository10\n\nSubmission Contains No Auxiliary Files.\n\nResult=Success\nJobID=69ea0727af15a63bc155d042\n\nThe job was submitted successfully.\n",
                 "stderr": ""
             },
             "state": "idle",
@@ -288,10 +421,10 @@
                 885.087011739608
             ],
             "parameters": {
-                "exec_in": null,
-                "exec_out": null,
+                "exec_in": true,
+                "exec_out": true,
                 "data": "",
-                "out": ""
+                "out": "69ea0727af15a63bc155d042"
             },
             "state": "idle",
             "bypassed": false
@@ -304,8 +437,8 @@
                 469.3642142312475
             ],
             "parameters": {
-                "exec_in": null,
-                "exec_out": null,
+                "exec_in": false,
+                "exec_out": true,
                 "data": "Houdini FX session failed — check logs.",
                 "out": "Houdini FX session failed — check logs."
             },
@@ -340,11 +473,39 @@
             ],
             "parameters": {
                 "core": null,
-                "sequence": null,
+                "sequence": {
+                    "name": "seq_0001",
+                    "project_path": "G:\\Prism\\splash",
+                    "project_name": "splash"
+                },
                 "name": "shot_001",
-                "shot": null,
-                "entity": null,
-                "found": false
+                "shot": {
+                    "sequence": "seq_0001",
+                    "shot": "shot_001",
+                    "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001",
+                    "location": "global",
+                    "type": "shot",
+                    "paths": [
+                        {
+                            "location": "global",
+                            "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001"
+                        }
+                    ]
+                },
+                "entity": {
+                    "type": "shot",
+                    "sequence": "seq_0001",
+                    "shot": "shot_001",
+                    "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001",
+                    "location": "global",
+                    "paths": [
+                        {
+                            "location": "global",
+                            "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001"
+                        }
+                    ]
+                },
+                "found": true
             },
             "state": "idle",
             "bypassed": false
@@ -358,10 +519,113 @@
             ],
             "parameters": {
                 "core": null,
-                "project": null,
+                "project": {
+                    "configPath": "G:\\Prism\\splash\\00_Pipeline\\pipeline.json",
+                    "name": "splash",
+                    "source": "disk"
+                },
                 "name": "seq_0001",
-                "sequence": null,
-                "found": false
+                "sequence": {
+                    "name": "seq_0001",
+                    "project_path": "G:\\Prism\\splash",
+                    "project_name": "splash"
+                },
+                "found": true
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "f90b078a-7240-49b4-8fa4-c4679a9542dd",
+            "node_id": "houdini_action_new_hip",
+            "position": [
+                -670.4957486465985,
+                1286.9005733774827
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "actions_in": [],
+                "actions_out": [
+                    {
+                        "type": "new_hip"
+                    }
+                ]
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "88dc840b-a19b-4653-93d9-f5c9f2d8d9fd",
+            "node_id": "houdini_action_set_frame_range",
+            "position": [
+                568.6038510484366,
+                1161.5673751658037
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "actions_in": [
+                    {
+                        "type": "new_hip"
+                    },
+                    {
+                        "type": "import_alembic",
+                        "abc_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\alembic\\v0001\\seq_0001-shot_001_alembic_v0001.abc",
+                        "context": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\alembic\\v0001\\seq_0001-shot_001_alembic_v0001.abc"
+                    }
+                ],
+                "frame_start": 1001,
+                "frame_end": 1100,
+                "actions_out": [
+                    {
+                        "type": "new_hip"
+                    },
+                    {
+                        "type": "import_alembic",
+                        "abc_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\alembic\\v0001\\seq_0001-shot_001_alembic_v0001.abc",
+                        "context": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\alembic\\v0001\\seq_0001-shot_001_alembic_v0001.abc"
+                    },
+                    {
+                        "type": "set_frame_range",
+                        "frame_start": 1001,
+                        "frame_end": 1100
+                    }
+                ]
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "aea48cdb-2074-4bc0-b1b1-ff94106eae03",
+            "node_id": "prism_get_export_path",
+            "position": [
+                -2024.6122116762212,
+                813.846443467
+            ],
+            "parameters": {
+                "core": null,
+                "entity": {
+                    "type": "shot",
+                    "sequence": "seq_0001",
+                    "shot": "shot_001",
+                    "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001",
+                    "location": "global",
+                    "paths": [
+                        {
+                            "location": "global",
+                            "path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001"
+                        }
+                    ]
+                },
+                "output_type": "export",
+                "identifier": "alembic",
+                "version": "v0001",
+                "identifier_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\alembic",
+                "version_dir": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\alembic\\v0001",
+                "version_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\alembic\\v0001\\seq_0001-shot_001_alembic_v0001.abc",
+                "file_pattern": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_001\\Export\\alembic\\v0001\\seq_0001-shot_001_alembic_v0001.####.*",
+                "exists": true
             },
             "state": "idle",
             "bypassed": false
@@ -369,7 +633,7 @@
     ],
     "connections": [
         {
-            "id": "b999fd14-cc13-457f-9dd3-6716defff876",
+            "id": "9a9b8b87-e98d-4124-bfae-122a2a12b971",
             "from_node": "50070000-5000-4500-8500-500000070000",
             "from_port": "exec_out",
             "to_node": "50080000-5000-4500-8500-500000080000",
@@ -377,39 +641,7 @@
             "is_exec": true
         },
         {
-            "id": "49840aeb-1aa9-4cbc-8f2f-e81360102026",
-            "from_node": "50080000-5000-4500-8500-500000080000",
-            "from_port": "exec_out",
-            "to_node": "50090000-5000-4500-8500-500000090000",
-            "to_port": "exec_in",
-            "is_exec": true
-        },
-        {
-            "id": "7df9205c-8243-49c9-a3f8-d091705e91c4",
-            "from_node": "50090000-5000-4500-8500-500000090000",
-            "from_port": "exec_out",
-            "to_node": "500a0000-5000-4500-8500-5000000a0000",
-            "to_port": "exec_in",
-            "is_exec": true
-        },
-        {
-            "id": "98d99543-b1fa-4c98-877f-c6edc01ea2bd",
-            "from_node": "500a0000-5000-4500-8500-5000000a0000",
-            "from_port": "exec_out",
-            "to_node": "500b0000-5000-4500-8500-5000000b0000",
-            "to_port": "exec_in",
-            "is_exec": true
-        },
-        {
-            "id": "d4602653-1cf4-4494-aba6-4ed4e22ff3e5",
-            "from_node": "500b0000-5000-4500-8500-5000000b0000",
-            "from_port": "exec_out",
-            "to_node": "500c0000-5000-4500-8500-5000000c0000",
-            "to_port": "exec_in",
-            "is_exec": true
-        },
-        {
-            "id": "6e77b2a2-7fa3-41bf-a414-641eb00c8606",
+            "id": "4f0a553e-56f6-41e3-94f2-fc7199682c5e",
             "from_node": "500c0000-5000-4500-8500-5000000c0000",
             "from_port": "exec_out",
             "to_node": "500d0000-5000-4500-8500-5000000d0000",
@@ -417,7 +649,7 @@
             "is_exec": true
         },
         {
-            "id": "67fd8b3c-dc2a-4873-9983-3d90f32979ec",
+            "id": "45ad2c41-309c-4fe6-bcab-729c4de88cdd",
             "from_node": "500d0000-5000-4500-8500-5000000d0000",
             "from_port": "exec_out",
             "to_node": "500e0000-5000-4500-8500-5000000e0000",
@@ -425,7 +657,7 @@
             "is_exec": true
         },
         {
-            "id": "dfd5b9ba-f286-48e6-afd1-b654ce8324fb",
+            "id": "b551f4ec-7c22-4451-aaf3-da99dd320421",
             "from_node": "500e0000-5000-4500-8500-5000000e0000",
             "from_port": "exec_out",
             "to_node": "500f0000-5000-4500-8500-5000000f0000",
@@ -433,7 +665,7 @@
             "is_exec": true
         },
         {
-            "id": "6fbe7014-063a-4388-8aea-4c8ee911fe68",
+            "id": "d0569d61-b34f-4a7b-808b-ea24bcda53ab",
             "from_node": "500f0000-5000-4500-8500-5000000f0000",
             "from_port": "exec_out",
             "to_node": "50100000-5000-4500-8500-500000100000",
@@ -441,7 +673,7 @@
             "is_exec": true
         },
         {
-            "id": "e79e08d1-bb2d-4744-a44e-11a4ffc8549e",
+            "id": "b09268e3-9813-4ad9-8c54-299d54213efa",
             "from_node": "50100000-5000-4500-8500-500000100000",
             "from_port": "exec_out",
             "to_node": "50110000-5000-4500-8500-500000110000",
@@ -449,7 +681,7 @@
             "is_exec": true
         },
         {
-            "id": "b0787f10-a953-4671-9fbc-cd5380147d0c",
+            "id": "95b499f8-7e7a-4f6f-9a48-8fdc05fa92bb",
             "from_node": "500f0000-5000-4500-8500-5000000f0000",
             "from_port": "exec_false",
             "to_node": "50120000-5000-4500-8500-500000120000",
@@ -457,23 +689,7 @@
             "is_exec": true
         },
         {
-            "id": "7967334e-3973-4afe-8f06-5563f9d52b97",
-            "from_node": "50050000-5000-4500-8500-500000050000",
-            "from_port": "frame_start",
-            "to_node": "500b0000-5000-4500-8500-5000000b0000",
-            "to_port": "param1",
-            "is_exec": false
-        },
-        {
-            "id": "7d12060a-a7f9-4745-96ed-aef6a2149a20",
-            "from_node": "50050000-5000-4500-8500-500000050000",
-            "from_port": "frame_end",
-            "to_node": "500b0000-5000-4500-8500-5000000b0000",
-            "to_port": "param2",
-            "is_exec": false
-        },
-        {
-            "id": "609b54e7-13e3-48ea-99bd-41c941eb21bf",
+            "id": "39120bc8-c6f6-43d1-9809-f8f9083e7e20",
             "from_node": "50050000-5000-4500-8500-500000050000",
             "from_port": "frame_start",
             "to_node": "500c0000-5000-4500-8500-5000000c0000",
@@ -481,7 +697,7 @@
             "is_exec": false
         },
         {
-            "id": "caa94057-6b40-459f-8c89-41594ddf599b",
+            "id": "5a1cd541-afb2-4ed1-8a6e-9a6bf29b17e3",
             "from_node": "50050000-5000-4500-8500-500000050000",
             "from_port": "frame_end",
             "to_node": "500c0000-5000-4500-8500-5000000c0000",
@@ -489,7 +705,7 @@
             "is_exec": false
         },
         {
-            "id": "9e3f410e-73a5-496f-b72e-bd24762a7a9f",
+            "id": "34ff1493-5674-490b-a89a-cb4fd44add90",
             "from_node": "50050000-5000-4500-8500-500000050000",
             "from_port": "frame_start",
             "to_node": "50100000-5000-4500-8500-500000100000",
@@ -497,7 +713,7 @@
             "is_exec": false
         },
         {
-            "id": "47662a60-59d6-45ee-8129-efacb9dc317d",
+            "id": "5b3f06ca-d7c1-438c-9bc2-fb622b927914",
             "from_node": "50050000-5000-4500-8500-500000050000",
             "from_port": "frame_end",
             "to_node": "50100000-5000-4500-8500-500000100000",
@@ -505,71 +721,7 @@
             "is_exec": false
         },
         {
-            "id": "1bb378c5-1437-4f3d-a5b8-14ef363e2567",
-            "from_node": "50060000-5000-4500-8500-500000060000",
-            "from_port": "version_path",
-            "to_node": "500a0000-5000-4500-8500-5000000a0000",
-            "to_port": "abc_path",
-            "is_exec": false
-        },
-        {
-            "id": "e5b66fb5-375f-4b3a-8ae6-0f8eeddf2c2e",
-            "from_node": "50070000-5000-4500-8500-500000070000",
-            "from_port": "saved_path",
-            "to_node": "50090000-5000-4500-8500-500000090000",
-            "to_port": "hip_path",
-            "is_exec": false
-        },
-        {
-            "id": "84d5a3fe-da87-42cb-8e50-171351804678",
-            "from_node": "50070000-5000-4500-8500-500000070000",
-            "from_port": "saved_path",
-            "to_node": "500d0000-5000-4500-8500-5000000d0000",
-            "to_port": "hip_path",
-            "is_exec": false
-        },
-        {
-            "id": "4cadb3d0-3bf3-4eef-8573-3ef1f7bea435",
-            "from_node": "50080000-5000-4500-8500-500000080000",
-            "from_port": "version_path",
-            "to_node": "500c0000-5000-4500-8500-5000000c0000",
-            "to_port": "abc_path",
-            "is_exec": false
-        },
-        {
-            "id": "f5a6d0aa-f4d1-405a-98da-11595b84ba28",
-            "from_node": "50090000-5000-4500-8500-500000090000",
-            "from_port": "actions_out",
-            "to_node": "500a0000-5000-4500-8500-5000000a0000",
-            "to_port": "actions_in",
-            "is_exec": false
-        },
-        {
-            "id": "97977d4a-378b-4a60-b10e-790950d440b7",
-            "from_node": "500a0000-5000-4500-8500-5000000a0000",
-            "from_port": "actions_out",
-            "to_node": "500b0000-5000-4500-8500-5000000b0000",
-            "to_port": "actions_in",
-            "is_exec": false
-        },
-        {
-            "id": "56c01470-8869-4284-8c9a-790c4cf3e9ca",
-            "from_node": "500b0000-5000-4500-8500-5000000b0000",
-            "from_port": "actions_out",
-            "to_node": "500c0000-5000-4500-8500-5000000c0000",
-            "to_port": "actions_in",
-            "is_exec": false
-        },
-        {
-            "id": "7d5ed38a-d1d8-4992-b26e-aadb1778acf8",
-            "from_node": "500c0000-5000-4500-8500-5000000c0000",
-            "from_port": "actions_out",
-            "to_node": "500d0000-5000-4500-8500-5000000d0000",
-            "to_port": "actions_in",
-            "is_exec": false
-        },
-        {
-            "id": "55a82e1e-94d3-4789-a98d-3a2cdbbb64f4",
+            "id": "544e9112-b810-4d44-ab79-974e45e5de36",
             "from_node": "500d0000-5000-4500-8500-5000000d0000",
             "from_port": "actions_out",
             "to_node": "500e0000-5000-4500-8500-5000000e0000",
@@ -577,7 +729,7 @@
             "is_exec": false
         },
         {
-            "id": "e1c4405d-78bd-48d7-be11-749500aaff44",
+            "id": "2e5adf2b-0052-4ab2-be6b-91603cd839a6",
             "from_node": "500e0000-5000-4500-8500-5000000e0000",
             "from_port": "success",
             "to_node": "500f0000-5000-4500-8500-5000000f0000",
@@ -585,7 +737,7 @@
             "is_exec": false
         },
         {
-            "id": "66de075a-3e79-45f4-bae9-efa6813c1501",
+            "id": "9ef40204-6f0d-4af4-8cb1-f2224ea9c595",
             "from_node": "50100000-5000-4500-8500-500000100000",
             "from_port": "job_id",
             "to_node": "50110000-5000-4500-8500-500000110000",
@@ -593,7 +745,7 @@
             "is_exec": false
         },
         {
-            "id": "6f3f4606-1722-405c-98c1-739b2b52cc66",
+            "id": "5c863e6c-1705-4641-b1fd-71e5cb5056aa",
             "from_node": "50020000-5000-4500-8500-500000020000",
             "from_port": "project",
             "to_node": "fcd048fe-100f-4ea7-ae1c-9f24880677ef",
@@ -601,7 +753,7 @@
             "is_exec": false
         },
         {
-            "id": "b7c5269d-caa5-4f54-b12b-f91fd07686cf",
+            "id": "8450371b-69ba-4241-b4a2-8747c279d601",
             "from_node": "fcd048fe-100f-4ea7-ae1c-9f24880677ef",
             "from_port": "sequence",
             "to_node": "71808b43-ef24-4c46-a36d-023ab5f3d69b",
@@ -609,7 +761,7 @@
             "is_exec": false
         },
         {
-            "id": "d3cc0944-b2a3-4bd1-bb02-00a8fcd86c10",
+            "id": "ddbbe664-2abc-4b7e-9018-14472b0d1d70",
             "from_node": "71808b43-ef24-4c46-a36d-023ab5f3d69b",
             "from_port": "entity",
             "to_node": "50050000-5000-4500-8500-500000050000",
@@ -617,7 +769,7 @@
             "is_exec": false
         },
         {
-            "id": "dea326db-86a4-4658-a257-ac77ab3f1d54",
+            "id": "5c683a4e-9033-413d-bd79-b8f5b7fdf1b4",
             "from_node": "71808b43-ef24-4c46-a36d-023ab5f3d69b",
             "from_port": "entity",
             "to_node": "50070000-5000-4500-8500-500000070000",
@@ -625,7 +777,7 @@
             "is_exec": false
         },
         {
-            "id": "521ab18b-adf4-48fa-bad2-530a61717f3d",
+            "id": "5f4ca1c6-a52f-4227-8e96-e71396574d9c",
             "from_node": "71808b43-ef24-4c46-a36d-023ab5f3d69b",
             "from_port": "entity",
             "to_node": "50080000-5000-4500-8500-500000080000",
@@ -633,11 +785,123 @@
             "is_exec": false
         },
         {
-            "id": "ae33d3c8-ee46-4859-b33a-1ea6aeba6b0f",
+            "id": "37b02c7b-ffbb-46bd-92bd-aa27d48bec83",
+            "from_node": "50070000-5000-4500-8500-500000070000",
+            "from_port": "saved_path",
+            "to_node": "500d0000-5000-4500-8500-5000000d0000",
+            "to_port": "hip_path",
+            "is_exec": false
+        },
+        {
+            "id": "c49a7c2c-b2d2-4f88-b8c2-ff5a7ee1bf95",
+            "from_node": "500c0000-5000-4500-8500-5000000c0000",
+            "from_port": "actions_out",
+            "to_node": "500d0000-5000-4500-8500-5000000d0000",
+            "to_port": "actions_in",
+            "is_exec": false
+        },
+        {
+            "id": "af184065-0ced-454f-9bbc-64558576bca2",
+            "from_node": "f90b078a-7240-49b4-8fa4-c4679a9542dd",
+            "from_port": "exec_out",
+            "to_node": "500a0000-5000-4500-8500-5000000a0000",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "095d8000-ac93-4ff1-b381-77e846680d42",
+            "from_node": "f90b078a-7240-49b4-8fa4-c4679a9542dd",
+            "from_port": "actions_out",
+            "to_node": "500a0000-5000-4500-8500-5000000a0000",
+            "to_port": "actions_in",
+            "is_exec": false
+        },
+        {
+            "id": "d17c9ec0-af0f-49d6-bd66-550eb9756876",
+            "from_node": "50080000-5000-4500-8500-500000080000",
+            "from_port": "exec_out",
+            "to_node": "f90b078a-7240-49b4-8fa4-c4679a9542dd",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "c530829c-b38f-4c38-823e-3ca15d902409",
+            "from_node": "500a0000-5000-4500-8500-5000000a0000",
+            "from_port": "exec_out",
+            "to_node": "88dc840b-a19b-4653-93d9-f5c9f2d8d9fd",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "73ce1cc3-13f6-4d0d-b64f-85b952b438f0",
+            "from_node": "500a0000-5000-4500-8500-5000000a0000",
+            "from_port": "actions_out",
+            "to_node": "88dc840b-a19b-4653-93d9-f5c9f2d8d9fd",
+            "to_port": "actions_in",
+            "is_exec": false
+        },
+        {
+            "id": "08b1a2c9-4286-439b-b30f-247bbe325f25",
+            "from_node": "50050000-5000-4500-8500-500000050000",
+            "from_port": "frame_start",
+            "to_node": "88dc840b-a19b-4653-93d9-f5c9f2d8d9fd",
+            "to_port": "frame_start",
+            "is_exec": false
+        },
+        {
+            "id": "2bba6de1-ccd4-4e9b-ac1c-c4f93f262c8d",
+            "from_node": "50050000-5000-4500-8500-500000050000",
+            "from_port": "frame_end",
+            "to_node": "88dc840b-a19b-4653-93d9-f5c9f2d8d9fd",
+            "to_port": "frame_end",
+            "is_exec": false
+        },
+        {
+            "id": "03764cdc-af5b-4ecb-a781-8dad9a298480",
+            "from_node": "88dc840b-a19b-4653-93d9-f5c9f2d8d9fd",
+            "from_port": "exec_out",
+            "to_node": "500c0000-5000-4500-8500-5000000c0000",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "13eda7a8-b839-446e-8e18-0e421d7a0fcd",
+            "from_node": "88dc840b-a19b-4653-93d9-f5c9f2d8d9fd",
+            "from_port": "actions_out",
+            "to_node": "500c0000-5000-4500-8500-5000000c0000",
+            "to_port": "actions_in",
+            "is_exec": false
+        },
+        {
+            "id": "70754e9d-89f3-4775-8ba1-3948216cc440",
             "from_node": "71808b43-ef24-4c46-a36d-023ab5f3d69b",
             "from_port": "entity",
-            "to_node": "50060000-5000-4500-8500-500000060000",
+            "to_node": "aea48cdb-2074-4bc0-b1b1-ff94106eae03",
             "to_port": "entity",
+            "is_exec": false
+        },
+        {
+            "id": "77b89c1a-0af5-4575-99e9-5ac573145839",
+            "from_node": "50080000-5000-4500-8500-500000080000",
+            "from_port": "version_path",
+            "to_node": "500c0000-5000-4500-8500-5000000c0000",
+            "to_port": "abc_path",
+            "is_exec": false
+        },
+        {
+            "id": "0587be4c-ddc0-48a1-a879-91625ffc980f",
+            "from_node": "50070000-5000-4500-8500-500000070000",
+            "from_port": "saved_path",
+            "to_node": "50100000-5000-4500-8500-500000100000",
+            "to_port": "hip_file",
+            "is_exec": false
+        },
+        {
+            "id": "0c4881a6-e9a7-4d0b-a939-ee4ec0fd584e",
+            "from_node": "aea48cdb-2074-4bc0-b1b1-ff94106eae03",
+            "from_port": "version_path",
+            "to_node": "500a0000-5000-4500-8500-5000000a0000",
+            "to_port": "abc_path",
             "is_exec": false
         }
     ],
@@ -692,6 +956,19 @@
                 80.0
             ],
             "text": "Houdini sim submission to Deadline.\nFrame range flows from prism_get_shot_info.\nPriority=60 , FX typically above lighting.",
+            "color": "#ffffcc"
+        },
+        {
+            "id": "d757356d-8375-41fa-a5cd-f8aaab050250",
+            "position": [
+                -1754.884268417769,
+                1071.0613806605897
+            ],
+            "size": [
+                200.0,
+                150.0
+            ],
+            "text": "Get exported animation for shot_001",
             "color": "#ffffcc"
         }
     ],

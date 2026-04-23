@@ -1,287 +1,1205 @@
 {
     "nodes": [
         {
-            "instance_id": "60010000-6000-4600-8600-600000010000",
-            "node_id": "prism_core_init",
-            "position": [60.0, 100.0],
-            "parameters": { "prism_scripts_path": "", "load_project": false, "show_ui": false },
-            "state": "idle", "bypassed": false
-        },
-        {
             "instance_id": "60020000-6000-4600-8600-600000020000",
             "node_id": "prism_get_project_by_name",
-            "position": [500.0, 100.0],
-            "parameters": { "name": "MyProject" },
-            "state": "idle", "bypassed": false
-        },
-        {
-            "instance_id": "60030000-6000-4600-8600-600000030000",
-            "node_id": "prism_get_asset_type_by_name",
-            "position": [500.0, 320.0],
-            "parameters": { "name": "props" },
-            "state": "idle", "bypassed": false
+            "position": [
+                -4096.479892730708,
+                371.1696624755858
+            ],
+            "parameters": {
+                "core": null,
+                "name": "splash",
+                "project": {
+                    "configPath": "G:\\Prism\\splash\\00_Pipeline\\pipeline.json",
+                    "name": "splash",
+                    "source": "disk"
+                },
+                "project_path": "G:\\Prism\\splash",
+                "config_path": "G:\\Prism\\splash\\00_Pipeline\\pipeline.json",
+                "found": true
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "60040000-6000-4600-8600-600000040000",
             "node_id": "prism_get_asset_by_name",
-            "position": [950.0, 320.0],
-            "parameters": { "name": "sword" },
-            "state": "idle", "bypassed": false
+            "position": [
+                -3626.585776712008,
+                338.1893859622985
+            ],
+            "parameters": {
+                "core": null,
+                "project": {
+                    "configPath": "G:\\Prism\\splash\\00_Pipeline\\pipeline.json",
+                    "name": "splash",
+                    "source": "disk"
+                },
+                "asset_type": null,
+                "name": "dog",
+                "asset": {
+                    "type": "asset",
+                    "asset_path": "dog"
+                },
+                "entity": {
+                    "type": "asset",
+                    "asset_path": "dog",
+                    "path": "G:\\Prism\\splash\\03_Production\\Assets\\dog",
+                    "location": "global",
+                    "paths": {}
+                },
+                "matches": [
+                    {
+                        "type": "asset",
+                        "asset_path": "dog"
+                    }
+                ],
+                "found": true
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "60050000-6000-4600-8600-600000050000",
             "node_id": "prism_get_scene_path",
-            "position": [1400.0, 320.0],
-            "parameters": { "department": "modeling", "task": "modeling", "application": "blender", "version": "" },
-            "state": "idle", "bypassed": false
-        },
-        {
-            "instance_id": "60060000-6000-4600-8600-600000060000",
-            "node_id": "prism_get_export_path",
-            "position": [500.0, 560.0],
-            "parameters": { "output_type": "3d", "identifier": "fbx_export", "version": "" },
-            "state": "idle", "bypassed": false
-        },
-        {
-            "instance_id": "60070000-6000-4600-8600-600000070000",
-            "node_id": "prism_get_export_path",
-            "position": [950.0, 560.0],
-            "parameters": { "output_type": "3d", "identifier": "alembic_export", "version": "" },
-            "state": "idle", "bypassed": false
-        },
-        {
-            "instance_id": "60080000-6000-4600-8600-600000080000",
-            "node_id": "prism_get_export_path",
-            "position": [1400.0, 560.0],
-            "parameters": { "output_type": "3d", "identifier": "usd_export", "version": "" },
-            "state": "idle", "bypassed": false
+            "position": [
+                -3210.7670021057074,
+                401.08665466308594
+            ],
+            "parameters": {
+                "core": null,
+                "entity": {
+                    "type": "asset",
+                    "asset_path": "dog",
+                    "path": "G:\\Prism\\splash\\03_Production\\Assets\\dog",
+                    "location": "global",
+                    "paths": {}
+                },
+                "department": "modeling",
+                "task": "modeling",
+                "application": "blender",
+                "version": "v0013",
+                "scene_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_Modeling_v0013.blend",
+                "task_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling",
+                "exists": true
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "60090000-6000-4600-8600-600000090000",
             "node_id": "prism_save_scene_version",
-            "position": [60.0, 560.0],
-            "parameters": { "department": "modeling", "task": "modeling", "application": "blender" },
-            "state": "idle", "bypassed": false
+            "position": [
+                -2123.898534991439,
+                -293.9519758860749
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "core": null,
+                "entity": {
+                    "type": "asset",
+                    "asset_path": "dog",
+                    "path": "G:\\Prism\\splash\\03_Production\\Assets\\dog",
+                    "location": "global",
+                    "paths": {}
+                },
+                "department": "modeling",
+                "task": "modeling",
+                "application": "blender",
+                "saved_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0014.blend",
+                "version": "v0014",
+                "task_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling",
+                "success": true
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "600a0000-6000-4600-8600-6000000a0000",
             "node_id": "blender_action_open_blend",
-            "position": [60.0, 820.0],
-            "parameters": {},
-            "state": "idle", "bypassed": false
+            "position": [
+                -289.3790626525862,
+                581.0073089599607
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "actions_in": [],
+                "blend_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_Modeling_v0013.blend",
+                "actions_out": [
+                    {
+                        "type": "open_blend",
+                        "blend_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_Modeling_v0013.blend"
+                    }
+                ]
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "600b0000-6000-4600-8600-6000000b0000",
             "node_id": "blender_action_export_fbx",
-            "position": [460.0, 820.0],
-            "parameters": { "selection_only": false, "frame_start": 1, "frame_end": 1, "bake_anim": false, "add_leaf_bones": false },
-            "state": "idle", "bypassed": false
+            "position": [
+                101.1629208996452,
+                265.35369316584536
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "actions_in": [
+                    {
+                        "type": "open_blend",
+                        "blend_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_Modeling_v0013.blend"
+                    }
+                ],
+                "fbx_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Export\\fbx_export\\v0001\\dog_fbx_export_v0001.fbx",
+                "selection_only": false,
+                "frame_start": 1,
+                "frame_end": 1,
+                "bake_anim": false,
+                "add_leaf_bones": false,
+                "actions_out": [
+                    {
+                        "type": "open_blend",
+                        "blend_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_Modeling_v0013.blend"
+                    },
+                    {
+                        "type": "export_fbx",
+                        "fbx_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Export\\fbx_export\\v0001\\dog_fbx_export_v0001.fbx",
+                        "selection_only": false,
+                        "frame_start": 1,
+                        "frame_end": 1,
+                        "bake_anim": false,
+                        "add_leaf_bones": false
+                    }
+                ]
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "600c0000-6000-4600-8600-6000000c0000",
             "node_id": "blender_action_export_alembic",
-            "position": [860.0, 820.0],
-            "parameters": { "frame_start": 1, "frame_end": 1, "export_hair": false, "export_particles": false },
-            "state": "idle", "bypassed": false
+            "position": [
+                498.9021873474139,
+                450.1479339599609
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "actions_in": [
+                    {
+                        "type": "open_blend",
+                        "blend_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_Modeling_v0013.blend"
+                    },
+                    {
+                        "type": "export_fbx",
+                        "fbx_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Export\\fbx_export\\v0001\\dog_fbx_export_v0001.fbx",
+                        "selection_only": false,
+                        "frame_start": 1,
+                        "frame_end": 1,
+                        "bake_anim": false,
+                        "add_leaf_bones": false
+                    }
+                ],
+                "abc_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Export\\alembic_export\\v0001\\dog_alembic_export_v0001.abc",
+                "frame_start": 1,
+                "frame_end": 1,
+                "export_hair": false,
+                "export_particles": false,
+                "actions_out": [
+                    {
+                        "type": "open_blend",
+                        "blend_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_Modeling_v0013.blend"
+                    },
+                    {
+                        "type": "export_fbx",
+                        "fbx_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Export\\fbx_export\\v0001\\dog_fbx_export_v0001.fbx",
+                        "selection_only": false,
+                        "frame_start": 1,
+                        "frame_end": 1,
+                        "bake_anim": false,
+                        "add_leaf_bones": false
+                    },
+                    {
+                        "type": "export_alembic",
+                        "abc_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Export\\alembic_export\\v0001\\dog_alembic_export_v0001.abc",
+                        "frame_start": 1,
+                        "frame_end": 1,
+                        "export_hair": false,
+                        "export_particles": false
+                    }
+                ]
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "600d0000-6000-4600-8600-6000000d0000",
             "node_id": "blender_action_export_usd",
-            "position": [1260.0, 820.0],
-            "parameters": { "export_animation": false, "export_hair": false, "export_uvmaps": true, "export_normals": true, "export_materials": true },
-            "state": "idle", "bypassed": false
+            "position": [
+                923.4934916235298,
+                291.5416831352916
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "actions_in": [
+                    {
+                        "type": "open_blend",
+                        "blend_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_Modeling_v0013.blend"
+                    },
+                    {
+                        "type": "export_fbx",
+                        "fbx_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Export\\fbx_export\\v0001\\dog_fbx_export_v0001.fbx",
+                        "selection_only": false,
+                        "frame_start": 1,
+                        "frame_end": 1,
+                        "bake_anim": false,
+                        "add_leaf_bones": false
+                    },
+                    {
+                        "type": "export_alembic",
+                        "abc_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Export\\alembic_export\\v0001\\dog_alembic_export_v0001.abc",
+                        "frame_start": 1,
+                        "frame_end": 1,
+                        "export_hair": false,
+                        "export_particles": false
+                    }
+                ],
+                "usd_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Export\\usd_export\\v0001\\dog_usd_export_v0001.usd",
+                "export_animation": false,
+                "export_hair": false,
+                "export_uvmaps": true,
+                "export_normals": true,
+                "export_materials": true,
+                "actions_out": [
+                    {
+                        "type": "open_blend",
+                        "blend_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_Modeling_v0013.blend"
+                    },
+                    {
+                        "type": "export_fbx",
+                        "fbx_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Export\\fbx_export\\v0001\\dog_fbx_export_v0001.fbx",
+                        "selection_only": false,
+                        "frame_start": 1,
+                        "frame_end": 1,
+                        "bake_anim": false,
+                        "add_leaf_bones": false
+                    },
+                    {
+                        "type": "export_alembic",
+                        "abc_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Export\\alembic_export\\v0001\\dog_alembic_export_v0001.abc",
+                        "frame_start": 1,
+                        "frame_end": 1,
+                        "export_hair": false,
+                        "export_particles": false
+                    },
+                    {
+                        "type": "export_usd",
+                        "usd_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Export\\usd_export\\v0001\\dog_usd_export_v0001.usd",
+                        "export_animation": false,
+                        "export_hair": false,
+                        "export_uvmaps": true,
+                        "export_normals": true,
+                        "export_materials": true
+                    }
+                ]
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "600e0000-6000-4600-8600-6000000e0000",
             "node_id": "blender_action_save_blend",
-            "position": [1660.0, 820.0],
-            "parameters": {},
-            "state": "idle", "bypassed": false
+            "position": [
+                1322.339687347414,
+                188.42918395996128
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "actions_in": [
+                    {
+                        "type": "open_blend",
+                        "blend_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_Modeling_v0013.blend"
+                    },
+                    {
+                        "type": "export_fbx",
+                        "fbx_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Export\\fbx_export\\v0001\\dog_fbx_export_v0001.fbx",
+                        "selection_only": false,
+                        "frame_start": 1,
+                        "frame_end": 1,
+                        "bake_anim": false,
+                        "add_leaf_bones": false
+                    },
+                    {
+                        "type": "export_alembic",
+                        "abc_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Export\\alembic_export\\v0001\\dog_alembic_export_v0001.abc",
+                        "frame_start": 1,
+                        "frame_end": 1,
+                        "export_hair": false,
+                        "export_particles": false
+                    },
+                    {
+                        "type": "export_usd",
+                        "usd_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Export\\usd_export\\v0001\\dog_usd_export_v0001.usd",
+                        "export_animation": false,
+                        "export_hair": false,
+                        "export_uvmaps": true,
+                        "export_normals": true,
+                        "export_materials": true
+                    }
+                ],
+                "blend_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0014.blend",
+                "actions_out": [
+                    {
+                        "type": "open_blend",
+                        "blend_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_Modeling_v0013.blend"
+                    },
+                    {
+                        "type": "export_fbx",
+                        "fbx_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Export\\fbx_export\\v0001\\dog_fbx_export_v0001.fbx",
+                        "selection_only": false,
+                        "frame_start": 1,
+                        "frame_end": 1,
+                        "bake_anim": false,
+                        "add_leaf_bones": false
+                    },
+                    {
+                        "type": "export_alembic",
+                        "abc_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Export\\alembic_export\\v0001\\dog_alembic_export_v0001.abc",
+                        "frame_start": 1,
+                        "frame_end": 1,
+                        "export_hair": false,
+                        "export_particles": false
+                    },
+                    {
+                        "type": "export_usd",
+                        "usd_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Export\\usd_export\\v0001\\dog_usd_export_v0001.usd",
+                        "export_animation": false,
+                        "export_hair": false,
+                        "export_uvmaps": true,
+                        "export_normals": true,
+                        "export_materials": true
+                    },
+                    {
+                        "type": "save_blend",
+                        "blend_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0014.blend"
+                    }
+                ]
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "600f0000-6000-4600-8600-6000000f0000",
             "node_id": "blender_headless",
-            "position": [60.0, 1080.0],
-            "parameters": { "blender_version": "4.2", "blender.exe": "C:/Program Files/Blender Foundation/Blender 4.2/blender.exe", "bat_file": "", "blender_env_file": "", "blend_file": "" },
-            "state": "idle", "bypassed": false
+            "position": [
+                1759.3880271911607,
+                162.32688903808656
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "blender_version": "5.1",
+                "blender.exe": "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe",
+                "bat_file": "",
+                "blender_env_file": "",
+                "blend_file": "",
+                "actions": [
+                    {
+                        "type": "open_blend",
+                        "blend_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_Modeling_v0013.blend"
+                    },
+                    {
+                        "type": "export_fbx",
+                        "fbx_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Export\\fbx_export\\v0001\\dog_fbx_export_v0001.fbx",
+                        "selection_only": false,
+                        "frame_start": 1,
+                        "frame_end": 1,
+                        "bake_anim": false,
+                        "add_leaf_bones": false
+                    },
+                    {
+                        "type": "export_alembic",
+                        "abc_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Export\\alembic_export\\v0001\\dog_alembic_export_v0001.abc",
+                        "frame_start": 1,
+                        "frame_end": 1,
+                        "export_hair": false,
+                        "export_particles": false
+                    },
+                    {
+                        "type": "export_usd",
+                        "usd_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Export\\usd_export\\v0001\\dog_usd_export_v0001.usd",
+                        "export_animation": false,
+                        "export_hair": false,
+                        "export_uvmaps": true,
+                        "export_normals": true,
+                        "export_materials": true
+                    },
+                    {
+                        "type": "save_blend",
+                        "blend_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Scenefiles\\mod\\modeling\\dog_modeling_v0014.blend"
+                    }
+                ],
+                "success": true,
+                "stdout": "Blender 5.1.1 (hash b70da489d7f4 built 2026-04-14 01:37:22)\n\nBlender quit\n",
+                "stderr": "C:\\Program Files/Prism2\\Scripts\\PrismCore.py:124: PythonQtWarning: Selected binding 'pyqt5' could not be found; falling back to 'pyside6'\n  from qtpy.QtCore import *\nC:\\Program Files\\Prism2\\PythonLibs\\Python3\\imageio_ffmpeg\\_utils.py:7: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.\n  from pkg_resources import resource_filename\n  File \"C:\\Users\\Mahmoud\\AppData\\Local\\Temp\\tmpjh9_et5h.py\", line 240\n    entry['error'] = str(e) + '\n                              ^\nSyntaxError: unterminated string literal (detected at line 240)\n",
+                "exit_code": 0,
+                "executed_actions": [],
+                "skipped_actions": []
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "60100000-6000-4600-8600-600000100000",
             "node_id": "if_condition",
-            "position": [560.0, 1080.0],
-            "parameters": { "data": "" },
-            "state": "idle", "bypassed": false
+            "position": [
+                2133.5030174255367,
+                208.10325622558662
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "condition": true,
+                "data": "",
+                "exec_false": false,
+                "on_true": "",
+                "on_false": null,
+                "result": true
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "60110000-6000-4600-8600-600000110000",
             "node_id": "blender_get_action_result",
-            "position": [60.0, 1340.0],
-            "parameters": { "action_type": "export_fbx", "index": 1 },
-            "state": "idle", "bypassed": false
+            "position": [
+                2910.2821922302232,
+                769.733753204346
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "executed_actions": [],
+                "action_type": "export_fbx",
+                "index": 1,
+                "found": false,
+                "action": {},
+                "info": {},
+                "path": ""
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "60120000-6000-4600-8600-600000120000",
             "node_id": "blender_get_action_result",
-            "position": [500.0, 1340.0],
-            "parameters": { "action_type": "export_alembic", "index": 2 },
-            "state": "idle", "bypassed": false
+            "position": [
+                3320.9853172302237,
+                552.4485969543465
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "executed_actions": [],
+                "action_type": "export_alembic",
+                "index": 2,
+                "found": false,
+                "action": {},
+                "info": {},
+                "path": ""
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "60130000-6000-4600-8600-600000130000",
             "node_id": "blender_get_action_result",
-            "position": [940.0, 1340.0],
-            "parameters": { "action_type": "export_usd", "index": 3 },
-            "state": "idle", "bypassed": false
+            "position": [
+                3690.1845359802246,
+                892.414417266846
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "executed_actions": [],
+                "action_type": "export_usd",
+                "index": 3,
+                "found": false,
+                "action": {},
+                "info": {},
+                "path": ""
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "60140000-6000-4600-8600-600000140000",
             "node_id": "console_print",
-            "position": [60.0, 1560.0],
-            "parameters": { "data": "" },
-            "state": "idle", "bypassed": false
+            "position": [
+                4079.715785980223,
+                579.5775032043467
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "data": "",
+                "out": ""
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "60150000-6000-4600-8600-600000150000",
             "node_id": "console_print",
-            "position": [500.0, 1560.0],
-            "parameters": { "data": "" },
-            "state": "idle", "bypassed": false
+            "position": [
+                4073.548793792723,
+                813.3421516418468
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "data": "",
+                "out": ""
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "60160000-6000-4600-8600-600000160000",
             "node_id": "console_print",
-            "position": [940.0, 1560.0],
-            "parameters": { "data": "" },
-            "state": "idle", "bypassed": false
+            "position": [
+                4083.861293792723,
+                1098.9866828918462
+            ],
+            "parameters": {
+                "exec_in": true,
+                "exec_out": true,
+                "data": "",
+                "out": ""
+            },
+            "state": "idle",
+            "bypassed": false
         },
         {
             "instance_id": "60170000-6000-4600-8600-600000170000",
             "node_id": "console_print",
-            "position": [560.0, 1180.0],
-            "parameters": { "data": "Blender session failed — check stdout/stderr." },
-            "state": "idle", "bypassed": false
+            "position": [
+                2499.7139549255367,
+                71.59202575683696
+            ],
+            "parameters": {
+                "exec_in": false,
+                "exec_out": true,
+                "data": "Blender session failed — check stdout/stderr.",
+                "out": "Blender session failed — check stdout/stderr."
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "99ac2ab5-e708-42b3-9c11-2934472b93eb",
+            "node_id": "prism_core_init",
+            "position": [
+                -4509.326572418209,
+                374.4069671630858
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": null,
+                "prism_scripts_path": "C:/Program Files/Prism2/Scripts",
+                "load_project": true,
+                "show_ui": false,
+                "core": null,
+                "version": ""
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "b3b49da2-ac17-492e-972f-090e6431e00c",
+            "node_id": "message_node",
+            "position": [
+                1361.0874999999999,
+                471.2625000000001
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "msg": "5.1",
+                "out": "5.1"
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "82f27ced-840f-49ce-87a7-817a181d24f5",
+            "node_id": "message_node",
+            "position": [
+                1360.0875000000008,
+                648.6625000000001
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "msg": "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe",
+                "out": "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe"
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "36960116-609e-456e-b024-60ba3db591a1",
+            "node_id": "prism_create_product_version",
+            "position": [
+                -1746.0024464064568,
+                699.6867846606426
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "core": null,
+                "entity": {
+                    "type": "asset",
+                    "asset_path": "dog",
+                    "path": "G:\\Prism\\splash\\03_Production\\Assets\\dog",
+                    "location": "global",
+                    "paths": {}
+                },
+                "task": "modeling",
+                "department": "modeling",
+                "product_name": "usd_export",
+                "comment": "",
+                "extension": ".usd",
+                "success": true,
+                "version_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Export\\usd_export\\v0001\\dog_usd_export_v0001.usd"
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "5ad24f36-9832-4779-8bbf-fd5346f3855e",
+            "node_id": "prism_create_product_version",
+            "position": [
+                -1793.5108542847256,
+                -131.7772384169525
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "core": null,
+                "entity": {
+                    "type": "asset",
+                    "asset_path": "dog",
+                    "path": "G:\\Prism\\splash\\03_Production\\Assets\\dog",
+                    "location": "global",
+                    "paths": {}
+                },
+                "task": "modeling",
+                "department": "modeling",
+                "product_name": "fbx_export",
+                "comment": "",
+                "extension": ".fbx",
+                "success": true,
+                "version_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Export\\fbx_export\\v0001\\dog_fbx_export_v0001.fbx"
+            },
+            "state": "idle",
+            "bypassed": false
+        },
+        {
+            "instance_id": "5b15b01b-0770-446b-b07f-a46e62d2b773",
+            "node_id": "prism_create_product_version",
+            "position": [
+                -1365.634229143244,
+                213.9212129778217
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": true,
+                "core": null,
+                "entity": {
+                    "type": "asset",
+                    "asset_path": "dog",
+                    "path": "G:\\Prism\\splash\\03_Production\\Assets\\dog",
+                    "location": "global",
+                    "paths": {}
+                },
+                "task": "modeling",
+                "department": "modeling",
+                "product_name": "alembic_export",
+                "comment": "",
+                "extension": ".abc",
+                "success": true,
+                "version_path": "G:\\Prism\\splash\\03_Production\\Assets\\dog\\Export\\alembic_export\\v0001\\dog_alembic_export_v0001.abc"
+            },
+            "state": "idle",
+            "bypassed": false
         }
     ],
     "connections": [
-        { "id": "6e010000-6e00-4e00-8e00-6e0000010000", "from_node": "60010000-6000-4600-8600-600000010000", "from_port": "exec_out", "to_node": "60090000-6000-4600-8600-600000090000", "to_port": "exec_in", "is_exec": true },
-        { "id": "6e020000-6e00-4e00-8e00-6e0000020000", "from_node": "60090000-6000-4600-8600-600000090000", "from_port": "exec_out", "to_node": "600a0000-6000-4600-8600-6000000a0000", "to_port": "exec_in", "is_exec": true },
-        { "id": "6e030000-6e00-4e00-8e00-6e0000030000", "from_node": "600a0000-6000-4600-8600-6000000a0000", "from_port": "exec_out", "to_node": "600b0000-6000-4600-8600-6000000b0000", "to_port": "exec_in", "is_exec": true },
-        { "id": "6e040000-6e00-4e00-8e00-6e0000040000", "from_node": "600b0000-6000-4600-8600-6000000b0000", "from_port": "exec_out", "to_node": "600c0000-6000-4600-8600-6000000c0000", "to_port": "exec_in", "is_exec": true },
-        { "id": "6e050000-6e00-4e00-8e00-6e0000050000", "from_node": "600c0000-6000-4600-8600-6000000c0000", "from_port": "exec_out", "to_node": "600d0000-6000-4600-8600-6000000d0000", "to_port": "exec_in", "is_exec": true },
-        { "id": "6e060000-6e00-4e00-8e00-6e0000060000", "from_node": "600d0000-6000-4600-8600-6000000d0000", "from_port": "exec_out", "to_node": "600e0000-6000-4600-8600-6000000e0000", "to_port": "exec_in", "is_exec": true },
-        { "id": "6e070000-6e00-4e00-8e00-6e0000070000", "from_node": "600e0000-6000-4600-8600-6000000e0000", "from_port": "exec_out", "to_node": "600f0000-6000-4600-8600-6000000f0000", "to_port": "exec_in", "is_exec": true },
-        { "id": "6e080000-6e00-4e00-8e00-6e0000080000", "from_node": "600f0000-6000-4600-8600-6000000f0000", "from_port": "exec_out", "to_node": "60100000-6000-4600-8600-600000100000", "to_port": "exec_in", "is_exec": true },
-        { "id": "6e090000-6e00-4e00-8e00-6e0000090000", "from_node": "60100000-6000-4600-8600-600000100000", "from_port": "exec_out", "to_node": "60110000-6000-4600-8600-600000110000", "to_port": "exec_in", "is_exec": true },
-        { "id": "6e0a0000-6e00-4e00-8e00-6e00000a0000", "from_node": "60110000-6000-4600-8600-600000110000", "from_port": "exec_out", "to_node": "60120000-6000-4600-8600-600000120000", "to_port": "exec_in", "is_exec": true },
-        { "id": "6e0b0000-6e00-4e00-8e00-6e00000b0000", "from_node": "60120000-6000-4600-8600-600000120000", "from_port": "exec_out", "to_node": "60130000-6000-4600-8600-600000130000", "to_port": "exec_in", "is_exec": true },
-        { "id": "6e0c0000-6e00-4e00-8e00-6e00000c0000", "from_node": "60130000-6000-4600-8600-600000130000", "from_port": "exec_out", "to_node": "60140000-6000-4600-8600-600000140000", "to_port": "exec_in", "is_exec": true },
-        { "id": "6e0d0000-6e00-4e00-8e00-6e00000d0000", "from_node": "60140000-6000-4600-8600-600000140000", "from_port": "exec_out", "to_node": "60150000-6000-4600-8600-600000150000", "to_port": "exec_in", "is_exec": true },
-        { "id": "6e0e0000-6e00-4e00-8e00-6e00000e0000", "from_node": "60150000-6000-4600-8600-600000150000", "from_port": "exec_out", "to_node": "60160000-6000-4600-8600-600000160000", "to_port": "exec_in", "is_exec": true },
-        { "id": "6e0f0000-6e00-4e00-8e00-6e00000f0000", "from_node": "60100000-6000-4600-8600-600000100000", "from_port": "exec_false", "to_node": "60170000-6000-4600-8600-600000170000", "to_port": "exec_in", "is_exec": true },
-
-        { "id": "6d010000-6d00-4d00-8d00-6d0000010000", "from_node": "60010000-6000-4600-8600-600000010000", "from_port": "core", "to_node": "60020000-6000-4600-8600-600000020000", "to_port": "core", "is_exec": false },
-        { "id": "6d020000-6d00-4d00-8d00-6d0000020000", "from_node": "60010000-6000-4600-8600-600000010000", "from_port": "core", "to_node": "60030000-6000-4600-8600-600000030000", "to_port": "core", "is_exec": false },
-        { "id": "6d030000-6d00-4d00-8d00-6d0000030000", "from_node": "60010000-6000-4600-8600-600000010000", "from_port": "core", "to_node": "60040000-6000-4600-8600-600000040000", "to_port": "core", "is_exec": false },
-        { "id": "6d040000-6d00-4d00-8d00-6d0000040000", "from_node": "60010000-6000-4600-8600-600000010000", "from_port": "core", "to_node": "60050000-6000-4600-8600-600000050000", "to_port": "core", "is_exec": false },
-        { "id": "6d050000-6d00-4d00-8d00-6d0000050000", "from_node": "60010000-6000-4600-8600-600000010000", "from_port": "core", "to_node": "60060000-6000-4600-8600-600000060000", "to_port": "core", "is_exec": false },
-        { "id": "6d060000-6d00-4d00-8d00-6d0000060000", "from_node": "60010000-6000-4600-8600-600000010000", "from_port": "core", "to_node": "60070000-6000-4600-8600-600000070000", "to_port": "core", "is_exec": false },
-        { "id": "6d070000-6d00-4d00-8d00-6d0000070000", "from_node": "60010000-6000-4600-8600-600000010000", "from_port": "core", "to_node": "60080000-6000-4600-8600-600000080000", "to_port": "core", "is_exec": false },
-        { "id": "6d080000-6d00-4d00-8d00-6d0000080000", "from_node": "60010000-6000-4600-8600-600000010000", "from_port": "core", "to_node": "60090000-6000-4600-8600-600000090000", "to_port": "core", "is_exec": false },
-
-        { "id": "6d090000-6d00-4d00-8d00-6d0000090000", "from_node": "60020000-6000-4600-8600-600000020000", "from_port": "project", "to_node": "60030000-6000-4600-8600-600000030000", "to_port": "project", "is_exec": false },
-        { "id": "6d0a0000-6d00-4d00-8d00-6d00000a0000", "from_node": "60020000-6000-4600-8600-600000020000", "from_port": "project", "to_node": "60040000-6000-4600-8600-600000040000", "to_port": "project", "is_exec": false },
-
-        { "id": "6d0b0000-6d00-4d00-8d00-6d00000b0000", "from_node": "60030000-6000-4600-8600-600000030000", "from_port": "asset_type", "to_node": "60040000-6000-4600-8600-600000040000", "to_port": "asset_type", "is_exec": false },
-        { "id": "6d0c0000-6d00-4d00-8d00-6d00000c0000", "from_node": "60040000-6000-4600-8600-600000040000", "from_port": "entity", "to_node": "60050000-6000-4600-8600-600000050000", "to_port": "entity", "is_exec": false },
-        { "id": "6d0d0000-6d00-4d00-8d00-6d00000d0000", "from_node": "60040000-6000-4600-8600-600000040000", "from_port": "entity", "to_node": "60060000-6000-4600-8600-600000060000", "to_port": "entity", "is_exec": false },
-        { "id": "6d0e0000-6d00-4d00-8d00-6d00000e0000", "from_node": "60040000-6000-4600-8600-600000040000", "from_port": "entity", "to_node": "60070000-6000-4600-8600-600000070000", "to_port": "entity", "is_exec": false },
-        { "id": "6d0f0000-6d00-4d00-8d00-6d00000f0000", "from_node": "60040000-6000-4600-8600-600000040000", "from_port": "entity", "to_node": "60080000-6000-4600-8600-600000080000", "to_port": "entity", "is_exec": false },
-        { "id": "6d100000-6d00-4d00-8d00-6d0000100000", "from_node": "60040000-6000-4600-8600-600000040000", "from_port": "entity", "to_node": "60090000-6000-4600-8600-600000090000", "to_port": "entity", "is_exec": false },
-
-        { "id": "6d110000-6d00-4d00-8d00-6d0000110000", "from_node": "60050000-6000-4600-8600-600000050000", "from_port": "scene_path", "to_node": "600a0000-6000-4600-8600-6000000a0000", "to_port": "blend_path", "is_exec": false },
-        { "id": "6d120000-6d00-4d00-8d00-6d0000120000", "from_node": "60090000-6000-4600-8600-600000090000", "from_port": "saved_path", "to_node": "600e0000-6000-4600-8600-6000000e0000", "to_port": "blend_path", "is_exec": false },
-
-        { "id": "6d130000-6d00-4d00-8d00-6d0000130000", "from_node": "60060000-6000-4600-8600-600000060000", "from_port": "version_path", "to_node": "600b0000-6000-4600-8600-6000000b0000", "to_port": "fbx_path", "is_exec": false },
-        { "id": "6d140000-6d00-4d00-8d00-6d0000140000", "from_node": "60070000-6000-4600-8600-600000070000", "from_port": "version_path", "to_node": "600c0000-6000-4600-8600-6000000c0000", "to_port": "abc_path", "is_exec": false },
-        { "id": "6d150000-6d00-4d00-8d00-6d0000150000", "from_node": "60080000-6000-4600-8600-600000080000", "from_port": "version_path", "to_node": "600d0000-6000-4600-8600-6000000d0000", "to_port": "usd_path", "is_exec": false },
-
-        { "id": "6d160000-6d00-4d00-8d00-6d0000160000", "from_node": "600a0000-6000-4600-8600-6000000a0000", "from_port": "actions_out", "to_node": "600b0000-6000-4600-8600-6000000b0000", "to_port": "actions_in", "is_exec": false },
-        { "id": "6d170000-6d00-4d00-8d00-6d0000170000", "from_node": "600b0000-6000-4600-8600-6000000b0000", "from_port": "actions_out", "to_node": "600c0000-6000-4600-8600-6000000c0000", "to_port": "actions_in", "is_exec": false },
-        { "id": "6d180000-6d00-4d00-8d00-6d0000180000", "from_node": "600c0000-6000-4600-8600-6000000c0000", "from_port": "actions_out", "to_node": "600d0000-6000-4600-8600-6000000d0000", "to_port": "actions_in", "is_exec": false },
-        { "id": "6d190000-6d00-4d00-8d00-6d0000190000", "from_node": "600d0000-6000-4600-8600-6000000d0000", "from_port": "actions_out", "to_node": "600e0000-6000-4600-8600-6000000e0000", "to_port": "actions_in", "is_exec": false },
-        { "id": "6d1a0000-6d00-4d00-8d00-6d00001a0000", "from_node": "600e0000-6000-4600-8600-6000000e0000", "from_port": "actions_out", "to_node": "600f0000-6000-4600-8600-6000000f0000", "to_port": "actions", "is_exec": false },
-
-        { "id": "6d1b0000-6d00-4d00-8d00-6d00001b0000", "from_node": "600f0000-6000-4600-8600-6000000f0000", "from_port": "success", "to_node": "60100000-6000-4600-8600-600000100000", "to_port": "condition", "is_exec": false },
-        { "id": "6d1c0000-6d00-4d00-8d00-6d00001c0000", "from_node": "600f0000-6000-4600-8600-6000000f0000", "from_port": "executed_actions", "to_node": "60110000-6000-4600-8600-600000110000", "to_port": "executed_actions", "is_exec": false },
-        { "id": "6d1d0000-6d00-4d00-8d00-6d00001d0000", "from_node": "600f0000-6000-4600-8600-6000000f0000", "from_port": "executed_actions", "to_node": "60120000-6000-4600-8600-600000120000", "to_port": "executed_actions", "is_exec": false },
-        { "id": "6d1e0000-6d00-4d00-8d00-6d00001e0000", "from_node": "600f0000-6000-4600-8600-6000000f0000", "from_port": "executed_actions", "to_node": "60130000-6000-4600-8600-600000130000", "to_port": "executed_actions", "is_exec": false },
-
-        { "id": "6d1f0000-6d00-4d00-8d00-6d00001f0000", "from_node": "60110000-6000-4600-8600-600000110000", "from_port": "path", "to_node": "60140000-6000-4600-8600-600000140000", "to_port": "data", "is_exec": false },
-        { "id": "6d200000-6d00-4d00-8d00-6d0000200000", "from_node": "60120000-6000-4600-8600-600000120000", "from_port": "path", "to_node": "60150000-6000-4600-8600-600000150000", "to_port": "data", "is_exec": false },
-        { "id": "6d210000-6d00-4d00-8d00-6d0000210000", "from_node": "60130000-6000-4600-8600-600000130000", "from_port": "path", "to_node": "60160000-6000-4600-8600-600000160000", "to_port": "data", "is_exec": false }
+        {
+            "id": "5e8ac646-ffb1-431f-a50b-3642feb1baf6",
+            "from_node": "60090000-6000-4600-8600-600000090000",
+            "from_port": "exec_out",
+            "to_node": "600a0000-6000-4600-8600-6000000a0000",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "fb9a4811-d038-45ff-9e17-d3bf914b66bd",
+            "from_node": "600a0000-6000-4600-8600-6000000a0000",
+            "from_port": "exec_out",
+            "to_node": "600b0000-6000-4600-8600-6000000b0000",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "029727a4-12ad-468c-aee4-39a3498aa492",
+            "from_node": "600b0000-6000-4600-8600-6000000b0000",
+            "from_port": "exec_out",
+            "to_node": "600c0000-6000-4600-8600-6000000c0000",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "d485a2d4-b461-4658-ba38-31bc620bce77",
+            "from_node": "600c0000-6000-4600-8600-6000000c0000",
+            "from_port": "exec_out",
+            "to_node": "600d0000-6000-4600-8600-6000000d0000",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "87745b22-79ae-42d6-a801-1e3edbc163d0",
+            "from_node": "600d0000-6000-4600-8600-6000000d0000",
+            "from_port": "exec_out",
+            "to_node": "600e0000-6000-4600-8600-6000000e0000",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "073049e9-839b-4899-9c83-346060f3c639",
+            "from_node": "600e0000-6000-4600-8600-6000000e0000",
+            "from_port": "exec_out",
+            "to_node": "600f0000-6000-4600-8600-6000000f0000",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "614f7015-2c93-4221-897e-4d181bf00368",
+            "from_node": "600f0000-6000-4600-8600-6000000f0000",
+            "from_port": "exec_out",
+            "to_node": "60100000-6000-4600-8600-600000100000",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "599d8d83-4fa9-40c2-bd32-d2e06877cc55",
+            "from_node": "60100000-6000-4600-8600-600000100000",
+            "from_port": "exec_out",
+            "to_node": "60110000-6000-4600-8600-600000110000",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "0640628f-c863-49a4-8a3d-b8f93f1d3487",
+            "from_node": "60110000-6000-4600-8600-600000110000",
+            "from_port": "exec_out",
+            "to_node": "60120000-6000-4600-8600-600000120000",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "213dd60b-4319-4b41-acae-1a4d1037876b",
+            "from_node": "60120000-6000-4600-8600-600000120000",
+            "from_port": "exec_out",
+            "to_node": "60130000-6000-4600-8600-600000130000",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "7a83bbe4-72e1-4c72-83cc-e5fbdb89f69d",
+            "from_node": "60130000-6000-4600-8600-600000130000",
+            "from_port": "exec_out",
+            "to_node": "60140000-6000-4600-8600-600000140000",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "c834a58f-a323-4bc0-8b9b-da7c208cc237",
+            "from_node": "60140000-6000-4600-8600-600000140000",
+            "from_port": "exec_out",
+            "to_node": "60150000-6000-4600-8600-600000150000",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "ff35f23d-9b8a-41a1-853d-2d33aa1abd16",
+            "from_node": "60150000-6000-4600-8600-600000150000",
+            "from_port": "exec_out",
+            "to_node": "60160000-6000-4600-8600-600000160000",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "1106bb8e-748e-4fbe-bcd4-42b726ebeaa6",
+            "from_node": "60100000-6000-4600-8600-600000100000",
+            "from_port": "exec_false",
+            "to_node": "60170000-6000-4600-8600-600000170000",
+            "to_port": "exec_in",
+            "is_exec": true
+        },
+        {
+            "id": "7eb4c132-e86c-469b-a996-4ec72a20a772",
+            "from_node": "60020000-6000-4600-8600-600000020000",
+            "from_port": "project",
+            "to_node": "60040000-6000-4600-8600-600000040000",
+            "to_port": "project",
+            "is_exec": false
+        },
+        {
+            "id": "e3b58b1f-5007-4439-ad5e-c5f716cb7512",
+            "from_node": "60040000-6000-4600-8600-600000040000",
+            "from_port": "entity",
+            "to_node": "60050000-6000-4600-8600-600000050000",
+            "to_port": "entity",
+            "is_exec": false
+        },
+        {
+            "id": "5180fd00-2642-4f25-93ad-b4ed817fe6b7",
+            "from_node": "60040000-6000-4600-8600-600000040000",
+            "from_port": "entity",
+            "to_node": "60090000-6000-4600-8600-600000090000",
+            "to_port": "entity",
+            "is_exec": false
+        },
+        {
+            "id": "eca1adfa-6290-4b13-8d94-a44fab9c211f",
+            "from_node": "60050000-6000-4600-8600-600000050000",
+            "from_port": "scene_path",
+            "to_node": "600a0000-6000-4600-8600-6000000a0000",
+            "to_port": "blend_path",
+            "is_exec": false
+        },
+        {
+            "id": "a840f955-567f-46a7-9ca3-d812d2e21e9f",
+            "from_node": "60090000-6000-4600-8600-600000090000",
+            "from_port": "saved_path",
+            "to_node": "600e0000-6000-4600-8600-6000000e0000",
+            "to_port": "blend_path",
+            "is_exec": false
+        },
+        {
+            "id": "ec1ee160-f272-4823-a774-ec17ec40a950",
+            "from_node": "600a0000-6000-4600-8600-6000000a0000",
+            "from_port": "actions_out",
+            "to_node": "600b0000-6000-4600-8600-6000000b0000",
+            "to_port": "actions_in",
+            "is_exec": false
+        },
+        {
+            "id": "bac1ea04-bce2-43fd-8e76-0d4274a923e5",
+            "from_node": "600b0000-6000-4600-8600-6000000b0000",
+            "from_port": "actions_out",
+            "to_node": "600c0000-6000-4600-8600-6000000c0000",
+            "to_port": "actions_in",
+            "is_exec": false
+        },
+        {
+            "id": "57c6ed4d-2a3a-4bfa-9933-9ad6f7656eaa",
+            "from_node": "600c0000-6000-4600-8600-6000000c0000",
+            "from_port": "actions_out",
+            "to_node": "600d0000-6000-4600-8600-6000000d0000",
+            "to_port": "actions_in",
+            "is_exec": false
+        },
+        {
+            "id": "20d808ad-2da6-4484-829f-57381b5f6465",
+            "from_node": "600d0000-6000-4600-8600-6000000d0000",
+            "from_port": "actions_out",
+            "to_node": "600e0000-6000-4600-8600-6000000e0000",
+            "to_port": "actions_in",
+            "is_exec": false
+        },
+        {
+            "id": "7d35c3f9-e8f0-451c-9e1e-4f9f3b03c8ce",
+            "from_node": "600e0000-6000-4600-8600-6000000e0000",
+            "from_port": "actions_out",
+            "to_node": "600f0000-6000-4600-8600-6000000f0000",
+            "to_port": "actions",
+            "is_exec": false
+        },
+        {
+            "id": "b04f1d29-1ba7-4d6b-8c37-5646cb137aaf",
+            "from_node": "600f0000-6000-4600-8600-6000000f0000",
+            "from_port": "success",
+            "to_node": "60100000-6000-4600-8600-600000100000",
+            "to_port": "condition",
+            "is_exec": false
+        },
+        {
+            "id": "9b7f0483-648b-4ec6-8dbb-83b465a4788b",
+            "from_node": "600f0000-6000-4600-8600-6000000f0000",
+            "from_port": "executed_actions",
+            "to_node": "60110000-6000-4600-8600-600000110000",
+            "to_port": "executed_actions",
+            "is_exec": false
+        },
+        {
+            "id": "609f5959-4b86-44d9-9b7e-a48de9e399ab",
+            "from_node": "600f0000-6000-4600-8600-6000000f0000",
+            "from_port": "executed_actions",
+            "to_node": "60120000-6000-4600-8600-600000120000",
+            "to_port": "executed_actions",
+            "is_exec": false
+        },
+        {
+            "id": "35d4cda1-9db5-4429-83ad-fbc7f57057af",
+            "from_node": "600f0000-6000-4600-8600-6000000f0000",
+            "from_port": "executed_actions",
+            "to_node": "60130000-6000-4600-8600-600000130000",
+            "to_port": "executed_actions",
+            "is_exec": false
+        },
+        {
+            "id": "798e1f80-7f29-4271-ae5d-4c8144c9ff51",
+            "from_node": "60110000-6000-4600-8600-600000110000",
+            "from_port": "path",
+            "to_node": "60140000-6000-4600-8600-600000140000",
+            "to_port": "data",
+            "is_exec": false
+        },
+        {
+            "id": "3d1368ca-d1ea-41b3-888a-4b4fd9f8dd7c",
+            "from_node": "60120000-6000-4600-8600-600000120000",
+            "from_port": "path",
+            "to_node": "60150000-6000-4600-8600-600000150000",
+            "to_port": "data",
+            "is_exec": false
+        },
+        {
+            "id": "fbc1e1c5-cbe8-432d-a71e-3b98b96a1c90",
+            "from_node": "60130000-6000-4600-8600-600000130000",
+            "from_port": "path",
+            "to_node": "60160000-6000-4600-8600-600000160000",
+            "to_port": "data",
+            "is_exec": false
+        },
+        {
+            "id": "dbe10342-6fed-47cc-a649-a81277d0345d",
+            "from_node": "b3b49da2-ac17-492e-972f-090e6431e00c",
+            "from_port": "out",
+            "to_node": "600f0000-6000-4600-8600-6000000f0000",
+            "to_port": "blender_version",
+            "is_exec": false
+        },
+        {
+            "id": "60d8e16f-4e55-45cb-836e-dea897be8483",
+            "from_node": "82f27ced-840f-49ce-87a7-817a181d24f5",
+            "from_port": "out",
+            "to_node": "600f0000-6000-4600-8600-6000000f0000",
+            "to_port": "blender.exe",
+            "is_exec": false
+        },
+        {
+            "id": "83853854-5893-4686-aa73-ce5f3b4f45ae",
+            "from_node": "60040000-6000-4600-8600-600000040000",
+            "from_port": "entity",
+            "to_node": "36960116-609e-456e-b024-60ba3db591a1",
+            "to_port": "entity",
+            "is_exec": false
+        },
+        {
+            "id": "f4b543a3-2474-47f7-93f2-c81f0add2bce",
+            "from_node": "5b15b01b-0770-446b-b07f-a46e62d2b773",
+            "from_port": "version_path",
+            "to_node": "600c0000-6000-4600-8600-6000000c0000",
+            "to_port": "abc_path",
+            "is_exec": false
+        },
+        {
+            "id": "2b7f1f15-8e10-4058-8cba-74a0ea47f0d4",
+            "from_node": "60040000-6000-4600-8600-600000040000",
+            "from_port": "entity",
+            "to_node": "5ad24f36-9832-4779-8bbf-fd5346f3855e",
+            "to_port": "entity",
+            "is_exec": false
+        },
+        {
+            "id": "a5bafe19-015b-4445-869a-aea84ac1d5c9",
+            "from_node": "60040000-6000-4600-8600-600000040000",
+            "from_port": "entity",
+            "to_node": "5b15b01b-0770-446b-b07f-a46e62d2b773",
+            "to_port": "entity",
+            "is_exec": false
+        },
+        {
+            "id": "35154db0-5371-488c-b9d5-c19b4b2d967d",
+            "from_node": "36960116-609e-456e-b024-60ba3db591a1",
+            "from_port": "version_path",
+            "to_node": "600d0000-6000-4600-8600-6000000d0000",
+            "to_port": "usd_path",
+            "is_exec": false
+        },
+        {
+            "id": "51e39738-821c-4bc2-8f5b-fae7101ef182",
+            "from_node": "5ad24f36-9832-4779-8bbf-fd5346f3855e",
+            "from_port": "version_path",
+            "to_node": "600b0000-6000-4600-8600-6000000b0000",
+            "to_port": "fbx_path",
+            "is_exec": false
+        }
     ],
     "sticky_notes": [
         {
             "id": "6f010000-6f00-4f00-8f00-6f0000010000",
-            "position": [60.0, 40.0], "size": [1400.0, 50.0],
+            "position": [
+                -4560.374228668208,
+                142.6889984130858
+            ],
+            "size": [
+                1400.0,
+                50.0
+            ],
             "text": "WORKFLOW: Blender asset -> export FBX + Alembic + USD in a single headless session. Paths resolved from Prism product versions.",
-            "color": "#200a20"
+            "color": "#ffff7f"
         },
         {
             "id": "6f020000-6f00-4f00-8f00-6f0000020000",
-            "position": [500.0, 460.0], "size": [1360.0, 90.0],
-            "text": "Three prism_get_export_path nodes resolve the versioned output paths from Prism products.\nChange 'identifier' values to match your pipeline product names (e.g. 'fbx_export', 'alembic_export', 'usd_export').\nVersion is empty = Prism creates the next version automatically.",
+            "position": [
+                -1435.3930321438377,
+                1076.6579770732658
+            ],
+            "size": [
+                605.9814453124986,
+                70.63964843749932
+            ],
+            "text": "\"Prism create product Version\" Nodes to Create the next version slot for a product on an entity and returns the versioned file path.",
             "color": "#ffffcc"
         },
         {
             "id": "6f030000-6f00-4f00-8f00-6f0000030000",
-            "position": [60.0, 760.0], "size": [1960.0, 50.0],
+            "position": [
+                -289.37906265258664,
+                1009.2885589599609
+            ],
+            "size": [
+                644.8478126525865,
+                50.0
+            ],
             "text": "Blender Action Chain: open .blend -> export FBX -> export Alembic -> export USD -> save versioned .blend -> run headless",
-            "color": "#200a20"
+            "color": "#ffff7f"
         },
         {
             "id": "6f040000-6f00-4f00-8f00-6f0000040000",
-            "position": [60.0, 1280.0], "size": [1360.0, 80.0],
+            "position": [
+                2908.18410873413,
+                1462.8312873840332
+            ],
+            "size": [
+                1360.0,
+                80.0
+            ],
             "text": "blender_get_action_result unpacks each export result by index position in the actions list:\nindex 1=FBX (action 0=open_blend), index 2=Alembic, index 3=USD, index 4=save_blend.\nThe 'path' output gives you the exported file path to verify or log.",
-            "color": "#2a3a5a"
+            "color": "#ffff7f"
         }
     ],
     "backdrops": [
         {
             "id": "6b010000-6b00-4b00-8b00-6b0000010000",
-            "position": [20.0, 20.0], "size": [380.0, 220.0],
+            "position": [
+                -4559.267978668208,
+                287.6296234130858
+            ],
+            "size": [
+                375.5078124999998,
+                441.4257812499999
+            ],
             "title": "Prism Initialization",
             "color": "#1a2850"
         },
         {
             "id": "6b020000-6b00-4b00-8b00-6b0000020000",
-            "position": [460.0, 20.0], "size": [1380.0, 220.0],
+            "position": [
+                -4147.03897476196,
+                295.8083343505858
+            ],
+            "size": [
+                393.1327247619611,
+                315.519790649414
+            ],
             "title": "Project + Asset Discovery",
             "color": "#1a2850"
         },
         {
             "id": "6b030000-6b00-4b00-8b00-6b0000030000",
-            "position": [20.0, 500.0], "size": [380.0, 220.0],
+            "position": [
+                -2155.4861180813377,
+                -358.21831198923326
+            ],
+            "size": [
+                1444.337414770495,
+                1548.7931074197445
+            ],
             "title": "Scene Version Slot",
             "color": "#301a1a"
         },
         {
             "id": "6b040000-6b00-4b00-8b00-6b0000040000",
-            "position": [460.0, 260.0], "size": [1380.0, 450.0],
+            "position": [
+                -3687.0170021057083,
+                227.3366546630859
+            ],
+            "size": [
+                1352.0170021057083,
+                581.4133453369141
+            ],
             "title": "Export Path Resolution — FBX + Alembic + USD (Prism Products)",
             "color": "#201040"
         },
         {
             "id": "6b050000-6b00-4b00-8b00-6b0000050000",
-            "position": [20.0, 760.0], "size": [2040.0, 400.0],
+            "position": [
+                -317.6603126525862,
+                128.42918395996134
+            ],
+            "size": [
+                2734.211425781245,
+                964.2431640624983
+            ],
             "title": "Blender Headless — Multi-Format Export (open, FBX, ABC, USD, save)",
             "color": "#1a0820"
         },
         {
             "id": "6b060000-6b00-4b00-8b00-6b0000060000",
-            "position": [20.0, 1260.0], "size": [1400.0, 420.0],
+            "position": [
+                2833.6610984802237,
+                501.7454719543464
+            ],
+            "size": [
+                1519.862155914302,
+                1090.890636444089
+            ],
             "title": "Results — Unpack Export Paths per Format",
             "color": "#102020"
+        },
+        {
+            "id": "85213f77-a02a-4919-9574-9abd0e706b1d",
+            "position": [
+                1320.0875000000008,
+                411.2625000000001
+            ],
+            "size": [
+                300.9999999999991,
+                433.40000000000003
+            ],
+            "title": "Blender EXE path and version",
+            "color": "#444444"
         }
     ],
     "metadata": {}
