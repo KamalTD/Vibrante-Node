@@ -258,25 +258,25 @@ def register_node():
 
     def _on_exec_changed(self):
         if not self._is_syncing:
-            self._sync_ui_to_code()
+            self._sync_ui_to_code(update_exec_hints=True)
 
     def _on_table_changed(self):
         if not self._is_syncing:
-            self._sync_ui_to_code()
+            self._sync_ui_to_code(update_exec_hints=False)
 
     def _on_metadata_changed(self):
         if not self._is_syncing:
             # Sanitize name: remove any non-alphanumeric/underscore and replace spaces
             raw_name = self.name_edit.text()
             sanitized = "".join(c if c.isalnum() else "_" for c in raw_name)
-            
+
             # Prevent recursive loop
             if sanitized != raw_name:
                 pos = self.name_edit.cursorPosition()
                 self.name_edit.setText(sanitized)
                 self.name_edit.setCursorPosition(pos)
-                
-            self._sync_ui_to_code()
+
+            self._sync_ui_to_code(update_exec_hints=False)
 
     def _sync_code_to_ui(self):
         """
@@ -396,13 +396,15 @@ def register_node():
             table.setItem(row, 3, QTableWidgetItem(p_options))
         table.blockSignals(False)
 
-    def _sync_ui_to_code(self):
+    def _sync_ui_to_code(self, update_exec_hints=True):
         """
         Updates the auto-generated ports section in the code.
+        update_exec_hints: if False, skips regenerating [SET-OUTPUT] and [EXEC-OUT] blocks
+        so user-written execute code is not overwritten by port/metadata edits.
         """
         if self._is_syncing:
             return
-            
+
         self._is_syncing = True
         try:
             name = self.name_edit.text().strip() or "MyNode"
@@ -463,36 +465,37 @@ def register_node():
             if exec_block:
                 code = re.sub(r'(super\(\)\.__init__\([^)]*\))', r'\1' + exec_block, code)
 
-            # Manage commented set_output hints in execute() body
-            set_output_pattern = r"[ \t]*# \[SET-OUTPUT-START\].*?# \[SET-OUTPUT-END\]"
-            if re.search(set_output_pattern, code, re.DOTALL):
-                set_output_lines = "        # [SET-OUTPUT-START]\n"
-                for row in range(self.outputs_table.rowCount()):
-                    item_name = self.outputs_table.item(row, 0)
-                    if not item_name: continue
-                    port_name = item_name.text().strip()
-                    if not port_name or port_name == "exec_out": continue
-                    set_output_lines += f'        #await self.set_output("{port_name}", <{port_name}_data>)\n'
-                set_output_lines += "        # [SET-OUTPUT-END]"
-                code = re.sub(set_output_pattern, set_output_lines, code, flags=re.DOTALL)
+            if update_exec_hints:
+                # Manage commented set_output hints in execute() body
+                set_output_pattern = r"[ \t]*# \[SET-OUTPUT-START\].*?# \[SET-OUTPUT-END\]"
+                if re.search(set_output_pattern, code, re.DOTALL):
+                    set_output_lines = "        # [SET-OUTPUT-START]\n"
+                    for row in range(self.outputs_table.rowCount()):
+                        item_name = self.outputs_table.item(row, 0)
+                        if not item_name: continue
+                        port_name = item_name.text().strip()
+                        if not port_name or port_name == "exec_out": continue
+                        set_output_lines += f'        #await self.set_output("{port_name}", <{port_name}_data>)\n'
+                    set_output_lines += "        # [SET-OUTPUT-END]"
+                    code = re.sub(set_output_pattern, set_output_lines, code, flags=re.DOTALL)
 
-            # Manage exec_out lines in execute() body
-            exec_out_pattern = r"[ \t]*# \[EXEC-OUT-START\].*?# \[EXEC-OUT-END\]"
-            if re.search(exec_out_pattern, code, re.DOTALL):
-                if self.exec_out_check.isChecked():
-                    exec_out_block = (
-                        '        # [EXEC-OUT-START]\n'
-                        '        await self.set_output("exec_out", True)\n'
-                        '        return {"exec_out": True}\n'
-                        '        # [EXEC-OUT-END]'
-                    )
-                else:
-                    exec_out_block = (
-                        '        # [EXEC-OUT-START]\n'
-                        '        return {}\n'
-                        '        # [EXEC-OUT-END]'
-                    )
-                code = re.sub(exec_out_pattern, exec_out_block, code, flags=re.DOTALL)
+                # Manage exec_out lines in execute() body
+                exec_out_pattern = r"[ \t]*# \[EXEC-OUT-START\].*?# \[EXEC-OUT-END\]"
+                if re.search(exec_out_pattern, code, re.DOTALL):
+                    if self.exec_out_check.isChecked():
+                        exec_out_block = (
+                            '        # [EXEC-OUT-START]\n'
+                            '        await self.set_output("exec_out", True)\n'
+                            '        return {"exec_out": True}\n'
+                            '        # [EXEC-OUT-END]'
+                        )
+                    else:
+                        exec_out_block = (
+                            '        # [EXEC-OUT-START]\n'
+                            '        return {}\n'
+                            '        # [EXEC-OUT-END]'
+                        )
+                    code = re.sub(exec_out_pattern, exec_out_block, code, flags=re.DOTALL)
 
             # Replace section using markers
             pattern = r"(\s*)# \[AUTO-GENERATED-PORTS-START\].*?# \[AUTO-GENERATED-PORTS-END\]"

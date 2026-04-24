@@ -453,26 +453,33 @@ class NodeWidget(QGraphicsItem):
                 w.setPlainText(str(target_value) if target_value is not None else "")
             w.blockSignals(False)
 
-        # 2. Trigger node logic
-        AsyncRuntime.run_coroutine(self.node_definition.on_parameter_changed(name, target_value))
-        
-        # 3. Push downstream
+        # 2. Trigger node logic, then push downstream so on_parameter_changed
+        #    (which may update output ports via set_output) runs before propagation.
         if propagate:
+            async def _run_then_propagate():
+                await self.node_definition.on_parameter_changed(name, target_value)
+                self._is_propagating = True
+                try:
+                    self._propagate_all_outputs()
+                finally:
+                    self._is_propagating = False
+            AsyncRuntime.run_coroutine(_run_then_propagate())
+        else:
+            AsyncRuntime.run_coroutine(self.node_definition.on_parameter_changed(name, target_value))
+
+    def _update_param(self, name, value):
+        """Internal handler for widget value changes."""
+        self.node_definition.parameters[name] = value
+
+        async def _run_then_propagate():
+            await self.node_definition.on_parameter_changed(name, value)
             self._is_propagating = True
             try:
                 self._propagate_all_outputs()
             finally:
                 self._is_propagating = False
 
-    def _update_param(self, name, value):
-        """Internal handler for widget value changes."""
-        self.node_definition.parameters[name] = value
-        AsyncRuntime.run_coroutine(self.node_definition.on_parameter_changed(name, value))
-        self._is_propagating = True
-        try:
-            self._propagate_all_outputs()
-        finally:
-            self._is_propagating = False
+        AsyncRuntime.run_coroutine(_run_then_propagate())
 
     def _propagate_all_outputs(self):
         """Pushes all current output port values to connected downstream nodes."""
