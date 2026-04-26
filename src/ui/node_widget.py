@@ -342,13 +342,14 @@ class NodeWidget(QGraphicsItem):
             if hasattr(p_model, 'options') and p_model.options:
                 w.addItems(p_model.options)
             val = self.node_definition.parameters.get(p_model.name)
-            # Use saved value if exists, otherwise fallback to definition default
             if val is not None:
                 w.setCurrentText(str(val))
             elif hasattr(p_model, 'default') and p_model.default is not None:
                 w.setCurrentText(str(p_model.default))
-                # ALSO sync back to definition so it saves correctly
-                self.node_definition.parameters[p_model.name] = p_model.default
+            # Always sync parameters to what the combobox actually shows — setCurrentText("")
+            # on a non-empty list leaves the widget at index 0 but keeps parameters as "",
+            # causing execute to receive "" instead of the displayed item.
+            self.node_definition.parameters[p_model.name] = w.currentText()
             w.currentTextChanged.connect(lambda val: self._update_param(p_model.name, val))
         elif p_model.widget_type == 'slider':
             w = QSlider(Qt.Horizontal)
