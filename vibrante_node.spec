@@ -1,5 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
-# PyInstaller spec for Vibrante-Node v1.8.1 Windows 64-bit build
+# PyInstaller spec for Vibrante-Node v1.8.2 Windows 64-bit build
 # Run: pyinstaller vibrante_node.spec
 
 import os
