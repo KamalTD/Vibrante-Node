@@ -70,10 +70,15 @@ class NodeBuilderDialog(QDialog):
         config_widget = QWidget()
         config_layout = QVBoxLayout(config_widget)
         
-        config_layout.addWidget(QLabel("Node Name (slug):"))
+        config_layout.addWidget(QLabel("Node ID (slug — used for file & class name):"))
         self.name_edit = QLineEdit()
         config_layout.addWidget(self.name_edit)
-        
+
+        config_layout.addWidget(QLabel("Display Name (shown on canvas — allows spaces, colons, etc.):"))
+        self.display_name_edit = QLineEdit()
+        self.display_name_edit.setPlaceholderText("Leave blank to use Node ID")
+        config_layout.addWidget(self.display_name_edit)
+
         config_layout.addWidget(QLabel("Description:"))
         self.desc_edit = QTextEdit()
         self.desc_edit.setMaximumHeight(60)
@@ -508,15 +513,18 @@ def register_node():
                     code = re.sub(init_pattern, r"\1\n" + injection, code, flags=re.DOTALL)
             
             # ALSO UPDATE CLASS NAME AND NAME ATTRIBUTE
-            # Sanitize name for class
+            # Sanitize slug for class/file — safe_name is the Python class identifier
             safe_name = "".join(x for x in name.title() if not x.isspace())
             if safe_name and not safe_name.endswith("Node"): safe_name += "Node"
             if not safe_name: safe_name = "MyNode"
-            
-            # Update class definition
+
+            # Display name is what shows on the canvas node — may contain spaces/colons
+            display_name = self.display_name_edit.text().strip() or name
+
+            # Update class definition (uses slug-based safe_name)
             code = re.sub(r"class \w+\(BaseNode\):", f"class {safe_name}(BaseNode):", code)
-            # Update name attribute (class-level only: 4-space indented line)
-            code = re.sub(r'^(    name\s*=\s*")[^"]*(")', rf'\g<1>{name}\2', code, flags=re.MULTILINE)
+            # Update name attribute to display name (shown on canvas)
+            code = re.sub(r'^(    name\s*=\s*")[^"]*(")', rf'\g<1>{display_name}\2', code, flags=re.MULTILINE)
             # Update register_node return (only inside register_node function)
             code = re.sub(r"(def register_node\(\)[^:]*:.*?return\s+)\w+", rf"\g<1>{safe_name}", code, flags=re.DOTALL)
             
@@ -625,9 +633,11 @@ def register_node():
             p_type = type_combo.currentText() if type_combo else "any"
             outputs.append(PortModel(name=name, type=p_type))
 
+        display_name = self.display_name_edit.text().strip() or node_id
+
         definition = NodeDefinitionJSON(
             node_id=node_id,
-            name=node_id,
+            name=display_name,
             description=self.desc_edit.toPlainText(),
             category=self.category_combo.currentText() or "General",
             icon_path=self.icon_edit.text() or None,
@@ -656,6 +666,8 @@ def register_node():
             defn = NodeRegistry.get_definition(self.editing_node_id)
             if defn:
                 self.name_edit.setText(defn.node_id)
+                # Populate display name only when it differs from the slug
+                self.display_name_edit.setText(defn.name if defn.name != defn.node_id else "")
                 self.desc_edit.setPlainText(defn.description)
                 self.category_combo.setCurrentText(defn.category or "General")
                 self.icon_edit.setText(defn.icon_path or "")
