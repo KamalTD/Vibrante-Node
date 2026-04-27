@@ -117,10 +117,13 @@ class BaseNode(ABC):
         pass
 
     def set_parameter(self, name: str, value: Any):
-        """Set a parameter value. If the port is a dropdown and value is a list, updates options and selects the first item."""
+        """Set a parameter value. If the port is a dropdown and value is a list, updates options
+        and preserves the current selection when it still exists in the new list, otherwise
+        falls back to the first item."""
         if isinstance(value, list) and name in self.inputs and self.inputs[name].widget_type == "dropdown":
             self.inputs[name].options = value
-            self.parameters[name] = value[0] if value else ""
+            current = self.parameters.get(name)
+            self.parameters[name] = current if (current and current in value) else (value[0] if value else "")
             if self._on_dropdown_options_changed:
                 self._on_dropdown_options_changed(name, value)
         else:
