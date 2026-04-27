@@ -619,8 +619,9 @@ class NodeWidget(QGraphicsItem):
         painter.drawText(self.bypass_rect, Qt.AlignCenter, "B")
         painter.restore()
 
-        if hasattr(self.node_definition, 'icon_path') and self.node_definition.icon_path:
-            pixmap = QPixmap(self.node_definition.icon_path)
+        icon_path = self.node_definition.icon_path or getattr(type(self.node_definition), 'icon_path', None)
+        if icon_path:
+            pixmap = QPixmap(icon_path)
             if not pixmap.isNull():
                 painter.drawPixmap(8, 8, 20, 20, pixmap)
                 self.title_text.setPos(32, 5)

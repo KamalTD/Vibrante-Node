@@ -55,6 +55,7 @@ class NodeBuilderDialog(QDialog):
         self.inputs_table.itemChanged.connect(self._on_table_changed)
         self.outputs_table.itemChanged.connect(self._on_table_changed)
         self.name_edit.textChanged.connect(self._on_metadata_changed)
+        self.icon_edit.textChanged.connect(lambda: self._sync_ui_to_code(update_exec_hints=False))
         self.category_combo.currentTextChanged.connect(self._on_category_changed)
         self.exec_in_check.stateChanged.connect(self._on_exec_changed)
         self.exec_out_check.stateChanged.connect(self._on_exec_changed)
@@ -527,7 +528,12 @@ def register_node():
             code = re.sub(r'^(    name\s*=\s*")[^"]*(")', rf'\g<1>{display_name}\2', code, flags=re.MULTILINE)
             # Update register_node return (only inside register_node function)
             code = re.sub(r"(def register_node\(\)[^:]*:.*?return\s+)\w+", rf"\g<1>{safe_name}", code, flags=re.DOTALL)
-            
+
+            # Sync icon_path into __init__ so the instance attribute matches the chosen file
+            icon_val = self.icon_edit.text().strip()
+            icon_replacement = f'self.icon_path = "{icon_val}"' if icon_val else 'self.icon_path = None'
+            code = re.sub(r'self\.icon_path\s*=\s*(?:"[^"]*"|None)', icon_replacement, code)
+
             if code != self.code_edit.toPlainText():
                 self.code_edit.setPlainText(code)
         finally:
