@@ -30,6 +30,17 @@ class ConfigManager:
         except Exception as e:
             print(f"Error saving config: {e}")
 
+    # --- Generic key/value helpers ---
+
+    def get(self, key: str, default=None):
+        return self._data.get(key, default)
+
+    def set(self, key: str, value):
+        self._data[key] = value
+        self._save()
+
+    # --- Specific helpers ---
+
     def get_gemini_api_key(self) -> str:
         return self._data.get("gemini_api_key", "")
 

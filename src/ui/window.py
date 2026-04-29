@@ -3,7 +3,8 @@ import os
 import shutil
 import asyncio
 from PyQt5.QtWidgets import QMainWindow, QAction, QFileDialog, QVBoxLayout, QWidget, QGraphicsView, QGraphicsScene, QToolBar, QMessageBox, QDockWidget, QMenu, QStyle, QTabWidget, QStatusBar, QLabel
-from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtCore import Qt, QTimer, QByteArray
+import base64
 from PyQt5.QtGui import QCursor
 from src.ui.canvas.scene import NodeScene
 from src.ui.canvas.view import NodeView
@@ -73,8 +74,14 @@ class MainWindow(QMainWindow):
         self._is_dark_theme = True # Track theme state
         self.setWindowTitle("Vibrante-Node Pipeline Editor")
         self.resize(1200, 800)
-        
-        self._apply_dark_theme()
+
+        # Apply saved theme stylesheet early (before panels are created) to
+        # avoid a dark→light flicker on startup.
+        from src.utils.config_manager import config as _cfg
+        if _cfg.get("ui.theme", "dark") == "light":
+            self._is_dark_theme = False
+        else:
+            self._apply_dark_theme()
 
         # Initialize Registry
         self.nodes_dir = os.path.abspath(os.path.join(os.getcwd(), 'nodes'))
@@ -110,6 +117,51 @@ class MainWindow(QMainWindow):
 
         # Create initial tab
         self.add_new_workflow()
+
+        # Restore saved window geometry, dock layout, and theme cascade.
+        self._load_user_settings()
+
+    # ------------------------------------------------------------------
+    # User settings persistence
+    # ------------------------------------------------------------------
+
+    def _load_user_settings(self):
+        from src.utils.config_manager import config
+
+        # Theme — cascade to all panels and scenes that now exist.
+        if self._is_dark_theme:
+            self._apply_dark_theme()
+        else:
+            self._apply_light_theme()
+
+        # Window geometry (position + size).
+        geom_b64 = config.get("ui.window_geometry")
+        if geom_b64:
+            try:
+                self.restoreGeometry(QByteArray(base64.b64decode(geom_b64)))
+            except Exception:
+                pass
+
+        # Dock/toolbar layout.
+        state_b64 = config.get("ui.window_state")
+        if state_b64:
+            try:
+                self.restoreState(QByteArray(base64.b64decode(state_b64)))
+            except Exception:
+                pass
+
+    def _save_user_settings(self):
+        from src.utils.config_manager import config
+
+        config.set("ui.theme", "dark" if self._is_dark_theme else "light")
+        config.set("ui.window_geometry",
+                   base64.b64encode(bytes(self.saveGeometry())).decode())
+        config.set("ui.window_state",
+                   base64.b64encode(bytes(self.saveState())).decode())
+
+    def closeEvent(self, event):
+        self._save_user_settings()
+        super().closeEvent(event)
 
     def _init_statusbar(self):
         self.statusbar = QStatusBar()
