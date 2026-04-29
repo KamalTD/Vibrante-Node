@@ -239,6 +239,12 @@ class {name}(BaseNode):
         pass
 
     async def on_parameter_changed(self, name, value):
+        \"\"\"Called whenever a widget parameter changes (before execute).
+
+        Example:
+            if name == "my_input":
+                await self.set_output("my_output", value)
+        \"\"\"
         pass
 
     async def execute(self, inputs):
