@@ -213,10 +213,8 @@ class {name}(BaseNode):
 
     def __init__(self):
         \"\"\"Initialize node ports and resources.\"\"\"
-        super().__init__(use_exec=False)
+        super().__init__(use_exec=True)
         self.icon_path = None
-        self.add_exec_input("exec_in")
-        self.add_exec_output("exec_out")
         # [AUTO-GENERATED-PORTS-START]
         # [AUTO-GENERATED-PORTS-END]
         try:
@@ -456,20 +454,26 @@ def register_node():
                 
             injection += "        # [AUTO-GENERATED-PORTS-END]"
 
-            # Normalize super().__init__() to use_exec=False
-            code = re.sub(r'super\(\)\.__init__\(\s*\)', 'super().__init__(use_exec=False)', code)
-            code = re.sub(r'super\(\)\.__init__\(use_exec\s*=\s*True\)', 'super().__init__(use_exec=False)', code)
+            exec_in = self.exec_in_check.isChecked()
+            exec_out = self.exec_out_check.isChecked()
 
-            # Remove existing exec lines, then re-add based on checkboxes
+            # Remove existing manual exec lines before re-evaluating
             code = re.sub(r'\n[ \t]*self\.add_exec_input\([^)]*\)', '', code)
             code = re.sub(r'\n[ \t]*self\.add_exec_output\([^)]*\)', '', code)
-            exec_block = ""
-            if self.exec_in_check.isChecked():
-                exec_block += '\n        self.add_exec_input("exec_in")'
-            if self.exec_out_check.isChecked():
-                exec_block += '\n        self.add_exec_output("exec_out")'
-            if exec_block:
-                code = re.sub(r'(super\(\)\.__init__\([^)]*\))', r'\1' + exec_block, code)
+
+            if exec_in and exec_out:
+                # Both checked: use_exec=True adds both ports automatically
+                code = re.sub(r'super\(\)\.__init__\([^)]*\)', 'super().__init__(use_exec=True)', code)
+            else:
+                # Partial or none: use_exec=False, add needed ports manually
+                code = re.sub(r'super\(\)\.__init__\([^)]*\)', 'super().__init__(use_exec=False)', code)
+                exec_block = ""
+                if exec_in:
+                    exec_block += '\n        self.add_exec_input("exec_in")'
+                if exec_out:
+                    exec_block += '\n        self.add_exec_output("exec_out")'
+                if exec_block:
+                    code = re.sub(r'(super\(\)\.__init__\([^)]*\))', r'\1' + exec_block, code)
 
             if update_exec_hints:
                 # Manage commented set_output hints in execute() body
