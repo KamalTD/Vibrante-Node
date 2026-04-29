@@ -238,6 +238,9 @@ class {name}(BaseNode):
     async def on_unplug(self, port_name, is_input):
         pass
 
+    async def on_parameter_changed(self, name, value):
+        pass
+
     async def execute(self, inputs):
         \"\"\"
         Main execution logic for the node.
