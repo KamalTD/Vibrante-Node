@@ -29,6 +29,9 @@ class Edge(QGraphicsPathItem):
     def _refresh_color(self):
         if self.from_port is not None:
             color = self.from_port.brush().color()
+            # White exec wires are invisible on a light background.
+            if not self.is_dark and color.lightness() > 200:
+                color = QColor(Qt.black)
         else:
             color = QColor(Qt.white) if self.is_dark else QColor(Qt.black)
         self.setPen(QPen(color, 2))
