@@ -273,11 +273,13 @@ def register_node():
 
     def _on_exec_changed(self):
         if not self._is_syncing:
-            self._sync_ui_to_code(update_exec_hints=True)
+            # Only update the [EXEC-OUT] block — never regenerate [SET-OUTPUT]
+            # which would wipe any code the user wrote in the execute method.
+            self._sync_ui_to_code(update_set_output_hints=False, update_exec_out_hint=True)
 
     def _on_table_changed(self):
         if not self._is_syncing:
-            self._sync_ui_to_code(update_exec_hints=False)
+            self._sync_ui_to_code(update_set_output_hints=True, update_exec_out_hint=False)
 
     def _on_metadata_changed(self):
         if not self._is_syncing:
@@ -411,7 +413,7 @@ def register_node():
             table.setItem(row, 3, QTableWidgetItem(p_options))
         table.blockSignals(False)
 
-    def _sync_ui_to_code(self, update_exec_hints=True):
+    def _sync_ui_to_code(self, update_exec_hints=True, update_set_output_hints=None, update_exec_out_hint=None):
         """
         Updates the auto-generated ports section in the code.
         update_exec_hints: if False, skips regenerating [SET-OUTPUT] and [EXEC-OUT] blocks
@@ -481,8 +483,14 @@ def register_node():
             if exec_block:
                 code = re.sub(r'(super\(\)\.__init__\([^)]*\))', r'\1' + exec_block, code)
 
-            if update_exec_hints:
-                # Manage commented set_output hints in execute() body
+            # Resolve legacy boolean flag — callers using the old keyword still work.
+            if update_set_output_hints is None:
+                update_set_output_hints = update_exec_hints
+            if update_exec_out_hint is None:
+                update_exec_out_hint = update_exec_hints
+
+            if update_set_output_hints:
+                # Regenerate commented set_output hints inside [SET-OUTPUT-START/END].
                 set_output_pattern = r"[ \t]*# \[SET-OUTPUT-START\].*?# \[SET-OUTPUT-END\]"
                 if re.search(set_output_pattern, code, re.DOTALL):
                     set_output_lines = "        # [SET-OUTPUT-START]\n"
@@ -495,7 +503,8 @@ def register_node():
                     set_output_lines += "        # [SET-OUTPUT-END]"
                     code = re.sub(set_output_pattern, set_output_lines, code, flags=re.DOTALL)
 
-                # Manage exec_out lines in execute() body
+            if update_exec_out_hint:
+                # Update the return statement inside [EXEC-OUT-START/END] only.
                 exec_out_pattern = r"[ \t]*# \[EXEC-OUT-START\].*?# \[EXEC-OUT-END\]"
                 if re.search(exec_out_pattern, code, re.DOTALL):
                     if self.exec_out_check.isChecked():
