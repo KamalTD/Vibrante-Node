@@ -24,6 +24,7 @@ class BaseNode(ABC):
         self.parameters: Dict[str, Any] = {}
         self.parameter_types: Dict[str, Type] = {}
         self._on_log = None # Hook for engine to capture logs
+        self._pending_logs: List[tuple] = [] # Buffer for log calls made before _on_log is set
         self._on_output = None # Hook for engine to capture intermediate outputs
         self._check_stopped = None # Hook for engine to check cancellation
         self._on_ports_changed = None # Hook for UI to rebuild ports
@@ -66,15 +67,21 @@ class BaseNode(ABC):
 
     def log_info(self, msg: str):
         if self._on_log: self._on_log(msg, "info")
-        else: print(f"INFO: {msg}")
+        else: self._pending_logs.append((msg, "info"))
 
     def log_success(self, msg: str):
         if self._on_log: self._on_log(msg, "success")
-        else: print(f"SUCCESS: {msg}")
+        else: self._pending_logs.append((msg, "success"))
 
     def log_error(self, msg: str):
         if self._on_log: self._on_log(msg, "error")
-        else: print(f"ERROR: {msg}")
+        else: self._pending_logs.append((msg, "error"))
+
+    def _flush_pending_logs(self):
+        if self._on_log and self._pending_logs:
+            for msg, lvl in self._pending_logs:
+                self._on_log(msg, lvl)
+            self._pending_logs.clear()
 
     def add_input(self, name: str, data_type: str = "any", widget_type: str = None, options: List[str] = None, default: Any = None):
         # Provide sensible defaults instead of None for certain types

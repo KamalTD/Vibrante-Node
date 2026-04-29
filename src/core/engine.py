@@ -125,6 +125,7 @@ class NetworkExecutor(QObject):
             def create_logger(nid):
                 return lambda msg, lvl: self.node_log.emit(nid, msg, lvl)
             instance._on_log = create_logger(node_id)
+            instance._flush_pending_logs()
 
             def create_output_handler(nid):
                 async def handler(name, value):

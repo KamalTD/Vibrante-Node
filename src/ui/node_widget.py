@@ -9,7 +9,7 @@ QSpinBox = QtWidgets.QSpinBox
 QDoubleSpinBox = QtWidgets.QDoubleSpinBox
 QCheckBox = QtWidgets.QCheckBox
 QLabel = QtWidgets.QLabel
-QComboBox = QtWidgets.QComboBox
+_QComboBox = QtWidgets.QComboBox
 QSlider = QtWidgets.QSlider
 QTextEdit = QtWidgets.QTextEdit
 QWidget = QtWidgets.QWidget
@@ -25,6 +25,73 @@ QPen = QtGui.QPen
 QBrush = QtGui.QBrush
 QPixmap = QtGui.QPixmap
 QPainterPath = QtGui.QPainterPath
+class QComboBox(_QComboBox):
+    """QComboBox that works correctly inside a QGraphicsProxyWidget.
+
+    Qt's default popup is rendered within the proxy's composite layer, so
+    sibling proxy widgets that were added later (higher paint order) appear
+    on top of it.  This override replaces the popup with a QMenu, which is
+    always a native OS window and therefore renders above all scene items.
+    Position is calculated through the full proxy→scene→view→global chain so
+    it lands correctly regardless of zoom or pan.
+    """
+
+    def showPopup(self):
+        proxy = self._proxy()
+        if proxy is None:
+            super().showPopup()
+            return
+
+        scene = proxy.scene()
+        if not scene or not scene.views():
+            super().showPopup()
+            return
+
+        view = scene.views()[0]
+
+        # Walk from self up to the proxy container to accumulate the
+        # combobox's offset within the proxy's item-local coordinate space.
+        offset = QtCore.QPoint(0, 0)
+        w = self
+        container = proxy.widget()
+        while w is not None and w is not container:
+            offset += w.pos()
+            w = w.parentWidget()
+
+        # Map the combobox bottom-left through scene→viewport→global.
+        combo_bl = QtCore.QPointF(offset.x(), offset.y() + self.height())
+        global_pt = view.viewport().mapToGlobal(
+            view.mapFromScene(proxy.mapToScene(combo_bl))
+        )
+
+        # QMenu is a native OS window, so it always renders above every
+        # QGraphicsItem and proxy widget in the scene.
+        menu = QtWidgets.QMenu()
+        menu.setMinimumWidth(self.width())
+        menu.setStyleSheet(
+            "QMenu { background-color: #2b2b2b; color: #ddd;"
+            "        border: 1px solid #555; }"
+            "QMenu::item { padding: 4px 16px; }"
+            "QMenu::item:selected { background-color: #4a90d9; color: white; }"
+        )
+        for i in range(self.count()):
+            action = menu.addAction(self.itemText(i))
+            action.setData(i)
+
+        chosen = menu.exec_(global_pt)
+        if chosen is not None:
+            self.setCurrentIndex(chosen.data())
+
+    def _proxy(self):
+        w = self
+        while w is not None:
+            p = w.graphicsProxyWidget()
+            if p is not None:
+                return p
+            w = w.parentWidget()
+        return None
+
+
 from src.ui.port_widget import PortWidget
 from src.ui.script_editor import ScriptEditorDialog
 from src.utils.runtime import AsyncRuntime
