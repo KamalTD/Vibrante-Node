@@ -24,7 +24,16 @@ class Edge(QGraphicsPathItem):
 
     def apply_theme(self, is_dark=True):
         self.is_dark = is_dark
-        color = Qt.white if is_dark else Qt.black
+        self._refresh_color()
+
+    def _refresh_color(self):
+        if self.from_port is not None:
+            color = self.from_port.brush().color()
+            # White exec wires are invisible on a light background.
+            if not self.is_dark and color.lightness() > 200:
+                color = QColor(Qt.black)
+        else:
+            color = QColor(Qt.white) if self.is_dark else QColor(Qt.black)
         self.setPen(QPen(color, 2))
         self.update()
 
@@ -55,6 +64,7 @@ class Edge(QGraphicsPathItem):
         
         path.cubicTo(ctrl1, ctrl2, pos_end)
         self.setPath(path)
+        self._refresh_color()
 
     def set_end_pos(self, pos):
         self.pos_end = pos

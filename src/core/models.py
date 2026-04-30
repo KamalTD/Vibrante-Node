@@ -41,6 +41,7 @@ class NodeInstanceModel(BaseModel):
     parameters: Dict[str, Any] = Field(default_factory=dict)
     state: str = "idle"
     bypassed: bool = False
+    init_priority: int = 0  # >0 means run before the main graph; higher = earlier
 
 class ConnectionModel(BaseModel):
     id: UUID = Field(default_factory=uuid4)

@@ -118,9 +118,15 @@ class NodeWidget(QGraphicsItem):
         self.status = "idle" # idle, running, success, failed
         self.is_dark = True
         self.bypassed = False
+        self.init_priority = 0
         self._is_propagating = False # Recursion guard
-        
-        self.setToolTip("Bypass Node (Ctrl+B)")
+
+        # Default rects so hoverMoveEvent is safe before _auto_size runs
+        self.bypass_rect = QRectF(0, 0, 0, 0)
+        self.init_rect = QRectF(0, 0, 0, 0)
+        self._active_tooltip_region = None  # tracks which button tooltip is visible
+
+        self.setAcceptHoverEvents(True)
         self._init_ui()
 
     def apply_theme(self, is_dark=True):
@@ -290,10 +296,16 @@ class NodeWidget(QGraphicsItem):
         self.prepareGeometryChange()
         
         # 1. Width Calculation
+        # Reset text width so we measure the natural (unconstrained) text width.
+        if hasattr(self, 'title_text') and self.title_text:
+            self.title_text.setTextWidth(-1)
+
         min_width = 220
         content_width = 0
         if hasattr(self, 'title_text') and self.title_text:
-            content_width = max(content_width, self.title_text.boundingRect().width() + 60) # Extra for bypass btn
+            # Reserve room for both header buttons (I + B = 58px) plus margins.
+            # Use 32px as the conservative title-start offset (icon case).
+            content_width = max(content_width, self.title_text.boundingRect().width() + 95)
         for proxy in self.param_widgets.values():
             w = proxy.widget()
             if w:
@@ -305,8 +317,16 @@ class NodeWidget(QGraphicsItem):
             content_width = max(content_width, w_row + 20)
         self.width = max(min_width, content_width)
         
-        # Bypass Button Position (Top Right)
+        # Bypass Button Position (Top Right); Init button sits to its left
         self.bypass_rect = QRectF(self.width - 30, 5, 25, 25)
+        self.init_rect = QRectF(self.width - 58, 5, 25, 25)
+
+        # Clamp title text so it never bleeds into the button area.
+        # 10 = left margin; 5 = gap before init button.
+        if hasattr(self, 'title_text') and self.title_text:
+            max_title_w = max(30, int(self.init_rect.x()) - 10 - 5)
+            self.title_text.setTextWidth(max_title_w)
+            self.title_text.setFlag(QGraphicsItem.ItemClipsToShape, True)
 
         # 2. Vertical Centering for params
         body_top = ports_bottom_y + 10
@@ -590,6 +610,14 @@ class NodeWidget(QGraphicsItem):
             self.scene().push_history()
         self.update()
 
+    def set_init_priority(self, priority: int):
+        if self.init_priority == priority:
+            return
+        self.init_priority = priority
+        if self.scene():
+            self.scene().push_history()
+        self.update()
+
     def is_port_connected(self, port_name, is_input):
         """Checks if a port has any active connections in the scene."""
         if not self.scene(): return False
@@ -679,11 +707,25 @@ class NodeWidget(QGraphicsItem):
         else:
             painter.setBrush(QBrush(QColor(60, 60, 60)))
             painter.setPen(QPen(QColor(200, 200, 200), 1))
-            
+
         painter.drawRoundedRect(self.bypass_rect, 4, 4)
         painter.setPen(QPen(Qt.white if not self.bypassed else Qt.black))
         painter.setFont(QtGui.QFont("Arial", 10, QtGui.QFont.Bold))
         painter.drawText(self.bypass_rect, Qt.AlignCenter, "B")
+        painter.restore()
+
+        # 4. DRAW INIT BUTTON (I) — teal when active
+        painter.save()
+        if self.init_priority > 0:
+            painter.setBrush(QBrush(QColor(0, 180, 180)))
+            painter.setPen(QPen(Qt.black, 1))
+        else:
+            painter.setBrush(QBrush(QColor(60, 60, 60)))
+            painter.setPen(QPen(QColor(200, 200, 200), 1))
+        painter.drawRoundedRect(self.init_rect, 4, 4)
+        painter.setPen(QPen(Qt.black if self.init_priority > 0 else Qt.white))
+        painter.setFont(QtGui.QFont("Arial", 10, QtGui.QFont.Bold))
+        painter.drawText(self.init_rect, Qt.AlignCenter, "I")
         painter.restore()
 
         icon_path = self.node_definition.icon_path or getattr(type(self.node_definition), 'icon_path', None)
@@ -700,9 +742,103 @@ class NodeWidget(QGraphicsItem):
             painter.setBrush(Qt.NoBrush)
             painter.drawRoundedRect(self.boundingRect(), 10, 10)
 
+    def _get_custom_tooltip(self):
+        """Lazy-create a shared frameless QLabel acting as a custom tooltip.
+        Stored on the QApplication so all NodeWidgets share one instance."""
+        app = QtWidgets.QApplication.instance()
+        tip = getattr(app, '_node_custom_tooltip', None)
+        if tip is None:
+            tip = QLabel(
+                None,
+                Qt.ToolTip | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
+            )
+            tip.setAttribute(Qt.WA_ShowWithoutActivating, True)
+            tip.setTextFormat(Qt.RichText)
+            tip.setWordWrap(False)
+            tip.setMargin(8)
+            tip.setStyleSheet(
+                "QLabel { background-color: #2b2b2b; color: #ddd;"
+                " border: 1px solid #555; }"
+            )
+            app._node_custom_tooltip = tip
+        return tip
+
+    def _show_button_tooltip(self, screen_pos, text):
+        tip = self._get_custom_tooltip()
+        tip.setText(text)
+        tip.adjustSize()
+        # Offset slightly so it doesn't sit under the cursor
+        tip.move(int(screen_pos.x()) + 16, int(screen_pos.y()) + 18)
+        tip.show()
+        tip.raise_()
+
+    def _hide_button_tooltip(self):
+        app = QtWidgets.QApplication.instance()
+        tip = getattr(app, '_node_custom_tooltip', None)
+        if tip is not None:
+            tip.hide()
+
+    _BYPASS_TOOLTIP_HTML = (
+        "<b>Bypass Node</b><br><br>"
+        "Skips this node's execution but keeps the exec flow connected,<br>"
+        "so all downstream nodes still run normally.<br><br>"
+        "Useful for temporarily disabling a node without breaking the graph.<br><br>"
+        "<i>Click to toggle &nbsp;|&nbsp; Orange = bypassed</i>"
+    )
+    _INIT_TOOLTIP_HTML = (
+        "<b>Init First Node</b><br><br>"
+        "Marks this node to run <i>before</i> the rest of the workflow.<br>"
+        "Use this for login, authentication, or data-initialization nodes<br>"
+        "that must complete before any dependent node can execute.<br><br>"
+        "Init nodes run in descending priority order (highest first),<br>"
+        "and their full exec chain completes before the main graph starts.<br><br>"
+        "<i>Click to toggle &nbsp;|&nbsp; Teal = active</i>"
+    )
+
+    def _update_button_tooltip(self, item_pos, screen_pos):
+        if self.bypass_rect.contains(item_pos):
+            region = 'bypass'
+        elif self.init_rect.contains(item_pos):
+            region = 'init'
+        else:
+            region = None
+
+        # Always re-show when over a button — covers the case where the
+        # tooltip was hidden by the OS and the region tracker still says
+        # we're "in" that region.
+        if region == 'bypass':
+            if self._active_tooltip_region != 'bypass':
+                self._active_tooltip_region = 'bypass'
+            self._show_button_tooltip(screen_pos, self._BYPASS_TOOLTIP_HTML)
+        elif region == 'init':
+            if self._active_tooltip_region != 'init':
+                self._active_tooltip_region = 'init'
+            self._show_button_tooltip(screen_pos, self._INIT_TOOLTIP_HTML)
+        else:
+            if self._active_tooltip_region is not None:
+                self._active_tooltip_region = None
+                self._hide_button_tooltip()
+
+    def hoverEnterEvent(self, event):
+        self._update_button_tooltip(event.pos(), event.screenPos())
+        super().hoverEnterEvent(event)
+
+    def hoverMoveEvent(self, event):
+        self._update_button_tooltip(event.pos(), event.screenPos())
+        super().hoverMoveEvent(event)
+
+    def hoverLeaveEvent(self, event):
+        self._active_tooltip_region = None
+        self._hide_button_tooltip()
+        super().hoverLeaveEvent(event)
+
     def mousePressEvent(self, event):
         if self.bypass_rect.contains(event.pos()):
             self.set_bypassed(not self.bypassed)
+            event.accept()
+            return
+        if self.init_rect.contains(event.pos()):
+            self.set_init_priority(0 if self.init_priority > 0 else 1)
             event.accept()
             return
         super().mousePressEvent(event)
