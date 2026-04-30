@@ -59,6 +59,7 @@ class NodeBuilderDialog(QDialog):
         self.category_combo.currentTextChanged.connect(self._on_category_changed)
         self.exec_in_check.stateChanged.connect(self._on_exec_changed)
         self.exec_out_check.stateChanged.connect(self._on_exec_changed)
+        self.init_first_check.stateChanged.connect(self._on_init_first_changed)
 
         if self.editing_node_id:
             self._load_existing_node()
@@ -121,6 +122,18 @@ class NodeBuilderDialog(QDialog):
         exec_layout.addWidget(self.exec_in_check)
         exec_layout.addWidget(self.exec_out_check)
         config_layout.addLayout(exec_layout)
+
+        # Init First option — instances of this node will run before the rest
+        # of the workflow (login, auth, data-init nodes).
+        init_layout = QHBoxLayout()
+        self.init_first_check = QCheckBox("Init First (run before main workflow)")
+        self.init_first_check.setToolTip(
+            "When checked, every instance of this node runs before the main\n"
+            "graph executes — useful for login, authentication, or data\n"
+            "initialization nodes."
+        )
+        init_layout.addWidget(self.init_first_check)
+        config_layout.addLayout(init_layout)
 
         # Inputs Table
         config_layout.addWidget(QLabel("Inputs:"))
@@ -210,13 +223,12 @@ class NodeBuilderDialog(QDialog):
 
 class {name}(BaseNode):
     name = "{name}"
+    init_first = False  # When True, instances of this node run before the main workflow
 
     def __init__(self):
         \"\"\"Initialize node ports and resources.\"\"\"
-        super().__init__(use_exec=False)
+        super().__init__(use_exec=True)
         self.icon_path = None
-        self.add_exec_input("exec_in")
-        self.add_exec_output("exec_out")
         # [AUTO-GENERATED-PORTS-START]
         # [AUTO-GENERATED-PORTS-END]
         try:
@@ -276,6 +288,10 @@ def register_node():
             # Only update the [EXEC-OUT] block — never regenerate [SET-OUTPUT]
             # which would wipe any code the user wrote in the execute method.
             self._sync_ui_to_code(update_set_output_hints=False, update_exec_out_hint=True)
+
+    def _on_init_first_changed(self):
+        if not self._is_syncing:
+            self._sync_ui_to_code(update_set_output_hints=False, update_exec_out_hint=False)
 
     def _on_table_changed(self):
         if not self._is_syncing:
@@ -358,6 +374,12 @@ def register_node():
             self.exec_out_check.setChecked(has_exec_out)
             self.exec_in_check.blockSignals(False)
             self.exec_out_check.blockSignals(False)
+
+            # Sync init_first checkbox from class attribute
+            init_first_match = re.search(r'^\s*init_first\s*=\s*(True|False)', code, flags=re.MULTILINE)
+            self.init_first_check.blockSignals(True)
+            self.init_first_check.setChecked(bool(init_first_match) and init_first_match.group(1) == "True")
+            self.init_first_check.blockSignals(False)
 
         except Exception as e:
             # Code might be invalid while typing, ignore
@@ -467,21 +489,43 @@ def register_node():
                 
             injection += "        # [AUTO-GENERATED-PORTS-END]"
 
-            # Normalize any use_exec=True / bare super().__init__() to use_exec=False.
-            # Exec ports are always controlled explicitly via add_exec_input/add_exec_output.
-            code = re.sub(r'super\(\)\.__init__\(\s*\)', 'super().__init__(use_exec=False)', code)
-            code = re.sub(r'super\(\)\.__init__\(use_exec\s*=\s*True\)', 'super().__init__(use_exec=False)', code)
+            # Decide use_exec based on checkboxes:
+            #   - both checked  -> use_exec=True  (BaseNode auto-adds exec_in + exec_out)
+            #   - only one      -> use_exec=False + explicit add for the one wanted
+            #   - neither       -> use_exec=False (no exec ports at all)
+            wants_in = self.exec_in_check.isChecked()
+            wants_out = self.exec_out_check.isChecked()
+            both = wants_in and wants_out
+            either = wants_in or wants_out
 
-            # Remove existing explicit exec lines, then re-add based on checkboxes.
+            use_exec_value = "True" if either else "False"
+            code = re.sub(r'super\(\)\.__init__\(\s*\)', f'super().__init__(use_exec={use_exec_value})', code)
+            code = re.sub(r'super\(\)\.__init__\(use_exec\s*=\s*(?:True|False)\)',
+                          f'super().__init__(use_exec={use_exec_value})', code)
+
+            # Strip any pre-existing explicit exec lines and re-add only when needed
+            # (i.e. only one checkbox checked — both checked is covered by use_exec=True).
             code = re.sub(r'\n[ \t]*self\.add_exec_input\([^)]*\)', '', code)
             code = re.sub(r'\n[ \t]*self\.add_exec_output\([^)]*\)', '', code)
-            exec_block = ""
-            if self.exec_in_check.isChecked():
-                exec_block += '\n        self.add_exec_input("exec_in")'
-            if self.exec_out_check.isChecked():
-                exec_block += '\n        self.add_exec_output("exec_out")'
-            if exec_block:
+            if either and not both:
+                exec_block = ""
+                if wants_in:
+                    exec_block += '\n        self.add_exec_input("exec_in")'
+                if wants_out:
+                    exec_block += '\n        self.add_exec_output("exec_out")'
                 code = re.sub(r'(super\(\)\.__init__\([^)]*\))', r'\1' + exec_block, code)
+
+            # Sync init_first class attribute with the checkbox
+            init_first_value = "True" if self.init_first_check.isChecked() else "False"
+            if re.search(r'^\s*init_first\s*=\s*(?:True|False)', code, flags=re.MULTILINE):
+                code = re.sub(r'^(\s*)init_first\s*=\s*(?:True|False).*$',
+                              rf'\1init_first = {init_first_value}',
+                              code, count=1, flags=re.MULTILINE)
+            else:
+                # Insert directly after `name = "..."`
+                code = re.sub(r'(^    name\s*=\s*"[^"]*")',
+                              rf'\1\n    init_first = {init_first_value}',
+                              code, count=1, flags=re.MULTILINE)
 
             # Resolve legacy boolean flag — callers using the old keyword still work.
             if update_set_output_hints is None:
@@ -706,6 +750,8 @@ def register_node():
                 )
                 self.exec_in_check.setChecked(default_exec or bool(re.search(r'add_exec_input', code)))
                 self.exec_out_check.setChecked(default_exec or bool(re.search(r'add_exec_output', code)))
+                init_first_match = re.search(r'^\s*init_first\s*=\s*(True|False)', code, flags=re.MULTILINE)
+                self.init_first_check.setChecked(bool(init_first_match) and init_first_match.group(1) == "True")
                 self.code_edit.setPlainText(code)
         finally:
             self._is_syncing = False

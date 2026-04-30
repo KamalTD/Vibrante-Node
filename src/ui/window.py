@@ -66,6 +66,15 @@ class _EventLoopRunner:
         self._executor.stop()
 
 
+class _InitPhaseRunner(_EventLoopRunner):
+    """Variant of _EventLoopRunner that runs the executor in init_only mode."""
+
+    def start(self):
+        self._active = True
+        self._task = self._loop.create_task(self._executor.run(init_only=True))
+        self._timer.start()
+
+
 class MainWindow(QMainWindow):
     def __init__(self):
         print("MainWindow init started")
@@ -626,6 +635,35 @@ class MainWindow(QMainWindow):
             scene.from_workflow_model(workflow_model)
             scene.file_path = file_path
             self.log_panel.log(f"Workflow loaded: {file_path}", "info")
+
+            # Auto-run init-priority nodes so login/auth/data-init nodes
+            # initialize immediately on load, not just at execution time.
+            self._run_init_phase(scene)
+
+    def _run_init_phase(self, scene):
+        """Run only the init-priority nodes for the given scene."""
+        workflow_model = scene.to_workflow_model()
+        if not any(getattr(n, 'init_priority', 0) > 0 for n in workflow_model.nodes):
+            return  # nothing marked init — skip silently
+
+        from src.core.graph import GraphManager
+        gm = GraphManager()
+        gm.from_model(workflow_model)
+
+        init_executor = NetworkExecutor(gm)
+        init_executor.node_started.connect(self._on_node_started)
+        init_executor.node_finished.connect(self._on_node_finished)
+        init_executor.node_error.connect(self._on_node_error)
+        init_executor.node_output.connect(self._on_node_output)
+        init_executor.node_log.connect(self._on_node_log)
+
+        self.log_panel.log("Running init-priority nodes after load...", "execution")
+
+        runner = _InitPhaseRunner(init_executor)
+        runner.start()
+        # Hold a reference so the runner isn't GC'd mid-execution
+        self._init_runners = getattr(self, '_init_runners', [])
+        self._init_runners.append(runner)
 
     def execute_pipeline(self):
         if self._is_executing:

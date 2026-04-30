@@ -50,9 +50,13 @@ class NetworkExecutor(QObject):
         task.add_done_callback(on_done)
         return task
 
-    async def run(self):
+    async def run(self, init_only: bool = False):
         """
         Executes the graph. Standardizes on flow-based execution via output triggers.
+
+        :param init_only: When True, only run nodes with init_priority > 0 and
+                          stop. Used after a workflow is loaded so init nodes
+                          (login/auth/data-init) run automatically.
         """
         from src.nodes.base import BaseNode
         BaseNode.memory.clear()
@@ -174,6 +178,18 @@ class NetworkExecutor(QObject):
         # shared cache without requiring an explicit 'core' wire.
         await self._bootstrap_prism_if_needed()
 
+        # 2.5 INIT NODES — run before the main graph (login, auth, data-init, etc.)
+        await self._run_init_nodes()
+        if self._is_stopped:
+            self.execution_finished.emit(False)
+            return
+
+        # If init_only, stop here — caller wants the init phase only
+        # (e.g. immediately after loading a saved workflow).
+        if init_only:
+            self.execution_finished.emit(True)
+            return
+
         # 3. IDENTIFY ENTRY NODES
         exec_conns = [c for c in self.graph_manager.connections if c.is_exec]
         
@@ -190,10 +206,11 @@ class NetworkExecutor(QObject):
                 entry_nodes = []
                 for node_id, instance in self.node_instances.items():
                     if node_id not in connected_nodes: continue
-                    
+                    if node_id in self._executed_nodes: continue  # already ran as init node
+
                     has_exec_in_pin = any(p.data_type == 'exec' for p in instance.inputs.values())
                     has_exec_out_pin = any(p.data_type == 'exec' for p in instance.outputs.values())
-                    
+
                     # Logic:
                     # 1. If it has no exec_in pin, it's a potential starter (data node or flow starter)
                     # 2. If it HAS an exec_in pin but NO connection to it, it's a flow starter
@@ -218,7 +235,12 @@ class NetworkExecutor(QObject):
                 
                 for layer in layers:
                     if self._is_stopped: break
-                    
+
+                    # Skip nodes already executed by the init phase
+                    layer = [nid for nid in layer if nid not in self._executed_nodes]
+                    if not layer:
+                        continue
+
                     # Track each node execution as a task so it can be cancelled
                     tasks = [self._track_task(self._run_single_node(nid)) for nid in layer]
                     # Filter out None if _track_task returned None due to stop
@@ -237,6 +259,28 @@ class NetworkExecutor(QObject):
 
         finally:
             self.execution_finished.emit(not self._is_stopped)
+
+    async def _run_init_nodes(self):
+        """Execute init-priority nodes (init_priority > 0) sequentially before the main graph.
+
+        Higher init_priority values run first.  Each init node's full exec chain
+        completes before the next init node starts.  Results are cached in
+        _executed_nodes so the main loop skips them.
+        """
+        init_node_ids = sorted(
+            [nid for nid, m in self.graph_manager.nodes.items() if getattr(m, 'init_priority', 0) > 0],
+            key=lambda nid: self.graph_manager.nodes[nid].init_priority,
+            reverse=True,
+        )
+        for node_id in init_node_ids:
+            if self._is_stopped:
+                return
+            self._finished_event.clear()
+            self._track_task(self._execute_flow(node_id))
+            while self._active_tasks and not self._is_stopped:
+                await self._finished_event.wait()
+                self._finished_event.clear()
+                await asyncio.sleep(0.05)
 
     async def _bootstrap_prism_if_needed(self):
         """Run bootstrap_prism_core before the main graph if a prism_core_init

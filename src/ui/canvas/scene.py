@@ -292,7 +292,8 @@ class NodeScene(QGraphicsScene):
                 node_id=getattr(node_widget.node_definition, 'node_id', node_widget.node_definition.name),
                 position=(node_widget.pos().x(), node_widget.pos().y()),
                 parameters=self._serializable_params(node_widget.node_definition.parameters),
-                bypassed=node_widget.bypassed
+                bypassed=node_widget.bypassed,
+                init_priority=node_widget.init_priority
             )
             model.nodes.append(node_model)
         for edge in self.edges:
@@ -342,6 +343,7 @@ class NodeScene(QGraphicsScene):
             if widget:
                 widget.instance_id = node_model.instance_id
                 widget.set_bypassed(node_model.bypassed)
+                widget.set_init_priority(getattr(node_model, 'init_priority', 0))
                 # SYNC: Apply parameters to UI widgets and node definition
                 for p_name, p_val in node_model.parameters.items():
                     widget.set_parameter(p_name, p_val, propagate=False)
@@ -578,6 +580,25 @@ class NodeScene(QGraphicsScene):
                 unbypass_act.triggered.connect(do_unbypass)
                 menu.addAction(unbypass_act)
 
+            any_init = any(n.init_priority > 0 for n in selected_nodes)
+            any_not_init = any(n.init_priority == 0 for n in selected_nodes)
+
+            if any_not_init:
+                init_act = QAction("Mark as Init Node (runs first)", self.parent())
+                def do_mark_init():
+                    self.push_history()
+                    for n in selected_nodes: n.set_init_priority(1)
+                init_act.triggered.connect(do_mark_init)
+                menu.addAction(init_act)
+
+            if any_init:
+                uninit_act = QAction("Remove Init Priority", self.parent())
+                def do_remove_init():
+                    self.push_history()
+                    for n in selected_nodes: n.set_init_priority(0)
+                uninit_act.triggered.connect(do_remove_init)
+                menu.addAction(uninit_act)
+
             menu.addSeparator()
             
             wrap_act = QAction(f"Wrap {len(selected_nodes)} Nodes in Box", self.parent())
@@ -671,6 +692,10 @@ class NodeScene(QGraphicsScene):
 
             # Ensure states are initialized correctly (all enabled)
             node_widget._refresh_widget_states()
+
+            # Honor class-level init_first flag from the node builder
+            if getattr(node_definition, 'init_first', False) or getattr(node_class, 'init_first', False):
+                node_widget.set_init_priority(1)
             return node_widget
         return None
 
