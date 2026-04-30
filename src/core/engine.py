@@ -156,11 +156,6 @@ class NetworkExecutor(QObject):
                                 if conn.to_node not in self._driven_by_flow:
                                     self._executed_nodes.discard(conn.to_node)
 
-                                # ALWAYS trigger on_parameter_changed for data connections.
-                                # This allows nodes (like For Each) to react to data changes
-                                # even if they are primarily driven by flow pins.
-                                await target_instance.on_parameter_changed(conn.to_port, value)
-
                     # 2. FLOW-BASED ROUTING
                     if bool(value) is True: # Handle both True and truthy values for execution pins
                         node_inst = self.node_instances.get(nid)
@@ -372,7 +367,6 @@ class NetworkExecutor(QObject):
                 if conn.from_port in from_results:
                     val = from_results.get(conn.from_port)
                     instance.parameters[conn.to_port] = val
-                    await instance.on_parameter_changed(conn.to_port, val)
 
             inputs = instance.parameters.copy()
             success, result, error = await SafeRuntime.run_node_safe(instance.execute, inputs)
