@@ -156,6 +156,12 @@ class NetworkExecutor(QObject):
                                 if conn.to_node not in self._driven_by_flow:
                                     self._executed_nodes.discard(conn.to_node)
 
+                                # Notify the target so reactive nodes (e.g. TwoWaySwitch, GetVariable)
+                                # can update their own outputs when upstream data changes during execution.
+                                # Only called here (reactive propagation), NOT in the pre-execute sync,
+                                # to avoid calling on_parameter_changed with partially-synced parameters.
+                                await target_instance.on_parameter_changed(conn.to_port, value)
+
                     # 2. FLOW-BASED ROUTING
                     if bool(value) is True: # Handle both True and truthy values for execution pins
                         node_inst = self.node_instances.get(nid)
