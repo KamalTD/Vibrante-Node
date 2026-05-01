@@ -406,9 +406,30 @@ class MainWindow(QMainWindow):
         feature_list_act.triggered.connect(lambda: self._open_doc("DOCUMENTATION.md"))
         help_menu.addAction(feature_list_act)
 
-        release_act = QAction('Release Notes v1.8.4', self)
-        release_act.triggered.connect(lambda: self._open_doc("RELEASE_v1.8.4.md"))
-        help_menu.addAction(release_act)
+        help_menu.addSeparator()
+
+        release_menu = help_menu.addMenu('Release Notes')
+        for ver in [
+            ("v1.8.4", "RELEASE_v1.8.4.md"),
+            ("v1.8.3", "RELEASE_v1.8.3.md"),
+            ("v1.8.2", "RELEASE_v1.8.2.md"),
+            ("v1.8.1", "RELEASE_v1.8.1.md"),
+            ("v1.8.0", "RELEASE_v1.8.0.md"),
+            ("v1.7.0", "RELEASE_v1.7.0.md"),
+            ("v1.6.1", "RELEASE_v1.6.1.md"),
+            ("v1.6.0", "RELEASE_v1.6.0.md"),
+            ("v1.5.0", "RELEASE_v1.5.0.md"),
+            ("v1.4.0", "RELEASE_v1.4.0.md"),
+            ("v1.3.0", "RELEASE_v1.3.0.md"),
+            ("v1.2.0", "RELEASE_v1.2.0.md"),
+            ("v1.1.5", "RELEASE_v1.1.5.md"),
+            ("v1.1.0", "RELEASE_v1.1.0.md"),
+            ("v1.0.5", "RELEASE_v1.0.5.md"),
+        ]:
+            label, fname = ver
+            act = QAction(label, self)
+            act.triggered.connect(lambda checked, f=fname: self._open_doc(f))
+            release_menu.addAction(act)
 
         help_menu.addSeparator()
 

@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Release Notes v1.5.0 — Vibrante-Node v1.8.4</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+       background: #1e1e2e; color: #cdd6f4; line-height: 1.7; }
+.sidebar { position: fixed; top: 0; left: 0; width: 220px; height: 100vh;
+           background: #181825; overflow-y: auto; padding: 20px 0; z-index: 100; }
+.sidebar h2 { font-size: 13px; color: #6c7086; text-transform: uppercase;
+              letter-spacing: .08em; padding: 0 18px 10px; }
+.sidebar a  { display: block; padding: 6px 18px; color: #a6adc8; text-decoration: none;
+              font-size: 13px; border-left: 3px solid transparent; transition: all .15s; }
+.sidebar a:hover, .sidebar a.active { color: #cba6f7; border-left-color: #cba6f7;
+                                       background: #1e1e2e; }
+.sidebar .nav-release { font-size: 12px; padding: 4px 18px; }
+.content { margin-left: 220px; max-width: 920px; padding: 40px 48px; }
+h1 { font-size: 2em; color: #cba6f7; border-bottom: 2px solid #313244; padding-bottom: 10px; margin: 28px 0 16px; }
+h2 { font-size: 1.45em; color: #89b4fa; margin: 32px 0 12px; }
+h3 { font-size: 1.15em; color: #94e2d5; margin: 22px 0 8px; }
+h4 { font-size: 1em; color: #f5c2e7; margin: 16px 0 6px; }
+p  { margin-bottom: 14px; color: #cdd6f4; }
+a  { color: #89b4fa; }
+ul, ol { margin: 10px 0 14px 22px; }
+li { margin-bottom: 5px; }
+code { background: #313244; color: #f38ba8; padding: 2px 6px; border-radius: 4px; font-size: .88em; font-family: 'Consolas','Courier New',monospace; }
+pre  { background: #181825; border: 1px solid #313244; border-radius: 8px;
+       padding: 18px 20px; overflow-x: auto; margin: 14px 0 20px; }
+pre code { background: none; color: #a6e3a1; padding: 0; font-size: .9em; }
+table { border-collapse: collapse; width: 100%; margin: 14px 0 20px; font-size: .92em; }
+th { background: #313244; color: #cba6f7; padding: 9px 14px; text-align: left; }
+td { border-top: 1px solid #313244; padding: 8px 14px; }
+tr:nth-child(even) td { background: #1e1e2e; }
+hr { border: none; border-top: 1px solid #313244; margin: 28px 0; }
+blockquote { border-left: 4px solid #6c7086; padding-left: 16px; color: #a6adc8; margin: 14px 0; }
+@media (max-width: 700px) { .sidebar { display: none; } .content { margin-left: 0; padding: 24px 18px; } }
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <h2>Vibrante-Node</h2>
+  <a href="USER_GUIDE.html">User Guide</a>
+<a href="NODE_BUILDER_API.html">Node Builder API</a>
+<a href="AUTOMATION_API.html">Automation API</a>
+<a href="DEVELOPER.html">Developer Documentation</a>
+<a href="DOCUMENTATION.html">Technical Feature List</a>
+  <hr style="border-color:#313244;margin:10px 18px">
+  <h2 style="margin-top:8px">Release Notes</h2>
+  <a class="nav-release" href="RELEASE_v1.8.4.html">Release Notes v1.8.4</a>
+<a class="nav-release" href="RELEASE_v1.8.3.html">Release Notes v1.8.3</a>
+<a class="nav-release" href="RELEASE_v1.8.2.html">Release Notes v1.8.2</a>
+<a class="nav-release" href="RELEASE_v1.8.1.html">Release Notes v1.8.1</a>
+<a class="nav-release" href="RELEASE_v1.8.0.html">Release Notes v1.8.0</a>
+<a class="nav-release" href="RELEASE_v1.7.0.html">Release Notes v1.7.0</a>
+<a class="nav-release" href="RELEASE_v1.6.1.html">Release Notes v1.6.1</a>
+<a class="nav-release" href="RELEASE_v1.6.0.html">Release Notes v1.6.0</a>
+<a class="nav-release" href="RELEASE_v1.5.0.html">Release Notes v1.5.0</a>
+<a class="nav-release" href="RELEASE_v1.4.0.html">Release Notes v1.4.0</a>
+<a class="nav-release" href="RELEASE_v1.3.0.html">Release Notes v1.3.0</a>
+<a class="nav-release" href="RELEASE_v1.2.0.html">Release Notes v1.2.0</a>
+<a class="nav-release" href="RELEASE_v1.1.5.html">Release Notes v1.1.5</a>
+<a class="nav-release" href="RELEASE_v1.1.0.html">Release Notes v1.1.0</a>
+<a class="nav-release" href="RELEASE_v1.0.5.html">Release Notes v1.0.5</a>
+  <hr style="border-color:#313244;margin:10px 18px">
+  <h2 style="margin-top:8px">On this page</h2>
+  <a href="#release-v150-maya-headless-houdini-headless-blender-headless-deadline-submitters" style="padding-left:18px">Release v1.5.0: Maya Headless, Houdini Headless, Blender Headless &amp; Deadline Submitters</a>
+<a href="#whats-new" style="padding-left:18px">What's New</a>
+<a href="#maya-headless-executor" style="padding-left:32px">Maya Headless Executor</a>
+<a href="#houdini-headless-executor" style="padding-left:32px">Houdini Headless Executor</a>
+<a href="#chainable-action-node-pattern" style="padding-left:32px">Chainable Action Node Pattern</a>
+<a href="#new-maya-action-nodes" style="padding-left:32px">New Maya Action Nodes</a>
+<a href="#new-houdini-action-nodes" style="padding-left:32px">New Houdini Action Nodes</a>
+<a href="#blender-headless-executor" style="padding-left:32px">Blender Headless Executor</a>
+<a href="#new-blender-action-nodes" style="padding-left:32px">New Blender Action Nodes</a>
+<a href="#deadline-render-farm-submitters-dccs-category" style="padding-left:32px">Deadline Render Farm Submitters (DCCs category)</a>
+<a href="#helper-nodes" style="padding-left:32px">Helper Nodes</a>
+<a href="#ui-file_save-widget-type" style="padding-left:32px">UI: file_save Widget Type</a>
+<a href="#ui-safer-node-drop" style="padding-left:32px">UI: Safer Node Drop</a>
+<a href="#ui-custom-action-script-editor" style="padding-left:32px">UI: Custom Action Script Editor</a>
+<a href="#upgrade-notes" style="padding-left:18px">Upgrade Notes</a>
+</nav>
+<main class="content">
+<h1 id="release-v150-maya-headless-houdini-headless-blender-headless-deadline-submitters">Release v1.5.0: Maya Headless, Houdini Headless, Blender Headless &amp; Deadline Submitters</h1>
+<p>Version 1.5.0 introduces a complete <strong>headless DCC execution system</strong> for Autodesk Maya, SideFX Houdini, and Blender, plus a chainable "Action Node" pattern that lets users compose batch pipelines visually. Deadline render-farm submitter nodes for all three DCCs are also included. Over 55 new nodes ship in this release.</p>
+<hr />
+<h2 id="whats-new">What's New</h2>
+<h3 id="maya-headless-executor">Maya Headless Executor</h3>
+<p>A new <code>Maya Headless</code> node launches Maya in batch mode via <code>mayapy.exe</code>, runs a list of structured actions, and returns a full results payload.</p>
+<ul>
+<li><strong>Maya version dropdown</strong> (2022 / 2024 / 2025 / 2026) with dynamic <code>mayapy.exe</code> path switching</li>
+<li><strong>Custom environment injection</strong> via a <code>.bat</code> file (parsing <code>SET</code> commands) and/or <code>Maya.env</code> file, merged into the subprocess environment</li>
+<li><strong>Structured JSON payload + runner script</strong> pattern — no f-string code injection, runner reports per-action success/error</li>
+<li><strong>Per-action validation</strong> — actions with missing required fields are skipped with clear error messages, failing the node early</li>
+<li><strong>Outputs:</strong> <code>success</code>, <code>stdout</code>, <code>stderr</code>, <code>exit_code</code>, <code>executed_actions</code>, <code>skipped_actions</code></li>
+</ul>
+<h3 id="houdini-headless-executor">Houdini Headless Executor</h3>
+<p>A new <code>Houdini Headless</code> node launches Houdini via <code>hython.exe</code>, mirroring the Maya Headless design.</p>
+<ul>
+<li><strong>Houdini version dropdown</strong> — <code>20.5.445</code>, <code>20.5.278</code>, <code>20.0.547</code>, <code>19.5.493</code> — with editable <code>hython.exe</code> path</li>
+<li><strong>Custom environment injection</strong> via <code>.bat</code> file and/or <code>houdini.env</code></li>
+<li><strong>Optional /obj vs /stage context</strong> on import nodes for classic vs Solaris/LOPs workflows</li>
+<li><strong>Same outputs contract</strong> as Maya Headless for drop-in consistency</li>
+</ul>
+<h3 id="chainable-action-node-pattern">Chainable Action Node Pattern</h3>
+<p>Both Maya and Houdini share a new design: small "Action" nodes each describe one operation and expose <code>actions_in</code> / <code>actions_out</code> list ports. Users chain them left-to-right and plug the final <code>actions_out</code> into the headless executor.</p>
+<p>This keeps the graph flat, readable, and lets any action node be inserted/removed without touching others.</p>
+<h3 id="new-maya-action-nodes">New Maya Action Nodes</h3>
+<table>
+<thead>
+<tr>
+<th>Node</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Open Scene</code></td>
+<td>Open a <code>.ma</code>/<code>.mb</code> file</td>
+</tr>
+<tr>
+<td><code>Save Scene</code></td>
+<td>Save scene to a specified path (mayaAscii/mayaBinary)</td>
+</tr>
+<tr>
+<td><code>New Scene</code></td>
+<td><code>cmds.file(new=True, force=True)</code></td>
+</tr>
+<tr>
+<td><code>Scene Info</code></td>
+<td>Query frame range, FPS, units, renderer, project path</td>
+</tr>
+<tr>
+<td><code>Set Frame Range</code></td>
+<td>Set animation/playback start and end</td>
+</tr>
+<tr>
+<td><code>Import OBJ</code></td>
+<td>Import <code>.obj</code> file</td>
+</tr>
+<tr>
+<td><code>Import FBX</code> / <code>Export FBX</code></td>
+<td>Import/export via <code>fbxmaya</code> plugin</td>
+</tr>
+<tr>
+<td><code>Import Alembic</code> / <code>Export Alembic</code></td>
+<td>Import/export via <code>AbcImport</code>/<code>AbcExport</code></td>
+</tr>
+<tr>
+<td><code>Reference Scene</code></td>
+<td><code>file(reference=True)</code> with namespace</td>
+</tr>
+<tr>
+<td><code>Reference Alembic</code></td>
+<td>Referenced Alembic load</td>
+</tr>
+<tr>
+<td><code>Import Camera</code></td>
+<td>Auto-detect <code>.abc</code>/<code>.fbx</code>/<code>.ma</code>/<code>.mb</code></td>
+</tr>
+<tr>
+<td><code>Export Camera Alembic</code></td>
+<td>Alembic export targeted at camera transforms</td>
+</tr>
+<tr>
+<td><code>List References</code></td>
+<td>Query all scene references into <code>info</code></td>
+</tr>
+<tr>
+<td><code>Playblast</code></td>
+<td>Render viewport to video/image sequence</td>
+</tr>
+<tr>
+<td><code>Bake Animation</code></td>
+<td><code>bakeResults</code> over a frame range</td>
+</tr>
+<tr>
+<td><code>Set Render Settings</code></td>
+<td>Renderer, resolution, frame range, image format, file prefix</td>
+</tr>
+<tr>
+<td><code>Set AOVs</code></td>
+<td>Create AOVs for Arnold (via <code>mtoa.aovs.AOVInterface</code>) or Redshift</td>
+</tr>
+<tr>
+<td><code>Create Render Layer</code></td>
+<td>Create a <code>renderSetup</code> layer with collection members</td>
+</tr>
+<tr>
+<td><code>Assign Material</code></td>
+<td>Assign shader/shading-group to nodes</td>
+</tr>
+<tr>
+<td><code>Custom Python</code></td>
+<td>Editable Python action with Script Editor button</td>
+</tr>
+</tbody>
+</table>
+<h3 id="new-houdini-action-nodes">New Houdini Action Nodes</h3>
+<table>
+<thead>
+<tr>
+<th>Node</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Open HIP</code> / <code>Save HIP</code> / <code>New HIP</code></td>
+<td><code>hou.hipFile</code> operations</td>
+</tr>
+<tr>
+<td><code>Scene Info</code></td>
+<td>hip path, FPS, frame range, <code>$HIP</code>, <code>$JOB</code>, cameras</td>
+</tr>
+<tr>
+<td><code>Set Frame Range</code></td>
+<td>Playbar and playback range</td>
+</tr>
+<tr>
+<td><code>Import OBJ</code></td>
+<td>File SOP in <code>/obj</code> or SOP Import in <code>/stage</code></td>
+</tr>
+<tr>
+<td><code>Import FBX</code></td>
+<td><code>hou.hipFile.importFBX()</code> or FBX LOP</td>
+</tr>
+<tr>
+<td><code>Import Alembic</code></td>
+<td>Alembic SOP or Sublayer LOP</td>
+</tr>
+<tr>
+<td><code>Import Camera</code></td>
+<td>Alembic Archive or FBX import</td>
+</tr>
+<tr>
+<td><code>Export FBX</code> / <code>Export Alembic</code> / <code>Export Camera Alembic</code></td>
+<td>ROP-based exports</td>
+</tr>
+<tr>
+<td><code>Bake Animation</code></td>
+<td>Keyframe baking on time-dependent parms</td>
+</tr>
+<tr>
+<td><code>Custom Python</code></td>
+<td>Editable hython action with Script Editor button</td>
+</tr>
+</tbody>
+</table>
+<h3 id="blender-headless-executor">Blender Headless Executor</h3>
+<p>A new <code>Blender Headless</code> node launches Blender in <code>--background</code> mode, mirroring the Maya/Houdini headless design.</p>
+<ul>
+<li><strong>Blender version dropdown</strong> — <code>4.3</code>, <code>4.2</code>, <code>4.1</code>, <code>4.0</code>, <code>3.6</code> — with editable <code>blender.exe</code> path</li>
+<li><strong>Custom environment injection</strong> via <code>.bat</code> file and/or <code>blender.env</code></li>
+<li><strong>bpy-version-aware OBJ import/export</strong> — uses <code>wm.obj_import</code> on Blender 4.0+ and <code>import_scene.obj</code> on 3.x automatically</li>
+<li><strong>Full traceback capture</strong> per action for easier debugging</li>
+<li><strong>Same outputs contract</strong> as Maya/Houdini Headless for drop-in consistency</li>
+</ul>
+<h3 id="new-blender-action-nodes">New Blender Action Nodes</h3>
+<table>
+<thead>
+<tr>
+<th>Node</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Open Blend</code></td>
+<td>Open a <code>.blend</code> file</td>
+</tr>
+<tr>
+<td><code>Save Blend</code></td>
+<td>Save scene to a specified path</td>
+</tr>
+<tr>
+<td><code>New Blend</code></td>
+<td>Create a fresh scene</td>
+</tr>
+<tr>
+<td><code>Scene Info</code></td>
+<td>Query scene name, FPS, frame range, active camera</td>
+</tr>
+<tr>
+<td><code>Set Frame Range</code></td>
+<td>Set animation start and end frames</td>
+</tr>
+<tr>
+<td><code>Import OBJ</code></td>
+<td>Version-aware OBJ import</td>
+</tr>
+<tr>
+<td><code>Import FBX</code></td>
+<td>FBX import</td>
+</tr>
+<tr>
+<td><code>Import Alembic</code></td>
+<td>Alembic cache import</td>
+</tr>
+<tr>
+<td><code>Import glTF</code></td>
+<td>glTF/GLB import</td>
+</tr>
+<tr>
+<td><code>Export OBJ</code></td>
+<td>Version-aware OBJ export</td>
+</tr>
+<tr>
+<td><code>Export FBX</code></td>
+<td>FBX export</td>
+</tr>
+<tr>
+<td><code>Export Alembic</code></td>
+<td>Alembic export</td>
+</tr>
+<tr>
+<td><code>Export glTF</code></td>
+<td>glTF/GLB export</td>
+</tr>
+<tr>
+<td><code>Export USD</code></td>
+<td>USD export</td>
+</tr>
+<tr>
+<td><code>Set Render Settings</code></td>
+<td>Engine (Cycles/EEVEE/EEVEE_NEXT/Workbench), resolution, samples, GPU, output format</td>
+</tr>
+<tr>
+<td><code>Render</code></td>
+<td>Still frame or animation render</td>
+</tr>
+<tr>
+<td><code>Bake Animation</code></td>
+<td>NLA bake with visual keying and configurable step</td>
+</tr>
+<tr>
+<td><code>Custom Python</code></td>
+<td>Editable bpy action with Script Editor button</td>
+</tr>
+<tr>
+<td><code>Blender: Get Action Result</code></td>
+<td>Extract a single action from <code>executed_actions</code> by type or index</td>
+</tr>
+</tbody>
+</table>
+<h3 id="deadline-render-farm-submitters-dccs-category">Deadline Render Farm Submitters (DCCs category)</h3>
+<p>Four new nodes for submitting jobs to a Deadline render farm via <code>deadlinecommand</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Node</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Deadline: Submit Maya</code></td>
+<td>Submit a Maya render job (Arnold/VRay/Redshift/RenderMan/Software/Hardware2)</td>
+</tr>
+<tr>
+<td><code>Deadline: Submit Houdini</code></td>
+<td>Submit a Houdini ROP job with <code>houdini_version</code> auto-extraction from build string</td>
+</tr>
+<tr>
+<td><code>Deadline: Submit Blender</code></td>
+<td>Submit a Blender render job (CYCLES/EEVEE/EEVEE_NEXT/WORKBENCH)</td>
+</tr>
+<tr>
+<td><code>Deadline: Job Status</code></td>
+<td>Query job status and progress; optional <code>poll_until_done</code> mode with configurable timeout</td>
+</tr>
+</tbody>
+</table>
+<p>All submitters:<br />
+- Write Job Info + Plugin Info temp files and submit via <code>deadlinecommand</code><br />
+- Parse <code>JobID</code> from output (<code>JobID=</code> line or 24-hex fallback)<br />
+- Support <code>extra_job_args</code> text area for arbitrary extra key=value job info lines<br />
+- Clean up temp files in a <code>finally</code> block<br />
+- Output: <code>success</code>, <code>job_id</code>, <code>stdout</code>, <code>stderr</code></p>
+<p><code>Deadline: Job Status</code> outputs: <code>status</code>, <code>progress</code>, <code>tasks_total</code>, <code>tasks_complete</code>, <code>tasks_failed</code>, <code>is_complete</code>, <code>is_failed</code>, <code>details</code></p>
+<h3 id="helper-nodes">Helper Nodes</h3>
+<p><code>Maya: Get Action Result</code>, <code>Houdini: Get Action Result</code>, and <code>Blender: Get Action Result</code> — extract a single action from the <code>executed_actions</code> list by type (first match) or index. Outputs the matched dict, its <code>info</code> field, and a best-guess <code>path</code> field, so downstream nodes don't have to filter the list manually.</p>
+<h3 id="ui-file_save-widget-type">UI: file_save Widget Type</h3>
+<p>New <code>file_save</code> widget on string ports opens a <strong>Save File</strong> dialog instead of an Open dialog. Used throughout the export action nodes so save paths feel natural.</p>
+<h3 id="ui-safer-node-drop">UI: Safer Node Drop</h3>
+<p>Node instantiation during drag-and-drop is now wrapped in try/except in <code>scene.py</code> and <code>view.py</code>. A failing node constructor logs an error instead of crashing the UI, and undo history is only pushed on successful spawn.</p>
+<h3 id="ui-custom-action-script-editor">UI: Custom Action Script Editor</h3>
+<p>The <code>Edit Script</code> button (previously only on <code>python_script</code> nodes) now also appears on <code>maya_action_custom</code> and <code>houdini_action_custom</code>, letting users duplicate those nodes and write their own DCC actions. The button reads/writes <code>python_code</code> via <code>get_parameter</code>/<code>set_parameter</code> so the editor always reflects the current code.</p>
+<hr />
+<h2 id="upgrade-notes">Upgrade Notes</h2>
+<ul>
+<li>No breaking changes to existing nodes or workflows.</li>
+<li>The Houdini Headless executor is a <strong>subprocess pattern</strong> and runs alongside the existing <code>hou_bridge</code> live-session pattern documented in <code>CLAUDE.md</code>. Both can be used in the same project.</li>
+<li><code>Maya Headless</code>' success criterion only checks process exit code + structured action errors. Maya's stderr warnings no longer cause false failures.</li>
+<li>Deadline nodes are in the <strong>DCCs</strong> category in the node library.</li>
+<li>Blender's OBJ import/export API changed in 4.0; the runner script handles this automatically based on the detected bpy version.</li>
+</ul>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var links = document.querySelectorAll('.sidebar a');
+    var headings = document.querySelectorAll('h1,h2,h3');
+    window.addEventListener('scroll', function() {
+        var cur = '';
+        headings.forEach(function(h) { if (h.offsetTop <= window.scrollY + 80) cur = h.id; });
+        links.forEach(function(a) {
+            a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+        });
+    });
+});
+</script>
+</body>
+</html>

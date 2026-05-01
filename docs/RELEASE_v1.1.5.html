@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Release Notes v1.1.5 — Vibrante-Node v1.8.4</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+       background: #1e1e2e; color: #cdd6f4; line-height: 1.7; }
+.sidebar { position: fixed; top: 0; left: 0; width: 220px; height: 100vh;
+           background: #181825; overflow-y: auto; padding: 20px 0; z-index: 100; }
+.sidebar h2 { font-size: 13px; color: #6c7086; text-transform: uppercase;
+              letter-spacing: .08em; padding: 0 18px 10px; }
+.sidebar a  { display: block; padding: 6px 18px; color: #a6adc8; text-decoration: none;
+              font-size: 13px; border-left: 3px solid transparent; transition: all .15s; }
+.sidebar a:hover, .sidebar a.active { color: #cba6f7; border-left-color: #cba6f7;
+                                       background: #1e1e2e; }
+.sidebar .nav-release { font-size: 12px; padding: 4px 18px; }
+.content { margin-left: 220px; max-width: 920px; padding: 40px 48px; }
+h1 { font-size: 2em; color: #cba6f7; border-bottom: 2px solid #313244; padding-bottom: 10px; margin: 28px 0 16px; }
+h2 { font-size: 1.45em; color: #89b4fa; margin: 32px 0 12px; }
+h3 { font-size: 1.15em; color: #94e2d5; margin: 22px 0 8px; }
+h4 { font-size: 1em; color: #f5c2e7; margin: 16px 0 6px; }
+p  { margin-bottom: 14px; color: #cdd6f4; }
+a  { color: #89b4fa; }
+ul, ol { margin: 10px 0 14px 22px; }
+li { margin-bottom: 5px; }
+code { background: #313244; color: #f38ba8; padding: 2px 6px; border-radius: 4px; font-size: .88em; font-family: 'Consolas','Courier New',monospace; }
+pre  { background: #181825; border: 1px solid #313244; border-radius: 8px;
+       padding: 18px 20px; overflow-x: auto; margin: 14px 0 20px; }
+pre code { background: none; color: #a6e3a1; padding: 0; font-size: .9em; }
+table { border-collapse: collapse; width: 100%; margin: 14px 0 20px; font-size: .92em; }
+th { background: #313244; color: #cba6f7; padding: 9px 14px; text-align: left; }
+td { border-top: 1px solid #313244; padding: 8px 14px; }
+tr:nth-child(even) td { background: #1e1e2e; }
+hr { border: none; border-top: 1px solid #313244; margin: 28px 0; }
+blockquote { border-left: 4px solid #6c7086; padding-left: 16px; color: #a6adc8; margin: 14px 0; }
+@media (max-width: 700px) { .sidebar { display: none; } .content { margin-left: 0; padding: 24px 18px; } }
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <h2>Vibrante-Node</h2>
+  <a href="USER_GUIDE.html">User Guide</a>
+<a href="NODE_BUILDER_API.html">Node Builder API</a>
+<a href="AUTOMATION_API.html">Automation API</a>
+<a href="DEVELOPER.html">Developer Documentation</a>
+<a href="DOCUMENTATION.html">Technical Feature List</a>
+  <hr style="border-color:#313244;margin:10px 18px">
+  <h2 style="margin-top:8px">Release Notes</h2>
+  <a class="nav-release" href="RELEASE_v1.8.4.html">Release Notes v1.8.4</a>
+<a class="nav-release" href="RELEASE_v1.8.3.html">Release Notes v1.8.3</a>
+<a class="nav-release" href="RELEASE_v1.8.2.html">Release Notes v1.8.2</a>
+<a class="nav-release" href="RELEASE_v1.8.1.html">Release Notes v1.8.1</a>
+<a class="nav-release" href="RELEASE_v1.8.0.html">Release Notes v1.8.0</a>
+<a class="nav-release" href="RELEASE_v1.7.0.html">Release Notes v1.7.0</a>
+<a class="nav-release" href="RELEASE_v1.6.1.html">Release Notes v1.6.1</a>
+<a class="nav-release" href="RELEASE_v1.6.0.html">Release Notes v1.6.0</a>
+<a class="nav-release" href="RELEASE_v1.5.0.html">Release Notes v1.5.0</a>
+<a class="nav-release" href="RELEASE_v1.4.0.html">Release Notes v1.4.0</a>
+<a class="nav-release" href="RELEASE_v1.3.0.html">Release Notes v1.3.0</a>
+<a class="nav-release" href="RELEASE_v1.2.0.html">Release Notes v1.2.0</a>
+<a class="nav-release" href="RELEASE_v1.1.5.html">Release Notes v1.1.5</a>
+<a class="nav-release" href="RELEASE_v1.1.0.html">Release Notes v1.1.0</a>
+<a class="nav-release" href="RELEASE_v1.0.5.html">Release Notes v1.0.5</a>
+  <hr style="border-color:#313244;margin:10px 18px">
+  <h2 style="margin-top:8px">On this page</h2>
+  <a href="#release-v115-sidefx-houdini-live-integration-command-bridge-app-icon" style="padding-left:18px">Release v1.1.5: SideFX Houdini Live Integration, Command Bridge &amp; App Icon</a>
+<a href="#overview" style="padding-left:18px">Overview</a>
+<a href="#new-features" style="padding-left:18px">New Features</a>
+<a href="#sidefx-houdini-live-integration" style="padding-left:32px">SideFX Houdini Live Integration</a>
+<a href="#19-houdini-node-definitions" style="padding-left:32px">19 Houdini Node Definitions</a>
+<a href="#houdini-example-scripts" style="padding-left:32px">Houdini Example Scripts</a>
+<a href="#application-icon" style="padding-left:32px">Application Icon</a>
+<a href="#qt-compatibility-layer" style="padding-left:32px">Qt Compatibility Layer</a>
+<a href="#architecture-changes" style="padding-left:18px">Architecture Changes</a>
+<a href="#subprocess-only-launch-mode" style="padding-left:32px">Subprocess-Only Launch Mode</a>
+<a href="#plugin-directory-structure" style="padding-left:32px">Plugin Directory Structure</a>
+<a href="#command-server-protocol" style="padding-left:18px">Command Server Protocol</a>
+<a href="#files-added" style="padding-left:18px">Files Added</a>
+<a href="#files-changed" style="padding-left:18px">Files Changed</a>
+</nav>
+<main class="content">
+<h1 id="release-v115-sidefx-houdini-live-integration-command-bridge-app-icon">Release v1.1.5: SideFX Houdini Live Integration, Command Bridge &amp; App Icon</h1>
+<h2 id="overview">Overview</h2>
+<p>Version 1.1.5 introduces a deep integration with <strong>SideFX Houdini FX</strong> via a Live Command Bridge architecture, 19 new Houdini-specific nodes, a Qt compatibility layer, and a custom application icon. This release transforms Vibrante-Node into a DCC-connected pipeline tool capable of controlling live Houdini sessions.</p>
+<hr />
+<h2 id="new-features">New Features</h2>
+<h3 id="sidefx-houdini-live-integration">SideFX Houdini Live Integration</h3>
+<p>A complete plugin system for SideFX Houdini FX (tested with 20.5.278):</p>
+<ul>
+<li><strong>JSON-RPC Command Server</strong> (<code>vibrante_hou_server.py</code>): Runs inside Houdini's Python process on <code>127.0.0.1:18811</code>. Supports 22 commands for scene manipulation, parameter control, animation, and code execution. All scene-modifying commands are dispatched to Houdini's main thread via <code>hdefereval.executeDeferred()</code> for thread safety.</li>
+<li><strong>Bridge Client</strong> (<code>src/utils/hou_bridge.py</code>): <code>HouBridge</code> class provides a high-level API for communicating with the Houdini server. Accessed via <code>get_bridge()</code> singleton with <code>is_available()</code> health check.</li>
+<li><strong>Houdini Shelf &amp; Menu</strong>: Custom shelf tool and menu bar entry for launching Vibrante-Node directly from Houdini.</li>
+<li><strong>Auto-Configuration</strong>: <code>setup_env()</code> configures Python paths and bundled virtual environment automatically on launch.</li>
+<li><strong>Bundled Virtual Environment</strong>: Dependencies (pydantic, etc.) are packaged in <code>plugins/houdini/houdini/scripts/python/env/</code> to avoid modifying Houdini's Python installation.</li>
+</ul>
+<h3 id="19-houdini-node-definitions">19 Houdini Node Definitions</h3>
+<p>All nodes are JSON-defined, validated against the pydantic <code>NodeDefinitionJSON</code> model, and categorized under "Houdini" in the Node Library:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Node</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>hou_create_node</code></td>
+<td style="text-align: left;">Create a node in the Houdini scene</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hou_create_geo</code></td>
+<td style="text-align: left;">Create a Geometry container at /obj</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hou_delete_node</code></td>
+<td style="text-align: left;">Delete a node by path</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hou_set_parm</code></td>
+<td style="text-align: left;">Set a single parameter</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hou_get_parm</code></td>
+<td style="text-align: left;">Read a parameter value</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hou_set_parms</code></td>
+<td style="text-align: left;">Set multiple parameters (JSON dict)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hou_connect_nodes</code></td>
+<td style="text-align: left;">Wire two nodes together</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hou_cook</code></td>
+<td style="text-align: left;">Force-cook a node</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hou_run_code</code></td>
+<td style="text-align: left;">Execute Python code in Houdini</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hou_scene_info</code></td>
+<td style="text-align: left;">Query scene metadata (filename, frame, FPS)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hou_node_info</code></td>
+<td style="text-align: left;">Get detailed info about a specific node</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hou_list_children</code></td>
+<td style="text-align: left;">List child nodes of a path</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hou_node_exists</code></td>
+<td style="text-align: left;">Check if a node path exists</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hou_set_display_flag</code></td>
+<td style="text-align: left;">Toggle display flag</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hou_set_expression</code></td>
+<td style="text-align: left;">Set a channel expression</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hou_set_keyframe</code></td>
+<td style="text-align: left;">Set a keyframe value</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hou_set_frame</code></td>
+<td style="text-align: left;">Jump to a timeline frame</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hou_save_hip</code></td>
+<td style="text-align: left;">Save the .hip file</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hou_layout_children</code></td>
+<td style="text-align: left;">Auto-layout network children</td>
+</tr>
+</tbody>
+</table>
+<h3 id="houdini-example-scripts">Houdini Example Scripts</h3>
+<p>Three example scripts in <code>plugins/houdini/v_scripts_houdini/</code>:<br />
+- <code>hou_scene_info.py</code> — Query scene metadata via the bridge.<br />
+- <code>hou_create_box_demo.py</code> — Create a Geometry container with a Box SOP.<br />
+- <code>hou_list_scene_nodes.py</code> — List all children under <code>/obj</code>.</p>
+<h3 id="application-icon">Application Icon</h3>
+<ul>
+<li>Custom application icon (<code>icons/vibrante-node-icon.png</code>) displayed in the taskbar, title bar, splash screen, and window switcher via <code>app.setWindowIcon()</code>.</li>
+</ul>
+<h3 id="qt-compatibility-layer">Qt Compatibility Layer</h3>
+<ul>
+<li>New <code>src/utils/qt_compat.py</code> module for unified imports across PyQt5 and PySide2.</li>
+<li>Handles <code>QPolygonF</code>, <code>QPointF</code>, and other types that differ between Qt bindings.</li>
+</ul>
+<hr />
+<h2 id="architecture-changes">Architecture Changes</h2>
+<h3 id="subprocess-only-launch-mode">Subprocess-Only Launch Mode</h3>
+<ul>
+<li><strong>In-process mode removed</strong>: <code>launch_inprocess()</code> now delegates to <code>launch()</code> (subprocess mode) to prevent Houdini Signal 11 segfaults caused by competing Qt event loops (PyQt5 vs PySide2).</li>
+<li>All launch modes (shelf button, menu, scripts) use subprocess execution exclusively.</li>
+</ul>
+<h3 id="plugin-directory-structure">Plugin Directory Structure</h3>
+<pre><code>plugins/houdini/
+├── houdini/                          # Installed to Houdini user prefs
+│   ├── toolbar/vibrante.shelf        # Shelf tool definition
+│   ├── mainmenu/vibrante.xml         # Menu bar integration
+│   └── scripts/python/
+│       ├── vibrante_node_houdini.py  # Entry point (launch, setup_env)
+│       ├── vibrante_hou_server.py    # JSON-RPC command server (22 cmds)
+│       └── env/                      # Bundled venv (pydantic, etc.)
+├── v_nodes_houdini/                  # 19 Houdini node definitions
+└── v_scripts_houdini/                # Example scripts
+</code></pre>
+<hr />
+<h2 id="command-server-protocol">Command Server Protocol</h2>
+<p>The command server uses a simple JSON-RPC protocol over TCP:</p>
+<pre><code class="language-json">{&quot;command&quot;: &quot;create_node&quot;, &quot;args&quot;: {&quot;parent&quot;: &quot;/obj&quot;, &quot;type&quot;: &quot;geo&quot;, &quot;name&quot;: &quot;my_geo&quot;}}
+</code></pre>
+<p>Response:</p>
+<pre><code class="language-json">{&quot;status&quot;: &quot;ok&quot;, &quot;result&quot;: &quot;/obj/my_geo&quot;}
+</code></pre>
+<p>Error:</p>
+<pre><code class="language-json">{&quot;status&quot;: &quot;error&quot;, &quot;error&quot;: &quot;Node not found: /obj/missing&quot;}
+</code></pre>
+<hr />
+<h2 id="files-added">Files Added</h2>
+<ul>
+<li><code>plugins/houdini/houdini/scripts/python/vibrante_hou_server.py</code> — JSON-RPC command server</li>
+<li><code>src/utils/hou_bridge.py</code> — Bridge client for Houdini communication</li>
+<li><code>src/utils/qt_compat.py</code> — Qt compatibility layer</li>
+<li><code>plugins/houdini/v_nodes_houdini/*.json</code> — 19 Houdini node definitions</li>
+<li><code>plugins/houdini/v_scripts_houdini/*.py</code> — 3 example Houdini scripts</li>
+<li><code>icons/vibrante-node-icon.png</code> — Application icon</li>
+</ul>
+<h2 id="files-changed">Files Changed</h2>
+<ul>
+<li><code>src/main.py</code> — Version bump to v1.1.5, application icon setup</li>
+<li><code>src/ui/window.py</code> — About dialog updated to v1.1.5</li>
+<li><code>plugins/houdini/houdini/scripts/python/vibrante_node_houdini.py</code> — Added <code>_ensure_command_server()</code>, subprocess-only mode</li>
+<li><code>README.md</code> — Houdini integration section, updated project structure</li>
+<li><code>DOCUMENTATION.md</code> — Added Houdini technical reference (Section 4)</li>
+<li><code>USER_GUIDE.md</code> — Added Houdini setup and usage guide</li>
+<li><code>DEVELOPER.md</code> — Added Houdini architecture documentation</li>
+</ul>
+<hr />
+<p><strong>Branch:</strong> <code>feature/topological-engine-and-foreach-improvements</code></p>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var links = document.querySelectorAll('.sidebar a');
+    var headings = document.querySelectorAll('h1,h2,h3');
+    window.addEventListener('scroll', function() {
+        var cur = '';
+        headings.forEach(function(h) { if (h.offsetTop <= window.scrollY + 80) cur = h.id; });
+        links.forEach(function(a) {
+            a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+        });
+    });
+});
+</script>
+</body>
+</html>

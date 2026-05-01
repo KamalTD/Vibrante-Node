@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Release Notes v1.7.0 — Vibrante-Node v1.8.4</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+       background: #1e1e2e; color: #cdd6f4; line-height: 1.7; }
+.sidebar { position: fixed; top: 0; left: 0; width: 220px; height: 100vh;
+           background: #181825; overflow-y: auto; padding: 20px 0; z-index: 100; }
+.sidebar h2 { font-size: 13px; color: #6c7086; text-transform: uppercase;
+              letter-spacing: .08em; padding: 0 18px 10px; }
+.sidebar a  { display: block; padding: 6px 18px; color: #a6adc8; text-decoration: none;
+              font-size: 13px; border-left: 3px solid transparent; transition: all .15s; }
+.sidebar a:hover, .sidebar a.active { color: #cba6f7; border-left-color: #cba6f7;
+                                       background: #1e1e2e; }
+.sidebar .nav-release { font-size: 12px; padding: 4px 18px; }
+.content { margin-left: 220px; max-width: 920px; padding: 40px 48px; }
+h1 { font-size: 2em; color: #cba6f7; border-bottom: 2px solid #313244; padding-bottom: 10px; margin: 28px 0 16px; }
+h2 { font-size: 1.45em; color: #89b4fa; margin: 32px 0 12px; }
+h3 { font-size: 1.15em; color: #94e2d5; margin: 22px 0 8px; }
+h4 { font-size: 1em; color: #f5c2e7; margin: 16px 0 6px; }
+p  { margin-bottom: 14px; color: #cdd6f4; }
+a  { color: #89b4fa; }
+ul, ol { margin: 10px 0 14px 22px; }
+li { margin-bottom: 5px; }
+code { background: #313244; color: #f38ba8; padding: 2px 6px; border-radius: 4px; font-size: .88em; font-family: 'Consolas','Courier New',monospace; }
+pre  { background: #181825; border: 1px solid #313244; border-radius: 8px;
+       padding: 18px 20px; overflow-x: auto; margin: 14px 0 20px; }
+pre code { background: none; color: #a6e3a1; padding: 0; font-size: .9em; }
+table { border-collapse: collapse; width: 100%; margin: 14px 0 20px; font-size: .92em; }
+th { background: #313244; color: #cba6f7; padding: 9px 14px; text-align: left; }
+td { border-top: 1px solid #313244; padding: 8px 14px; }
+tr:nth-child(even) td { background: #1e1e2e; }
+hr { border: none; border-top: 1px solid #313244; margin: 28px 0; }
+blockquote { border-left: 4px solid #6c7086; padding-left: 16px; color: #a6adc8; margin: 14px 0; }
+@media (max-width: 700px) { .sidebar { display: none; } .content { margin-left: 0; padding: 24px 18px; } }
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <h2>Vibrante-Node</h2>
+  <a href="USER_GUIDE.html">User Guide</a>
+<a href="NODE_BUILDER_API.html">Node Builder API</a>
+<a href="AUTOMATION_API.html">Automation API</a>
+<a href="DEVELOPER.html">Developer Documentation</a>
+<a href="DOCUMENTATION.html">Technical Feature List</a>
+  <hr style="border-color:#313244;margin:10px 18px">
+  <h2 style="margin-top:8px">Release Notes</h2>
+  <a class="nav-release" href="RELEASE_v1.8.4.html">Release Notes v1.8.4</a>
+<a class="nav-release" href="RELEASE_v1.8.3.html">Release Notes v1.8.3</a>
+<a class="nav-release" href="RELEASE_v1.8.2.html">Release Notes v1.8.2</a>
+<a class="nav-release" href="RELEASE_v1.8.1.html">Release Notes v1.8.1</a>
+<a class="nav-release" href="RELEASE_v1.8.0.html">Release Notes v1.8.0</a>
+<a class="nav-release" href="RELEASE_v1.7.0.html">Release Notes v1.7.0</a>
+<a class="nav-release" href="RELEASE_v1.6.1.html">Release Notes v1.6.1</a>
+<a class="nav-release" href="RELEASE_v1.6.0.html">Release Notes v1.6.0</a>
+<a class="nav-release" href="RELEASE_v1.5.0.html">Release Notes v1.5.0</a>
+<a class="nav-release" href="RELEASE_v1.4.0.html">Release Notes v1.4.0</a>
+<a class="nav-release" href="RELEASE_v1.3.0.html">Release Notes v1.3.0</a>
+<a class="nav-release" href="RELEASE_v1.2.0.html">Release Notes v1.2.0</a>
+<a class="nav-release" href="RELEASE_v1.1.5.html">Release Notes v1.1.5</a>
+<a class="nav-release" href="RELEASE_v1.1.0.html">Release Notes v1.1.0</a>
+<a class="nav-release" href="RELEASE_v1.0.5.html">Release Notes v1.0.5</a>
+  <hr style="border-color:#313244;margin:10px 18px">
+  <h2 style="margin-top:8px">On this page</h2>
+  <a href="#release-notes-vibrante-node-v170" style="padding-left:18px">Release Notes — Vibrante-Node v1.7.0</a>
+<a href="#overview" style="padding-left:18px">Overview</a>
+<a href="#new-features" style="padding-left:18px">New Features</a>
+<a href="#prism_get_scene_path" style="padding-left:32px">prism_get_scene_path</a>
+<a href="#prism_get_export_path" style="padding-left:32px">prism_get_export_path</a>
+<a href="#srcutilsprism_configpy-dynamic-project-config-reader" style="padding-left:32px">src/utils/prism_config.py — Dynamic Project Config Reader</a>
+<a href="#prism_get_departments-new-outputs" style="padding-left:32px">prism_get_departments — New Outputs</a>
+<a href="#bug-fixes" style="padding-left:18px">Bug Fixes</a>
+<a href="#entity-dict-enrichment-pathlocationpaths-fields" style="padding-left:32px">Entity dict enrichment — path/location/paths fields</a>
+<a href="#prism_get_scene_files-disk-fallback" style="padding-left:32px">prism_get_scene_files — Disk fallback</a>
+<a href="#prism_get_departments-wrong-data-source" style="padding-left:32px">prism_get_departments — Wrong data source</a>
+<a href="#prism_get_tasks-crash-on-gettasknames" style="padding-left:32px">prism_get_tasks — Crash on getTaskNames</a>
+<a href="#department-resolution-all-nodes" style="padding-left:32px">Department resolution — All nodes</a>
+<a href="#prism_get_entity_info-missing-path-output" style="padding-left:32px">prism_get_entity_info — Missing path output</a>
+<a href="#prism_get_shot_info-broken-getentitypath-call" style="padding-left:32px">prism_get_shot_info — Broken getEntityPath call</a>
+<a href="#prism_get_sequences_by_project-inconsistent-output-type" style="padding-left:32px">prism_get_sequences_by_project — Inconsistent output type</a>
+<a href="#audit-none-defaults" style="padding-left:32px">Audit: None defaults</a>
+<a href="#prism_core_info-runtime-crash" style="padding-left:32px">prism_core_info — Runtime crash</a>
+<a href="#prism_build_entity-prism_create_entity-incomplete-entity-dicts" style="padding-left:32px">prism_build_entity / prism_create_entity — Incomplete entity dicts</a>
+<a href="#prism_get_shots-getshots-unpack-crash" style="padding-left:32px">prism_get_shots — getShots() unpack crash</a>
+<a href="#nodes-changed" style="padding-left:18px">Nodes Changed</a>
+</nav>
+<main class="content">
+<h1 id="release-notes-vibrante-node-v170">Release Notes — Vibrante-Node v1.7.0</h1>
+<p><strong>Release date:</strong> 2026-04-19<br />
+<strong>Build:</strong> Python 3.10 / PyInstaller 6.19</p>
+<hr />
+<h2 id="overview">Overview</h2>
+<p>v1.7.0 is a major Prism Pipeline integration overhaul. All Prism getter nodes have been audited and standardised, department/task/path resolution is now fully dynamic (read from the project's <code>pipeline.json</code>), and two new path-resolution nodes have been added.</p>
+<hr />
+<h2 id="new-features">New Features</h2>
+<h3 id="prism_get_scene_path"><code>prism_get_scene_path</code></h3>
+<p>Resolves the filesystem path for a scene file from entity + department + task + application + version inputs.<br />
+- Scans <code>Scenefiles/&lt;dept&gt;/&lt;task&gt;/</code> using the project's configured folder structure<br />
+- Filters by application extension (Blender → <code>.blend</code>, Houdini → <code>.hip</code>/<code>.hiplc</code>/<code>.hipnc</code>, Maya → <code>.ma</code>/<code>.mb</code>, Nuke → <code>.nk</code>, etc.)<br />
+- <code>version=latest</code> picks the highest <code>_v####</code> file; explicit version resolves exact match<br />
+- If no file exists, constructs the expected filename from Prism's template (<code>&lt;seq&gt;-&lt;shot&gt;_&lt;task&gt;_&lt;version&gt;&lt;ext&gt;</code>)<br />
+- Outputs: <code>scene_path</code>, <code>task_path</code>, <code>version</code>, <code>exists</code></p>
+<h3 id="prism_get_export_path"><code>prism_get_export_path</code></h3>
+<p>Resolves output paths for exports, renders, and playblasts.<br />
+- <code>output_type</code>: <code>export</code> → <code>Export/</code>, <code>3drender</code> → <code>Renders/3dRender/</code>, <code>2drender</code> → <code>Renders/2dRender/</code>, <code>playblast</code> → <code>Playblasts/</code><br />
+- Scans identifier folder for existing version directories; <code>version=latest</code> returns highest<br />
+- Outputs: <code>identifier_path</code>, <code>version_path</code>, <code>version</code>, <code>file_pattern</code>, <code>exists</code><br />
+- <code>file_pattern</code> uses Prism naming: <code>&lt;seq&gt;-&lt;shot&gt;_&lt;identifier&gt;_&lt;version&gt;.####.exr</code></p>
+<h3 id="srcutilsprism_configpy-dynamic-project-config-reader"><code>src/utils/prism_config.py</code> — Dynamic Project Config Reader</h3>
+<p>New shared utility replacing all hardcoded department abbreviation dictionaries.<br />
+- Reads <code>globals.departments_shot</code> / <code>globals.departments_asset</code> from <code>pipeline.json</code><br />
+- Config discovery: entity <code>path</code> walk-up → <code>project['configPath']</code> → core's current project → user Prism2 dir<br />
+- Respects <code>PRISM_LAUNCHER_CONFIG</code> environment variable for non-standard installs<br />
+- API: <code>get_departments()</code>, <code>resolve_dept_folder()</code>, <code>resolve_dept_name()</code>, <code>get_entity_scenefiles_root()</code>, <code>build_abbrev_map()</code><br />
+- <code>versionPadding</code> read from project globals for correct <code>v0001</code>/<code>v0004</code> formatting</p>
+<h3 id="prism_get_departments-new-outputs"><code>prism_get_departments</code> — New Outputs</h3>
+<ul>
+<li>Added <code>default_tasks</code> output: list of default task names per department (from <code>pipeline.json</code>)</li>
+<li>Added <code>abbreviations</code> output: raw folder names (<code>anm</code>, <code>cfx</code>, …) alongside full names</li>
+</ul>
+<hr />
+<h2 id="bug-fixes">Bug Fixes</h2>
+<h3 id="entity-dict-enrichment-pathlocationpaths-fields">Entity dict enrichment — <code>path</code>/<code>location</code>/<code>paths</code> fields</h3>
+<p><code>prism_get_shot_by_sequence</code> and <code>prism_get_shot_by_name</code> previously emitted a minimal entity dict <code>{type, sequence, shot}</code>. Prism's <code>getScenefiles()</code> silently returns empty without the <code>path</code> field. All shot-outputting nodes now emit the full dict:</p>
+<pre><code class="language-json">{&quot;type&quot;: &quot;shot&quot;, &quot;sequence&quot;: &quot;seq_0001&quot;, &quot;shot&quot;: &quot;shot_001&quot;,
+ &quot;path&quot;: &quot;G:/Prism/.../shot_001&quot;, &quot;location&quot;: &quot;global&quot;, &quot;paths&quot;: [...]}
+</code></pre>
+<h3 id="prism_get_scene_files-disk-fallback"><code>prism_get_scene_files</code> — Disk fallback</h3>
+<p><code>getScenefiles()</code> returns empty even with a correctly enriched entity. Added disk scanner that reads <code>Scenefiles/&lt;dept&gt;/&lt;task&gt;/</code> directly, filters out <code>*versioninfo.json</code> and <code>*preview.jpg</code>, sorts by version, and returns file dicts with <code>path</code>, <code>version</code>, <code>task</code>, <code>department</code>.</p>
+<h3 id="prism_get_departments-wrong-data-source"><code>prism_get_departments</code> — Wrong data source</h3>
+<p>Was calling <code>getCategories()</code> which returns Prism UI tabs (Scenefiles/Renders/Exports) not departments. Fixed to read from <code>pipeline.json</code> globals first, then scan <code>Scenefiles/</code> as fallback.</p>
+<h3 id="prism_get_tasks-crash-on-gettasknames"><code>prism_get_tasks</code> — Crash on <code>getTaskNames</code></h3>
+<p>Prism's decorator re-raises exceptions as <code>BaseException</code>, bypassing <code>except Exception</code>. Removed the broken <code>getTaskNames</code> fallback. Tasks are now resolved via disk scan of <code>Scenefiles/&lt;dept&gt;/</code> with config-driven abbreviation mapping.</p>
+<h3 id="department-resolution-all-nodes">Department resolution — All nodes</h3>
+<p>Removed hardcoded <code>DEPT_ABBREVS</code> dictionaries from <code>prism_get_tasks</code>, <code>prism_get_entity_path</code>, <code>prism_get_scene_files</code>. All nodes now use <code>prism_config.resolve_dept_folder()</code> which reads the actual project's department list.</p>
+<h3 id="prism_get_entity_info-missing-path-output"><code>prism_get_entity_info</code> — Missing <code>path</code> output</h3>
+<p>Added <code>path</code> output port that passes through <code>entity['path']</code> for downstream nodes.</p>
+<h3 id="prism_get_shot_info-broken-getentitypath-call"><code>prism_get_shot_info</code> — Broken <code>getEntityPath</code> call</h3>
+<p>Removed calls to non-existent <code>getEntityPath</code>/<code>getShotPath</code> API methods. <code>entity_path</code> now reads directly from <code>entity.get('path')</code>.</p>
+<h3 id="prism_get_sequences_by_project-inconsistent-output-type"><code>prism_get_sequences_by_project</code> — Inconsistent output type</h3>
+<p>Was outputting a list of strings. Now outputs a list of dicts <code>{name, project_path, project_name}</code> matching the shape expected by <code>prism_get_shot_by_sequence</code>.</p>
+<h3 id="audit-none-defaults">Audit: None defaults</h3>
+<p>12 nodes (<code>prism_get_media_versions</code>, <code>prism_get_product_versions</code>, <code>prism_get_plugin</code>, <code>prism_import_product</code>, <code>prism_send_cmd</code>, <code>prism_trigger_callback</code>, <code>prism_eval</code>, <code>prism_register_callback</code>, and others) returned <code>None</code> for output ports on error. Changed to safe empty defaults (<code>{}</code> or <code>""</code>).</p>
+<h3 id="prism_core_info-runtime-crash"><code>prism_core_info</code> — Runtime crash</h3>
+<p>Removed stray <code>exec_out</code> emission on a <code>use_exec=False</code> node.</p>
+<h3 id="prism_build_entity-prism_create_entity-incomplete-entity-dicts"><code>prism_build_entity</code> / <code>prism_create_entity</code> — Incomplete entity dicts</h3>
+<p>Shot entities now include <code>path</code>, <code>location</code>, <code>paths</code>; asset entities include <code>path</code>.</p>
+<h3 id="prism_get_shots-getshots-unpack-crash"><code>prism_get_shots</code> — <code>getShots()</code> unpack crash</h3>
+<p><code>sequences, shots = core.entities.getShots()</code> crashes when Prism returns a single list after <code>changeProject()</code>. Fixed with try/except unpack pattern across all affected nodes.</p>
+<hr />
+<h2 id="nodes-changed">Nodes Changed</h2>
+<table>
+<thead>
+<tr>
+<th>Node</th>
+<th>Change</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>prism_get_shot_by_sequence</code></td>
+<td>Entity enrichment: path/location/paths</td>
+</tr>
+<tr>
+<td><code>prism_get_shot_by_name</code></td>
+<td>Entity enrichment: path/location/paths</td>
+</tr>
+<tr>
+<td><code>prism_get_departments</code></td>
+<td>Config-driven, added abbreviations + default_tasks outputs</td>
+</tr>
+<tr>
+<td><code>prism_get_tasks</code></td>
+<td>Config-driven, disk fallback, removed crashing getTaskNames</td>
+</tr>
+<tr>
+<td><code>prism_get_scene_files</code></td>
+<td>Disk fallback scanner</td>
+</tr>
+<tr>
+<td><code>prism_get_entity_path</code></td>
+<td>Config-driven dept resolution</td>
+</tr>
+<tr>
+<td><code>prism_get_entity_info</code></td>
+<td>Added path output</td>
+</tr>
+<tr>
+<td><code>prism_get_shot_info</code></td>
+<td>Uses entity.path directly</td>
+</tr>
+<tr>
+<td><code>prism_get_sequences_by_project</code></td>
+<td>Outputs sequence dicts not strings</td>
+</tr>
+<tr>
+<td><code>prism_get_shots</code></td>
+<td>getShots unpack fix</td>
+</tr>
+<tr>
+<td><code>prism_get_shots_by_sequence</code></td>
+<td>getShots unpack fix</td>
+</tr>
+<tr>
+<td><code>prism_get_asset_by_name</code></td>
+<td>Asset entity includes path</td>
+</tr>
+<tr>
+<td><code>prism_get_scene_files</code></td>
+<td>DEPT_ABBREVS → prism_config</td>
+</tr>
+<tr>
+<td><code>prism_core_info</code></td>
+<td>Remove stray exec_out</td>
+</tr>
+<tr>
+<td><code>prism_build_entity</code></td>
+<td>Full entity dict fields</td>
+</tr>
+<tr>
+<td><code>prism_create_entity</code></td>
+<td>Full entity dict fields</td>
+</tr>
+<tr>
+<td><code>prism_get_current_scene</code></td>
+<td>Full entity dict reconstruction</td>
+</tr>
+<tr>
+<td>12× misc nodes</td>
+<td>None → safe empty defaults</td>
+</tr>
+</tbody>
+</table>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var links = document.querySelectorAll('.sidebar a');
+    var headings = document.querySelectorAll('h1,h2,h3');
+    window.addEventListener('scroll', function() {
+        var cur = '';
+        headings.forEach(function(h) { if (h.offsetTop <= window.scrollY + 80) cur = h.id; });
+        links.forEach(function(a) {
+            a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+        });
+    });
+});
+</script>
+</body>
+</html>
