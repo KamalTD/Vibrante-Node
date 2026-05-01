@@ -63,6 +63,120 @@ Themes are applied globally using `QApplication.instance().setStyleSheet()`. Cus
 
 ---
 
+## 🆕 Developer Notes — v1.7.0 (Prism Overhaul, Atomic Save)
+
+### New Prism Getter Nodes
+
+Six new nodes were added to the Prism category: `prism_get_scene_path`, `prism_get_export_path`, `prism_get_shot_by_sequence`, `prism_get_asset_type_by_name`, `prism_get_asset_types_by_project`, `prism_get_assets_by_type`. All follow the standardised Prism getter pattern (guard `if core is None`, safe defaults).
+
+`prism_get_export_path` returns the actual file path, not its containing directory. It handles `output_type` values `'3d'` and `'2d'` and accepts an optional `version` argument.
+
+### Prism Entity Dict Enrichment
+
+The entity dict produced by `prism_build_entity` and related nodes is now enriched with `path`, `location`, and `paths` keys so downstream nodes can resolve scene file locations without an extra bridge call.
+
+### Dynamic Config Reader
+
+The Prism config reader no longer hardcodes department abbreviations. Abbreviations are now read at runtime from the active project's config via `core.getConfig()`, making the nodes compatible with any studio that customises department names.
+
+### `get_tasks` Multi-Method Fallback
+
+`prism_get_tasks` now tries multiple Prism API methods in sequence (`getTasks`, `getTasksForEntity`, `task_mgr.getTasks`) to stay compatible across Prism versions.
+
+### Atomic Workflow Save + Safe Load
+
+`NodeScene.save_workflow_model()` strips non-serializable runtime values (widget objects, Qt handles, live Python references) before writing JSON so saves never corrupt on object-rich graphs. `load_workflow_model()` uses a safe loader that catches `json.JSONDecodeError` on empty or corrupt files and prompts the user to start fresh rather than crashing.
+
+### Prism v2.1.0 API Fixes
+
+- `getShots()` in Prism v2.1.0 returns a flat list instead of a dict; `prism_get_shots` now handles both shapes.
+- `createProduct` signature corrected for v2.1.0.
+- Version directory is created on disk before `prism_save_scene_version` writes the file; improved error diagnostics.
+
+---
+
+## 🆕 Developer Notes — v1.8.0 (Stability & Bugfix)
+
+### Engine: Bypass Flag
+
+`NetworkExecutor._run_single_node_impl()` now checks `node.bypassed` before executing. Bypassed nodes propagate their primary input straight to their primary output (passthrough semantics) and fire `exec_out` normally so the downstream chain is not broken.
+
+### `for_loop` Fix
+
+The `for_loop` builtin was stopping iteration after the first shot because it re-entered `_run_from_node()` before the loop variable advanced. The fix iterates the full list inside a single `execute` call, building the complete index list and returning it; `exec_out` fires once. The `loop_body` node then drives per-item iteration.
+
+### Hotkey Guard on Text Fields
+
+The `KeyPressEvent` handler in `NodeCanvas` now checks `QApplication.focusWidget()` — if a `QLineEdit` or `QTextEdit` has focus, all hotkeys are suppressed. This prevents `Delete` and `F5` from triggering while the user is typing in a node widget.
+
+### Houdini Headless Fixes
+
+- `houdini_headless_executor` validates that the hython path exists before spawning a subprocess; raises `FileNotFoundError` with a clear message if not.
+- `import_alembic` defaults its SOP context to `/obj` rather than `/stage`.
+
+### Blender Runner Fix
+
+Alembic frame arguments renamed to match Blender's current CLI (`--frame-start` / `--frame-end`). `makedirs(exist_ok=True)` added before writing output files.
+
+### `deadline_job_status` Crash Fix
+
+The node now guards against a `None` return from the Deadline REST endpoint and logs a clear error instead of raising an `AttributeError`.
+
+### Prism `set_output` Ordering
+
+In nodes that expose data ports alongside `exec_out`, `set_output` is now called on data ports before `exec_out` fires, ensuring downstream nodes receive data before their own `execute` is triggered.
+
+---
+
+## 🆕 Developer Notes — v1.8.x (Node Reload, Init-First, Wire Color, Settings)
+
+### `on_parameter_changed` Timing (v1.8.1–v1.8.3)
+
+`on_parameter_changed` is called **reactively during execution** when the output handler propagates a result to a connected input port (i.e., after an upstream node finishes, the downstream node's parameter is updated and `on_parameter_changed` fires). This enables reactive nodes (e.g., `TwoWaySwitchNode`) to update their own outputs mid-run.
+
+It is **not** called during:
+- Pre-execute input sync (the sweep that copies wire values into node parameters before `execute` begins) — removed in v1.8.3.
+- Reactive output propagation outside the execution path — removed in v1.8.3 to prevent double-propagation.
+
+### Registry Source Paths
+
+`NodeRegistry` maintains a `_source_paths: dict[str, str]` mapping `node_id → absolute JSON file path`. Two new public methods:
+- `get_source_path(node_id) -> str | None` — returns the file path or `None` if the node is built-in / not found.
+- `reload_node_definition(node_id) -> bool` — re-reads the JSON from `_source_paths[node_id]`, re-compiles the Python class, and replaces the registry entry. Returns `True` on success.
+
+### `NodeWidget.reload_definition(new_definition)`
+
+Accepts a new node definition dict and performs an in-place widget update:
+1. Replaces the internal `definition`.
+2. Removes existing port items from the scene.
+3. Calls `_build_ports()` with the new definition.
+4. Re-applies parameter values that are still valid (port still exists, type compatible).
+5. Removes wire connections to ports that no longer exist.
+
+### `NodeScene.reload_node_type(node_id)`
+
+Calls `registry.reload_node_definition(node_id)` then iterates all `NodeWidget` instances in the scene whose `node_id` matches, calling `widget.reload_definition(new_definition)` on each. This is the entry point for `Ctrl+R`.
+
+### Init-First Scene Ordering
+
+`NodeScene.load_workflow_model()` now performs two passes:
+1. **Pass 1**: Create and connect all nodes with `init_priority > 0` (Init First nodes).
+2. **Pass 2**: Create and connect all remaining nodes.
+
+This guarantees that authentication and server-connect nodes are fully instantiated and wired before any downstream node is built, which matters when `on_plug_sync` reads a value from an already-connected init node.
+
+The `init_priority` is stored in the node's JSON definition and on `BaseNode` as an integer attribute (default `0`).
+
+### Wire Coloring by Port Type
+
+`WireItem.paint()` now resolves the color from the **output port's data type** by calling `PortItem.get_type_color(data_type)` rather than using a fixed color. In the light theme, all wires render in black regardless of type for legibility.
+
+### User Settings Persistence
+
+`MainWindow` now saves theme, window geometry (`saveGeometry()`) and dock layout (`saveState()`) to `QSettings` on close, and restores them on startup. The settings key group is `VibrateNode/session`.
+
+---
+
 ## 🆕 Developer Notes — v1.6.0 (Prism, Python Script, While Loop)
 
 ### Prism Pipeline Integration
