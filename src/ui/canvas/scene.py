@@ -337,8 +337,19 @@ class NodeScene(QGraphicsScene):
         self.sticky_notes = []
         self.backdrops = []
         id_to_widget = {}
-        
-        for node_model in model.nodes:
+
+        # Sort nodes so init-first nodes (init_priority > 0) are created BEFORE
+        # any other node. Higher init_priority is created earlier so the very
+        # first thing on the canvas is the highest-priority init node.
+        # This ensures init nodes (e.g. "connect to server", "auth login") are
+        # present in the scene before any downstream node tries to render or
+        # request data from them.
+        ordered_nodes = sorted(
+            model.nodes,
+            key=lambda n: -getattr(n, 'init_priority', 0),
+        )
+
+        for node_model in ordered_nodes:
             widget = self.add_node_by_name(node_model.node_id, QPointF(node_model.position[0], node_model.position[1]))
             if widget:
                 widget.instance_id = node_model.instance_id
@@ -347,10 +358,19 @@ class NodeScene(QGraphicsScene):
                 # SYNC: Apply parameters to UI widgets and node definition
                 for p_name, p_val in node_model.parameters.items():
                     widget.set_parameter(p_name, p_val, propagate=False)
-                
+
                 id_to_widget[node_model.instance_id] = widget
-        
-        for conn in model.connections:
+
+        # Create connections involving init-first nodes BEFORE all others so
+        # the init nodes are fully wired up before any non-init connection
+        # is established.
+        init_ids = {n.instance_id for n in model.nodes if getattr(n, 'init_priority', 0) > 0}
+        ordered_conns = sorted(
+            model.connections,
+            key=lambda c: 0 if (c.from_node in init_ids or c.to_node in init_ids) else 1,
+        )
+
+        for conn in ordered_conns:
             from_widget = id_to_widget.get(conn.from_node)
             to_widget = id_to_widget.get(conn.to_node)
             if from_widget and to_widget:
@@ -556,10 +576,28 @@ class NodeScene(QGraphicsScene):
         
         # 1. Option to wrap selection in Backdrop
         if selected_nodes:
+            # EDIT NODE (open Node Builder for the first selected node's definition)
+            editable_ids = [
+                n.node_definition.node_id
+                for n in selected_nodes
+                if NodeRegistry.get_source_path(getattr(n.node_definition, 'node_id', '')) is not None
+            ]
+            if editable_ids:
+                first_id = editable_ids[0]
+                edit_label = f"Edit Node ('{first_id}')" if len(editable_ids) == 1 else f"Edit Node ('{first_id}')..."
+                edit_act = QAction(edit_label, self.parent())
+                def do_edit(_checked=False, nid=first_id):
+                    parent = self.parent()
+                    if parent and hasattr(parent, '_on_edit_requested'):
+                        parent._on_edit_requested(nid)
+                edit_act.triggered.connect(do_edit)
+                menu.addAction(edit_act)
+                menu.addSeparator()
+
             copy_act = QAction(f"Copy {len(selected_nodes)} Nodes", self.parent())
             copy_act.triggered.connect(self.copy_selection)
             menu.addAction(copy_act)
-            
+
             # BYPASS Options
             any_bypassed = any(n.bypassed for n in selected_nodes)
             any_not_bypassed = any(not n.bypassed for n in selected_nodes)
@@ -598,6 +636,24 @@ class NodeScene(QGraphicsScene):
                     for n in selected_nodes: n.set_init_priority(0)
                 uninit_act.triggered.connect(do_remove_init)
                 menu.addAction(uninit_act)
+
+            # RELOAD node from disk — refresh ports / code without re-adding
+            reloadable_ids = sorted({
+                n.node_definition.node_id
+                for n in selected_nodes
+                if NodeRegistry.get_source_path(getattr(n.node_definition, 'node_id', '')) is not None
+            })
+            if reloadable_ids:
+                if len(reloadable_ids) == 1:
+                    reload_act = QAction(f"Reload Node ('{reloadable_ids[0]}')", self.parent())
+                else:
+                    reload_act = QAction(f"Reload {len(reloadable_ids)} Node Types from Disk", self.parent())
+                def do_reload(_checked=False, ids=reloadable_ids):
+                    self.push_history()
+                    for nid in ids:
+                        self.reload_node_type(nid)
+                reload_act.triggered.connect(do_reload)
+                menu.addAction(reload_act)
 
             menu.addSeparator()
             
@@ -703,6 +759,61 @@ class NodeScene(QGraphicsScene):
         for node in self.nodes:
             if node.node_definition.name == name: return node
         return None
+
+    def reload_node_type(self, node_id: str) -> int:
+        """Re-read this node's JSON definition from disk and refresh every
+        live instance of it in the scene.
+
+        Existing connections are preserved where the port name still exists
+        on the new definition; connections to removed ports are dropped.
+        Saved parameter values are re-applied where the port still exists.
+
+        Returns the number of widgets that were refreshed.
+        """
+        ok = NodeRegistry.reload_node_definition(node_id)
+        if not ok:
+            err = NodeRegistry.last_error or f"Reload failed for '{node_id}'"
+            if self.parent() and hasattr(self.parent(), 'log_panel'):
+                self.parent().log_panel.log(err, "error")
+            return 0
+
+        node_class = NodeRegistry.get_class(node_id)
+        if not node_class:
+            return 0
+
+        refreshed = 0
+        for node_widget in list(self.nodes):
+            inst_id = getattr(node_widget.node_definition, 'node_id', None)
+            if inst_id != node_id:
+                continue
+            try:
+                new_definition = node_class()
+            except Exception as e:
+                if self.parent() and hasattr(self.parent(), 'log_panel'):
+                    self.parent().log_panel.log(
+                        f"Reload: failed to instantiate '{node_id}': {e}", "error"
+                    )
+                continue
+
+            # Re-wire engine/UI hooks so the rebuilt instance behaves like a
+            # freshly added node.
+            if self.parent() and hasattr(self.parent(), 'log_panel'):
+                lp = self.parent().log_panel
+                new_definition._on_log = lambda msg, level, name=new_definition.name: lp.log(
+                    f"[{name}] {msg}", level
+                )
+            new_definition._on_ports_changed = node_widget.rebuild_ports
+            new_definition._is_port_connected = node_widget.is_port_connected
+            new_definition._on_dropdown_options_changed = node_widget.update_dropdown_options
+
+            node_widget.reload_definition(new_definition)
+            refreshed += 1
+
+        if self.parent() and hasattr(self.parent(), 'log_panel'):
+            self.parent().log_panel.log(
+                f"Reloaded '{node_id}' — {refreshed} instance(s) updated.", "success"
+            )
+        return refreshed
 
     def connect_nodes(self, from_node, from_port_name, to_node, to_port_name):
         self.push_history()

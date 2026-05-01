@@ -5,7 +5,7 @@ import asyncio
 from PyQt5.QtWidgets import QMainWindow, QAction, QFileDialog, QVBoxLayout, QWidget, QGraphicsView, QGraphicsScene, QToolBar, QMessageBox, QDockWidget, QMenu, QStyle, QTabWidget, QStatusBar, QLabel
 from PyQt5.QtCore import Qt, QTimer, QByteArray
 import base64
-from PyQt5.QtGui import QCursor
+from PyQt5.QtGui import QCursor, QIcon
 from src.ui.canvas.scene import NodeScene
 from src.ui.canvas.view import NodeView
 from src.ui.node_builder import NodeBuilderDialog
@@ -286,6 +286,72 @@ class MainWindow(QMainWindow):
         load_node_action.triggered.connect(self.load_node_json)
         node_menu.addAction(load_node_action)
 
+        node_menu.addSeparator()
+
+        edit_selected_action = QAction(
+            self._icon('builder.png'),
+            '&Edit Selected Node...', self,
+        )
+        edit_selected_action.setShortcut('Ctrl+E')
+        edit_selected_action.setToolTip("Open the Node Builder for the currently selected node")
+        edit_selected_action.triggered.connect(self._edit_selected_node)
+        node_menu.addAction(edit_selected_action)
+        self.edit_selected_action = edit_selected_action
+
+        reload_selected_action = QAction(
+            self.style().standardIcon(QStyle.SP_BrowserReload),
+            '&Reload Selected Node', self,
+        )
+        reload_selected_action.setShortcut('Ctrl+R')
+        reload_selected_action.setToolTip("Re-read the selected node's JSON from disk and refresh the widget in place")
+        reload_selected_action.triggered.connect(self._reload_selected_node)
+        node_menu.addAction(reload_selected_action)
+        self.reload_selected_action = reload_selected_action
+
+        reload_all_action = QAction(
+            self.style().standardIcon(QStyle.SP_BrowserReload),
+            'Reload &All Nodes (refresh from disk)', self,
+        )
+        reload_all_action.setShortcut('Ctrl+Shift+R')
+        reload_all_action.setToolTip(
+            "Re-read every loaded node JSON from disk and refresh all live "
+            "instances in the current scene. Connections are preserved when "
+            "port names still exist on the new definition."
+        )
+        reload_all_action.triggered.connect(self.reload_all_nodes)
+        node_menu.addAction(reload_all_action)
+        self.reload_all_action = reload_all_action
+
+        node_menu.addSeparator()
+
+        add_node_action = QAction(
+            self._icon('online-library.png'),
+            '&Add Node...', self,
+        )
+        add_node_action.setShortcut('Tab')
+        add_node_action.setToolTip("Open the node search popup at the canvas centre")
+        add_node_action.triggered.connect(self._open_add_node_search)
+        node_menu.addAction(add_node_action)
+        self.add_node_action = add_node_action
+
+        add_sticky_action = QAction(
+            self.style().standardIcon(QStyle.SP_FileDialogDetailedView),
+            'Add &Sticky Note', self,
+        )
+        add_sticky_action.setToolTip("Add a sticky note at the canvas centre")
+        add_sticky_action.triggered.connect(self._add_sticky_note_at_center)
+        node_menu.addAction(add_sticky_action)
+        self.add_sticky_action = add_sticky_action
+
+        add_backdrop_action = QAction(
+            self._icon('computer-window.png'),
+            'Add &Network Box (Backdrop)', self,
+        )
+        add_backdrop_action.setToolTip("Add a network-box backdrop at the canvas centre")
+        add_backdrop_action.triggered.connect(self._add_backdrop_at_center)
+        node_menu.addAction(add_backdrop_action)
+        self.add_backdrop_action = add_backdrop_action
+
         # Window Menu
         window_menu = menubar.addMenu('&Window')
         
@@ -441,6 +507,55 @@ class MainWindow(QMainWindow):
         self.stop_btn.setEnabled(False)
         toolbar.addAction(self.stop_btn)
 
+        toolbar.addSeparator()
+
+        # Add Node (search popup)
+        add_node_tb = QAction(
+            self._icon('online-library.png'),
+            "Add Node", self,
+        )
+        add_node_tb.setToolTip("Add a node from the library (Tab)")
+        add_node_tb.triggered.connect(self._open_add_node_search)
+        toolbar.addAction(add_node_tb)
+
+        # Add Sticky Note
+        add_sticky_tb = QAction(
+            self.style().standardIcon(QStyle.SP_FileDialogDetailedView),
+            "Add Sticky Note", self,
+        )
+        add_sticky_tb.setToolTip("Add a sticky note at the canvas centre")
+        add_sticky_tb.triggered.connect(self._add_sticky_note_at_center)
+        toolbar.addAction(add_sticky_tb)
+
+        # Add Network Box (Backdrop)
+        add_backdrop_tb = QAction(
+            self._icon('computer-window.png'),
+            "Add Network Box", self,
+        )
+        add_backdrop_tb.setToolTip("Add a network-box backdrop at the canvas centre")
+        add_backdrop_tb.triggered.connect(self._add_backdrop_at_center)
+        toolbar.addAction(add_backdrop_tb)
+
+        toolbar.addSeparator()
+
+        # Edit Selected Node
+        edit_sel_tb = QAction(
+            self._icon('builder.png'),
+            "Edit Selected Node", self,
+        )
+        edit_sel_tb.setToolTip("Open the Node Builder for the selected node (Ctrl+E)")
+        edit_sel_tb.triggered.connect(self._edit_selected_node)
+        toolbar.addAction(edit_sel_tb)
+
+        # Reload Selected Node
+        reload_sel_tb = QAction(
+            self.style().standardIcon(QStyle.SP_BrowserReload),
+            "Reload Selected Node", self,
+        )
+        reload_sel_tb.setToolTip("Re-read the selected node's JSON from disk and refresh in place (Ctrl+R)")
+        reload_sel_tb.triggered.connect(self._reload_selected_node)
+        toolbar.addAction(reload_sel_tb)
+
     def _delete_selected(self):
         scene = self.get_current_scene()
         if not scene: return
@@ -563,6 +678,145 @@ class MainWindow(QMainWindow):
 
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Failed to load node: {str(e)}")
+
+    def _icon(self, filename: str) -> QIcon:
+        """Load an icon from the project's icons/ folder, falling back to an
+        empty icon if the file is missing."""
+        path = os.path.join(os.getcwd(), 'icons', filename)
+        if os.path.exists(path):
+            return QIcon(path)
+        return QIcon()
+
+    def _selected_node_widgets(self):
+        scene = self.get_current_scene()
+        if not scene:
+            return []
+        try:
+            from src.ui.node_widget import NodeWidget
+            return [i for i in scene.selectedItems() if isinstance(i, NodeWidget)]
+        except Exception:
+            return []
+
+    def _edit_selected_node(self):
+        """Open the Node Builder dialog for the currently selected node's
+        definition. If multiple nodes are selected, edit the first selected
+        node that has an on-disk JSON source."""
+        sel = self._selected_node_widgets()
+        if not sel:
+            QMessageBox.information(self, "Edit Node", "Select a node in the canvas first.")
+            return
+
+        target_id = None
+        for nw in sel:
+            nid = getattr(nw.node_definition, 'node_id', None)
+            if nid and NodeRegistry.get_source_path(nid) is not None:
+                target_id = nid
+                break
+        if not target_id:
+            QMessageBox.information(
+                self, "Edit Node",
+                "Selected node(s) are builtins or were not loaded from a JSON file, so they can't be edited via the Node Builder.",
+            )
+            return
+
+        self._on_edit_requested(target_id)
+        # After the builder closes, reload the type so live instances reflect
+        # any saved changes immediately.
+        scene = self.get_current_scene()
+        if scene:
+            scene.reload_node_type(target_id)
+
+    def _reload_selected_node(self):
+        """Reload the selected node(s) JSON from disk and refresh widgets."""
+        sel = self._selected_node_widgets()
+        if not sel:
+            QMessageBox.information(self, "Reload Node", "Select a node in the canvas first.")
+            return
+
+        scene = self.get_current_scene()
+        if not scene:
+            return
+
+        ids = []
+        for nw in sel:
+            nid = getattr(nw.node_definition, 'node_id', None)
+            if nid and nid not in ids and NodeRegistry.get_source_path(nid) is not None:
+                ids.append(nid)
+        if not ids:
+            QMessageBox.information(
+                self, "Reload Node",
+                "Selected node(s) are builtins or have no on-disk JSON source — nothing to reload.",
+            )
+            return
+
+        for nid in ids:
+            scene.reload_node_type(nid)
+
+    def _canvas_center_pos(self):
+        """Return a QPointF at the centre of the current canvas viewport."""
+        view = self.get_current_view()
+        if view is None:
+            return None
+        return view.mapToScene(view.viewport().rect().center())
+
+    def _open_add_node_search(self):
+        """Open the node-search popup at the canvas centre."""
+        view = self.get_current_view()
+        if view is None:
+            return
+        pos = self._canvas_center_pos()
+        if hasattr(view, 'show_node_search_popup'):
+            view.show_node_search_popup(pos)
+
+    def _add_sticky_note_at_center(self):
+        scene = self.get_current_scene()
+        pos = self._canvas_center_pos()
+        if scene and pos is not None:
+            scene.add_sticky_note(pos=(pos.x(), pos.y()))
+
+    def _add_backdrop_at_center(self):
+        scene = self.get_current_scene()
+        pos = self._canvas_center_pos()
+        if scene and pos is not None:
+            scene.add_backdrop(pos=(pos.x(), pos.y()))
+
+    def reload_all_nodes(self):
+        """Re-read every loaded node JSON from disk and refresh all live
+        instances in every open scene. Connections are preserved where the
+        port name still exists on the new definition.
+        """
+        # Collect node_ids that have an on-disk source
+        ids_with_source = [
+            nid for nid in NodeRegistry.list_node_ids()
+            if NodeRegistry.get_source_path(nid) is not None
+        ]
+        if not ids_with_source:
+            self.log_panel.log("Reload All Nodes: nothing to reload (no JSON-sourced nodes).", "info")
+            return
+
+        total_widgets = 0
+        total_types = 0
+        for i in range(self.tabs.count()):
+            view = self.tabs.widget(i)
+            scene = view.scene() if hasattr(view, 'scene') else None
+            if not scene:
+                continue
+            for nid in ids_with_source:
+                refreshed = scene.reload_node_type(nid)
+                if refreshed > 0:
+                    total_widgets += refreshed
+                    total_types += 1
+
+        # Refresh the library panel too in case definitions changed
+        try:
+            self.library_panel.refresh()
+        except Exception:
+            pass
+
+        self.log_panel.log(
+            f"Reloaded all nodes — {total_widgets} widget(s) refreshed across {total_types} type(s).",
+            "success",
+        )
 
     @staticmethod
     def _atomic_write(file_path: str, data: str):

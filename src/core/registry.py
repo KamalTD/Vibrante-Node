@@ -8,6 +8,7 @@ from src.nodes.base import BaseNode
 class NodeRegistry:
     _definitions: Dict[str, NodeDefinitionJSON] = {}
     _classes: Dict[str, Type[BaseNode]] = {}
+    _source_paths: Dict[str, str] = {}  # node_id -> json file path (for reload-from-disk)
     last_error: Optional[str] = None
 
     @classmethod
@@ -125,11 +126,33 @@ class NodeRegistry:
             with open(file_path, "r") as f:
                 data = json.load(f)
             definition = NodeDefinitionJSON.model_validate(data)
-            return cls.register_definition(definition)
+            ok = cls.register_definition(definition)
+            if ok:
+                cls._source_paths[definition.node_id] = file_path
+            return ok
         except (json.JSONDecodeError, ValidationError, Exception) as e:
             cls.last_error = f"Error loading node from {file_path}: {e}"
             print(cls.last_error)
             return False
+
+    @classmethod
+    def get_source_path(cls, node_id: str) -> Optional[str]:
+        """Return the on-disk JSON path the node was loaded from (None for builtins)."""
+        return cls._source_paths.get(node_id)
+
+    @classmethod
+    def reload_node_definition(cls, node_id: str) -> bool:
+        """Re-read a node's JSON from disk and re-register it.
+
+        Returns True on success. After this, callers should refresh any live
+        NodeWidget instances bound to this node_id so the new ports/code are
+        reflected in the scene.
+        """
+        path = cls._source_paths.get(node_id)
+        if not path:
+            cls.last_error = f"Node '{node_id}' has no on-disk source (builtin or never loaded)."
+            return False
+        return cls.load_node(path)
 
     @classmethod
     def register_definition(cls, definition: NodeDefinitionJSON) -> bool:

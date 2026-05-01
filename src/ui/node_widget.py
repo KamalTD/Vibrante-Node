@@ -618,6 +618,60 @@ class NodeWidget(QGraphicsItem):
             self.scene().push_history()
         self.update()
 
+    def reload_definition(self, new_definition):
+        """Swap this widget's node_definition for a freshly loaded one and
+        rebuild the visual ports / parameter widgets in place.
+
+        Existing edges are preserved when their port names still exist on the
+        new definition; edges to removed ports are dropped (rebuild_ports
+        already handles this). Saved parameter values are re-applied where
+        the port still exists with the same name.
+        """
+        # Snapshot current parameter values so we can re-apply them after the
+        # ports/widgets are rebuilt against the new definition.
+        old_params = dict(getattr(self.node_definition, 'parameters', {}) or {})
+
+        # Swap the definition reference.
+        self.node_definition = new_definition
+
+        # Clear cached parameter widgets — _create_param_widget only creates
+        # a widget when the name isn't already in self.param_widgets, so we
+        # must drop the old ones for the new definition's widget_types to
+        # take effect.
+        for name, proxy in list(self.param_widgets.items()):
+            try:
+                if self.scene() and proxy.scene():
+                    self.scene().removeItem(proxy)
+                else:
+                    proxy.setParentItem(None)
+            except Exception:
+                pass
+        self.param_widgets.clear()
+        self._param_raw_widgets.clear()
+
+        # Update the title text with the new definition's name.
+        try:
+            if hasattr(self, 'title_text') and self.title_text:
+                self.title_text.setPlainText(new_definition.name)
+        except Exception:
+            pass
+
+        # rebuild_ports() handles port reconstruction AND edge preservation
+        # for ports that still exist; edges to removed ports are removed.
+        self.rebuild_ports()
+
+        # Re-apply saved parameter values for ports that still exist on the
+        # new definition (set_parameter handles missing ports gracefully).
+        for p_name, p_val in old_params.items():
+            try:
+                self.set_parameter(p_name, p_val, propagate=False)
+            except Exception:
+                pass
+
+        if self.scene():
+            self.scene().push_history()
+        self.update()
+
     def is_port_connected(self, port_name, is_input):
         """Checks if a port has any active connections in the scene."""
         if not self.scene(): return False
