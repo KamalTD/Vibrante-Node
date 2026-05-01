@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Automation API — Vibrante-Node v1.8.4</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+       background: #1e1e2e; color: #cdd6f4; line-height: 1.7; }
+.sidebar { position: fixed; top: 0; left: 0; width: 220px; height: 100vh;
+           background: #181825; overflow-y: auto; padding: 20px 0; z-index: 100; }
+.sidebar h2 { font-size: 13px; color: #6c7086; text-transform: uppercase;
+              letter-spacing: .08em; padding: 0 18px 10px; }
+.sidebar a  { display: block; padding: 6px 18px; color: #a6adc8; text-decoration: none;
+              font-size: 13px; border-left: 3px solid transparent; transition: all .15s; }
+.sidebar a:hover, .sidebar a.active { color: #cba6f7; border-left-color: #cba6f7;
+                                       background: #1e1e2e; }
+.content { margin-left: 220px; max-width: 920px; padding: 40px 48px; }
+h1 { font-size: 2em; color: #cba6f7; border-bottom: 2px solid #313244; padding-bottom: 10px; margin: 28px 0 16px; }
+h2 { font-size: 1.45em; color: #89b4fa; margin: 32px 0 12px; }
+h3 { font-size: 1.15em; color: #94e2d5; margin: 22px 0 8px; }
+h4 { font-size: 1em; color: #f5c2e7; margin: 16px 0 6px; }
+p  { margin-bottom: 14px; color: #cdd6f4; }
+a  { color: #89b4fa; }
+ul, ol { margin: 10px 0 14px 22px; }
+li { margin-bottom: 5px; }
+code { background: #313244; color: #f38ba8; padding: 2px 6px; border-radius: 4px; font-size: .88em; font-family: 'Consolas','Courier New',monospace; }
+pre  { background: #181825; border: 1px solid #313244; border-radius: 8px;
+       padding: 18px 20px; overflow-x: auto; margin: 14px 0 20px; }
+pre code { background: none; color: #a6e3a1; padding: 0; font-size: .9em; }
+table { border-collapse: collapse; width: 100%; margin: 14px 0 20px; font-size: .92em; }
+th { background: #313244; color: #cba6f7; padding: 9px 14px; text-align: left; }
+td { border-top: 1px solid #313244; padding: 8px 14px; }
+tr:nth-child(even) td { background: #1e1e2e; }
+hr { border: none; border-top: 1px solid #313244; margin: 28px 0; }
+blockquote { border-left: 4px solid #6c7086; padding-left: 16px; color: #a6adc8; margin: 14px 0; }
+@media (max-width: 700px) { .sidebar { display: none; } .content { margin-left: 0; padding: 24px 18px; } }
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <h2>Vibrante-Node</h2>
+  <a href="USER_GUIDE.html">User Guide</a>
+<a href="NODE_BUILDER_API.html">Node Builder API</a>
+<a href="AUTOMATION_API.html">Automation API</a>
+<a href="DEVELOPER.html">Developer Documentation</a>
+<a href="DOCUMENTATION.html">Technical Feature List</a>
+<a href="RELEASE_v1.8.4.html">Release Notes v1.8.4</a>
+  <hr style="border-color:#313244;margin:10px 18px">
+  <h2 style="margin-top:8px">On this page</h2>
+  <a href="#vibrante-node-automation-api-reference" style="padding-left:18px">Vibrante-Node: Automation API Reference</a>
+<a href="#global-objects" style="padding-left:18px">🌍 Global Objects</a>
+<a href="#methods-reference" style="padding-left:18px">🛠️ Methods Reference</a>
+<a href="#scene-manipulation-scene" style="padding-left:32px">🔹 Scene Manipulation (scene)</a>
+<a href="#node-control-node" style="padding-left:32px">🔹 Node Control (node)</a>
+<a href="#application-control-app" style="padding-left:32px">🔹 Application Control (app)</a>
+<a href="#advanced-automation-concepts-v105" style="padding-left:18px">⚙️ Advanced Automation Concepts (v1.0.5+)</a>
+<a href="#working-with-flow-data" style="padding-left:32px">🔹 Working with Flow &amp; Data</a>
+<a href="#creating-data-only-nodes-via-scripting" style="padding-left:32px">🔹 Creating Data-Only Nodes via Scripting</a>
+<a href="#practical-automation-scenarios" style="padding-left:18px">📖 Practical Automation Scenarios</a>
+<a href="#1-the-multiplier-grid-stress-test" style="padding-left:32px">1. The Multiplier Grid (Stress Test)</a>
+<a href="#2-batch-data-processing" style="padding-left:32px">2. Batch Data Processing</a>
+<a href="#3-workflow-cleanup-reset" style="padding-left:32px">3. Workflow Cleanup &amp; Reset</a>
+<a href="#4-git-integration-workflow" style="padding-left:32px">4. Git Integration Workflow</a>
+<a href="#5-inspect-and-toggle-bypass-state-v120" style="padding-left:32px">5. Inspect and Toggle Bypass State (v1.2.0)</a>
+</nav>
+<main class="content">
+<h1 id="vibrante-node-automation-api-reference">Vibrante-Node: Automation API Reference</h1>
+<p>The <strong>Scripting Console</strong> (Window -&gt; Show/Hide Scripting Console) allows you to control the entire application using Python. This guide covers all available objects, methods, and practical automation scenarios.</p>
+<hr />
+<h2 id="global-objects">🌍 Global Objects</h2>
+<p>When writing scripts in the console, the following objects are pre-loaded into your namespace:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Object</th>
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>app</code></td>
+<td style="text-align: left;"><code>MainWindow</code></td>
+<td style="text-align: left;">Control high-level app features (Tabs, Execution, Themes).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>scene</code></td>
+<td style="text-align: left;"><code>NodeScene</code></td>
+<td style="text-align: left;">Manipulate the active canvas (Nodes, Wires, Clearing).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>registry</code></td>
+<td style="text-align: left;"><code>NodeRegistry</code></td>
+<td style="text-align: left;">Access the database of all available node types.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>git</code></td>
+<td style="text-align: left;"><code>GitWrapper</code></td>
+<td style="text-align: left;">Manage project source control from the script.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>print()</code></td>
+<td style="text-align: left;"><code>Function</code></td>
+<td style="text-align: left;">Redirects output to both the Console and the Event Log.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="methods-reference">🛠️ Methods Reference</h2>
+<h3 id="scene-manipulation-scene">🔹 Scene Manipulation (<code>scene</code>)</h3>
+<ul>
+<li><strong><code>scene.add_node_by_name(node_id, pos)</code></strong>: </li>
+<li><code>node_id</code>: String (e.g., <code>"math_add"</code>).</li>
+<li><code>pos</code>: Tuple <code>(x, y)</code>.</li>
+<li><em>Returns</em>: <code>NodeWidget</code> object.</li>
+<li><strong><code>scene.connect_nodes(node_a, port_a, node_b, port_b)</code></strong>: </li>
+<li><code>node_a</code>/<code>node_b</code>: Can be <code>NodeWidget</code> objects OR their names as strings.</li>
+<li><strong><code>scene.find_node_by_name(name)</code></strong>: Returns the first node matching the display name.</li>
+<li><strong><code>scene.clear()</code></strong>: Deletes everything from the current tab.</li>
+</ul>
+<h3 id="node-control-node">🔹 Node Control (<code>node</code>)</h3>
+<ul>
+<li><strong><code>node.set_parameter(name, value)</code></strong>: </li>
+<li>Updates a widget value programmatically.</li>
+<li>Automatically triggers downstream data propagation.</li>
+<li>For dropdown ports, passing a list updates the options and selects the first item (v1.4.0).</li>
+<li><strong><code>node.node_definition</code></strong>: Access the underlying Python logic instance.</li>
+<li><strong><code>node.node_definition.bypassed</code></strong>: <code>True</code> if the node is in bypass mode (v1.2.0).</li>
+</ul>
+<h3 id="application-control-app">🔹 Application Control (<code>app</code>)</h3>
+<ul>
+<li><strong><code>app.add_new_workflow(name)</code></strong>: Opens a new empty tab.</li>
+<li><strong><code>app.execute_pipeline()</code></strong>: Starts the execution engine for the current tab. <ul>
+<li><strong>v1.0.5+</strong>: Now supports hybrid <strong>Flow + Data</strong> execution with automatic recursive data pulling and re-entrant loop support.</li>
+</ul>
+</li>
+<li><strong><code>app.save_workflow()</code></strong>: Triggers the save dialog or smart-saves if a path exists.</li>
+</ul>
+<hr />
+<h2 id="advanced-automation-concepts-v105">⚙️ Advanced Automation Concepts (v1.0.5+)</h2>
+<h3 id="working-with-flow-data">🔹 Working with Flow &amp; Data</h3>
+<p>With the v1.0.5 engine, you can automate workflows that combine traditional execution paths with reactive data-only nodes:</p>
+<ul>
+<li><strong>Reactive Pulling</strong>: When you call <code>app.execute_pipeline()</code>, the engine will automatically find and refresh all connected "Data-Only" nodes (nodes with <code>use_exec: false</code>) before executing flow-based nodes.</li>
+<li><strong>Loop Support</strong>: You can now safely automate workflows containing <code>For Loop</code> and <code>Loop Body</code> nodes. The engine will handle the recursive execution of the loop body without deadlocking.</li>
+</ul>
+<h3 id="creating-data-only-nodes-via-scripting">🔹 Creating Data-Only Nodes via Scripting</h3>
+<p>You can check if a node type is data-only by inspecting its registry definition:</p>
+<pre><code class="language-python">defn = registry.get_definition(&quot;math_add&quot;)
+if not defn.use_exec:
+    print(&quot;This is a pure data node!&quot;)
+</code></pre>
+<hr />
+<h2 id="practical-automation-scenarios">📖 Practical Automation Scenarios</h2>
+<h3 id="1-the-multiplier-grid-stress-test">1. The Multiplier Grid (Stress Test)</h3>
+<p>Generate a 5x5 grid of nodes and chain them all together.</p>
+<pre><code class="language-python">scene.clear()
+prev = None
+for i in range(5):
+    for j in range(5):
+        curr = scene.add_node_by_name(&quot;message_node&quot;, (j*300, i*200))
+        curr.set_parameter(&quot;msg&quot;, f&quot;Link {i}-{j}&quot;)
+        if prev:
+            scene.connect_nodes(prev, &quot;out&quot;, curr, &quot;msg&quot;)
+        prev = curr
+print(&quot;Chained 25 nodes successfully.&quot;)
+</code></pre>
+<h3 id="2-batch-data-processing">2. Batch Data Processing</h3>
+<p>Update a node's input multiple times and run the workflow for each value.</p>
+<pre><code class="language-python">loader = scene.find_node_by_name(&quot;Message Node&quot;)
+if loader:
+    data_list = [&quot;Record_01&quot;, &quot;Record_02&quot;, &quot;Record_03&quot;]
+    for item in data_list:
+        loader.set_parameter(&quot;msg&quot;, item)
+        app.execute_pipeline()
+        # Execution is async; the log will show results sequentially
+</code></pre>
+<h3 id="3-workflow-cleanup-reset">3. Workflow Cleanup &amp; Reset</h3>
+<p>Find all nodes of a certain type and reset their values.</p>
+<pre><code class="language-python">for node in scene.nodes:
+    if node.node_definition.name == &quot;Math Adder&quot;:
+        node.set_parameter(&quot;val_a&quot;, 0)
+        node.set_parameter(&quot;val_b&quot;, 0)
+print(&quot;All math nodes reset to zero.&quot;)
+</code></pre>
+<h3 id="4-git-integration-workflow">4. Git Integration Workflow</h3>
+<p>Automate your backup after a successful build.</p>
+<pre><code class="language-python">git.status()
+git.commit(&quot;Automated workflow backup&quot;)
+git.push()
+print(&quot;Workflow pushed to GitHub successfully.&quot;)
+</code></pre>
+<h3 id="5-inspect-and-toggle-bypass-state-v120">5. Inspect and Toggle Bypass State (v1.2.0)</h3>
+<p>Find all bypassed nodes and re-enable them programmatically.</p>
+<pre><code class="language-python">for node in scene.nodes:
+    defn = node.node_definition
+    if getattr(defn, 'bypassed', False):
+        defn.bypassed = False
+        print(f&quot;Re-enabled: {defn.name}&quot;)
+print(&quot;All bypassed nodes restored.&quot;)
+</code></pre>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var links = document.querySelectorAll('.sidebar a');
+    var headings = document.querySelectorAll('h1,h2,h3');
+    window.addEventListener('scroll', function() {
+        var cur = '';
+        headings.forEach(function(h) { if (h.offsetTop <= window.scrollY + 80) cur = h.id; });
+        links.forEach(function(a) {
+            a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+        });
+    });
+});
+</script>
+</body>
+</html>

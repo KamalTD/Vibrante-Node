@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Node Builder API — Vibrante-Node v1.8.4</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+       background: #1e1e2e; color: #cdd6f4; line-height: 1.7; }
+.sidebar { position: fixed; top: 0; left: 0; width: 220px; height: 100vh;
+           background: #181825; overflow-y: auto; padding: 20px 0; z-index: 100; }
+.sidebar h2 { font-size: 13px; color: #6c7086; text-transform: uppercase;
+              letter-spacing: .08em; padding: 0 18px 10px; }
+.sidebar a  { display: block; padding: 6px 18px; color: #a6adc8; text-decoration: none;
+              font-size: 13px; border-left: 3px solid transparent; transition: all .15s; }
+.sidebar a:hover, .sidebar a.active { color: #cba6f7; border-left-color: #cba6f7;
+                                       background: #1e1e2e; }
+.content { margin-left: 220px; max-width: 920px; padding: 40px 48px; }
+h1 { font-size: 2em; color: #cba6f7; border-bottom: 2px solid #313244; padding-bottom: 10px; margin: 28px 0 16px; }
+h2 { font-size: 1.45em; color: #89b4fa; margin: 32px 0 12px; }
+h3 { font-size: 1.15em; color: #94e2d5; margin: 22px 0 8px; }
+h4 { font-size: 1em; color: #f5c2e7; margin: 16px 0 6px; }
+p  { margin-bottom: 14px; color: #cdd6f4; }
+a  { color: #89b4fa; }
+ul, ol { margin: 10px 0 14px 22px; }
+li { margin-bottom: 5px; }
+code { background: #313244; color: #f38ba8; padding: 2px 6px; border-radius: 4px; font-size: .88em; font-family: 'Consolas','Courier New',monospace; }
+pre  { background: #181825; border: 1px solid #313244; border-radius: 8px;
+       padding: 18px 20px; overflow-x: auto; margin: 14px 0 20px; }
+pre code { background: none; color: #a6e3a1; padding: 0; font-size: .9em; }
+table { border-collapse: collapse; width: 100%; margin: 14px 0 20px; font-size: .92em; }
+th { background: #313244; color: #cba6f7; padding: 9px 14px; text-align: left; }
+td { border-top: 1px solid #313244; padding: 8px 14px; }
+tr:nth-child(even) td { background: #1e1e2e; }
+hr { border: none; border-top: 1px solid #313244; margin: 28px 0; }
+blockquote { border-left: 4px solid #6c7086; padding-left: 16px; color: #a6adc8; margin: 14px 0; }
+@media (max-width: 700px) { .sidebar { display: none; } .content { margin-left: 0; padding: 24px 18px; } }
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <h2>Vibrante-Node</h2>
+  <a href="USER_GUIDE.html">User Guide</a>
+<a href="NODE_BUILDER_API.html">Node Builder API</a>
+<a href="AUTOMATION_API.html">Automation API</a>
+<a href="DEVELOPER.html">Developer Documentation</a>
+<a href="DOCUMENTATION.html">Technical Feature List</a>
+<a href="RELEASE_v1.8.4.html">Release Notes v1.8.4</a>
+  <hr style="border-color:#313244;margin:10px 18px">
+  <h2 style="margin-top:8px">On this page</h2>
+  <a href="#vibrante-node-node-builder-scripting-api" style="padding-left:18px">Vibrante-Node: Node Builder Scripting API</a>
+<a href="#the-basenode-class" style="padding-left:18px">🏗️ The BaseNode Class</a>
+<a href="#core-attributes" style="padding-left:32px">🔹 Core Attributes</a>
+<a href="#configuration-methods" style="padding-left:18px">🛠️ Configuration Methods</a>
+<a href="#selfadd_inputname-data_typeany-widget_typenone-optionsnone" style="padding-left:32px">self.add_input(name, data_type="any", widget_type=None, options=None)</a>
+<a href="#selfadd_outputname-data_typeany" style="padding-left:32px">self.add_output(name, data_type="any")</a>
+<a href="#selfadd_parametername-type-defaultnone" style="padding-left:32px">self.add_parameter(name, type, default=None)</a>
+<a href="#selfset_parametername-value-v140" style="padding-left:32px">self.set_parameter(name, value) (v1.4.0)</a>
+<a href="#lifecycle-hooks-events" style="padding-left:18px">🔄 Lifecycle Hooks (Events)</a>
+<a href="#on_plug_syncself-port_name-is_input-other_node-other_port_name" style="padding-left:32px">on_plug_sync(self, port_name, is_input, other_node, other_port_name)</a>
+<a href="#on_unplug_syncself-port_name-is_input" style="padding-left:32px">on_unplug_sync(self, port_name, is_input)</a>
+<a href="#on_parameter_changedself-name-value" style="padding-left:32px">on_parameter_changed(self, name, value)</a>
+<a href="#async-def-executeself-inputs" style="padding-left:32px">async def execute(self, inputs)</a>
+<a href="#practical-node-scenarios" style="padding-left:18px">📖 Practical Node Scenarios</a>
+<a href="#1-the-real-time-mirror-pass-through" style="padding-left:32px">1. The Real-Time Mirror (Pass-through)</a>
+<a href="#2-reactive-data-fetcher" style="padding-left:32px">2. Reactive Data Fetcher</a>
+<a href="#3-asynchronous-timer-non-blocking" style="padding-left:32px">3. Asynchronous Timer (Non-blocking)</a>
+<a href="#best-practices-tips" style="padding-left:18px">💡 Best Practices &amp; Tips</a>
+<a href="#node-reload-workflow-v18x" style="padding-left:18px">🔄 Node Reload Workflow (v1.8.x)</a>
+<a href="#scripted-nodes-gemini-assistance" style="padding-left:18px">🆕 Scripted Nodes &amp; Gemini Assistance</a>
+</nav>
+<main class="content">
+<h1 id="vibrante-node-node-builder-scripting-api">Vibrante-Node: Node Builder Scripting API</h1>
+<p>This guide provides a full reference for creating custom nodes using the <strong>Node Builder</strong>. It covers the <code>BaseNode</code> class, port configuration, lifecycle events, and common use cases.</p>
+<hr />
+<h2 id="the-basenode-class">🏗️ The <code>BaseNode</code> Class</h2>
+<p>Every custom node must be a class inheriting from <code>BaseNode</code>.</p>
+<h3 id="core-attributes">🔹 Core Attributes</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Attribute</th>
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>name</code></td>
+<td style="text-align: left;"><code>str</code></td>
+<td style="text-align: left;">Internal node ID and class identifier.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>display_name</code></td>
+<td style="text-align: left;"><code>str</code></td>
+<td style="text-align: left;">Optional. Text shown in the canvas header. Defaults to <code>name</code> when not set. (v1.8.x)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>category</code></td>
+<td style="text-align: left;"><code>str</code></td>
+<td style="text-align: left;">Library folder name.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>description</code></td>
+<td style="text-align: left;"><code>str</code></td>
+<td style="text-align: left;">Hover tooltip text.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>icon_path</code></td>
+<td style="text-align: left;"><code>str</code></td>
+<td style="text-align: left;">Local path to SVG/PNG icon.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>init_priority</code></td>
+<td style="text-align: left;"><code>int</code></td>
+<td style="text-align: left;">Default <code>0</code>. Nodes with <code>init_priority &gt; 0</code> are created and connected before all other nodes during workflow load (Init First). (v1.8.x)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="configuration-methods">🛠️ Configuration Methods</h2>
+<p>These are typically called in the <code>__init__</code> method of your node.</p>
+<h3 id="selfadd_inputname-data_typeany-widget_typenone-optionsnone"><code>self.add_input(name, data_type="any", widget_type=None, options=None)</code></h3>
+<ul>
+<li><strong><code>widget_type</code></strong>: Options are <code>"text"</code>, <code>"text_area"</code>, <code>"int"</code>, <code>"float"</code>, <code>"bool"</code>, <code>"checkbox"</code>, <code>"dropdown"</code>, <code>"slider"</code>, <code>"file"</code>, <code>"file_save"</code> (Save File dialog — v1.5.0).</li>
+<li><strong><code>options</code></strong>: A list of strings used only for the <code>"dropdown"</code> widget.</li>
+</ul>
+<h3 id="selfadd_outputname-data_typeany"><code>self.add_output(name, data_type="any")</code></h3>
+<ul>
+<li>Adds an outgoing port for data flow.</li>
+</ul>
+<h3 id="selfadd_parametername-type-defaultnone"><code>self.add_parameter(name, type, default=None)</code></h3>
+<ul>
+<li>Defines internal state variables not necessarily linked to a port.</li>
+</ul>
+<h3 id="selfset_parametername-value-v140"><code>self.set_parameter(name, value)</code> (v1.4.0)</h3>
+<ul>
+<li>Programmatically sets a port or parameter value. For dropdown ports, passing a list updates the options without resetting the current selection (v1.8.2 fix). Safe to call inside <code>__init__</code>.</li>
+</ul>
+<hr />
+<h2 id="lifecycle-hooks-events">🔄 Lifecycle Hooks (Events)</h2>
+<h3 id="on_plug_syncself-port_name-is_input-other_node-other_port_name"><code>on_plug_sync(self, port_name, is_input, other_node, other_port_name)</code></h3>
+<ul>
+<li><strong>Thread</strong>: Main GUI (Synchronous).</li>
+<li><strong>Use Case</strong>: Immediate UI updates or data copying when a wire is connected.</li>
+<li><strong>Example</strong>: <code>val = other_node.get_parameter(other_port_name)</code></li>
+</ul>
+<h3 id="on_unplug_syncself-port_name-is_input"><code>on_unplug_sync(self, port_name, is_input)</code></h3>
+<ul>
+<li><strong>Thread</strong>: Main GUI (Synchronous).</li>
+<li><strong>Use Case</strong>: Resetting a widget or clearing data when a wire is removed.</li>
+</ul>
+<h3 id="on_parameter_changedself-name-value"><code>on_parameter_changed(self, name, value)</code></h3>
+<ul>
+<li><strong>Trigger</strong>: When a user interacts with a widget (text box, slider, dropdown, etc.), <strong>and</strong> reactively during execution when an upstream node's output is propagated to this node's input port mid-run (v1.8.x).</li>
+<li><strong>Not triggered</strong> during the pre-execute input sync sweep (v1.8.3).</li>
+<li><strong>Use Case</strong>: Real-time mirroring of inputs to outputs, updating internal calculations, or reactive nodes that call <code>set_output</code> to push values mid-execution (e.g., <code>TwoWaySwitchNode</code>).</li>
+<li><strong>Important</strong>: Keep this method fast and side-effect-free for user-interaction triggers. Avoid heavy I/O here.</li>
+</ul>
+<h3 id="async-def-executeself-inputs"><code>async def execute(self, inputs)</code></h3>
+<ul>
+<li><strong>Trigger</strong>: When the user clicks "Run Workflow".</li>
+<li><strong>Inputs</strong>: A dictionary <code>{port_name: value}</code>.</li>
+<li><strong>Returns</strong>: A dictionary <code>{output_port_name: value}</code>.</li>
+</ul>
+<hr />
+<h2 id="practical-node-scenarios">📖 Practical Node Scenarios</h2>
+<h3 id="1-the-real-time-mirror-pass-through">1. The Real-Time Mirror (Pass-through)</h3>
+<p>A node that instantly reflects its input to its output as you type.</p>
+<pre><code class="language-python">def on_parameter_changed(self, name, value):
+    if name == &quot;input_msg&quot;:
+        self.parameters[&quot;out&quot;] = value # Mirror to output instantly
+</code></pre>
+<h3 id="2-reactive-data-fetcher">2. Reactive Data Fetcher</h3>
+<p>A node that queries its connected neighbor for configuration.</p>
+<pre><code class="language-python">def on_plug_sync(self, port_name, is_input, other_node, other_port_name):
+    if is_input:
+        # Get data from the node we just connected to
+        neighbor_data = other_node.get_parameter(other_port_name)
+        # Update our own widget with that data
+        self.set_parameter(&quot;config_text&quot;, neighbor_data)
+</code></pre>
+<h3 id="3-asynchronous-timer-non-blocking">3. Asynchronous Timer (Non-blocking)</h3>
+<p>Wait for a duration without freezing the UI.</p>
+<pre><code class="language-python">async def execute(self, inputs):
+    delay = inputs.get(&quot;seconds&quot;, 1.0)
+    await asyncio.sleep(delay) # Use await, NEVER time.sleep
+    return {&quot;done&quot;: True}
+</code></pre>
+<hr />
+<h2 id="best-practices-tips">💡 Best Practices &amp; Tips</h2>
+<ul>
+<li><strong>Safely Access Data</strong>: Use <code>self.get_parameter(name)</code> or <code>self[name]</code> to avoid KeyErrors.</li>
+<li><strong>Logging</strong>: Use <code>self.log_info("message")</code>, <code>log_success</code>, or <code>log_error</code> to communicate with the user via the Event Log.</li>
+<li><strong>Widget Control</strong>: Use <code>self.set_parameter(name, value)</code> to programmatically update UI widgets from within your code.</li>
+</ul>
+<hr />
+<h2 id="node-reload-workflow-v18x">🔄 Node Reload Workflow (v1.8.x)</h2>
+<p>After editing a node definition, you can refresh live canvas instances without restarting the application:</p>
+<ol>
+<li><strong>Edit</strong>: Open the node's JSON file directly or press <code>Ctrl+E</code> with the node selected to open it in the Node Builder.</li>
+<li><strong>Save</strong>: Write the updated definition to disk (the Node Builder does this on "Save &amp; Register").</li>
+<li><strong>Reload</strong>: Press <code>Ctrl+R</code> with the node selected, or use right-click &gt; "Reload Node". This calls <code>NodeScene.reload_node_type(node_id)</code>, which:<ul>
+<li>Re-reads the JSON via <code>NodeRegistry.reload_node_definition(node_id)</code>.</li>
+<li>Calls <code>NodeWidget.reload_definition(new_definition)</code> on every live instance.</li>
+<li>Rebuilds ports, re-applies saved parameter values where the port still exists, and removes wires to deleted ports.</li>
+</ul>
+</li>
+<li><strong>Reload All</strong>: Press <code>Ctrl+Shift+R</code> to reload every registered node type from disk at once.</li>
+</ol>
+<pre><code class="language-python"># Programmatic reload via the Scripting Console:
+registry.reload_node_definition(&quot;my_node_id&quot;)
+scene.reload_node_type(&quot;my_node_id&quot;)
+</code></pre>
+<hr />
+<h2 id="scripted-nodes-gemini-assistance">🆕 Scripted Nodes &amp; Gemini Assistance</h2>
+<ul>
+<li>
+<p><strong><code>python_code</code> parameter</strong>: Nodes created via the Node Builder may include a <code>python_code</code> parameter which contains the node's execute/on_parameter_changed logic as text. When the workflow is loaded, the engine compiles this <code>python_code</code> into a dynamic node class. Ensure your <code>python_code</code> defines an <code>execute(self, inputs)</code> function or assigns to <code>result</code> when using the <code>python_script</code> node.</p>
+</li>
+<li>
+<p><strong>In-UI Script Editor</strong>: For nodes that expose <code>python_code</code> (e.g., <code>python_script</code>, <code>maya_action_custom</code>, <code>houdini_action_custom</code>), use the <code>Edit Script</code> button to open the code editor. Changes are saved into the node's parameter map so they persist with the workflow. (v1.5.0: custom action nodes also support this button.)</p>
+</li>
+<li>
+<p><strong>Gemini Support</strong>: The Node Builder can optionally use Gemini to suggest code snippets and prompt templates while authoring node logic. Gemini integration is provided as a helper — always review generated code for correctness and safety before executing in production.</p>
+</li>
+</ul>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var links = document.querySelectorAll('.sidebar a');
+    var headings = document.querySelectorAll('h1,h2,h3');
+    window.addEventListener('scroll', function() {
+        var cur = '';
+        headings.forEach(function(h) { if (h.offsetTop <= window.scrollY + 80) cur = h.id; });
+        links.forEach(function(a) {
+            a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+        });
+    });
+});
+</script>
+</body>
+</html>

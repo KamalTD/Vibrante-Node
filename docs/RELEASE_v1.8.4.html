@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Release Notes v1.8.4 — Vibrante-Node v1.8.4</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+       background: #1e1e2e; color: #cdd6f4; line-height: 1.7; }
+.sidebar { position: fixed; top: 0; left: 0; width: 220px; height: 100vh;
+           background: #181825; overflow-y: auto; padding: 20px 0; z-index: 100; }
+.sidebar h2 { font-size: 13px; color: #6c7086; text-transform: uppercase;
+              letter-spacing: .08em; padding: 0 18px 10px; }
+.sidebar a  { display: block; padding: 6px 18px; color: #a6adc8; text-decoration: none;
+              font-size: 13px; border-left: 3px solid transparent; transition: all .15s; }
+.sidebar a:hover, .sidebar a.active { color: #cba6f7; border-left-color: #cba6f7;
+                                       background: #1e1e2e; }
+.content { margin-left: 220px; max-width: 920px; padding: 40px 48px; }
+h1 { font-size: 2em; color: #cba6f7; border-bottom: 2px solid #313244; padding-bottom: 10px; margin: 28px 0 16px; }
+h2 { font-size: 1.45em; color: #89b4fa; margin: 32px 0 12px; }
+h3 { font-size: 1.15em; color: #94e2d5; margin: 22px 0 8px; }
+h4 { font-size: 1em; color: #f5c2e7; margin: 16px 0 6px; }
+p  { margin-bottom: 14px; color: #cdd6f4; }
+a  { color: #89b4fa; }
+ul, ol { margin: 10px 0 14px 22px; }
+li { margin-bottom: 5px; }
+code { background: #313244; color: #f38ba8; padding: 2px 6px; border-radius: 4px; font-size: .88em; font-family: 'Consolas','Courier New',monospace; }
+pre  { background: #181825; border: 1px solid #313244; border-radius: 8px;
+       padding: 18px 20px; overflow-x: auto; margin: 14px 0 20px; }
+pre code { background: none; color: #a6e3a1; padding: 0; font-size: .9em; }
+table { border-collapse: collapse; width: 100%; margin: 14px 0 20px; font-size: .92em; }
+th { background: #313244; color: #cba6f7; padding: 9px 14px; text-align: left; }
+td { border-top: 1px solid #313244; padding: 8px 14px; }
+tr:nth-child(even) td { background: #1e1e2e; }
+hr { border: none; border-top: 1px solid #313244; margin: 28px 0; }
+blockquote { border-left: 4px solid #6c7086; padding-left: 16px; color: #a6adc8; margin: 14px 0; }
+@media (max-width: 700px) { .sidebar { display: none; } .content { margin-left: 0; padding: 24px 18px; } }
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <h2>Vibrante-Node</h2>
+  <a href="USER_GUIDE.html">User Guide</a>
+<a href="NODE_BUILDER_API.html">Node Builder API</a>
+<a href="AUTOMATION_API.html">Automation API</a>
+<a href="DEVELOPER.html">Developer Documentation</a>
+<a href="DOCUMENTATION.html">Technical Feature List</a>
+<a href="RELEASE_v1.8.4.html">Release Notes v1.8.4</a>
+  <hr style="border-color:#313244;margin:10px 18px">
+  <h2 style="margin-top:8px">On this page</h2>
+  <a href="#release-notes-vibrante-node-v184" style="padding-left:18px">Release Notes — Vibrante-Node v1.8.4</a>
+<a href="#overview" style="padding-left:18px">Overview</a>
+<a href="#new-features" style="padding-left:18px">New Features</a>
+<a href="#node-reload-from-disk" style="padding-left:32px">Node Reload from Disk</a>
+<a href="#edit-node-shortcut" style="padding-left:32px">Edit Node Shortcut</a>
+<a href="#toolbar-additions" style="padding-left:32px">Toolbar Additions</a>
+<a href="#init-first-scene-ordering" style="padding-left:32px">Init-First Scene Ordering</a>
+<a href="#html-help-system" style="padding-left:32px">HTML Help System</a>
+<a href="#bug-fixes" style="padding-left:18px">Bug Fixes</a>
+<a href="#for_loop-exec_out-now-fires-once" style="padding-left:32px">for_loop — exec_out Now Fires Once</a>
+<a href="#on_parameter_changed-reactive-execution-propagation" style="padding-left:32px">on_parameter_changed — Reactive Execution Propagation</a>
+<a href="#list_item_picker-added-port_1-output" style="padding-left:32px">list_item_picker — Added port_1 Output</a>
+<a href="#keyboard-shortcuts-summary" style="padding-left:18px">Keyboard Shortcuts Summary</a>
+<a href="#upgrade-notes" style="padding-left:18px">Upgrade Notes</a>
+</nav>
+<main class="content">
+<h1 id="release-notes-vibrante-node-v184">Release Notes — Vibrante-Node v1.8.4</h1>
+<p><strong>Release date:</strong> 2026-05-01<br />
+<strong>Build:</strong> Python 3.10 / PyInstaller — Windows 64-bit</p>
+<hr />
+<h2 id="overview">Overview</h2>
+<p>v1.8.4 bundles the post-v1.8.3 feature work that landed on the main branch: node reload-from-disk, init-first scene ordering, edit/add toolbar shortcuts, and a new in-app HTML help system. It also corrects the <code>for_loop</code> execution model and introduces an additional output port on <code>list_item_picker</code>.</p>
+<hr />
+<h2 id="new-features">New Features</h2>
+<h3 id="node-reload-from-disk">Node Reload from Disk</h3>
+<p>Edit a node's JSON definition file, then reload all live canvas instances without re-adding the node.</p>
+<ul>
+<li><strong><code>Ctrl+R</code></strong> — Reload selected node from disk. Ports are rebuilt, saved parameter values are re-applied, and connections whose port names still exist are preserved. Connections to removed ports are dropped.</li>
+<li><strong><code>Ctrl+Shift+R</code></strong> — Reload All Nodes: re-reads every registered JSON node from disk and refreshes all live instances in every open scene.</li>
+<li><strong>Right-click → "Reload Node"</strong> — same as <code>Ctrl+R</code> for the selected node.</li>
+<li><strong><code>NodeRegistry.get_source_path(node_id)</code></strong> — returns the on-disk JSON path the node was loaded from.</li>
+<li><strong><code>NodeRegistry.reload_node_definition(node_id)</code></strong> — re-reads and re-registers the definition from disk.</li>
+<li><strong><code>NodeWidget.reload_definition(new_definition)</code></strong> — swaps the definition in-place and rebuilds the widget.</li>
+<li><strong><code>NodeScene.reload_node_type(node_id)</code></strong> — orchestrates reload for all instances in the scene.</li>
+</ul>
+<h3 id="edit-node-shortcut">Edit Node Shortcut</h3>
+<ul>
+<li><strong><code>Ctrl+E</code></strong> — Opens the Node Builder pre-loaded with the selected node's definition. After the builder closes, the node is automatically reloaded so canvas instances reflect any saved changes immediately.</li>
+<li><strong>Right-click → "Edit Node"</strong> — same action from the context menu.</li>
+</ul>
+<h3 id="toolbar-additions">Toolbar Additions</h3>
+<p>Five new toolbar buttons added to the main toolbar:<br />
+- <strong>Add Node</strong> — opens the node-search popup at the canvas centre (same as <code>Tab</code>).<br />
+- <strong>Add Sticky Note</strong> — adds a sticky note at the canvas centre.<br />
+- <strong>Add Network Box</strong> — adds a backdrop/network box at the canvas centre.<br />
+- <strong>Edit Selected Node</strong> — opens Node Builder (<code>Ctrl+E</code>).<br />
+- <strong>Reload Selected Node</strong> — reloads from disk (<code>Ctrl+R</code>).</p>
+<h3 id="init-first-scene-ordering">Init-First Scene Ordering</h3>
+<p>When loading a workflow, nodes with <code>init_priority &gt; 0</code> (marked as Init First) are now created and wired up <strong>before</strong> all other nodes. This guarantees authentication or server-connect nodes are fully initialized before any downstream node is instantiated.</p>
+<h3 id="html-help-system">HTML Help System</h3>
+<p>All documentation is now shipped as styled HTML files in the <code>docs/</code> folder. The Help menu opens these HTML files directly in the system browser, providing properly rendered headings, tables, and code blocks instead of raw Markdown text.</p>
+<hr />
+<h2 id="bug-fixes">Bug Fixes</h2>
+<h3 id="for_loop-exec_out-now-fires-once"><code>for_loop</code> — exec_out Now Fires Once</h3>
+<p><code>for_loop</code> previously fired <code>exec_out</code> once per index (acting as its own loop body). This caused issues when the downstream chain had side effects. <code>for_loop</code> now fires <code>exec_out</code> <strong>once</strong> after the full <code>indices</code> list is ready. Use a <code>loop_body</code> node connected to <code>indices</code> + <code>exec_out</code> to iterate per item.</p>
+<h3 id="on_parameter_changed-reactive-execution-propagation"><code>on_parameter_changed</code> — Reactive Execution Propagation</h3>
+<p>When a node's <code>execute</code> produces an output that propagates to a downstream node mid-run, <code>on_parameter_changed</code> is now correctly called on the target instance. This allows reactive nodes (e.g. <code>TwoWaySwitchNode</code>, <code>GetVariable</code>) to update their own outputs when upstream data changes during execution — without the double-propagation bug fixed in v1.8.3.</p>
+<h3 id="list_item_picker-added-port_1-output"><code>list_item_picker</code> — Added <code>port_1</code> Output</h3>
+<p>A second output port <code>port_1</code> of type <code>any</code> has been added to <code>list_item_picker</code>.</p>
+<hr />
+<h2 id="keyboard-shortcuts-summary">Keyboard Shortcuts Summary</h2>
+<table>
+<thead>
+<tr>
+<th>Shortcut</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Tab</code></td>
+<td>Open node-search popup at canvas centre</td>
+</tr>
+<tr>
+<td><code>Ctrl+E</code></td>
+<td>Edit selected node in Node Builder</td>
+</tr>
+<tr>
+<td><code>Ctrl+R</code></td>
+<td>Reload selected node from disk</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+R</code></td>
+<td>Reload all nodes from disk</td>
+</tr>
+<tr>
+<td><code>F5</code></td>
+<td>Run workflow</td>
+</tr>
+<tr>
+<td><code>F</code></td>
+<td>Focus on selected nodes</td>
+</tr>
+<tr>
+<td><code>Ctrl+C</code> / <code>Ctrl+V</code></td>
+<td>Copy / Paste selected nodes</td>
+</tr>
+<tr>
+<td><code>Delete</code></td>
+<td>Delete selected items</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="upgrade-notes">Upgrade Notes</h2>
+<ul>
+<li><strong><code>for_loop</code> users</strong>: If your graph relied on <code>for_loop</code> firing <code>exec_out</code> per iteration, insert a <code>loop_body</code> node between <code>for_loop.exec_out</code> → <code>loop_body.exec_in</code> and connect <code>for_loop.indices</code> → <code>loop_body.items</code>. The <code>loop_body</code> fires <code>exec_out</code> once per item.</li>
+<li>The <code>docs/</code> folder is now required alongside the executable. It is included automatically in the PyInstaller build.</li>
+</ul>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var links = document.querySelectorAll('.sidebar a');
+    var headings = document.querySelectorAll('h1,h2,h3');
+    window.addEventListener('scroll', function() {
+        var cur = '';
+        headings.forEach(function(h) { if (h.offsetTop <= window.scrollY + 80) cur = h.id; });
+        links.forEach(function(a) {
+            a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+        });
+    });
+});
+</script>
+</body>
+</html>
