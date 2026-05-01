@@ -37,6 +37,7 @@ _apply_pythonpath()
 _register_houdini_dlls()
 
 from src.utils.qt_compat import QtWidgets, QtGui, QtCore, exec_app
+from src.utils.paths import resource_path
 QApplication = QtWidgets.QApplication
 QSplashScreen = QtWidgets.QSplashScreen
 QProgressBar = QtWidgets.QProgressBar
@@ -65,7 +66,7 @@ class SplashScreen(QSplashScreen):
     COPYRIGHT = "\u00a9 2026 Mahmoud Kamal - KamalTD"
 
     def __init__(self):
-        splash_path = os.path.join(os.path.dirname(__file__), '..', 'splash.png')
+        splash_path = resource_path('splash.png')
         pixmap = QPixmap(splash_path)
         # Scale to a reasonable splash size while keeping aspect ratio
         pixmap = pixmap.scaled(800, 500, Qt.KeepAspectRatio, Qt.SmoothTransformation)
@@ -133,7 +134,7 @@ def main():
     app = QApplication(sys.argv)
 
     # Set application icon
-    icon_path = os.path.join(os.path.dirname(__file__), '..', 'icons', 'vibrante-node-icon.png')
+    icon_path = resource_path('icons', 'vibrante-node-icon.png')
     if os.path.isfile(icon_path):
         app.setWindowIcon(QtGui.QIcon(icon_path))
 

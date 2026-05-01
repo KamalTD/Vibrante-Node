@@ -21,6 +21,7 @@ QDrag = QtGui.QDrag
 QMimeData = QtCore.QMimeData
 QSvgRenderer = QtSvg.QSvgRenderer if QtSvg else None
 from src.core.registry import NodeRegistry
+from src.utils.paths import resource_path
 import os
 import re
 
@@ -177,13 +178,12 @@ class LibraryPanel(QDockWidget):
             # Icon logic - use theme-appropriate color for SVG icons
             icon = self.style().standardIcon(QStyle.SP_FileIcon)
             if defn and defn.icon_path:
-                # Try relative to cwd first, then absolute
-                cwd_path = os.path.join(os.getcwd(), defn.icon_path)
+                rp = resource_path(defn.icon_path)
                 abs_path = os.path.abspath(defn.icon_path)
-                
+
                 icon_file = None
-                if os.path.exists(cwd_path):
-                    icon_file = cwd_path
+                if os.path.exists(rp):
+                    icon_file = rp
                 elif os.path.exists(abs_path):
                     icon_file = abs_path
                 
