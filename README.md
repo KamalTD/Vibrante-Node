@@ -22,6 +22,35 @@ The project focuses on flexibility, extensibility, and developer productivity, m
 
 ## 🌟 Latest Enhancements
 
+### 🛠️ Node Reload & Dev Workflow (v1.8.x)
+- **In-Place Node Reload**: Edit a node's JSON definition, then press `Ctrl+R` to reload all live instances on the canvas — ports are rebuilt, saved parameter values are re-applied, and valid connections are preserved.
+- **Registry Source Tracking**: `NodeRegistry` now tracks the on-disk path of every loaded definition via `_source_paths`, and exposes `get_source_path(node_id)` / `reload_node_definition(node_id)` for programmatic reloads.
+- **Right-Click Shortcuts**: The canvas context menu now includes "Edit Node" (opens Node Builder for that definition) and "Reload Node" (reloads from disk without reopening the builder).
+- **Toolbar Buttons**: New buttons for Add Node, Add Sticky Note, Add Network Box, Edit Selected Node, and Reload Selected Node.
+- **Keyboard Shortcuts**: `Tab` adds a node, `Ctrl+E` edits the selected node, `Ctrl+R` reloads it from disk, `Ctrl+Shift+R` reloads all nodes.
+
+### 🚦 Init-First Scene Ordering (v1.8.x)
+Nodes marked as **Init First** (`init_priority > 0`) are created and connected before all other nodes during workflow load. This guarantees that authentication or server-connect nodes are fully wired before downstream consumers are instantiated.
+
+### 🎨 Wire Type Coloring & Settings Persistence (v1.8.x)
+- Wires are now colored by the **output port's data type** rather than a fixed color; the light theme uses black wires for readability.
+- Theme, window geometry, and dock layout are now **persisted between sessions**.
+
+### 🔧 Stability & Bugfix Release (v1.8.x)
+- **Bypass flag**: The engine now honours the node bypass flag — bypassed nodes are skipped during execution.
+- **`on_parameter_changed` timing**: No longer called during pre-execute input sync or reactive output propagation, preventing cascading side effects (v1.8.1–v1.8.3).
+- **Dropdown fix**: Dropdown parameters now return the selected item correctly during `execute`, and `set_parameter` no longer resets selection on options update (v1.8.2).
+- **`for_loop` behavior**: `for_loop` fires `exec_out` once after building the full index list; use a `loop_body` node to iterate per item.
+
+### 🎬 Prism Pipeline Overhaul (v1.7.0)
+New Prism nodes and reliability improvements:
+- **New nodes**: `prism_get_scene_path`, `prism_get_export_path`, `prism_get_shot_by_sequence`, `prism_get_asset_type_by_name`, `prism_get_asset_types_by_project`, `prism_get_assets_by_type`.
+- **Export path resolution**: `prism_get_export_path` returns the actual file path (not directory) and handles `output_type` `'3d'`/`'2d'`.
+- **Dynamic config reader**: Department abbreviations are read dynamically from the project config — no more hardcoded values.
+- **Prism v2.1.0 API fixes**: `getShots()` flat-list handling, corrected `createProduct` signature, version directory creation before save.
+- **Atomic workflow save + safe load**: Scene strips non-serializable runtime values before saving; corrupted or empty files are handled gracefully.
+- **Full Prism + Maya headless tutorial workflow** included.
+
 ### 🎬 Prism Pipeline Integration (v1.6.0)
 Full integration with the [Prism Pipeline](https://prism-pipeline.com/) studio management system:
 - **40+ Prism Nodes**: Complete node library covering entities, products, media, scenes, configs, USD workflows, and more.
@@ -124,7 +153,7 @@ Detailed documentation is available for both users and developers:
 -   🤖 **[Automation API](AUTOMATION_API.md)**: Reference for Scripting Console automation.
 -   🛠️ **[Developer Documentation](DEVELOPER.md)**: Technical architecture and internal data flow.
 -   📄 **[Technical Feature List](DOCUMENTATION.md)**: Detailed breakdown of all platform features.
--   📋 **[Release Notes v1.6.1](RELEASE_v1.6.1.md)**: Full changelog for the current release.
+-   📋 **[Release Notes v1.8.3](RELEASE_v1.8.3.md)**: Full changelog for the current release.
 
 ---
 
@@ -143,8 +172,10 @@ Detailed documentation is available for both users and developers:
 │   │   ├── prism_core.py   # Prism initialization and shared-memory cache
 │   │   └── qt_compat.py    # Qt5/Qt6 compatibility layer
 │   └── main.py         # Application entry point
+├── specs/              # Feature and design specifications
 ├── tests/              # Unit and integration tests
 ├── workflows/          # Saved pipeline files (.json)
+├── ai_memory/          # Persistent AI context and memory files
 └── DOCUMENTATION.md    # Detailed technical documentation
 ```
 

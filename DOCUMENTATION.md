@@ -199,3 +199,129 @@ Workflow-saved parameters (including `python_code`) are now applied to node inst
 ### Gemini Support in Node Builder
 
 The Node Builder includes integration hooks for Gemini-based assistance to scaffold example scripts, generate prompt templates, and provide sample code snippets. See `src/ui/gemini_chat.py` for configuration and usage notes.
+
+---
+
+## 🆕 7. v1.7.0 — Prism Pipeline Overhaul
+
+### New Prism Getter Nodes
+
+| Node | Description |
+|---|---|
+| `prism_get_scene_path` | Resolves the on-disk scene file path for an entity/department/task |
+| `prism_get_export_path` | Returns the actual export file path (not directory); handles `output_type` `'3d'`/`'2d'` |
+| `prism_get_shot_by_sequence` | Looks up a specific shot within a sequence by name |
+| `prism_get_asset_type_by_name` | Returns a single asset-type dict matching the given name |
+| `prism_get_asset_types_by_project` | Lists all asset types defined in the active project |
+| `prism_get_assets_by_type` | Returns all assets belonging to a specific asset type |
+
+### Prism Entity Enrichment
+
+Entity dicts produced by Prism getter nodes now include `path`, `location`, and `paths` fields, enabling downstream nodes to resolve scene file locations without additional bridge calls.
+
+### Dynamic Config Reader
+
+Department abbreviations and other studio-specific config values are read at runtime from the project config (`core.getConfig()`). No more hardcoded values in node logic.
+
+### `get_tasks` Multi-Method Fallback
+
+`prism_get_tasks` tries `getTasks`, `getTasksForEntity`, and `task_mgr.getTasks` in sequence to stay compatible with multiple Prism versions.
+
+### Atomic Workflow Save + Safe Load
+
+The scene strips non-serializable runtime values before writing workflow JSON. An empty or corrupt JSON file on load triggers a graceful error prompt instead of an application crash.
+
+### Prism v2.1.0 Compatibility
+
+- `getShots()` now handles both the flat-list shape (v2.1.0) and the dict shape (older versions).
+- `createProduct` API signature updated for v2.1.0.
+- Version directory is created on disk before writing a new scene version file.
+
+---
+
+## 🆕 8. v1.8.x — Stability, Node Reload, Init-First, and UX Polish
+
+### 8.1 Execution Engine
+
+| Change | Details |
+|---|---|
+| **Bypass flag** | Bypassed nodes are skipped; their primary input is forwarded as output and `exec_out` fires normally |
+| **`for_loop` behavior** | Fires `exec_out` once after building the complete index list; per-item iteration is handled by `loop_body` |
+| **`on_parameter_changed` timing** | Not called during pre-execute sync; called reactively during execution when upstream output is propagated to a downstream input (v1.8.1–v1.8.3) |
+| **Hotkey guard** | Canvas hotkeys are suppressed when a text input widget has keyboard focus |
+
+### 8.2 Node Reload Workflow
+
+Nodes can be edited and refreshed without restarting the application:
+
+1. Edit the node's JSON definition (via Node Builder or directly on disk).
+2. Press `Ctrl+R` (or right-click > "Reload Node") to reload.
+3. `NodeRegistry.reload_node_definition(node_id)` re-reads the JSON and recompiles the class.
+4. `NodeWidget.reload_definition(new_definition)` rebuilds ports in place, preserves compatible parameter values, and removes wires to deleted ports.
+5. `NodeScene.reload_node_type(node_id)` applies the reload to all live instances of that type.
+
+Registry source tracking: `NodeRegistry._source_paths` maps every loaded `node_id` to its absolute JSON file path. Use `get_source_path(node_id)` and `reload_node_definition(node_id)` programmatically.
+
+### 8.3 Init-First Scene Ordering
+
+`NodeScene.load_workflow_model()` performs two passes when loading a workflow:
+- **Pass 1**: Nodes with `init_priority > 0` are created and connected first.
+- **Pass 2**: All remaining nodes are created and connected.
+
+This ensures authentication and server-connect nodes are wired before downstream consumers are instantiated.
+
+Mark/unmark nodes via right-click > "Init First" / "Remove Init First".
+
+### 8.4 Toolbar & Context Menu
+
+New toolbar buttons: Add Node, Add Sticky Note, Add Network Box, Edit Selected Node, Reload Selected Node.
+
+Context menu additions (right-click on a node):
+- "Edit Node ('node_id')" — opens Node Builder for that definition.
+- "Reload Node ('node_id')" — reloads from disk and refreshes widget in place.
+- "Init First" / "Remove Init First" — toggles init priority.
+
+### 8.5 Keyboard Shortcuts
+
+| Shortcut | Action |
+|---|---|
+| `Tab` | Add Node (search popup at canvas centre) |
+| `Ctrl+E` | Edit Selected Node (opens Node Builder) |
+| `Ctrl+R` | Reload Selected Node from disk |
+| `Ctrl+Shift+R` | Reload All Nodes from disk |
+| `F5` | Run workflow |
+| `F` | Focus view |
+| `Ctrl+C` / `Ctrl+V` | Copy / Paste nodes |
+| `Delete` | Delete selected items |
+
+### 8.6 Wire Type Coloring
+
+Wires are rendered in the color associated with the **output port's data type** (matching port dot colors). The light theme overrides all wire colors to black for legibility.
+
+### 8.7 User Settings Persistence
+
+Theme selection, window geometry, and dock layout are saved to `QSettings` (key group `VibrateNode/session`) on close and restored on the next launch.
+
+### 8.8 Node Builder Improvements
+
+- **Display Name** field: sets the text shown in the canvas header independently of the node ID.
+- `icon_path` is now correctly reflected on the canvas widget after save.
+- Exec checkbox no longer resets the execute method body.
+- Template includes an `on_parameter_changed` placeholder with a docstring example.
+
+### 8.9 Bugfixes (v1.8.0–v1.8.3)
+
+| Version | Fix |
+|---|---|
+| v1.8.0 | `for_loop` now iterates all items correctly (was stopping after first) |
+| v1.8.0 | Houdini headless executor validates hython path before subprocess launch |
+| v1.8.0 | `import_alembic` SOP context defaults to `/obj` |
+| v1.8.0 | Blender alembic frame args renamed; `makedirs` added |
+| v1.8.0 | `deadline_job_status` crash fixed; engine hardened against `None` returns |
+| v1.8.0 | 6 professional VFX pipeline workflow examples added to `workflows/` |
+| v1.8.1 | `on_parameter_changed` stale-value bug fixed — value reflects latest widget state |
+| v1.8.1 | Node Builder execute method no longer resets when switching tabs |
+| v1.8.2 | Dropdown returns selected item correctly during `execute` |
+| v1.8.2 | `set_parameter` no longer resets dropdown selection on options update |
+| v1.8.3 | `on_parameter_changed` removed from pre-execute input sync phase |
+| v1.8.3 | `on_parameter_changed` removed from reactive output propagation path |

@@ -13,6 +13,22 @@ Welcome to Vibrante-Node! This guide will help you get started with building and
     -   **Delete**: Select an item and press the `Delete` key.
 -   **Event Log (Bottom)**: Real-time feedback on execution, outputs, and connection events.
 
+## ⌨️ Keyboard Shortcuts
+
+| Shortcut | Action |
+|---|---|
+| `Tab` | Open the "Add Node" search popup at the canvas centre |
+| `F5` | Run the current workflow |
+| `F` | Focus view on selected nodes (or graph centre) |
+| `Ctrl+C` | Copy selected nodes |
+| `Ctrl+V` | Paste nodes at cursor position |
+| `Delete` | Delete selected nodes or wires |
+| `Ctrl+E` | Open Node Builder for the selected node's definition |
+| `Ctrl+R` | Reload the selected node from disk |
+| `Ctrl+Shift+R` | Reload all nodes from disk |
+
+> **Note**: Hotkeys are disabled when a text input field on the canvas has keyboard focus, so typing in widgets will not accidentally trigger shortcuts.
+
 ## 🔗 Building a Workflow
 
 1.  **Add Nodes**: Use the library or right-click on the canvas to add nodes.
@@ -37,12 +53,12 @@ For workflows without explicit execution wires (Data-Flow only), the engine uses
 
 To iterate over data or repeat operations, use the **Loop** nodes:
 
-1.  **For Loop**: Generates a range of indices (e.g., 0 to 10).
-    -   Connect its `indices` output to a `Loop Body`.
-    -   Connect its `exec_out` to start the iteration.
-2.  **Loop Body**: Executes its downstream chain for every item in the provided list.
+1.  **For Loop**: Generates a list of indices (e.g., 0 to N-1) and fires `exec_out` **once** after building the full list — it does not iterate itself.
+    -   Connect its `indices` output to a `Loop Body`'s list input.
+    -   Connect its `exec_out` to the `Loop Body`'s `exec_in` to start iteration.
+2.  **Loop Body**: Receives the index list and iterates over it, executing its downstream chain once per item.
     -   `current_index`: Provides the current value for the iteration.
-    -   `exec_out`: Triggers once for every item.
+    -   `exec_out`: Triggers once for every item in the list.
     -   `exec_on_finished`: Triggers once the entire loop is complete.
 3.  **Break Condition**: You can connect a boolean value to the `break_condition` input of the `Loop Body` to stop the loop early.
 4.  **While Loop** (v1.6.0): The `while_loop` node repeats its `exec_out` chain while its `condition` input is `True`. Connect a boolean-producing node to `condition` to control when the loop stops.
@@ -103,17 +119,36 @@ Vibrante-Node v1.6.0 includes full integration with [Prism Pipeline](https://pri
 
 Vibrante-Node allows you to create your own nodes with custom Python logic:
 
-1.  **Open Builder**: Click the "New Node" icon in the toolbar.
+1.  **Open Builder**: Click the "New Node" icon in the toolbar, or press `Ctrl+E` with a node selected to edit an existing definition.
 2.  **Configure UI**:
+    -   Set a **Display Name** (v1.8.x) — the text shown in the node's canvas header, independent of the node's internal ID.
     -   Add **Inputs** and **Outputs** using the tables.
     -   Select **Type** and **Widget** using the interactive dropdowns.
 3.  **Write Logic**:
     -   `on_plug_sync`: Use this to react immediately to connections (e.g., `other_node.get_parameter(other_port_name)`).
-    -   `on_parameter_changed`: Use this to update outputs reactively as the user types.
+    -   `on_parameter_changed`: Use this to update outputs reactively as the user types. Also called during execution when upstream data changes mid-run (reactive nodes). Not called during pre-execute input sync.
     -   `execute`: The main logic run when the workflow executes.
 4.  **Save**: Click "Save & Register". Your node is now ready to use.
 
 **Gemini Assistance**: When creating node logic in the Node Builder you can enable Gemini assistance to generate starter code, prompt templates, or example snippets. It is optional and configurable; always validate generated code before running.
+
+## 🔄 Editing & Reloading Nodes (v1.8.x)
+
+After a node definition has been saved you can iterate on it without closing and reopening the app:
+
+1.  **Edit**: Select the node on canvas and press `Ctrl+E` (or right-click > "Edit Node"). The Node Builder opens with that node's current definition pre-loaded.
+2.  **Save changes** in the Node Builder — this writes the updated JSON to disk.
+3.  **Reload**: Press `Ctrl+R` (or right-click > "Reload Node"). The canvas widget is rebuilt in place — ports are updated, saved parameter values are re-applied, and connections that are still compatible are preserved.
+4.  To reload every node type at once (e.g., after a bulk edit), press `Ctrl+Shift+R`.
+
+## 🚦 Init First Nodes (v1.8.x)
+
+Some nodes need to be fully initialized before any other node in the graph runs — for example, an authentication node or a server-connection node. You can mark any node as **Init First**:
+
+-   Right-click the node on the canvas and select **"Init First"** to promote it. A badge appears on the node header.
+-   Right-click again and select **"Remove Init First"** to demote it.
+
+When a workflow is loaded, all Init First nodes (those with `init_priority > 0`) are created and wired up **before** all other nodes. This ensures that downstream nodes that depend on the init result receive it correctly on first execution.
 
 ## 🌓 Themes
 
@@ -125,3 +160,4 @@ You can switch between **Dark** and **Light** modes at any time using the **Them
 -   **Widgets are Disabled**: This is normal! Widgets are disabled when they are receiving data from another node via a wire.
 -   **Prism nodes show "PrismCore not initialized"**: Make sure a `prism_core_init` node is present in the graph and that `prism_root` points to a valid Prism installation.
 -   **Crashes**: If the app closes, check `crash.log` in the project folder for details.
+-   **Stale ports after editing a node**: If a node's ports look outdated after you edited its JSON definition, select the node and press `Ctrl+R` to reload it from disk. All live instances of that node type on the canvas will be refreshed.

@@ -11,10 +11,12 @@ Every custom node must be a class inheriting from `BaseNode`.
 ### 🔹 Core Attributes
 | Attribute | Type | Description |
 | :--- | :--- | :--- |
-| `name` | `str` | Display name. |
+| `name` | `str` | Internal node ID and class identifier. |
+| `display_name` | `str` | Optional. Text shown in the canvas header. Defaults to `name` when not set. (v1.8.x) |
 | `category` | `str` | Library folder name. |
 | `description`| `str` | Hover tooltip text. |
 | `icon_path` | `str` | Local path to SVG/PNG icon. |
+| `init_priority` | `int` | Default `0`. Nodes with `init_priority > 0` are created and connected before all other nodes during workflow load (Init First). (v1.8.x) |
 
 ---
 
@@ -33,7 +35,7 @@ These are typically called in the `__init__` method of your node.
 - Defines internal state variables not necessarily linked to a port.
 
 ### `self.set_parameter(name, value)` (v1.4.0)
-- Programmatically sets a port or parameter value. For dropdown ports, passing a list updates the options and selects the first item. Safe to call inside `__init__`.
+- Programmatically sets a port or parameter value. For dropdown ports, passing a list updates the options without resetting the current selection (v1.8.2 fix). Safe to call inside `__init__`.
 
 ---
 
@@ -49,8 +51,10 @@ These are typically called in the `__init__` method of your node.
 - **Use Case**: Resetting a widget or clearing data when a wire is removed.
 
 ### `on_parameter_changed(self, name, value)`
-- **Trigger**: When a user types in a text box, moves a slider, etc.
-- **Use Case**: Real-time mirroring of inputs to outputs or updating internal calculations.
+- **Trigger**: When a user interacts with a widget (text box, slider, dropdown, etc.), **and** reactively during execution when an upstream node's output is propagated to this node's input port mid-run (v1.8.x).
+- **Not triggered** during the pre-execute input sync sweep (v1.8.3).
+- **Use Case**: Real-time mirroring of inputs to outputs, updating internal calculations, or reactive nodes that call `set_output` to push values mid-execution (e.g., `TwoWaySwitchNode`).
+- **Important**: Keep this method fast and side-effect-free for user-interaction triggers. Avoid heavy I/O here.
 
 ### `async def execute(self, inputs)`
 - **Trigger**: When the user clicks "Run Workflow".
@@ -98,6 +102,26 @@ async def execute(self, inputs):
 - **Safely Access Data**: Use `self.get_parameter(name)` or `self[name]` to avoid KeyErrors.
 - **Logging**: Use `self.log_info("message")`, `log_success`, or `log_error` to communicate with the user via the Event Log.
 - **Widget Control**: Use `self.set_parameter(name, value)` to programmatically update UI widgets from within your code.
+
+---
+
+## 🔄 Node Reload Workflow (v1.8.x)
+
+After editing a node definition, you can refresh live canvas instances without restarting the application:
+
+1.  **Edit**: Open the node's JSON file directly or press `Ctrl+E` with the node selected to open it in the Node Builder.
+2.  **Save**: Write the updated definition to disk (the Node Builder does this on "Save & Register").
+3.  **Reload**: Press `Ctrl+R` with the node selected, or use right-click > "Reload Node". This calls `NodeScene.reload_node_type(node_id)`, which:
+    -   Re-reads the JSON via `NodeRegistry.reload_node_definition(node_id)`.
+    -   Calls `NodeWidget.reload_definition(new_definition)` on every live instance.
+    -   Rebuilds ports, re-applies saved parameter values where the port still exists, and removes wires to deleted ports.
+4.  **Reload All**: Press `Ctrl+Shift+R` to reload every registered node type from disk at once.
+
+```python
+# Programmatic reload via the Scripting Console:
+registry.reload_node_definition("my_node_id")
+scene.reload_node_type("my_node_id")
+```
 
 ---
 
