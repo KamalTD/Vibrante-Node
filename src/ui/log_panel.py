@@ -37,6 +37,7 @@ class LogPanel(QDockWidget):
 
     def __init__(self, parent=None):
         super().__init__("Event Log", parent)
+        self.setObjectName("EventLogDock")
         self.setAllowedAreas(Qt.BottomDockWidgetArea | Qt.RightDockWidgetArea)
         
         # Store all log entries

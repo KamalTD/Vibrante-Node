@@ -479,6 +479,7 @@ class MainWindow(QMainWindow):
 
     def _init_toolbar(self):
         toolbar = self.addToolBar("Main")
+        toolbar.setObjectName("MainToolBar")
         toolbar.setMovable(False)
         
         # New Tab

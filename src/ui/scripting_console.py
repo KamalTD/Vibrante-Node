@@ -25,6 +25,7 @@ import os
 class ScriptingConsole(QDockWidget):
     def __init__(self, main_window):
         super().__init__("Scripting Console", main_window)
+        self.setObjectName("ScriptingConsoleDock")
         self.main_window = main_window
         self.setAllowedAreas(Qt.BottomDockWidgetArea | Qt.TopDockWidgetArea)
         
