@@ -730,9 +730,7 @@ class MainWindow(QMainWindow):
             QMessageBox.critical(self, "Error", f"Failed to load node: {str(e)}")
 
     def _icon(self, filename: str) -> QIcon:
-        """Load an icon from the project's icons/ folder, falling back to an
-        empty icon if the file is missing."""
-        path = os.path.join(os.getcwd(), 'icons', filename)
+        path = resource_path('icons', filename)
         if os.path.exists(path):
             return QIcon(path)
         return QIcon()

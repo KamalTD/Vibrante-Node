@@ -95,6 +95,7 @@ class QComboBox(_QComboBox):
 from src.ui.port_widget import PortWidget
 from src.ui.script_editor import ScriptEditorDialog
 from src.utils.runtime import AsyncRuntime
+from src.utils.paths import resource_path
 from uuid import uuid4
 
 class NodeWidget(QGraphicsItem):
@@ -784,7 +785,7 @@ class NodeWidget(QGraphicsItem):
 
         icon_path = self.node_definition.icon_path or getattr(type(self.node_definition), 'icon_path', None)
         if icon_path:
-            pixmap = QPixmap(icon_path)
+            pixmap = QPixmap(resource_path(icon_path))
             if not pixmap.isNull():
                 painter.drawPixmap(8, 8, 20, 20, pixmap)
                 self.title_text.setPos(32, 5)
