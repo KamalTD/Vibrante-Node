@@ -75,6 +75,7 @@ class LibraryPanel(QDockWidget):
 
     def __init__(self, parent=None):
         super().__init__("Node Library", parent)
+        self.setObjectName("NodeLibraryDock")
         self.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
         self._is_dark_theme = True  # Track current theme
         

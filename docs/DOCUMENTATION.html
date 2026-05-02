@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Technical Feature List — Vibrante-Node v1.8.4</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+       background: #1e1e2e; color: #cdd6f4; line-height: 1.7; }
+.sidebar { position: fixed; top: 0; left: 0; width: 220px; height: 100vh;
+           background: #181825; overflow-y: auto; padding: 20px 0; z-index: 100; }
+.sidebar h2 { font-size: 13px; color: #6c7086; text-transform: uppercase;
+              letter-spacing: .08em; padding: 0 18px 10px; }
+.sidebar a  { display: block; padding: 6px 18px; color: #a6adc8; text-decoration: none;
+              font-size: 13px; border-left: 3px solid transparent; transition: all .15s; }
+.sidebar a:hover, .sidebar a.active { color: #cba6f7; border-left-color: #cba6f7;
+                                       background: #1e1e2e; }
+.content { margin-left: 220px; max-width: 920px; padding: 40px 48px; }
+h1 { font-size: 2em; color: #cba6f7; border-bottom: 2px solid #313244; padding-bottom: 10px; margin: 28px 0 16px; }
+h2 { font-size: 1.45em; color: #89b4fa; margin: 32px 0 12px; }
+h3 { font-size: 1.15em; color: #94e2d5; margin: 22px 0 8px; }
+h4 { font-size: 1em; color: #f5c2e7; margin: 16px 0 6px; }
+p  { margin-bottom: 14px; color: #cdd6f4; }
+a  { color: #89b4fa; }
+ul, ol { margin: 10px 0 14px 22px; }
+li { margin-bottom: 5px; }
+code { background: #313244; color: #f38ba8; padding: 2px 6px; border-radius: 4px; font-size: .88em; font-family: 'Consolas','Courier New',monospace; }
+pre  { background: #181825; border: 1px solid #313244; border-radius: 8px;
+       padding: 18px 20px; overflow-x: auto; margin: 14px 0 20px; }
+pre code { background: none; color: #a6e3a1; padding: 0; font-size: .9em; }
+table { border-collapse: collapse; width: 100%; margin: 14px 0 20px; font-size: .92em; }
+th { background: #313244; color: #cba6f7; padding: 9px 14px; text-align: left; }
+td { border-top: 1px solid #313244; padding: 8px 14px; }
+tr:nth-child(even) td { background: #1e1e2e; }
+hr { border: none; border-top: 1px solid #313244; margin: 28px 0; }
+blockquote { border-left: 4px solid #6c7086; padding-left: 16px; color: #a6adc8; margin: 14px 0; }
+@media (max-width: 700px) { .sidebar { display: none; } .content { margin-left: 0; padding: 24px 18px; } }
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <h2>Vibrante-Node</h2>
+  <a href="USER_GUIDE.html">User Guide</a>
+<a href="NODE_BUILDER_API.html">Node Builder API</a>
+<a href="AUTOMATION_API.html">Automation API</a>
+<a href="DEVELOPER.html">Developer Documentation</a>
+<a href="DOCUMENTATION.html">Technical Feature List</a>
+<a href="RELEASE_v1.8.4.html">Release Notes v1.8.4</a>
+  <hr style="border-color:#313244;margin:10px 18px">
+  <h2 style="margin-top:8px">On this page</h2>
+  <a href="#vibrante-node-technical-api-architecture-documentation" style="padding-left:18px">Vibrante-Node - Technical API &amp; Architecture Documentation</a>
+<a href="#1-core-application-architecture" style="padding-left:18px">🚀 1. Core Application Architecture</a>
+<a href="#professional-python-code-editor" style="padding-left:32px">🔹 Professional Python Code Editor</a>
+<a href="#high-performance-execution-engine" style="padding-left:32px">🔹 High-Performance Execution Engine</a>
+<a href="#advanced-connection-system" style="padding-left:32px">🔹 Advanced Connection System</a>
+<a href="#2-part-1-node-scripting-api-basenode" style="padding-left:18px">🏗️ 2. Part 1: Node Scripting API (BaseNode)</a>
+<a href="#class-attributes" style="padding-left:32px">🔹 Class Attributes</a>
+<a href="#configuration-methods" style="padding-left:32px">🔹 Configuration Methods</a>
+<a href="#data-access-logging" style="padding-left:32px">🔹 Data Access &amp; Logging</a>
+<a href="#lifecycle-hooks" style="padding-left:32px">🔄 Lifecycle Hooks</a>
+<a href="#node-scripting-scenarios" style="padding-left:32px">📖 Node Scripting Scenarios</a>
+<a href="#3-part-2-workflow-automation-api" style="padding-left:18px">🤖 3. Part 2: Workflow Automation API</a>
+<a href="#available-globals" style="padding-left:32px">🔹 Available Globals</a>
+<a href="#automation-methods" style="padding-left:32px">🔹 Automation Methods</a>
+<a href="#automation-scenarios" style="padding-left:32px">📖 Automation Scenarios</a>
+<a href="#4-ui-architecture-features" style="padding-left:18px">🎨 4. UI Architecture &amp; Features</a>
+<a href="#5-technical-safety-reliability" style="padding-left:18px">🛠️ 5. Technical Safety &amp; Reliability</a>
+<a href="#6-v160-prism-integration-python-script-while-loop-utilities" style="padding-left:18px">🆕 6. v1.6.0 — Prism Integration, Python Script, While Loop, Utilities</a>
+<a href="#prism-pipeline-integration" style="padding-left:32px">Prism Pipeline Integration</a>
+<a href="#python-script-node" style="padding-left:32px">Python Script Node</a>
+<a href="#while-loop-node" style="padding-left:32px">While Loop Node</a>
+<a href="#utility-nodes" style="padding-left:32px">Utility Nodes</a>
+<a href="#file_save-widget-type" style="padding-left:32px">file_save Widget Type</a>
+<a href="#engine-runtime-fix" style="padding-left:32px">Engine Runtime Fix</a>
+<a href="#gemini-support-in-node-builder" style="padding-left:32px">Gemini Support in Node Builder</a>
+<a href="#7-v170-prism-pipeline-overhaul" style="padding-left:18px">🆕 7. v1.7.0 — Prism Pipeline Overhaul</a>
+<a href="#new-prism-getter-nodes" style="padding-left:32px">New Prism Getter Nodes</a>
+<a href="#prism-entity-enrichment" style="padding-left:32px">Prism Entity Enrichment</a>
+<a href="#dynamic-config-reader" style="padding-left:32px">Dynamic Config Reader</a>
+<a href="#get_tasks-multi-method-fallback" style="padding-left:32px">get_tasks Multi-Method Fallback</a>
+<a href="#atomic-workflow-save-safe-load" style="padding-left:32px">Atomic Workflow Save + Safe Load</a>
+<a href="#prism-v210-compatibility" style="padding-left:32px">Prism v2.1.0 Compatibility</a>
+<a href="#8-v18x-stability-node-reload-init-first-and-ux-polish" style="padding-left:18px">🆕 8. v1.8.x — Stability, Node Reload, Init-First, and UX Polish</a>
+<a href="#81-execution-engine" style="padding-left:32px">8.1 Execution Engine</a>
+<a href="#82-node-reload-workflow" style="padding-left:32px">8.2 Node Reload Workflow</a>
+<a href="#83-init-first-scene-ordering" style="padding-left:32px">8.3 Init-First Scene Ordering</a>
+<a href="#84-toolbar-context-menu" style="padding-left:32px">8.4 Toolbar &amp; Context Menu</a>
+<a href="#85-keyboard-shortcuts" style="padding-left:32px">8.5 Keyboard Shortcuts</a>
+<a href="#86-wire-type-coloring" style="padding-left:32px">8.6 Wire Type Coloring</a>
+<a href="#87-user-settings-persistence" style="padding-left:32px">8.7 User Settings Persistence</a>
+<a href="#88-node-builder-improvements" style="padding-left:32px">8.8 Node Builder Improvements</a>
+<a href="#89-bugfixes-v180v183" style="padding-left:32px">8.9 Bugfixes (v1.8.0–v1.8.3)</a>
+</nav>
+<main class="content">
+<h1 id="vibrante-node-technical-api-architecture-documentation">Vibrante-Node - Technical API &amp; Architecture Documentation</h1>
+<p>This document provides an exhaustive reference for the Vibrante-Node platform, covering core architecture, the custom node Scripting API, and the Workflow Automation system.</p>
+<hr />
+<h2 id="1-core-application-architecture">🚀 1. Core Application Architecture</h2>
+<h3 id="professional-python-code-editor">🔹 Professional Python Code Editor</h3>
+<p>The Node Builder features a fully-integrated, professional-grade source code editor:<br />
+- <strong>Intelligent Syntax Highlighting</strong>: Dracula-inspired theme for keywords, builtins, and multi-line strings.<br />
+- <strong>Auto-Indentation &amp; Linting</strong>: Automatic 4-space indent after colons (<code>:</code>) and instant syntax error detection with gutter highlighting.<br />
+- <strong>IntelliSense</strong>: Rich completion suggestions for Python keywords and common node methods.<br />
+- <strong>Bracket Matching &amp; Auto-Closing</strong>: Instant feedback for <code>()</code>, <code>[]</code>, and <code>{}</code>.</p>
+<h3 id="high-performance-execution-engine">🔹 High-Performance Execution Engine</h3>
+<ul>
+<li><strong>Asynchronous Execution</strong>: Uses a background <code>asyncio</code> loop to keep the UI responsive.</li>
+<li><strong>Topological Sorting</strong>: Automatically determines execution order for data-only graphs.</li>
+<li><strong>Hybrid Flow + Data Model (v1.0.5)</strong>:<ul>
+<li><strong>Flow-Based Routing</strong>: Execution follows <code>exec</code> pins sequentially.</li>
+<li><strong>Recursive Data Pulling</strong>: Before any node executes, it recursively triggers upstream data-only nodes to ensure all inputs are current.</li>
+<li><strong>Re-entrant Execution</strong>: Fixed deadlocks in <code>NetworkExecutor</code> to allow nested flow calls (essential for Loops).</li>
+</ul>
+</li>
+<li><strong>Prism Bootstrap Phase (v1.6.0)</strong>: Before main execution, the engine detects <code>prism_core_init</code> nodes and bootstraps PrismCore on the Qt main thread.</li>
+<li><strong>Recursive Data Propagation</strong>: A live system that pushes parameter changes through the entire node chain instantly as the user interacts with the UI.</li>
+</ul>
+<h3 id="advanced-connection-system">🔹 Advanced Connection System</h3>
+<ul>
+<li><strong>Bidirectional Dragging</strong>: Start wires from either input or output ports.</li>
+<li><strong>Single-Input Enforcement</strong>: Automatically replaces old wires when a new one is connected to an input port.</li>
+<li><strong>Redrag-to-Disconnect</strong>: Seamlessly move existing wires by dragging them away from ports.</li>
+</ul>
+<hr />
+<h2 id="2-part-1-node-scripting-api-basenode">🏗️ 2. Part 1: Node Scripting API (<code>BaseNode</code>)</h2>
+<p>All custom nodes must inherit from the <code>BaseNode</code> class.</p>
+<h3 id="class-attributes">🔹 Class Attributes</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Attribute</th>
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>name</code></td>
+<td style="text-align: left;"><code>str</code></td>
+<td style="text-align: left;">The display name of the node in the library and canvas.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>category</code></td>
+<td style="text-align: left;"><code>str</code></td>
+<td style="text-align: left;">Logical grouping (e.g., "Math", "IO", "Logic", "Prism").</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>description</code></td>
+<td style="text-align: left;"><code>str</code></td>
+<td style="text-align: left;">Tooltip/help text for the user.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>icon_path</code></td>
+<td style="text-align: left;"><code>str</code></td>
+<td style="text-align: left;">Path to an SVG/PNG icon.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="configuration-methods">🔹 Configuration Methods</h3>
+<ul>
+<li><strong><code>self.add_input(name, data_type, widget_type, options)</code></strong>: Adds an input port.</li>
+<li>Supported widgets: <code>"text"</code>, <code>"text_area"</code>, <code>"int"</code>, <code>"float"</code>, <code>"bool"</code>, <code>"dropdown"</code>, <code>"slider"</code>, <code>"file"</code>, <code>"file_save"</code>.</li>
+<li><strong><code>self.add_output(name, data_type)</code></strong>: Adds an output port.</li>
+<li><strong><code>self.add_parameter(name, type, default)</code></strong>: Defines internal data not linked to a port.</li>
+</ul>
+<h3 id="data-access-logging">🔹 Data Access &amp; Logging</h3>
+<ul>
+<li><strong><code>self.get_parameter(name)</code></strong> or <strong><code>self[name]</code></strong>: Safely retrieve current port/widget values.</li>
+<li><strong><code>self.set_parameter(name, value)</code></strong>: Programmatically update a widget and trigger downstream sync.</li>
+<li><strong><code>self.log_info(msg)</code></strong> / <strong><code>log_success</code></strong> / <strong><code>log_error</code></strong>: Thread-safe logging to the Event Log panel.</li>
+</ul>
+<h3 id="lifecycle-hooks">🔄 Lifecycle Hooks</h3>
+<ul>
+<li><strong><code>on_plug_sync(port_name, is_input, other_node, other_port_name)</code></strong>: (Sync) Called instantly on the GUI thread. Best for immediate data copying or UI updates.</li>
+<li><strong><code>on_unplug_sync(port_name, is_input)</code></strong>: (Sync) Cleanup logic when a wire is removed.</li>
+<li><strong><code>on_parameter_changed(name, value)</code></strong>: Triggered live as the user interacts with node widgets.</li>
+<li><strong><code>async on_plug(...)</code> / <code>on_unplug(...)</code></strong>: (Async) Background triggers for heavy IO or network tasks.</li>
+<li><strong><code>async def execute(self, inputs)</code></strong>: The main logic executed during a workflow run.</li>
+</ul>
+<h3 id="node-scripting-scenarios">📖 Node Scripting Scenarios</h3>
+<h4 id="scenario-a-reactive-multi-port-sync">Scenario A: Reactive Multi-Port Sync</h4>
+<pre><code class="language-python">def on_plug_sync(self, port_name, is_input, other_node, other_port_name):
+    if is_input:
+        data = other_node.get_parameter(other_port_name)
+        self.set_parameter(port_name, data)
+        self.log_info(f&quot;Connected to {other_node.name}&quot;)
+</code></pre>
+<h4 id="scenario-b-async-background-worker">Scenario B: Async Background Worker</h4>
+<pre><code class="language-python">async def execute(self, inputs):
+    self.log_info(&quot;Starting heavy calculation...&quot;)
+    await asyncio.sleep(2.0)
+    return {&quot;result&quot;: inputs.get(&quot;val&quot;) * 10}
+</code></pre>
+<hr />
+<h2 id="3-part-2-workflow-automation-api">🤖 3. Part 2: Workflow Automation API</h2>
+<p>The built-in <strong>Scripting Console</strong> allows for full application automation using Python.</p>
+<h3 id="available-globals">🔹 Available Globals</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Global</th>
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>app</code></td>
+<td style="text-align: left;"><code>MainWindow</code></td>
+<td style="text-align: left;">The main application instance.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>scene</code></td>
+<td style="text-align: left;"><code>NodeScene</code></td>
+<td style="text-align: left;">The active canvas/tab for node manipulation.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>registry</code></td>
+<td style="text-align: left;"><code>NodeRegistry</code></td>
+<td style="text-align: left;">Global registry of all available node types.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>git</code></td>
+<td style="text-align: left;"><code>GitWrapper</code></td>
+<td style="text-align: left;">Integrated source control management.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="automation-methods">🔹 Automation Methods</h3>
+<ul>
+<li><strong><code>scene.add_node_by_name(node_id, (x, y))</code></strong>: Spawn a node programmatically.</li>
+<li><strong><code>scene.connect_nodes(node_a, port_a, node_b, port_b)</code></strong>: Create wires between ports.</li>
+<li><strong><code>scene.clear()</code></strong>: Wipe the current workspace.</li>
+<li><strong><code>app.add_new_workflow(name)</code></strong>: Create a new tab.</li>
+<li><strong><code>app.execute_pipeline()</code></strong>: Trigger the workflow execution engine.</li>
+</ul>
+<h3 id="automation-scenarios">📖 Automation Scenarios</h3>
+<h4 id="scenario-c-pipeline-grid-generation">Scenario C: Pipeline Grid Generation</h4>
+<pre><code class="language-python">prev = None
+for i in range(3):
+    for j in range(3):
+        curr = scene.add_node_by_name(&quot;message_node&quot;, (j*300, i*200))
+        curr.set_parameter(&quot;msg&quot;, f&quot;Auto-Node {i}-{j}&quot;)
+        if prev: scene.connect_nodes(prev, &quot;out&quot;, curr, &quot;msg&quot;)
+        prev = curr
+</code></pre>
+<h4 id="scenario-d-automated-batch-execution">Scenario D: Automated Batch Execution</h4>
+<pre><code class="language-python">node = scene.find_node_by_name(&quot;Message Node&quot;)
+if node:
+    for val in [&quot;Test A&quot;, &quot;Test B&quot;, &quot;Test C&quot;]:
+        node.set_parameter(&quot;msg&quot;, val)
+        app.execute_pipeline()
+</code></pre>
+<hr />
+<h2 id="4-ui-architecture-features">🎨 4. UI Architecture &amp; Features</h2>
+<ul>
+<li><strong>Dynamic Node Scaling</strong>: Nodes automatically resize their bounding box based on port count and child widget dimensions.</li>
+<li><strong>Vertical Parameter Centering</strong>: Parameter widgets (Label + Input) are distributed and centered within the node body.</li>
+<li><strong>Clip-Path Header Rendering</strong>: Clean, solid title bars that perfectly respect the node's rounded corners without overlapping lines.</li>
+<li><strong>Global Theme System</strong>: Integrated Dracula-based <strong>Dark Mode</strong> and standard <strong>Light Mode</strong> available via the Themes menu.</li>
+<li><strong>SVG Vector Support</strong>: Native rendering for all icons in the library, toolbar, and node headers.</li>
+</ul>
+<hr />
+<h2 id="5-technical-safety-reliability">🛠️ 5. Technical Safety &amp; Reliability</h2>
+<ul>
+<li><strong>Thread-Safe UI Updates</strong>: Signal-based communication ensures that background threads can safely update the Event Log and widgets.</li>
+<li><strong>Crash Protection</strong>: A global exception hook captures unhandled errors and generates a <code>crash.log</code> file for instant debugging.</li>
+<li><strong>Robust Persistence</strong>: Full workflow states (positions, parameters, and connections) are serialized as clean, portable JSON.</li>
+<li><strong>Name Sanitization</strong>: Automated slug generation for custom nodes to ensure filesystem and class compatibility.</li>
+</ul>
+<hr />
+<h2 id="6-v160-prism-integration-python-script-while-loop-utilities">🆕 6. v1.6.0 — Prism Integration, Python Script, While Loop, Utilities</h2>
+<h3 id="prism-pipeline-integration">Prism Pipeline Integration</h3>
+<p>40+ new nodes in the <code>Prism</code> category enable full Prism Pipeline studio-management workflows:</p>
+<table>
+<thead>
+<tr>
+<th>Node Group</th>
+<th>Nodes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Core</td>
+<td><code>prism_core_init</code>, <code>prism_core_info</code></td>
+</tr>
+<tr>
+<td>Entities</td>
+<td><code>prism_get_assets</code>, <code>prism_get_shots</code>, <code>prism_build_entity</code>, <code>prism_create_entity</code></td>
+</tr>
+<tr>
+<td>Products</td>
+<td><code>prism_get_products</code>, <code>prism_get_product_versions</code>, <code>prism_create_product_version</code>, <code>prism_get_latest_product_path</code>, <code>prism_import_product</code></td>
+</tr>
+<tr>
+<td>Media</td>
+<td><code>prism_get_media</code>, <code>prism_get_media_versions</code>, <code>prism_create_playblast</code></td>
+</tr>
+<tr>
+<td>Scenes</td>
+<td><code>prism_get_current_scene</code>, <code>prism_get_scene_files</code>, <code>prism_get_preset_scenes</code>, <code>prism_open_scene</code>, <code>prism_save_scene_version</code>, <code>prism_create_scene_from_preset</code></td>
+</tr>
+<tr>
+<td>Config</td>
+<td><code>prism_get_config</code>, <code>prism_set_config</code>, <code>prism_get_project_config_path</code></td>
+</tr>
+<tr>
+<td>Projects</td>
+<td><code>prism_list_projects</code>, <code>prism_create_project</code>, <code>prism_change_project</code></td>
+</tr>
+<tr>
+<td>Departments/Tasks</td>
+<td><code>prism_get_departments</code>, <code>prism_get_tasks</code>, <code>prism_create_category</code></td>
+</tr>
+<tr>
+<td>Plugins</td>
+<td><code>prism_list_plugins</code>, <code>prism_get_plugin</code>, <code>prism_add_integration</code></td>
+</tr>
+<tr>
+<td>USD</td>
+<td><code>prism_usd_entity_path</code>, <code>prism_usd_department_layer_path</code>, <code>prism_usd_sublayer_path</code>, <code>prism_usd_update_department_layer</code>, <code>prism_usd_update_sublayer</code></td>
+</tr>
+<tr>
+<td>Advanced</td>
+<td><code>prism_eval</code>, <code>prism_monkey_patch</code>, <code>prism_register_callback</code>, <code>prism_trigger_callback</code>, <code>prism_popup</code>, <code>prism_send_cmd</code>, <code>prism_login_token</code>, <code>prism_studio_assign_project</code></td>
+</tr>
+</tbody>
+</table>
+<p>Key behaviours:<br />
+- <strong>Auto-bootstrap</strong>: <code>prism_core_init</code> is detected before execution and PrismCore is initialized on the Qt main thread.<br />
+- <strong>Zero-wiring</strong>: All <code>prism_*</code> nodes resolve the shared <code>PrismCore</code> via <code>resolve_prism_core()</code> — no <code>core</code> wire needed.<br />
+- <strong>Qt compat</strong>: <code>qt_compat.py</code> auto-stubs <code>shiboken</code> and backfills <code>QColor.fromString</code> so Prism loads without binary-wheel conflicts.</p>
+<h3 id="python-script-node">Python Script Node</h3>
+<ul>
+<li><code>python_script</code> node ships with an <strong>Edit Script</strong> button that opens a full code editor dialog.</li>
+<li>Scripts are persisted in the workflow JSON under the <code>python_code</code> parameter.</li>
+<li>The engine injects <code>python_code</code> into node instances before execution, so saved scripts always run correctly.</li>
+<li>User scripts should assign their primary output to a variable named <code>result</code>, which is published to the <code>result</code> output port.</li>
+</ul>
+<h3 id="while-loop-node">While Loop Node</h3>
+<ul>
+<li><code>while_loop</code> builtin: iterates while a boolean <code>condition</code> input is <code>True</code>.</li>
+<li>Safe re-entrant execution — the engine's lock-free design prevents deadlocks in nested loop scenarios.</li>
+</ul>
+<h3 id="utility-nodes">Utility Nodes</h3>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Nodes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>List</td>
+<td><code>create_list</code>, <code>get_list_item</code>, <code>list_length</code></td>
+</tr>
+<tr>
+<td>Dictionary</td>
+<td><code>create_dictionary</code>, <code>get_dict_value</code>, <code>set_dict_value</code></td>
+</tr>
+<tr>
+<td>String</td>
+<td><code>concat</code>, <code>split</code>, <code>replace</code>, <code>lowercase</code>, <code>uppercase</code>, <code>string_length</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="file_save-widget-type"><code>file_save</code> Widget Type</h3>
+<p>A new <code>"file_save"</code> widget type is available for output file path inputs. It opens a save-file dialog rather than an open-file dialog, making it suitable for export nodes.</p>
+<h3 id="engine-runtime-fix">Engine Runtime Fix</h3>
+<p>Workflow-saved parameters (including <code>python_code</code>) are now applied to node instances at startup so authored scripts embedded in saved workflows execute as intended.</p>
+<h3 id="gemini-support-in-node-builder">Gemini Support in Node Builder</h3>
+<p>The Node Builder includes integration hooks for Gemini-based assistance to scaffold example scripts, generate prompt templates, and provide sample code snippets. See <code>src/ui/gemini_chat.py</code> for configuration and usage notes.</p>
+<hr />
+<h2 id="7-v170-prism-pipeline-overhaul">🆕 7. v1.7.0 — Prism Pipeline Overhaul</h2>
+<h3 id="new-prism-getter-nodes">New Prism Getter Nodes</h3>
+<table>
+<thead>
+<tr>
+<th>Node</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>prism_get_scene_path</code></td>
+<td>Resolves the on-disk scene file path for an entity/department/task</td>
+</tr>
+<tr>
+<td><code>prism_get_export_path</code></td>
+<td>Returns the actual export file path (not directory); handles <code>output_type</code> <code>'3d'</code>/<code>'2d'</code></td>
+</tr>
+<tr>
+<td><code>prism_get_shot_by_sequence</code></td>
+<td>Looks up a specific shot within a sequence by name</td>
+</tr>
+<tr>
+<td><code>prism_get_asset_type_by_name</code></td>
+<td>Returns a single asset-type dict matching the given name</td>
+</tr>
+<tr>
+<td><code>prism_get_asset_types_by_project</code></td>
+<td>Lists all asset types defined in the active project</td>
+</tr>
+<tr>
+<td><code>prism_get_assets_by_type</code></td>
+<td>Returns all assets belonging to a specific asset type</td>
+</tr>
+</tbody>
+</table>
+<h3 id="prism-entity-enrichment">Prism Entity Enrichment</h3>
+<p>Entity dicts produced by Prism getter nodes now include <code>path</code>, <code>location</code>, and <code>paths</code> fields, enabling downstream nodes to resolve scene file locations without additional bridge calls.</p>
+<h3 id="dynamic-config-reader">Dynamic Config Reader</h3>
+<p>Department abbreviations and other studio-specific config values are read at runtime from the project config (<code>core.getConfig()</code>). No more hardcoded values in node logic.</p>
+<h3 id="get_tasks-multi-method-fallback"><code>get_tasks</code> Multi-Method Fallback</h3>
+<p><code>prism_get_tasks</code> tries <code>getTasks</code>, <code>getTasksForEntity</code>, and <code>task_mgr.getTasks</code> in sequence to stay compatible with multiple Prism versions.</p>
+<h3 id="atomic-workflow-save-safe-load">Atomic Workflow Save + Safe Load</h3>
+<p>The scene strips non-serializable runtime values before writing workflow JSON. An empty or corrupt JSON file on load triggers a graceful error prompt instead of an application crash.</p>
+<h3 id="prism-v210-compatibility">Prism v2.1.0 Compatibility</h3>
+<ul>
+<li><code>getShots()</code> now handles both the flat-list shape (v2.1.0) and the dict shape (older versions).</li>
+<li><code>createProduct</code> API signature updated for v2.1.0.</li>
+<li>Version directory is created on disk before writing a new scene version file.</li>
+</ul>
+<hr />
+<h2 id="8-v18x-stability-node-reload-init-first-and-ux-polish">🆕 8. v1.8.x — Stability, Node Reload, Init-First, and UX Polish</h2>
+<h3 id="81-execution-engine">8.1 Execution Engine</h3>
+<table>
+<thead>
+<tr>
+<th>Change</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Bypass flag</strong></td>
+<td>Bypassed nodes are skipped; their primary input is forwarded as output and <code>exec_out</code> fires normally</td>
+</tr>
+<tr>
+<td><strong><code>for_loop</code> behavior</strong></td>
+<td>Fires <code>exec_out</code> once after building the complete index list; per-item iteration is handled by <code>loop_body</code></td>
+</tr>
+<tr>
+<td><strong><code>on_parameter_changed</code> timing</strong></td>
+<td>Not called during pre-execute sync; called reactively during execution when upstream output is propagated to a downstream input (v1.8.1–v1.8.3)</td>
+</tr>
+<tr>
+<td><strong>Hotkey guard</strong></td>
+<td>Canvas hotkeys are suppressed when a text input widget has keyboard focus</td>
+</tr>
+</tbody>
+</table>
+<h3 id="82-node-reload-workflow">8.2 Node Reload Workflow</h3>
+<p>Nodes can be edited and refreshed without restarting the application:</p>
+<ol>
+<li>Edit the node's JSON definition (via Node Builder or directly on disk).</li>
+<li>Press <code>Ctrl+R</code> (or right-click &gt; "Reload Node") to reload.</li>
+<li><code>NodeRegistry.reload_node_definition(node_id)</code> re-reads the JSON and recompiles the class.</li>
+<li><code>NodeWidget.reload_definition(new_definition)</code> rebuilds ports in place, preserves compatible parameter values, and removes wires to deleted ports.</li>
+<li><code>NodeScene.reload_node_type(node_id)</code> applies the reload to all live instances of that type.</li>
+</ol>
+<p>Registry source tracking: <code>NodeRegistry._source_paths</code> maps every loaded <code>node_id</code> to its absolute JSON file path. Use <code>get_source_path(node_id)</code> and <code>reload_node_definition(node_id)</code> programmatically.</p>
+<h3 id="83-init-first-scene-ordering">8.3 Init-First Scene Ordering</h3>
+<p><code>NodeScene.load_workflow_model()</code> performs two passes when loading a workflow:<br />
+- <strong>Pass 1</strong>: Nodes with <code>init_priority &gt; 0</code> are created and connected first.<br />
+- <strong>Pass 2</strong>: All remaining nodes are created and connected.</p>
+<p>This ensures authentication and server-connect nodes are wired before downstream consumers are instantiated.</p>
+<p>Mark/unmark nodes via right-click &gt; "Init First" / "Remove Init First".</p>
+<h3 id="84-toolbar-context-menu">8.4 Toolbar &amp; Context Menu</h3>
+<p>New toolbar buttons: Add Node, Add Sticky Note, Add Network Box, Edit Selected Node, Reload Selected Node.</p>
+<p>Context menu additions (right-click on a node):<br />
+- "Edit Node ('node_id')" — opens Node Builder for that definition.<br />
+- "Reload Node ('node_id')" — reloads from disk and refreshes widget in place.<br />
+- "Init First" / "Remove Init First" — toggles init priority.</p>
+<h3 id="85-keyboard-shortcuts">8.5 Keyboard Shortcuts</h3>
+<table>
+<thead>
+<tr>
+<th>Shortcut</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Tab</code></td>
+<td>Add Node (search popup at canvas centre)</td>
+</tr>
+<tr>
+<td><code>Ctrl+E</code></td>
+<td>Edit Selected Node (opens Node Builder)</td>
+</tr>
+<tr>
+<td><code>Ctrl+R</code></td>
+<td>Reload Selected Node from disk</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+R</code></td>
+<td>Reload All Nodes from disk</td>
+</tr>
+<tr>
+<td><code>F5</code></td>
+<td>Run workflow</td>
+</tr>
+<tr>
+<td><code>F</code></td>
+<td>Focus view</td>
+</tr>
+<tr>
+<td><code>Ctrl+C</code> / <code>Ctrl+V</code></td>
+<td>Copy / Paste nodes</td>
+</tr>
+<tr>
+<td><code>Delete</code></td>
+<td>Delete selected items</td>
+</tr>
+</tbody>
+</table>
+<h3 id="86-wire-type-coloring">8.6 Wire Type Coloring</h3>
+<p>Wires are rendered in the color associated with the <strong>output port's data type</strong> (matching port dot colors). The light theme overrides all wire colors to black for legibility.</p>
+<h3 id="87-user-settings-persistence">8.7 User Settings Persistence</h3>
+<p>Theme selection, window geometry, and dock layout are saved to <code>QSettings</code> (key group <code>VibrateNode/session</code>) on close and restored on the next launch.</p>
+<h3 id="88-node-builder-improvements">8.8 Node Builder Improvements</h3>
+<ul>
+<li><strong>Display Name</strong> field: sets the text shown in the canvas header independently of the node ID.</li>
+<li><code>icon_path</code> is now correctly reflected on the canvas widget after save.</li>
+<li>Exec checkbox no longer resets the execute method body.</li>
+<li>Template includes an <code>on_parameter_changed</code> placeholder with a docstring example.</li>
+</ul>
+<h3 id="89-bugfixes-v180v183">8.9 Bugfixes (v1.8.0–v1.8.3)</h3>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v1.8.0</td>
+<td><code>for_loop</code> now iterates all items correctly (was stopping after first)</td>
+</tr>
+<tr>
+<td>v1.8.0</td>
+<td>Houdini headless executor validates hython path before subprocess launch</td>
+</tr>
+<tr>
+<td>v1.8.0</td>
+<td><code>import_alembic</code> SOP context defaults to <code>/obj</code></td>
+</tr>
+<tr>
+<td>v1.8.0</td>
+<td>Blender alembic frame args renamed; <code>makedirs</code> added</td>
+</tr>
+<tr>
+<td>v1.8.0</td>
+<td><code>deadline_job_status</code> crash fixed; engine hardened against <code>None</code> returns</td>
+</tr>
+<tr>
+<td>v1.8.0</td>
+<td>6 professional VFX pipeline workflow examples added to <code>workflows/</code></td>
+</tr>
+<tr>
+<td>v1.8.1</td>
+<td><code>on_parameter_changed</code> stale-value bug fixed — value reflects latest widget state</td>
+</tr>
+<tr>
+<td>v1.8.1</td>
+<td>Node Builder execute method no longer resets when switching tabs</td>
+</tr>
+<tr>
+<td>v1.8.2</td>
+<td>Dropdown returns selected item correctly during <code>execute</code></td>
+</tr>
+<tr>
+<td>v1.8.2</td>
+<td><code>set_parameter</code> no longer resets dropdown selection on options update</td>
+</tr>
+<tr>
+<td>v1.8.3</td>
+<td><code>on_parameter_changed</code> removed from pre-execute input sync phase</td>
+</tr>
+<tr>
+<td>v1.8.3</td>
+<td><code>on_parameter_changed</code> removed from reactive output propagation path</td>
+</tr>
+</tbody>
+</table>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var links = document.querySelectorAll('.sidebar a');
+    var headings = document.querySelectorAll('h1,h2,h3');
+    window.addEventListener('scroll', function() {
+        var cur = '';
+        headings.forEach(function(h) { if (h.offsetTop <= window.scrollY + 80) cur = h.id; });
+        links.forEach(function(a) {
+            a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+        });
+    });
+});
+</script>
+</body>
+</html>

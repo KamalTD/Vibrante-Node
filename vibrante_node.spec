@@ -1,5 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
-# PyInstaller spec for Vibrante-Node v1.8.3 Windows 64-bit build
+# PyInstaller spec for Vibrante-Node v1.8.4 Windows 64-bit build
 # Run: pyinstaller vibrante_node.spec
 
 import os
@@ -28,6 +28,8 @@ datas = google_datas + grpc_datas + [
     ('workflows', 'workflows'),
     # Examples
     ('examples', 'examples'),
+    # HTML documentation (Help menu)
+    ('docs', 'docs'),
 ]
 
 a = Analysis(

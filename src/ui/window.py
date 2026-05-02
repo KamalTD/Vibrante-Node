@@ -379,27 +379,37 @@ class MainWindow(QMainWindow):
 
         # Help Menu
         help_menu = menubar.addMenu('&Help')
-        
+
+        help_home_act = QAction('Help Home', self)
+        help_home_act.triggered.connect(self._open_help_home)
+        help_menu.addAction(help_home_act)
+
+        help_menu.addSeparator()
+
         user_guide_act = QAction('User Guide', self)
         user_guide_act.triggered.connect(lambda: self._open_doc("USER_GUIDE.md"))
         help_menu.addAction(user_guide_act)
-        
+
         node_builder_act = QAction('Node Builder API', self)
         node_builder_act.triggered.connect(lambda: self._open_doc("NODE_BUILDER_API.md"))
         help_menu.addAction(node_builder_act)
-        
+
         automation_act = QAction('Automation API', self)
         automation_act.triggered.connect(lambda: self._open_doc("AUTOMATION_API.md"))
         help_menu.addAction(automation_act)
-        
+
         dev_doc_act = QAction('Developer Documentation', self)
         dev_doc_act.triggered.connect(lambda: self._open_doc("DEVELOPER.md"))
         help_menu.addAction(dev_doc_act)
-        
+
         feature_list_act = QAction('Technical Feature List', self)
         feature_list_act.triggered.connect(lambda: self._open_doc("DOCUMENTATION.md"))
         help_menu.addAction(feature_list_act)
-        
+
+        release_act = QAction('Release Notes v1.8.4', self)
+        release_act.triggered.connect(lambda: self._open_doc("RELEASE_v1.8.4.md"))
+        help_menu.addAction(release_act)
+
         help_menu.addSeparator()
 
         gemini_act = QAction('Link to Gemini', self)
@@ -414,11 +424,26 @@ class MainWindow(QMainWindow):
 
     def _open_doc(self, filename):
         import webbrowser
+        # Prefer the pre-built HTML version in docs/
+        html_name = filename.replace(".md", ".html")
+        html_path = os.path.abspath(os.path.join(os.getcwd(), "docs", html_name))
+        if os.path.exists(html_path):
+            webbrowser.open("file:///" + html_path.replace("\\", "/"))
+            return
+        # Fall back to raw .md if HTML is missing
         path = os.path.abspath(os.path.join(os.getcwd(), filename))
         if os.path.exists(path):
             webbrowser.open(path)
         else:
             QMessageBox.critical(self, "Error", f"Documentation file not found: {filename}")
+
+    def _open_help_home(self):
+        import webbrowser
+        index_path = os.path.abspath(os.path.join(os.getcwd(), "docs", "index.html"))
+        if os.path.exists(index_path):
+            webbrowser.open("file:///" + index_path.replace("\\", "/"))
+        else:
+            QMessageBox.critical(self, "Error", "Help index not found. Run tools/build_docs.py to generate it.")
 
     def _show_about(self):
         description = (
@@ -437,7 +462,7 @@ class MainWindow(QMainWindow):
         )
         
         QMessageBox.about(self, "About Vibrante-Node",
-            f"<h3>Vibrante-Node v1.8.3</h3>"
+            f"<h3>Vibrante-Node v1.8.4</h3>"
             f"<p>{description}</p>"
             f"<hr>"
             f"<p><b>Copyright &copy; 2026 Mahmoud Kamal - KamalTD</b></p>"
@@ -454,6 +479,7 @@ class MainWindow(QMainWindow):
 
     def _init_toolbar(self):
         toolbar = self.addToolBar("Main")
+        toolbar.setObjectName("MainToolBar")
         toolbar.setMovable(False)
         
         # New Tab

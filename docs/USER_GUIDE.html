@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>User Guide — Vibrante-Node v1.8.4</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+       background: #1e1e2e; color: #cdd6f4; line-height: 1.7; }
+.sidebar { position: fixed; top: 0; left: 0; width: 220px; height: 100vh;
+           background: #181825; overflow-y: auto; padding: 20px 0; z-index: 100; }
+.sidebar h2 { font-size: 13px; color: #6c7086; text-transform: uppercase;
+              letter-spacing: .08em; padding: 0 18px 10px; }
+.sidebar a  { display: block; padding: 6px 18px; color: #a6adc8; text-decoration: none;
+              font-size: 13px; border-left: 3px solid transparent; transition: all .15s; }
+.sidebar a:hover, .sidebar a.active { color: #cba6f7; border-left-color: #cba6f7;
+                                       background: #1e1e2e; }
+.content { margin-left: 220px; max-width: 920px; padding: 40px 48px; }
+h1 { font-size: 2em; color: #cba6f7; border-bottom: 2px solid #313244; padding-bottom: 10px; margin: 28px 0 16px; }
+h2 { font-size: 1.45em; color: #89b4fa; margin: 32px 0 12px; }
+h3 { font-size: 1.15em; color: #94e2d5; margin: 22px 0 8px; }
+h4 { font-size: 1em; color: #f5c2e7; margin: 16px 0 6px; }
+p  { margin-bottom: 14px; color: #cdd6f4; }
+a  { color: #89b4fa; }
+ul, ol { margin: 10px 0 14px 22px; }
+li { margin-bottom: 5px; }
+code { background: #313244; color: #f38ba8; padding: 2px 6px; border-radius: 4px; font-size: .88em; font-family: 'Consolas','Courier New',monospace; }
+pre  { background: #181825; border: 1px solid #313244; border-radius: 8px;
+       padding: 18px 20px; overflow-x: auto; margin: 14px 0 20px; }
+pre code { background: none; color: #a6e3a1; padding: 0; font-size: .9em; }
+table { border-collapse: collapse; width: 100%; margin: 14px 0 20px; font-size: .92em; }
+th { background: #313244; color: #cba6f7; padding: 9px 14px; text-align: left; }
+td { border-top: 1px solid #313244; padding: 8px 14px; }
+tr:nth-child(even) td { background: #1e1e2e; }
+hr { border: none; border-top: 1px solid #313244; margin: 28px 0; }
+blockquote { border-left: 4px solid #6c7086; padding-left: 16px; color: #a6adc8; margin: 14px 0; }
+@media (max-width: 700px) { .sidebar { display: none; } .content { margin-left: 0; padding: 24px 18px; } }
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <h2>Vibrante-Node</h2>
+  <a href="USER_GUIDE.html">User Guide</a>
+<a href="NODE_BUILDER_API.html">Node Builder API</a>
+<a href="AUTOMATION_API.html">Automation API</a>
+<a href="DEVELOPER.html">Developer Documentation</a>
+<a href="DOCUMENTATION.html">Technical Feature List</a>
+<a href="RELEASE_v1.8.4.html">Release Notes v1.8.4</a>
+  <hr style="border-color:#313244;margin:10px 18px">
+  <h2 style="margin-top:8px">On this page</h2>
+  <a href="#vibrante-node-user-guide" style="padding-left:18px">Vibrante-Node User Guide</a>
+<a href="#interface-basics" style="padding-left:18px">🕹️ Interface Basics</a>
+<a href="#keyboard-shortcuts" style="padding-left:18px">⌨️ Keyboard Shortcuts</a>
+<a href="#building-a-workflow" style="padding-left:18px">🔗 Building a Workflow</a>
+<a href="#advanced-execution-flow-v105" style="padding-left:18px">⚙️ Advanced Execution Flow (v1.0.5+)</a>
+<a href="#topological-execution-engine" style="padding-left:32px">🧠 Topological Execution Engine</a>
+<a href="#working-with-loops" style="padding-left:18px">🔄 Working with Loops</a>
+<a href="#python-script-node-v160" style="padding-left:18px">🐍 Python Script Node (v1.6.0)</a>
+<a href="#utility-nodes-v160" style="padding-left:18px">🧩 Utility Nodes (v1.6.0)</a>
+<a href="#prism-pipeline-integration-v160" style="padding-left:18px">🎬 Prism Pipeline Integration (v1.6.0)</a>
+<a href="#getting-started-with-prism-nodes" style="padding-left:32px">Getting started with Prism nodes</a>
+<a href="#available-prism-node-groups" style="padding-left:32px">Available Prism node groups</a>
+<a href="#using-the-node-builder" style="padding-left:18px">🛠️ Using the Node Builder</a>
+<a href="#editing-reloading-nodes-v18x" style="padding-left:18px">🔄 Editing &amp; Reloading Nodes (v1.8.x)</a>
+<a href="#init-first-nodes-v18x" style="padding-left:18px">🚦 Init First Nodes (v1.8.x)</a>
+<a href="#themes" style="padding-left:18px">🌓 Themes</a>
+<a href="#troubleshooting" style="padding-left:18px">🪵 Troubleshooting</a>
+</nav>
+<main class="content">
+<h1 id="vibrante-node-user-guide">Vibrante-Node User Guide</h1>
+<p>Welcome to Vibrante-Node! This guide will help you get started with building and executing visual workflows.</p>
+<h2 id="interface-basics">🕹️ Interface Basics</h2>
+<ul>
+<li><strong>Node Library (Left)</strong>: Browse and search for nodes. Drag-and-drop or double-click to add them to the canvas.</li>
+<li><strong>Main Canvas (Center)</strong>: Your workspace.<ul>
+<li><strong>Pan</strong>: Middle-mouse button drag.</li>
+<li><strong>Zoom</strong>: Mouse wheel.</li>
+<li><strong>Focus</strong>: Press <code>F</code> to focus on selected nodes or the center of the graph.</li>
+<li><strong>Copy/Paste</strong>: Press <code>Ctrl+C</code> to copy selected nodes and <code>Ctrl+V</code> to paste them at the cursor position.</li>
+<li><strong>Delete</strong>: Select an item and press the <code>Delete</code> key.</li>
+</ul>
+</li>
+<li><strong>Event Log (Bottom)</strong>: Real-time feedback on execution, outputs, and connection events.</li>
+</ul>
+<h2 id="keyboard-shortcuts">⌨️ Keyboard Shortcuts</h2>
+<table>
+<thead>
+<tr>
+<th>Shortcut</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Tab</code></td>
+<td>Open the "Add Node" search popup at the canvas centre</td>
+</tr>
+<tr>
+<td><code>F5</code></td>
+<td>Run the current workflow</td>
+</tr>
+<tr>
+<td><code>F</code></td>
+<td>Focus view on selected nodes (or graph centre)</td>
+</tr>
+<tr>
+<td><code>Ctrl+C</code></td>
+<td>Copy selected nodes</td>
+</tr>
+<tr>
+<td><code>Ctrl+V</code></td>
+<td>Paste nodes at cursor position</td>
+</tr>
+<tr>
+<td><code>Delete</code></td>
+<td>Delete selected nodes or wires</td>
+</tr>
+<tr>
+<td><code>Ctrl+E</code></td>
+<td>Open Node Builder for the selected node's definition</td>
+</tr>
+<tr>
+<td><code>Ctrl+R</code></td>
+<td>Reload the selected node from disk</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+R</code></td>
+<td>Reload all nodes from disk</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Note</strong>: Hotkeys are disabled when a text input field on the canvas has keyboard focus, so typing in widgets will not accidentally trigger shortcuts.</p>
+</blockquote>
+<h2 id="building-a-workflow">🔗 Building a Workflow</h2>
+<ol>
+<li><strong>Add Nodes</strong>: Use the library or right-click on the canvas to add nodes.</li>
+<li><strong>Connect Ports</strong>: Click and drag from an <strong>Output Port</strong> (right side) to an <strong>Input Port</strong> (left side).<ul>
+<li><em>Live Sync</em>: When you connect two nodes, the data from the source is instantly pushed to the destination.</li>
+</ul>
+</li>
+<li><strong>Configure Data</strong>: Interact with widgets (text boxes, sliders, etc.) directly on the node.<ul>
+<li><em>Reactive Flow</em>: Destination widgets are disabled when connected but will <strong>update live</strong> as you change the source node's values.</li>
+</ul>
+</li>
+<li><strong>Run</strong>: Click the <strong>Play</strong> icon in the toolbar or press <code>F5</code>.</li>
+</ol>
+<h2 id="advanced-execution-flow-v105">⚙️ Advanced Execution Flow (v1.0.5+)</h2>
+<p>Vibrante-Node uses a hybrid <strong>Flow + Data</strong> execution model:</p>
+<ul>
+<li><strong>Flow Pins (Exec)</strong>: Use <code>exec_in</code> and <code>exec_out</code> (white ports) to define the order of operations. Execution follows these wires sequentially.</li>
+<li><strong>Data Pulling</strong>: Before a node executes, it automatically "pulls" the most recent values from all connected data nodes (e.g., Variable or Math nodes), even if they don't have execution pins.</li>
+<li><strong>Data-Only Nodes</strong>: You can create nodes without <code>exec</code> pins (using the <code>use_exec: false</code> property in the Node Builder). These nodes are reactive — they update their outputs immediately when their inputs change and are "pulled" by downstream flow nodes.</li>
+</ul>
+<h3 id="topological-execution-engine">🧠 Topological Execution Engine</h3>
+<p>For workflows without explicit execution wires (Data-Flow only), the engine uses <strong>Topological Sorting</strong> to determine the correct order of operations. This ensures that every node has its required data before it begins processing, effectively resolving dependencies layer by layer.</p>
+<h2 id="working-with-loops">🔄 Working with Loops</h2>
+<p>To iterate over data or repeat operations, use the <strong>Loop</strong> nodes:</p>
+<ol>
+<li><strong>For Loop</strong>: Generates a list of indices (e.g., 0 to N-1) and fires <code>exec_out</code> <strong>once</strong> after building the full list — it does not iterate itself.<ul>
+<li>Connect its <code>indices</code> output to a <code>Loop Body</code>'s list input.</li>
+<li>Connect its <code>exec_out</code> to the <code>Loop Body</code>'s <code>exec_in</code> to start iteration.</li>
+</ul>
+</li>
+<li><strong>Loop Body</strong>: Receives the index list and iterates over it, executing its downstream chain once per item.<ul>
+<li><code>current_index</code>: Provides the current value for the iteration.</li>
+<li><code>exec_out</code>: Triggers once for every item in the list.</li>
+<li><code>exec_on_finished</code>: Triggers once the entire loop is complete.</li>
+</ul>
+</li>
+<li><strong>Break Condition</strong>: You can connect a boolean value to the <code>break_condition</code> input of the <code>Loop Body</code> to stop the loop early.</li>
+<li><strong>While Loop</strong> (v1.6.0): The <code>while_loop</code> node repeats its <code>exec_out</code> chain while its <code>condition</code> input is <code>True</code>. Connect a boolean-producing node to <code>condition</code> to control when the loop stops.</li>
+</ol>
+<h2 id="python-script-node-v160">🐍 Python Script Node (v1.6.0)</h2>
+<p>Place a <code>python_script</code> node on the canvas and click the <strong>Edit Script</strong> button to author custom Python code directly in the app.</p>
+<ul>
+<li>Your script receives an <code>inputs</code> dict containing the current values of all connected input ports.</li>
+<li>Assign your primary output to a variable named <code>result</code> — it will be published to the <code>result</code> output port.</li>
+<li>Scripts are saved into the workflow JSON and restored automatically when you reopen the file.</li>
+</ul>
+<p><strong>Example script:</strong></p>
+<pre><code class="language-python">val = inputs.get('data')
+result = val.upper() if isinstance(val, str) else val
+</code></pre>
+<h2 id="utility-nodes-v160">🧩 Utility Nodes (v1.6.0)</h2>
+<p>New helper nodes are available in the node library for common data operations:</p>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Available Nodes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>List</strong></td>
+<td><code>create_list</code>, <code>get_list_item</code>, <code>list_length</code></td>
+</tr>
+<tr>
+<td><strong>Dictionary</strong></td>
+<td><code>create_dictionary</code>, <code>get_dict_value</code>, <code>set_dict_value</code></td>
+</tr>
+<tr>
+<td><strong>String</strong></td>
+<td><code>concat</code>, <code>split</code>, <code>replace</code>, <code>lowercase</code>, <code>uppercase</code>, <code>string_length</code></td>
+</tr>
+</tbody>
+</table>
+<p>These nodes are data-only (no exec pins) and update reactively as their inputs change.</p>
+<h2 id="prism-pipeline-integration-v160">🎬 Prism Pipeline Integration (v1.6.0)</h2>
+<p>Vibrante-Node v1.6.0 includes full integration with <a href="https://prism-pipeline.com/">Prism Pipeline</a>.</p>
+<h3 id="getting-started-with-prism-nodes">Getting started with Prism nodes</h3>
+<ol>
+<li><strong>Add <code>prism_core_init</code></strong>: Drag a <code>prism_core_init</code> node onto the canvas. Set the <code>prism_root</code> path to your Prism installation directory.</li>
+<li><strong>Run</strong>: When you execute the graph, the engine automatically initializes PrismCore before any other node runs. No wiring between the init node and other Prism nodes is required.</li>
+<li><strong>Add Prism nodes</strong>: Browse the <code>Prism</code> category in the node library. All <code>prism_*</code> nodes share the same initialized core automatically.</li>
+</ol>
+<h3 id="available-prism-node-groups">Available Prism node groups</h3>
+<table>
+<thead>
+<tr>
+<th>Group</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Core</td>
+<td>Initialize and inspect PrismCore</td>
+</tr>
+<tr>
+<td>Entities</td>
+<td>Retrieve assets, shots, build or create entities</td>
+</tr>
+<tr>
+<td>Products</td>
+<td>Manage product versions, import products</td>
+</tr>
+<tr>
+<td>Media</td>
+<td>Access media and media versions, create playblasts</td>
+</tr>
+<tr>
+<td>Scenes</td>
+<td>Open, save, and manage scene files</td>
+</tr>
+<tr>
+<td>Config</td>
+<td>Read and write Prism configuration values</td>
+</tr>
+<tr>
+<td>Projects</td>
+<td>List, create, and switch projects</td>
+</tr>
+<tr>
+<td>Departments/Tasks</td>
+<td>Browse departments, tasks, and categories</td>
+</tr>
+<tr>
+<td>Plugins</td>
+<td>List and retrieve loaded Prism plugins</td>
+</tr>
+<tr>
+<td>USD</td>
+<td>Resolve USD layer and entity paths</td>
+</tr>
+<tr>
+<td>Advanced</td>
+<td>Eval, monkey-patch, callbacks, popups, token auth</td>
+</tr>
+</tbody>
+</table>
+<h2 id="using-the-node-builder">🛠️ Using the Node Builder</h2>
+<p>Vibrante-Node allows you to create your own nodes with custom Python logic:</p>
+<ol>
+<li><strong>Open Builder</strong>: Click the "New Node" icon in the toolbar, or press <code>Ctrl+E</code> with a node selected to edit an existing definition.</li>
+<li><strong>Configure UI</strong>:<ul>
+<li>Set a <strong>Display Name</strong> (v1.8.x) — the text shown in the node's canvas header, independent of the node's internal ID.</li>
+<li>Add <strong>Inputs</strong> and <strong>Outputs</strong> using the tables.</li>
+<li>Select <strong>Type</strong> and <strong>Widget</strong> using the interactive dropdowns.</li>
+</ul>
+</li>
+<li><strong>Write Logic</strong>:<ul>
+<li><code>on_plug_sync</code>: Use this to react immediately to connections (e.g., <code>other_node.get_parameter(other_port_name)</code>).</li>
+<li><code>on_parameter_changed</code>: Use this to update outputs reactively as the user types. Also called during execution when upstream data changes mid-run (reactive nodes). Not called during pre-execute input sync.</li>
+<li><code>execute</code>: The main logic run when the workflow executes.</li>
+</ul>
+</li>
+<li><strong>Save</strong>: Click "Save &amp; Register". Your node is now ready to use.</li>
+</ol>
+<p><strong>Gemini Assistance</strong>: When creating node logic in the Node Builder you can enable Gemini assistance to generate starter code, prompt templates, or example snippets. It is optional and configurable; always validate generated code before running.</p>
+<h2 id="editing-reloading-nodes-v18x">🔄 Editing &amp; Reloading Nodes (v1.8.x)</h2>
+<p>After a node definition has been saved you can iterate on it without closing and reopening the app:</p>
+<ol>
+<li><strong>Edit</strong>: Select the node on canvas and press <code>Ctrl+E</code> (or right-click &gt; "Edit Node"). The Node Builder opens with that node's current definition pre-loaded.</li>
+<li><strong>Save changes</strong> in the Node Builder — this writes the updated JSON to disk.</li>
+<li><strong>Reload</strong>: Press <code>Ctrl+R</code> (or right-click &gt; "Reload Node"). The canvas widget is rebuilt in place — ports are updated, saved parameter values are re-applied, and connections that are still compatible are preserved.</li>
+<li>To reload every node type at once (e.g., after a bulk edit), press <code>Ctrl+Shift+R</code>.</li>
+</ol>
+<h2 id="init-first-nodes-v18x">🚦 Init First Nodes (v1.8.x)</h2>
+<p>Some nodes need to be fully initialized before any other node in the graph runs — for example, an authentication node or a server-connection node. You can mark any node as <strong>Init First</strong>:</p>
+<ul>
+<li>Right-click the node on the canvas and select <strong>"Init First"</strong> to promote it. A badge appears on the node header.</li>
+<li>Right-click again and select <strong>"Remove Init First"</strong> to demote it.</li>
+</ul>
+<p>When a workflow is loaded, all Init First nodes (those with <code>init_priority &gt; 0</code>) are created and wired up <strong>before</strong> all other nodes. This ensures that downstream nodes that depend on the init result receive it correctly on first execution.</p>
+<h2 id="themes">🌓 Themes</h2>
+<p>You can switch between <strong>Dark</strong> and <strong>Light</strong> modes at any time using the <strong>Themes</strong> menu. Themes apply globally.</p>
+<h2 id="troubleshooting">🪵 Troubleshooting</h2>
+<ul>
+<li><strong>Node is Red</strong>: The node failed during execution. Check the <strong>Event Log</strong> for the error.</li>
+<li><strong>Widgets are Disabled</strong>: This is normal! Widgets are disabled when they are receiving data from another node via a wire.</li>
+<li><strong>Prism nodes show "PrismCore not initialized"</strong>: Make sure a <code>prism_core_init</code> node is present in the graph and that <code>prism_root</code> points to a valid Prism installation.</li>
+<li><strong>Crashes</strong>: If the app closes, check <code>crash.log</code> in the project folder for details.</li>
+<li><strong>Stale ports after editing a node</strong>: If a node's ports look outdated after you edited its JSON definition, select the node and press <code>Ctrl+R</code> to reload it from disk. All live instances of that node type on the canvas will be refreshed.</li>
+</ul>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var links = document.querySelectorAll('.sidebar a');
+    var headings = document.querySelectorAll('h1,h2,h3');
+    window.addEventListener('scroll', function() {
+        var cur = '';
+        headings.forEach(function(h) { if (h.offsetTop <= window.scrollY + 80) cur = h.id; });
+        links.forEach(function(a) {
+            a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+        });
+    });
+});
+</script>
+</body>
+</html>
