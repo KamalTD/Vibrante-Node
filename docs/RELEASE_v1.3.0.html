@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Release Notes v1.3.0 — Vibrante-Node v1.8.4</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+       background: #1e1e2e; color: #cdd6f4; line-height: 1.7; }
+.sidebar { position: fixed; top: 0; left: 0; width: 220px; height: 100vh;
+           background: #181825; overflow-y: auto; padding: 20px 0; z-index: 100; }
+.sidebar h2 { font-size: 13px; color: #6c7086; text-transform: uppercase;
+              letter-spacing: .08em; padding: 0 18px 10px; }
+.sidebar a  { display: block; padding: 6px 18px; color: #a6adc8; text-decoration: none;
+              font-size: 13px; border-left: 3px solid transparent; transition: all .15s; }
+.sidebar a:hover, .sidebar a.active { color: #cba6f7; border-left-color: #cba6f7;
+                                       background: #1e1e2e; }
+.sidebar .nav-release { font-size: 12px; padding: 4px 18px; }
+.content { margin-left: 220px; max-width: 920px; padding: 40px 48px; }
+h1 { font-size: 2em; color: #cba6f7; border-bottom: 2px solid #313244; padding-bottom: 10px; margin: 28px 0 16px; }
+h2 { font-size: 1.45em; color: #89b4fa; margin: 32px 0 12px; }
+h3 { font-size: 1.15em; color: #94e2d5; margin: 22px 0 8px; }
+h4 { font-size: 1em; color: #f5c2e7; margin: 16px 0 6px; }
+p  { margin-bottom: 14px; color: #cdd6f4; }
+a  { color: #89b4fa; }
+ul, ol { margin: 10px 0 14px 22px; }
+li { margin-bottom: 5px; }
+code { background: #313244; color: #f38ba8; padding: 2px 6px; border-radius: 4px; font-size: .88em; font-family: 'Consolas','Courier New',monospace; }
+pre  { background: #181825; border: 1px solid #313244; border-radius: 8px;
+       padding: 18px 20px; overflow-x: auto; margin: 14px 0 20px; }
+pre code { background: none; color: #a6e3a1; padding: 0; font-size: .9em; }
+table { border-collapse: collapse; width: 100%; margin: 14px 0 20px; font-size: .92em; }
+th { background: #313244; color: #cba6f7; padding: 9px 14px; text-align: left; }
+td { border-top: 1px solid #313244; padding: 8px 14px; }
+tr:nth-child(even) td { background: #1e1e2e; }
+hr { border: none; border-top: 1px solid #313244; margin: 28px 0; }
+blockquote { border-left: 4px solid #6c7086; padding-left: 16px; color: #a6adc8; margin: 14px 0; }
+@media (max-width: 700px) { .sidebar { display: none; } .content { margin-left: 0; padding: 24px 18px; } }
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <h2>Vibrante-Node</h2>
+  <a href="USER_GUIDE.html">User Guide</a>
+<a href="NODE_BUILDER_API.html">Node Builder API</a>
+<a href="AUTOMATION_API.html">Automation API</a>
+<a href="DEVELOPER.html">Developer Documentation</a>
+<a href="DOCUMENTATION.html">Technical Feature List</a>
+  <hr style="border-color:#313244;margin:10px 18px">
+  <h2 style="margin-top:8px">Release Notes</h2>
+  <a class="nav-release" href="RELEASE_v1.8.4.html">Release Notes v1.8.4</a>
+<a class="nav-release" href="RELEASE_v1.8.3.html">Release Notes v1.8.3</a>
+<a class="nav-release" href="RELEASE_v1.8.2.html">Release Notes v1.8.2</a>
+<a class="nav-release" href="RELEASE_v1.8.1.html">Release Notes v1.8.1</a>
+<a class="nav-release" href="RELEASE_v1.8.0.html">Release Notes v1.8.0</a>
+<a class="nav-release" href="RELEASE_v1.7.0.html">Release Notes v1.7.0</a>
+<a class="nav-release" href="RELEASE_v1.6.1.html">Release Notes v1.6.1</a>
+<a class="nav-release" href="RELEASE_v1.6.0.html">Release Notes v1.6.0</a>
+<a class="nav-release" href="RELEASE_v1.5.0.html">Release Notes v1.5.0</a>
+<a class="nav-release" href="RELEASE_v1.4.0.html">Release Notes v1.4.0</a>
+<a class="nav-release" href="RELEASE_v1.3.0.html">Release Notes v1.3.0</a>
+<a class="nav-release" href="RELEASE_v1.2.0.html">Release Notes v1.2.0</a>
+<a class="nav-release" href="RELEASE_v1.1.5.html">Release Notes v1.1.5</a>
+<a class="nav-release" href="RELEASE_v1.1.0.html">Release Notes v1.1.0</a>
+<a class="nav-release" href="RELEASE_v1.0.5.html">Release Notes v1.0.5</a>
+  <hr style="border-color:#313244;margin:10px 18px">
+  <h2 style="margin-top:8px">On this page</h2>
+  <a href="#release-v130-houdini-geometry-nodes-ai-context-fix-developer-guide" style="padding-left:18px">Release v1.3.0: Houdini Geometry Nodes, AI Context Fix &amp; Developer Guide</a>
+<a href="#key-features" style="padding-left:18px">🚀 Key Features</a>
+<a href="#new-houdini-geometry-nodes" style="padding-left:32px">🔥 New Houdini Geometry Nodes</a>
+<a href="#gemini-ai-node-builder-houdini-context-fix" style="padding-left:32px">🤖 Gemini AI Node Builder — Houdini Context Fix</a>
+<a href="#claudemd-developer-reference" style="padding-left:32px">📖 CLAUDE.md — Developer Reference</a>
+<a href="#youtube-channel-tutorial-integration" style="padding-left:32px">🎬 YouTube Channel &amp; Tutorial Integration</a>
+<a href="#bug-fixes-refinements" style="padding-left:18px">🐞 Bug Fixes &amp; Refinements</a>
+<a href="#changed-files" style="padding-left:18px">📂 Changed Files</a>
+<a href="#license" style="padding-left:18px">📜 License</a>
+</nav>
+<main class="content">
+<h1 id="release-v130-houdini-geometry-nodes-ai-context-fix-developer-guide">Release v1.3.0: Houdini Geometry Nodes, AI Context Fix &amp; Developer Guide</h1>
+<p>Version 1.3.0 adds three new Houdini geometry processing nodes, fixes the Gemini AI node builder so it correctly understands the Houdini bridge API, ships a comprehensive <code>CLAUDE.md</code> developer guide, and updates all user-facing documentation with YouTube tutorial links.</p>
+<hr />
+<h2 id="key-features">🚀 Key Features</h2>
+<h3 id="new-houdini-geometry-nodes">🔥 New Houdini Geometry Nodes</h3>
+<p><strong>Houdini ABC Convert</strong> (<code>nodes/houdini_abc_convert.json</code>)<br />
+- Imports an Alembic (<code>.abc</code>) file into Houdini and automatically converts it to polygons via <code>alembic</code> → <code>convert</code> SOP chain.<br />
+- Outputs the resulting geometry path for downstream nodes.</p>
+<p><strong>Houdini Edges to Curves</strong> (<code>nodes/houdini_edges_to_curves.json</code>)<br />
+- Converts all edges in a geometry into individual curves using a <code>convertline</code> SOP.<br />
+- Filters curves by direction — only keeps edges flowing along the <strong>X axis</strong> (configurable threshold).<br />
+- Inputs: <code>geo_path</code>, <code>x_threshold</code> (default 0.9).</p>
+<p><strong>Houdini Color Curves</strong> (<code>nodes/houdini_color_curves.json</code>)<br />
+- Extracts <strong>red-painted surface regions</strong> from a mesh and generates one clean curve per stripe.<br />
+- Pipeline: detect red points → label connected stripes (Connectivity SOP) → project sample positions along stripe axis → snap each sample to nearest surface point → remove original mesh polygons.<br />
+- Inputs: <code>geo_path</code>, <code>red_threshold</code>, <code>green_max</code>, <code>blue_max</code>, <code>num_samples</code>.<br />
+- Result: isolated polyline curves, one per red stripe, snapped to the original surface geometry.</p>
+<h3 id="gemini-ai-node-builder-houdini-context-fix">🤖 Gemini AI Node Builder — Houdini Context Fix</h3>
+<ul>
+<li>The system prompt for the Gemini AI assistant is now applied via <code>system_instruction=</code> on the <code>GenerativeModel</code> constructor, ensuring it persists across <strong>every</strong> message in the conversation.</li>
+<li>The prompt now includes the complete Houdini bridge API reference: all methods, their exact return dict shapes, correct port rules (<code>super().__init__()</code> auto-adds exec ports — never add manually), and annotated example nodes.</li>
+<li>Previously the AI would generate broken nodes using <code>hou</code> module API directly or wrong port patterns — now it generates correct bridge-aware code.</li>
+</ul>
+<h3 id="claudemd-developer-reference">📖 CLAUDE.md — Developer Reference</h3>
+<ul>
+<li>New <code>CLAUDE.md</code> at the project root documents the full node JSON structure, <code>BaseNode</code> rules, all bridge methods with exact return shapes, common mistakes table, and a complete reference node implementation.</li>
+<li>Designed so AI assistants (Claude, Gemini, Copilot) immediately understand the project structure with zero warm-up.</li>
+</ul>
+<h3 id="youtube-channel-tutorial-integration">🎬 YouTube Channel &amp; Tutorial Integration</h3>
+<ul>
+<li>Added <code>🎬 Video Tutorials</code> section to <code>README.md</code> with badge linking to the official YouTube channel.</li>
+<li>Added a 6-step introduction tutorial (Install → Place Nodes → Connect → Run → Save/Export → AI Builder) directly in the README.</li>
+<li>YouTube channel listed as the first entry in the Documentation section.</li>
+</ul>
+<hr />
+<h2 id="bug-fixes-refinements">🐞 Bug Fixes &amp; Refinements</h2>
+<ul>
+<li><strong><code>houdini_abc_convert</code></strong>: Was using non-existent <code>get_hou()</code> API and calling <code>hou</code> module methods directly — rewritten to use <code>get_bridge()</code> with correct RPC calls and dict unpacking.</li>
+<li><strong>VEX type ambiguity</strong>: Fixed <code>point(0, "P", i).y</code> ambiguity in Houdini wrangle VEX by reading individual float components <code>point(0, "Px", i)</code> / <code>"Py"</code> / <code>"Pz"</code>.</li>
+<li><strong>Gemini context loss</strong>: Fixed <code>initialized</code> flag pattern that only injected the system prompt into the first message — replaced with permanent <code>system_instruction=</code> on the model.</li>
+</ul>
+<hr />
+<h2 id="changed-files">📂 Changed Files</h2>
+<ul>
+<li><code>src/main.py</code> — Version bump to v1.3.0</li>
+<li><code>src/ui/gemini_chat.py</code> — Permanent system_instruction with Houdini bridge API reference</li>
+<li><code>nodes/houdini_abc_convert.json</code> — Rewritten with correct bridge API usage</li>
+<li><code>nodes/houdini_edges_to_curves.json</code> — New: X-axis edge-to-curve converter</li>
+<li><code>nodes/houdini_color_curves.json</code> — New: Red surface stripe curve extractor</li>
+<li><code>CLAUDE.md</code> — New: Comprehensive developer and AI assistant reference</li>
+<li><code>README.md</code> — YouTube channel section and introduction tutorial added</li>
+</ul>
+<hr />
+<h2 id="license">📜 License</h2>
+<p>Permission is granted to use, modify, and test this software for personal and non-commercial purposes.<br />
+Commercial use requires written permission from the author.</p>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var links = document.querySelectorAll('.sidebar a');
+    var headings = document.querySelectorAll('h1,h2,h3');
+    window.addEventListener('scroll', function() {
+        var cur = '';
+        headings.forEach(function(h) { if (h.offsetTop <= window.scrollY + 80) cur = h.id; });
+        links.forEach(function(a) {
+            a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+        });
+    });
+});
+</script>
+</body>
+</html>

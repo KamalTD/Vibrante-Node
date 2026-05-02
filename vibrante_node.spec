@@ -64,6 +64,7 @@ a = Analysis(
         'src.core.engine',
         'src.core.graph',
         'src.core.registry',
+        'src.utils.paths',
         # Prism utilities
         'src.utils.prism_core',
         'src.utils.prism_config',

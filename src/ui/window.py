@@ -18,6 +18,7 @@ from src.core.engine import NetworkExecutor
 from src.ui.node_widget import NodeWidget
 
 from src.ui.gemini_api_dialog import GeminiApiDialog
+from src.utils.paths import resource_path, app_dir
 
 
 class _EventLoopRunner:
@@ -92,9 +93,13 @@ class MainWindow(QMainWindow):
         else:
             self._apply_dark_theme()
 
-        # Initialize Registry
-        self.nodes_dir = os.path.abspath(os.path.join(os.getcwd(), 'nodes'))
-        NodeRegistry.load_all(self.nodes_dir)
+        # Initialize Registry — bundled nodes live in _internal/nodes (resource_path),
+        # user-created nodes live next to the exe (app_dir).
+        bundled_nodes = resource_path('nodes')
+        self.nodes_dir = os.path.join(app_dir(), 'nodes')
+        NodeRegistry.load_all(bundled_nodes)
+        if self.nodes_dir != bundled_nodes and os.path.isdir(self.nodes_dir):
+            NodeRegistry._load_directory(self.nodes_dir)
 
         # Setup Tab Widget
         self.tabs = QTabWidget()
@@ -406,9 +411,30 @@ class MainWindow(QMainWindow):
         feature_list_act.triggered.connect(lambda: self._open_doc("DOCUMENTATION.md"))
         help_menu.addAction(feature_list_act)
 
-        release_act = QAction('Release Notes v1.8.4', self)
-        release_act.triggered.connect(lambda: self._open_doc("RELEASE_v1.8.4.md"))
-        help_menu.addAction(release_act)
+        help_menu.addSeparator()
+
+        release_menu = help_menu.addMenu('Release Notes')
+        for ver in [
+            ("v1.8.4", "RELEASE_v1.8.4.md"),
+            ("v1.8.3", "RELEASE_v1.8.3.md"),
+            ("v1.8.2", "RELEASE_v1.8.2.md"),
+            ("v1.8.1", "RELEASE_v1.8.1.md"),
+            ("v1.8.0", "RELEASE_v1.8.0.md"),
+            ("v1.7.0", "RELEASE_v1.7.0.md"),
+            ("v1.6.1", "RELEASE_v1.6.1.md"),
+            ("v1.6.0", "RELEASE_v1.6.0.md"),
+            ("v1.5.0", "RELEASE_v1.5.0.md"),
+            ("v1.4.0", "RELEASE_v1.4.0.md"),
+            ("v1.3.0", "RELEASE_v1.3.0.md"),
+            ("v1.2.0", "RELEASE_v1.2.0.md"),
+            ("v1.1.5", "RELEASE_v1.1.5.md"),
+            ("v1.1.0", "RELEASE_v1.1.0.md"),
+            ("v1.0.5", "RELEASE_v1.0.5.md"),
+        ]:
+            label, fname = ver
+            act = QAction(label, self)
+            act.triggered.connect(lambda checked, f=fname: self._open_doc(f))
+            release_menu.addAction(act)
 
         help_menu.addSeparator()
 
@@ -424,14 +450,12 @@ class MainWindow(QMainWindow):
 
     def _open_doc(self, filename):
         import webbrowser
-        # Prefer the pre-built HTML version in docs/
         html_name = filename.replace(".md", ".html")
-        html_path = os.path.abspath(os.path.join(os.getcwd(), "docs", html_name))
+        html_path = resource_path("docs", html_name)
         if os.path.exists(html_path):
             webbrowser.open("file:///" + html_path.replace("\\", "/"))
             return
-        # Fall back to raw .md if HTML is missing
-        path = os.path.abspath(os.path.join(os.getcwd(), filename))
+        path = resource_path(filename)
         if os.path.exists(path):
             webbrowser.open(path)
         else:
@@ -439,11 +463,11 @@ class MainWindow(QMainWindow):
 
     def _open_help_home(self):
         import webbrowser
-        index_path = os.path.abspath(os.path.join(os.getcwd(), "docs", "index.html"))
+        index_path = resource_path("docs", "index.html")
         if os.path.exists(index_path):
             webbrowser.open("file:///" + index_path.replace("\\", "/"))
         else:
-            QMessageBox.critical(self, "Error", "Help index not found. Run tools/build_docs.py to generate it.")
+            QMessageBox.critical(self, "Error", "Help index not found.")
 
     def _show_about(self):
         description = (
@@ -706,9 +730,7 @@ class MainWindow(QMainWindow):
             QMessageBox.critical(self, "Error", f"Failed to load node: {str(e)}")
 
     def _icon(self, filename: str) -> QIcon:
-        """Load an icon from the project's icons/ folder, falling back to an
-        empty icon if the file is missing."""
-        path = os.path.join(os.getcwd(), 'icons', filename)
+        path = resource_path('icons', filename)
         if os.path.exists(path):
             return QIcon(path)
         return QIcon()

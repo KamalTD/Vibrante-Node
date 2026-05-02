@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Release Notes v1.6.1 — Vibrante-Node v1.8.4</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+       background: #1e1e2e; color: #cdd6f4; line-height: 1.7; }
+.sidebar { position: fixed; top: 0; left: 0; width: 220px; height: 100vh;
+           background: #181825; overflow-y: auto; padding: 20px 0; z-index: 100; }
+.sidebar h2 { font-size: 13px; color: #6c7086; text-transform: uppercase;
+              letter-spacing: .08em; padding: 0 18px 10px; }
+.sidebar a  { display: block; padding: 6px 18px; color: #a6adc8; text-decoration: none;
+              font-size: 13px; border-left: 3px solid transparent; transition: all .15s; }
+.sidebar a:hover, .sidebar a.active { color: #cba6f7; border-left-color: #cba6f7;
+                                       background: #1e1e2e; }
+.sidebar .nav-release { font-size: 12px; padding: 4px 18px; }
+.content { margin-left: 220px; max-width: 920px; padding: 40px 48px; }
+h1 { font-size: 2em; color: #cba6f7; border-bottom: 2px solid #313244; padding-bottom: 10px; margin: 28px 0 16px; }
+h2 { font-size: 1.45em; color: #89b4fa; margin: 32px 0 12px; }
+h3 { font-size: 1.15em; color: #94e2d5; margin: 22px 0 8px; }
+h4 { font-size: 1em; color: #f5c2e7; margin: 16px 0 6px; }
+p  { margin-bottom: 14px; color: #cdd6f4; }
+a  { color: #89b4fa; }
+ul, ol { margin: 10px 0 14px 22px; }
+li { margin-bottom: 5px; }
+code { background: #313244; color: #f38ba8; padding: 2px 6px; border-radius: 4px; font-size: .88em; font-family: 'Consolas','Courier New',monospace; }
+pre  { background: #181825; border: 1px solid #313244; border-radius: 8px;
+       padding: 18px 20px; overflow-x: auto; margin: 14px 0 20px; }
+pre code { background: none; color: #a6e3a1; padding: 0; font-size: .9em; }
+table { border-collapse: collapse; width: 100%; margin: 14px 0 20px; font-size: .92em; }
+th { background: #313244; color: #cba6f7; padding: 9px 14px; text-align: left; }
+td { border-top: 1px solid #313244; padding: 8px 14px; }
+tr:nth-child(even) td { background: #1e1e2e; }
+hr { border: none; border-top: 1px solid #313244; margin: 28px 0; }
+blockquote { border-left: 4px solid #6c7086; padding-left: 16px; color: #a6adc8; margin: 14px 0; }
+@media (max-width: 700px) { .sidebar { display: none; } .content { margin-left: 0; padding: 24px 18px; } }
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <h2>Vibrante-Node</h2>
+  <a href="USER_GUIDE.html">User Guide</a>
+<a href="NODE_BUILDER_API.html">Node Builder API</a>
+<a href="AUTOMATION_API.html">Automation API</a>
+<a href="DEVELOPER.html">Developer Documentation</a>
+<a href="DOCUMENTATION.html">Technical Feature List</a>
+  <hr style="border-color:#313244;margin:10px 18px">
+  <h2 style="margin-top:8px">Release Notes</h2>
+  <a class="nav-release" href="RELEASE_v1.8.4.html">Release Notes v1.8.4</a>
+<a class="nav-release" href="RELEASE_v1.8.3.html">Release Notes v1.8.3</a>
+<a class="nav-release" href="RELEASE_v1.8.2.html">Release Notes v1.8.2</a>
+<a class="nav-release" href="RELEASE_v1.8.1.html">Release Notes v1.8.1</a>
+<a class="nav-release" href="RELEASE_v1.8.0.html">Release Notes v1.8.0</a>
+<a class="nav-release" href="RELEASE_v1.7.0.html">Release Notes v1.7.0</a>
+<a class="nav-release" href="RELEASE_v1.6.1.html">Release Notes v1.6.1</a>
+<a class="nav-release" href="RELEASE_v1.6.0.html">Release Notes v1.6.0</a>
+<a class="nav-release" href="RELEASE_v1.5.0.html">Release Notes v1.5.0</a>
+<a class="nav-release" href="RELEASE_v1.4.0.html">Release Notes v1.4.0</a>
+<a class="nav-release" href="RELEASE_v1.3.0.html">Release Notes v1.3.0</a>
+<a class="nav-release" href="RELEASE_v1.2.0.html">Release Notes v1.2.0</a>
+<a class="nav-release" href="RELEASE_v1.1.5.html">Release Notes v1.1.5</a>
+<a class="nav-release" href="RELEASE_v1.1.0.html">Release Notes v1.1.0</a>
+<a class="nav-release" href="RELEASE_v1.0.5.html">Release Notes v1.0.5</a>
+  <hr style="border-color:#313244;margin:10px 18px">
+  <h2 style="margin-top:8px">On this page</h2>
+  <a href="#release-notes-vibrante-node-v161" style="padding-left:18px">Release Notes — Vibrante-Node v1.6.1</a>
+<a href="#overview" style="padding-left:18px">Overview</a>
+<a href="#bug-fixes" style="padding-left:18px">Bug Fixes</a>
+<a href="#fix-qbasictimerstart-timers-cannot-be-started-from-another-thread" style="padding-left:32px">Fix: QBasicTimer::start: Timers cannot be started from another thread</a>
+<a href="#fix-prism-auto-bootstrap-not-implemented-in-engine" style="padding-left:32px">Fix: Prism auto-bootstrap not implemented in engine</a>
+<a href="#fix-prism_core_init-silently-breaks-exec-chain-on-bootstrap-failure" style="padding-left:32px">Fix: prism_core_init silently breaks exec chain on bootstrap failure</a>
+<a href="#fix-unhelpful-no-prismcore-provided-error-across-all-prism-nodes" style="padding-left:32px">Fix: Unhelpful "No PrismCore provided." error across all Prism nodes</a>
+<a href="#changed-files" style="padding-left:18px">Changed Files</a>
+<a href="#upgrade-notes" style="padding-left:18px">Upgrade Notes</a>
+</nav>
+<main class="content">
+<h1 id="release-notes-vibrante-node-v161">Release Notes — Vibrante-Node v1.6.1</h1>
+<p><strong>Release date:</strong> 2026-04-18<br />
+<strong>Branch:</strong> <code>feature/python-script-while-loop-nodes</code></p>
+<hr />
+<h2 id="overview">Overview</h2>
+<p>v1.6.1 is a stability patch that resolves a persistent Qt threading warning introduced alongside the v1.6.0 asyncio execution engine, and fixes the Prism Pipeline auto-bootstrap that was missing from the engine.</p>
+<hr />
+<h2 id="bug-fixes">Bug Fixes</h2>
+<h3 id="fix-qbasictimerstart-timers-cannot-be-started-from-another-thread">Fix: <code>QBasicTimer::start: Timers cannot be started from another thread</code></h3>
+<p><strong>Root cause:</strong> The <code>NetworkExecutor</code> (a <code>QObject</code>) was moved into a background <code>QThread</code> so that signals would originate from that thread. Qt's cross-thread signal delivery still required a <code>QBasicTimer</code> inside the worker thread, which had no Qt event dispatcher — producing the warning on every execution.</p>
+<p><strong>Fix:</strong> Replaced <code>_AsyncWorker(QThread)</code> in <code>src/ui/window.py</code> with <code>_EventLoopRunner</code> — a lightweight class that drives the asyncio event loop <strong>on the main Qt thread</strong> using a zero-delay <code>QTimer</code>. Each timer tick calls <code>loop.call_soon(loop.stop); loop.run_forever()</code> to process one round of ready asyncio callbacks without blocking the Qt event loop. Because all asyncio callbacks and signal emissions now originate from the main thread, Qt's cross-thread delivery machinery is never activated and the warning is structurally impossible.</p>
+<h3 id="fix-prism-auto-bootstrap-not-implemented-in-engine">Fix: Prism auto-bootstrap not implemented in engine</h3>
+<p><strong>Root cause:</strong> The <code>CLAUDE.md</code> and documentation described a Prism auto-bootstrap phase where the engine would initialise <code>PrismCore</code> before graph execution if a <code>prism_core_init</code> node was present — but the code in <code>engine.py</code> never implemented this. All <code>prism_*</code> nodes would fail with "No PrismCore provided." unless explicitly wired.</p>
+<p><strong>Fix:</strong> Added <code>_bootstrap_prism_if_needed()</code> async method to <code>NetworkExecutor</code> in <code>src/core/engine.py</code>. It is called at the start of <code>run()</code>, detects any <code>prism_core_init</code> node in the graph, and calls <code>bootstrap_prism_core()</code> with that node's parameters before any node executes. All subsequent <code>prism_*</code> nodes share the cached <code>PrismCore</code> instance automatically.</p>
+<h3 id="fix-prism_core_init-silently-breaks-exec-chain-on-bootstrap-failure">Fix: <code>prism_core_init</code> silently breaks exec chain on bootstrap failure</h3>
+<p><strong>Root cause:</strong> When <code>bootstrap_prism_core()</code> raised an exception inside <code>prism_core_init</code>, the node returned <code>{'core': None, 'version': ''}</code> without emitting <code>exec_out</code>. Any nodes connected downstream via execution wire were never triggered.</p>
+<p><strong>Fix:</strong> Added <code>await self.set_output('exec_out', True)</code> to the error path so the execution chain always continues even when Prism initialisation fails.</p>
+<h3 id="fix-unhelpful-no-prismcore-provided-error-across-all-prism-nodes">Fix: Unhelpful "No PrismCore provided." error across all Prism nodes</h3>
+<p><strong>Root cause:</strong> All 31 <code>prism_*</code> nodes used the generic message <code>"No PrismCore provided."</code> which gave no actionable guidance.</p>
+<p><strong>Fix:</strong> Updated all 31 nodes to emit: <code>"No PrismCore found. Add a prism_core_init node to your graph and run it before this node."</code> — directing users to the correct fix immediately.</p>
+<hr />
+<h2 id="changed-files">Changed Files</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Change</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>src/ui/window.py</code></td>
+<td>Replaced <code>_AsyncWorker(QThread)</code> with <code>_EventLoopRunner</code> (main-thread asyncio pump via <code>QTimer</code>)</td>
+</tr>
+<tr>
+<td><code>src/core/engine.py</code></td>
+<td>Added <code>_bootstrap_prism_if_needed()</code>, guarded <code>_finished_event</code> in <code>stop()</code></td>
+</tr>
+<tr>
+<td><code>src/main.py</code></td>
+<td>Version bump <code>v1.6.0</code> → <code>v1.6.1</code></td>
+</tr>
+<tr>
+<td><code>nodes/prism_core_init.json</code></td>
+<td>Emit <code>exec_out</code> on error path</td>
+</tr>
+<tr>
+<td><code>nodes/prism_add_integration.json</code></td>
+<td>Improved error message</td>
+</tr>
+<tr>
+<td><code>nodes/prism_*.json</code> (29 others)</td>
+<td>Improved "no core" error messages</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="upgrade-notes">Upgrade Notes</h2>
+<p>No workflow changes required. Existing <code>.json</code> workflow files load and execute identically. The Prism auto-bootstrap is automatic — no new wiring needed.</p>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var links = document.querySelectorAll('.sidebar a');
+    var headings = document.querySelectorAll('h1,h2,h3');
+    window.addEventListener('scroll', function() {
+        var cur = '';
+        headings.forEach(function(h) { if (h.offsetTop <= window.scrollY + 80) cur = h.id; });
+        links.forEach(function(a) {
+            a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+        });
+    });
+});
+</script>
+</body>
+</html>

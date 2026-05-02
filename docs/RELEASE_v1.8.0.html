@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Release Notes v1.8.0 — Vibrante-Node v1.8.4</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+       background: #1e1e2e; color: #cdd6f4; line-height: 1.7; }
+.sidebar { position: fixed; top: 0; left: 0; width: 220px; height: 100vh;
+           background: #181825; overflow-y: auto; padding: 20px 0; z-index: 100; }
+.sidebar h2 { font-size: 13px; color: #6c7086; text-transform: uppercase;
+              letter-spacing: .08em; padding: 0 18px 10px; }
+.sidebar a  { display: block; padding: 6px 18px; color: #a6adc8; text-decoration: none;
+              font-size: 13px; border-left: 3px solid transparent; transition: all .15s; }
+.sidebar a:hover, .sidebar a.active { color: #cba6f7; border-left-color: #cba6f7;
+                                       background: #1e1e2e; }
+.sidebar .nav-release { font-size: 12px; padding: 4px 18px; }
+.content { margin-left: 220px; max-width: 920px; padding: 40px 48px; }
+h1 { font-size: 2em; color: #cba6f7; border-bottom: 2px solid #313244; padding-bottom: 10px; margin: 28px 0 16px; }
+h2 { font-size: 1.45em; color: #89b4fa; margin: 32px 0 12px; }
+h3 { font-size: 1.15em; color: #94e2d5; margin: 22px 0 8px; }
+h4 { font-size: 1em; color: #f5c2e7; margin: 16px 0 6px; }
+p  { margin-bottom: 14px; color: #cdd6f4; }
+a  { color: #89b4fa; }
+ul, ol { margin: 10px 0 14px 22px; }
+li { margin-bottom: 5px; }
+code { background: #313244; color: #f38ba8; padding: 2px 6px; border-radius: 4px; font-size: .88em; font-family: 'Consolas','Courier New',monospace; }
+pre  { background: #181825; border: 1px solid #313244; border-radius: 8px;
+       padding: 18px 20px; overflow-x: auto; margin: 14px 0 20px; }
+pre code { background: none; color: #a6e3a1; padding: 0; font-size: .9em; }
+table { border-collapse: collapse; width: 100%; margin: 14px 0 20px; font-size: .92em; }
+th { background: #313244; color: #cba6f7; padding: 9px 14px; text-align: left; }
+td { border-top: 1px solid #313244; padding: 8px 14px; }
+tr:nth-child(even) td { background: #1e1e2e; }
+hr { border: none; border-top: 1px solid #313244; margin: 28px 0; }
+blockquote { border-left: 4px solid #6c7086; padding-left: 16px; color: #a6adc8; margin: 14px 0; }
+@media (max-width: 700px) { .sidebar { display: none; } .content { margin-left: 0; padding: 24px 18px; } }
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <h2>Vibrante-Node</h2>
+  <a href="USER_GUIDE.html">User Guide</a>
+<a href="NODE_BUILDER_API.html">Node Builder API</a>
+<a href="AUTOMATION_API.html">Automation API</a>
+<a href="DEVELOPER.html">Developer Documentation</a>
+<a href="DOCUMENTATION.html">Technical Feature List</a>
+  <hr style="border-color:#313244;margin:10px 18px">
+  <h2 style="margin-top:8px">Release Notes</h2>
+  <a class="nav-release" href="RELEASE_v1.8.4.html">Release Notes v1.8.4</a>
+<a class="nav-release" href="RELEASE_v1.8.3.html">Release Notes v1.8.3</a>
+<a class="nav-release" href="RELEASE_v1.8.2.html">Release Notes v1.8.2</a>
+<a class="nav-release" href="RELEASE_v1.8.1.html">Release Notes v1.8.1</a>
+<a class="nav-release" href="RELEASE_v1.8.0.html">Release Notes v1.8.0</a>
+<a class="nav-release" href="RELEASE_v1.7.0.html">Release Notes v1.7.0</a>
+<a class="nav-release" href="RELEASE_v1.6.1.html">Release Notes v1.6.1</a>
+<a class="nav-release" href="RELEASE_v1.6.0.html">Release Notes v1.6.0</a>
+<a class="nav-release" href="RELEASE_v1.5.0.html">Release Notes v1.5.0</a>
+<a class="nav-release" href="RELEASE_v1.4.0.html">Release Notes v1.4.0</a>
+<a class="nav-release" href="RELEASE_v1.3.0.html">Release Notes v1.3.0</a>
+<a class="nav-release" href="RELEASE_v1.2.0.html">Release Notes v1.2.0</a>
+<a class="nav-release" href="RELEASE_v1.1.5.html">Release Notes v1.1.5</a>
+<a class="nav-release" href="RELEASE_v1.1.0.html">Release Notes v1.1.0</a>
+<a class="nav-release" href="RELEASE_v1.0.5.html">Release Notes v1.0.5</a>
+  <hr style="border-color:#313244;margin:10px 18px">
+  <h2 style="margin-top:8px">On this page</h2>
+  <a href="#release-notes-vibrante-node-v180" style="padding-left:18px">Release Notes — Vibrante-Node v1.8.0</a>
+<a href="#overview" style="padding-left:18px">Overview</a>
+<a href="#bug-fixes" style="padding-left:18px">Bug Fixes</a>
+<a href="#engine" style="padding-left:32px">Engine</a>
+<a href="#flow-control" style="padding-left:32px">Flow Control</a>
+<a href="#prism-nodes" style="padding-left:32px">Prism Nodes</a>
+<a href="#deadline-nodes" style="padding-left:32px">Deadline Nodes</a>
+<a href="#houdini-nodes" style="padding-left:32px">Houdini Nodes</a>
+<a href="#blender-nodes" style="padding-left:32px">Blender Nodes</a>
+<a href="#ui" style="padding-left:32px">UI</a>
+<a href="#vfx-workflow-files" style="padding-left:18px">VFX Workflow Files</a>
+</nav>
+<main class="content">
+<h1 id="release-notes-vibrante-node-v180">Release Notes — Vibrante-Node v1.8.0</h1>
+<p><strong>Release date:</strong> 2026-04-23<br />
+<strong>Build:</strong> Python 3.10 / PyInstaller</p>
+<hr />
+<h2 id="overview">Overview</h2>
+<p>v1.8.0 is a stability and bugfix release focused on the VFX pipeline workflows. All known execution errors across the Maya, Houdini, Blender, Prism, and Deadline nodes have been resolved, and the engine has been hardened against edge-case crashes.</p>
+<hr />
+<h2 id="bug-fixes">Bug Fixes</h2>
+<h3 id="engine">Engine</h3>
+<ul>
+<li><strong><code>result or {}</code> guard</strong> — <code>NetworkExecutor</code> now protects <code>node_results.update(result)</code> against nodes that return <code>None</code> from <code>execute()</code>, preventing <code>TypeError: 'NoneType' object is not iterable</code> crashes.</li>
+</ul>
+<h3 id="flow-control">Flow Control</h3>
+<ul>
+<li><strong><code>for_loop</code></strong> — Was firing <code>exec_out</code> only once (last index). Now iterates correctly in a Python loop, calling <code>set_output('current_index', i)</code> then <code>set_output('exec_out', True)</code> per index.</li>
+<li><strong><code>_executed_nodes</code> cache invalidation</strong> — Pure data nodes are now discarded from the cache when their inputs change reactively, forcing them to recompute each loop iteration instead of serving stale results.</li>
+<li><strong>Bypass flag</strong> — Bypassed nodes now correctly skip <code>execute()</code> and pass exec flow through to downstream nodes.</li>
+</ul>
+<h3 id="prism-nodes">Prism Nodes</h3>
+<ul>
+<li><strong><code>prism_get_export_path</code></strong></li>
+<li>Added <code>"3d"</code> and <code>"2d"</code> as valid <code>output_type</code> aliases (previously only <code>"3drender"</code> / <code>"2drender"</code> were recognised).</li>
+<li><code>version_path</code> output now returns the <strong>full file path</strong> of the first matching file inside the version directory, not the directory itself. Falls back to the directory path when no file exists yet.</li>
+<li>Added new <code>version_dir</code> output for the directory path.</li>
+<li><strong><code>prism_create_product_version</code></strong> — Data outputs (<code>version_path</code>, <code>success</code>) are now emitted via <code>set_output()</code> before <code>exec_out</code> fires, so downstream nodes receive values before continuing.</li>
+<li><strong>Prism shot/sequence getter nodes</strong> — All six nodes (<code>prism_get_shots</code>, <code>prism_get_shots_by_sequence</code>, <code>prism_get_sequence_by_project</code>, <code>prism_get_sequences_by_project</code>, <code>prism_get_sequence_by_project</code>, <code>prism_get_shot_by_sequence</code>) updated to use Prism v2.1.0 flat-list <code>getShots()</code> API.</li>
+</ul>
+<h3 id="deadline-nodes">Deadline Nodes</h3>
+<ul>
+<li><strong><code>deadline_job_status</code></strong> — Two bare <code>return</code> statements inside <code>execute()</code> replaced with <code>return {}</code> to prevent <code>NoneType</code> crashes in the engine.</li>
+</ul>
+<h3 id="houdini-nodes">Houdini Nodes</h3>
+<ul>
+<li><strong><code>houdini_headless</code></strong></li>
+<li>Added upfront <code>os.path.isfile(hython)</code> check with a clear error message instead of the cryptic <code>[WinError 2]</code> when the executable path is wrong.</li>
+<li><code>import_alembic</code> context logic inverted: now defaults to <code>/obj</code> for any value except the explicit string <code>"/stage"</code>, preventing accidental LOP imports.</li>
+<li><code>import_obj</code> and <code>import_fbx</code> context checks hardened with the same inversion.</li>
+<li><strong><code>houdini_action_import_alembic</code></strong> — Context value normalised with <code>(value or "/obj").strip()</code> to prevent <code>None</code> falling through to the <code>/stage</code> branch.</li>
+</ul>
+<h3 id="blender-nodes">Blender Nodes</h3>
+<ul>
+<li><strong><code>blender_headless</code></strong></li>
+<li>Fixed <code>SyntaxError: unterminated string literal</code> in the runner script: <code>'\n'</code> inside a triple-quoted Python string was being written as a real newline to the temp <code>.py</code> file. Replaced with <code>chr(10)</code>.</li>
+<li><code>bpy.ops.wm.alembic_export</code>: Blender 4+ renamed <code>frame_start</code>/<code>frame_end</code> to <code>start</code>/<code>end</code>. Runner now tries <code>start</code>/<code>end</code> first and falls back to the old names.</li>
+<li>Added <code>os.makedirs(..., exist_ok=True)</code> before FBX, Alembic, and USD exports so missing output directories don't silently fail.</li>
+</ul>
+<h3 id="ui">UI</h3>
+<ul>
+<li><strong>Delete / F key conflicts</strong> — <code>keyPressEvent</code> in both <code>scene.py</code> and <code>view.py</code> now checks <code>QApplication.focusWidget()</code> and bails early if focus is on a text widget, preventing accidental node deletion or focus-fitting while typing in parameters, sticky notes, or backdrop titles.</li>
+</ul>
+<hr />
+<h2 id="vfx-workflow-files">VFX Workflow Files</h2>
+<p>Six production VFX workflow templates added/updated under <code>vfx_workflows/</code>:</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>01_prism_project_overview.json</code></td>
+<td>Project/shot/asset browser</td>
+</tr>
+<tr>
+<td><code>02_maya_asset_publish.json</code></td>
+<td>Maya headless asset publish to Prism</td>
+</tr>
+<tr>
+<td><code>03_multi_shot_alembic_export.json</code></td>
+<td>Multi-shot alembic export loop via Maya</td>
+</tr>
+<tr>
+<td><code>04_deadline_render_pipeline.json</code></td>
+<td>Deadline Maya render submission + job status polling</td>
+</tr>
+<tr>
+<td><code>05_houdini_fx_pipeline.json</code></td>
+<td>Houdini FX sim + Prism cache registration</td>
+</tr>
+<tr>
+<td><code>06_blender_multi_format_export.json</code></td>
+<td>Blender FBX / Alembic / USD multi-format export</td>
+</tr>
+</tbody>
+</table>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var links = document.querySelectorAll('.sidebar a');
+    var headings = document.querySelectorAll('h1,h2,h3');
+    window.addEventListener('scroll', function() {
+        var cur = '';
+        headings.forEach(function(h) { if (h.offsetTop <= window.scrollY + 80) cur = h.id; });
+        links.forEach(function(a) {
+            a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+        });
+    });
+});
+</script>
+</body>
+</html>

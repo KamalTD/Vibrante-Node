@@ -5,14 +5,33 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 DOCS_OUT = os.path.join(ROOT, "docs")
 os.makedirs(DOCS_OUT, exist_ok=True)
 
-DOCS = [
+MAIN_DOCS = [
     ("USER_GUIDE.md",       "User Guide"),
     ("NODE_BUILDER_API.md", "Node Builder API"),
     ("AUTOMATION_API.md",   "Automation API"),
     ("DEVELOPER.md",        "Developer Documentation"),
     ("DOCUMENTATION.md",    "Technical Feature List"),
-    ("RELEASE_v1.8.4.md",   "Release Notes v1.8.4"),
 ]
+
+RELEASE_DOCS = [
+    ("RELEASE_v1.8.4.md", "Release Notes v1.8.4"),
+    ("RELEASE_v1.8.3.md", "Release Notes v1.8.3"),
+    ("RELEASE_v1.8.2.md", "Release Notes v1.8.2"),
+    ("RELEASE_v1.8.1.md", "Release Notes v1.8.1"),
+    ("RELEASE_v1.8.0.md", "Release Notes v1.8.0"),
+    ("RELEASE_v1.7.0.md", "Release Notes v1.7.0"),
+    ("RELEASE_v1.6.1.md", "Release Notes v1.6.1"),
+    ("RELEASE_v1.6.0.md", "Release Notes v1.6.0"),
+    ("RELEASE_v1.5.0.md", "Release Notes v1.5.0"),
+    ("RELEASE_v1.4.0.md", "Release Notes v1.4.0"),
+    ("RELEASE_v1.3.0.md", "Release Notes v1.3.0"),
+    ("RELEASE_v1.2.0.md", "Release Notes v1.2.0"),
+    ("RELEASE_v1.1.5.md", "Release Notes v1.1.5"),
+    ("RELEASE_v1.1.0.md", "Release Notes v1.1.0"),
+    ("RELEASE_v1.0.5.md", "Release Notes v1.0.5"),
+]
+
+ALL_DOCS = MAIN_DOCS + RELEASE_DOCS
 
 CSS = """
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -26,6 +45,7 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
               font-size: 13px; border-left: 3px solid transparent; transition: all .15s; }
 .sidebar a:hover, .sidebar a.active { color: #cba6f7; border-left-color: #cba6f7;
                                        background: #1e1e2e; }
+.sidebar .nav-release { font-size: 12px; padding: 4px 18px; }
 .content { margin-left: 220px; max-width: 920px; padding: 40px 48px; }
 h1 { font-size: 2em; color: #cba6f7; border-bottom: 2px solid #313244; padding-bottom: 10px; margin: 28px 0 16px; }
 h2 { font-size: 1.45em; color: #89b4fa; margin: 32px 0 12px; }
@@ -62,9 +82,14 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 """
 
-NAV_LINKS = "\n".join(
+MAIN_NAV = "\n".join(
     f'<a href="{fn.replace(".md", ".html")}">{title}</a>'
-    for fn, title in DOCS
+    for fn, title in MAIN_DOCS
+)
+
+RELEASE_NAV = "\n".join(
+    f'<a class="nav-release" href="{fn.replace(".md", ".html")}">{title}</a>'
+    for fn, title in RELEASE_DOCS
 )
 
 def slugify(text):
@@ -89,7 +114,7 @@ def add_ids(html_body):
 
 md = markdown.Markdown(extensions=['tables', 'fenced_code', 'toc', 'nl2br'])
 
-for filename, title in DOCS:
+for filename, title in ALL_DOCS:
     src = os.path.join(ROOT, filename)
     if not os.path.exists(src):
         print(f"  SKIP (not found): {filename}")
@@ -112,7 +137,10 @@ for filename, title in DOCS:
 <body>
 <nav class="sidebar">
   <h2>Vibrante-Node</h2>
-  {NAV_LINKS}
+  {MAIN_NAV}
+  <hr style="border-color:#313244;margin:10px 18px">
+  <h2 style="margin-top:8px">Release Notes</h2>
+  {RELEASE_NAV}
   <hr style="border-color:#313244;margin:10px 18px">
   <h2 style="margin-top:8px">On this page</h2>
   {sidebar_items}
@@ -129,10 +157,15 @@ for filename, title in DOCS:
     print(f"  OK: {out_name}")
 
 # index page
-index_links = "\n".join(
-    f'<li><a href="{fn.replace(".md",".html")}">{title}</a></li>'
-    for fn, title in DOCS
+main_cards = "\n".join(
+    f'  <a class="card" href="{fn.replace(".md",".html")}"><h3>{title}</h3></a>'
+    for fn, title in MAIN_DOCS
 )
+release_cards = "\n".join(
+    f'  <a class="card" href="{fn.replace(".md",".html")}"><h3>{title}</h3></a>'
+    for fn, title in RELEASE_DOCS
+)
+
 index_html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -147,6 +180,7 @@ index_html = f"""<!DOCTYPE html>
 .card:hover {{ border-color:#cba6f7; background:#1e1e2e; }}
 .card h3 {{ color:#cba6f7; margin-bottom:6px; font-size:1.05em; }}
 .card p {{ color:#a6adc8; font-size:.9em; margin:0; }}
+.section-title {{ color:#89b4fa; font-size:1.2em; margin: 36px 0 12px; border-bottom: 1px solid #313244; padding-bottom:8px; }}
 </style>
 </head>
 <body>
@@ -155,13 +189,13 @@ index_html = f"""<!DOCTYPE html>
   <h1>Vibrante-Node v1.8.4</h1>
   <p>Documentation &amp; Help</p>
 </div>
+<h2 class="section-title">Documentation</h2>
 <div class="card-grid">
-  <a class="card" href="USER_GUIDE.html"><h3>User Guide</h3><p>Interface basics, workflows, loops, shortcuts</p></a>
-  <a class="card" href="NODE_BUILDER_API.html"><h3>Node Builder API</h3><p>Create custom nodes with Python logic</p></a>
-  <a class="card" href="AUTOMATION_API.html"><h3>Automation API</h3><p>Scripting console reference</p></a>
-  <a class="card" href="DEVELOPER.html"><h3>Developer Docs</h3><p>Architecture, engine internals, extension guide</p></a>
-  <a class="card" href="DOCUMENTATION.html"><h3>Technical Features</h3><p>Full platform feature breakdown</p></a>
-  <a class="card" href="RELEASE_v1.8.4.html"><h3>Release Notes v1.8.4</h3><p>What&apos;s new in this release</p></a>
+{main_cards}
+</div>
+<h2 class="section-title">Release Notes</h2>
+<div class="card-grid">
+{release_cards}
 </div>
 </main>
 </body>

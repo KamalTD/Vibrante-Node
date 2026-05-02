@@ -30,6 +30,7 @@ from src.core.models import NodeDefinitionJSON, PortModel
 from src.ui.code_editor import CodeEditor
 from src.ui.gemini_chat import GeminiChatWidget
 from src.utils.hou_bridge import get_bridge, is_available
+from src.utils.paths import app_dir
 
 AVAILABLE_WIDGETS = ["", "text", "text_area", "int", "float", "bool", "dropdown", "slider", "file"]
 AVAILABLE_TYPES = ["any", "int", "float", "string", "bool", "list", "dict"]
@@ -715,7 +716,7 @@ def register_node():
             python_code=self.code_edit.toPlainText()
         )
         
-        nodes_dir = os.path.abspath(os.path.join(os.getcwd(), 'nodes'))
+        nodes_dir = os.path.join(app_dir(), 'nodes')
         os.makedirs(nodes_dir, exist_ok=True)
         
         file_path = os.path.join(nodes_dir, f"{node_id}.json")

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Release Notes v1.1.0 — Vibrante-Node v1.8.4</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+       background: #1e1e2e; color: #cdd6f4; line-height: 1.7; }
+.sidebar { position: fixed; top: 0; left: 0; width: 220px; height: 100vh;
+           background: #181825; overflow-y: auto; padding: 20px 0; z-index: 100; }
+.sidebar h2 { font-size: 13px; color: #6c7086; text-transform: uppercase;
+              letter-spacing: .08em; padding: 0 18px 10px; }
+.sidebar a  { display: block; padding: 6px 18px; color: #a6adc8; text-decoration: none;
+              font-size: 13px; border-left: 3px solid transparent; transition: all .15s; }
+.sidebar a:hover, .sidebar a.active { color: #cba6f7; border-left-color: #cba6f7;
+                                       background: #1e1e2e; }
+.sidebar .nav-release { font-size: 12px; padding: 4px 18px; }
+.content { margin-left: 220px; max-width: 920px; padding: 40px 48px; }
+h1 { font-size: 2em; color: #cba6f7; border-bottom: 2px solid #313244; padding-bottom: 10px; margin: 28px 0 16px; }
+h2 { font-size: 1.45em; color: #89b4fa; margin: 32px 0 12px; }
+h3 { font-size: 1.15em; color: #94e2d5; margin: 22px 0 8px; }
+h4 { font-size: 1em; color: #f5c2e7; margin: 16px 0 6px; }
+p  { margin-bottom: 14px; color: #cdd6f4; }
+a  { color: #89b4fa; }
+ul, ol { margin: 10px 0 14px 22px; }
+li { margin-bottom: 5px; }
+code { background: #313244; color: #f38ba8; padding: 2px 6px; border-radius: 4px; font-size: .88em; font-family: 'Consolas','Courier New',monospace; }
+pre  { background: #181825; border: 1px solid #313244; border-radius: 8px;
+       padding: 18px 20px; overflow-x: auto; margin: 14px 0 20px; }
+pre code { background: none; color: #a6e3a1; padding: 0; font-size: .9em; }
+table { border-collapse: collapse; width: 100%; margin: 14px 0 20px; font-size: .92em; }
+th { background: #313244; color: #cba6f7; padding: 9px 14px; text-align: left; }
+td { border-top: 1px solid #313244; padding: 8px 14px; }
+tr:nth-child(even) td { background: #1e1e2e; }
+hr { border: none; border-top: 1px solid #313244; margin: 28px 0; }
+blockquote { border-left: 4px solid #6c7086; padding-left: 16px; color: #a6adc8; margin: 14px 0; }
+@media (max-width: 700px) { .sidebar { display: none; } .content { margin-left: 0; padding: 24px 18px; } }
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <h2>Vibrante-Node</h2>
+  <a href="USER_GUIDE.html">User Guide</a>
+<a href="NODE_BUILDER_API.html">Node Builder API</a>
+<a href="AUTOMATION_API.html">Automation API</a>
+<a href="DEVELOPER.html">Developer Documentation</a>
+<a href="DOCUMENTATION.html">Technical Feature List</a>
+  <hr style="border-color:#313244;margin:10px 18px">
+  <h2 style="margin-top:8px">Release Notes</h2>
+  <a class="nav-release" href="RELEASE_v1.8.4.html">Release Notes v1.8.4</a>
+<a class="nav-release" href="RELEASE_v1.8.3.html">Release Notes v1.8.3</a>
+<a class="nav-release" href="RELEASE_v1.8.2.html">Release Notes v1.8.2</a>
+<a class="nav-release" href="RELEASE_v1.8.1.html">Release Notes v1.8.1</a>
+<a class="nav-release" href="RELEASE_v1.8.0.html">Release Notes v1.8.0</a>
+<a class="nav-release" href="RELEASE_v1.7.0.html">Release Notes v1.7.0</a>
+<a class="nav-release" href="RELEASE_v1.6.1.html">Release Notes v1.6.1</a>
+<a class="nav-release" href="RELEASE_v1.6.0.html">Release Notes v1.6.0</a>
+<a class="nav-release" href="RELEASE_v1.5.0.html">Release Notes v1.5.0</a>
+<a class="nav-release" href="RELEASE_v1.4.0.html">Release Notes v1.4.0</a>
+<a class="nav-release" href="RELEASE_v1.3.0.html">Release Notes v1.3.0</a>
+<a class="nav-release" href="RELEASE_v1.2.0.html">Release Notes v1.2.0</a>
+<a class="nav-release" href="RELEASE_v1.1.5.html">Release Notes v1.1.5</a>
+<a class="nav-release" href="RELEASE_v1.1.0.html">Release Notes v1.1.0</a>
+<a class="nav-release" href="RELEASE_v1.0.5.html">Release Notes v1.0.5</a>
+  <hr style="border-color:#313244;margin:10px 18px">
+  <h2 style="margin-top:8px">On this page</h2>
+  <a href="#release-v110-professional-code-editor-execution-optimizations-event-log-enhancements" style="padding-left:18px">Release v1.1.0: Professional Code Editor, Execution Optimizations &amp; Event Log Enhancements</a>
+<a href="#overview" style="padding-left:18px">Overview</a>
+<a href="#new-features" style="padding-left:18px">New Features</a>
+<a href="#professional-python-code-editor-export-dialog" style="padding-left:32px">Professional Python Code Editor (Export Dialog)</a>
+<a href="#event-log-silent-mode" style="padding-left:32px">Event Log Silent Mode</a>
+<a href="#performance-optimizations" style="padding-left:18px">Performance Optimizations</a>
+<a href="#execution-engine-enginepy" style="padding-left:32px">Execution Engine (engine.py)</a>
+<a href="#ui-signal-optimization" style="padding-left:32px">UI Signal Optimization</a>
+<a href="#bug-fixes" style="padding-left:18px">Bug Fixes</a>
+<a href="#files-changed" style="padding-left:18px">Files Changed</a>
+</nav>
+<main class="content">
+<h1 id="release-v110-professional-code-editor-execution-optimizations-event-log-enhancements">Release v1.1.0: Professional Code Editor, Execution Optimizations &amp; Event Log Enhancements</h1>
+<h2 id="overview">Overview</h2>
+<p>Version 1.1.0 introduces a fully-featured IDE-style Python Code Editor for exported workflows, major execution engine performance optimizations, and a new Silent Mode for the Event Log. This release significantly improves both the developer experience and runtime performance.</p>
+<hr />
+<h2 id="new-features">New Features</h2>
+<h3 id="professional-python-code-editor-export-dialog">Professional Python Code Editor (Export Dialog)</h3>
+<p>The "Export Workflow as Python" dialog has been completely redesigned as a professional IDE-like code editor:<br />
+- <strong>Full CodeEditor integration</strong> with line numbers, syntax highlighting (Dracula theme), bracket matching, auto-completion, auto-indentation, and live syntax linting.<br />
+- <strong>Code Execution</strong>: Run exported Python scripts directly from the editor with real-time stdout/stderr output via <code>QProcess</code>.<br />
+- <strong>Stop Button</strong>: Kill running scripts mid-execution.<br />
+- <strong>AI-Powered Fix</strong>: Send code with errors to Google Gemini for automatic debugging and correction with accept/reject workflow.<br />
+- <strong>Dracula-Themed UI</strong>: Toolbar, editor, output panel, and status bar styled with a consistent dark Dracula color scheme.<br />
+- <strong>Status Bar</strong>: Real-time cursor position (Ln/Col) and execution status display.<br />
+- <strong>Keyboard Shortcuts</strong>: F5 to Run, Ctrl+S to Save, Ctrl+Shift+C to Copy.</p>
+<h3 id="event-log-silent-mode">Event Log Silent Mode</h3>
+<ul>
+<li><strong>Silent Mode toggle</strong> added to the Event Log filter bar.</li>
+<li>When enabled, suppresses all Info, Execution, and Output messages — only Errors and Warnings are displayed.</li>
+<li><strong>Fast-path optimization</strong>: In silent mode, filtered messages skip all processing (regex, object creation, UI updates) for zero overhead.</li>
+<li><strong>Signal handler short-circuits</strong>: Node started, output, and log signal handlers in the main window skip log message construction entirely when silent mode is active.</li>
+</ul>
+<hr />
+<h2 id="performance-optimizations">Performance Optimizations</h2>
+<h3 id="execution-engine-enginepy">Execution Engine (engine.py)</h3>
+<ul>
+<li><strong>Eliminated artificial delays</strong>: All <code>asyncio.sleep(0.05)</code> and <code>asyncio.sleep(0.1)</code> calls in ForEachNode, WhileLoopNode, SequenceNode, and the engine poll loop replaced with <code>asyncio.sleep(0)</code>. This removes 150ms of idle time per loop iteration (a ForEach over 100 items saves ~15 seconds).</li>
+<li><strong>Indexed outgoing connections</strong>: Pre-calculated <code>_outgoing_data_conns</code> and <code>_outgoing_exec_conns</code> dictionaries keyed by <code>(node_id, port_name)</code> replace O(N) full scans of all connections on every <code>set_output</code> call with O(1) dict lookups.</li>
+<li><strong>Cached node widget lookups</strong>: <code>_find_node_widget</code> now uses a dictionary cache built once at execution start instead of O(N) linear scan per signal handler call.</li>
+</ul>
+<h3 id="ui-signal-optimization">UI Signal Optimization</h3>
+<ul>
+<li><code>_on_node_started</code>, <code>_on_node_output</code>, and <code>_on_node_log</code> handlers skip log message string formatting and signal emission when the Event Log's silent mode is active, reducing per-node UI overhead.</li>
+</ul>
+<hr />
+<h2 id="bug-fixes">Bug Fixes</h2>
+<ul>
+<li>Fixed the "Export Workflow as Python" dialog using a read-only <code>QPlainTextEdit</code> with no editing capabilities — now uses the full <code>CodeEditor</code> widget.</li>
+<li>Fixed node widget cache not being invalidated after execution finishes.</li>
+</ul>
+<hr />
+<h2 id="files-changed">Files Changed</h2>
+<ul>
+<li><code>src/ui/export_python_dialog.py</code> — Complete rewrite (74 lines to ~300 lines)</li>
+<li><code>src/ui/log_panel.py</code> — Silent Mode toggle and fast-path filtering</li>
+<li><code>src/core/engine.py</code> — Indexed connection lookups, reduced sleep delays</li>
+<li><code>src/nodes/builtins/nodes.py</code> — Removed artificial sleep delays from loop nodes</li>
+<li><code>src/ui/window.py</code> — Widget cache, signal handler optimizations</li>
+</ul>
+<hr />
+<p><strong>Branch:</strong> <code>feature/topological-engine-and-foreach-improvements</code></p>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var links = document.querySelectorAll('.sidebar a');
+    var headings = document.querySelectorAll('h1,h2,h3');
+    window.addEventListener('scroll', function() {
+        var cur = '';
+        headings.forEach(function(h) { if (h.offsetTop <= window.scrollY + 80) cur = h.id; });
+        links.forEach(function(a) {
+            a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+        });
+    });
+});
+</script>
+</body>
+</html>

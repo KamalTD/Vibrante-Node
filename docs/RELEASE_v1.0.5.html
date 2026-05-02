@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Release Notes v1.0.5 — Vibrante-Node v1.8.4</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+       background: #1e1e2e; color: #cdd6f4; line-height: 1.7; }
+.sidebar { position: fixed; top: 0; left: 0; width: 220px; height: 100vh;
+           background: #181825; overflow-y: auto; padding: 20px 0; z-index: 100; }
+.sidebar h2 { font-size: 13px; color: #6c7086; text-transform: uppercase;
+              letter-spacing: .08em; padding: 0 18px 10px; }
+.sidebar a  { display: block; padding: 6px 18px; color: #a6adc8; text-decoration: none;
+              font-size: 13px; border-left: 3px solid transparent; transition: all .15s; }
+.sidebar a:hover, .sidebar a.active { color: #cba6f7; border-left-color: #cba6f7;
+                                       background: #1e1e2e; }
+.sidebar .nav-release { font-size: 12px; padding: 4px 18px; }
+.content { margin-left: 220px; max-width: 920px; padding: 40px 48px; }
+h1 { font-size: 2em; color: #cba6f7; border-bottom: 2px solid #313244; padding-bottom: 10px; margin: 28px 0 16px; }
+h2 { font-size: 1.45em; color: #89b4fa; margin: 32px 0 12px; }
+h3 { font-size: 1.15em; color: #94e2d5; margin: 22px 0 8px; }
+h4 { font-size: 1em; color: #f5c2e7; margin: 16px 0 6px; }
+p  { margin-bottom: 14px; color: #cdd6f4; }
+a  { color: #89b4fa; }
+ul, ol { margin: 10px 0 14px 22px; }
+li { margin-bottom: 5px; }
+code { background: #313244; color: #f38ba8; padding: 2px 6px; border-radius: 4px; font-size: .88em; font-family: 'Consolas','Courier New',monospace; }
+pre  { background: #181825; border: 1px solid #313244; border-radius: 8px;
+       padding: 18px 20px; overflow-x: auto; margin: 14px 0 20px; }
+pre code { background: none; color: #a6e3a1; padding: 0; font-size: .9em; }
+table { border-collapse: collapse; width: 100%; margin: 14px 0 20px; font-size: .92em; }
+th { background: #313244; color: #cba6f7; padding: 9px 14px; text-align: left; }
+td { border-top: 1px solid #313244; padding: 8px 14px; }
+tr:nth-child(even) td { background: #1e1e2e; }
+hr { border: none; border-top: 1px solid #313244; margin: 28px 0; }
+blockquote { border-left: 4px solid #6c7086; padding-left: 16px; color: #a6adc8; margin: 14px 0; }
+@media (max-width: 700px) { .sidebar { display: none; } .content { margin-left: 0; padding: 24px 18px; } }
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <h2>Vibrante-Node</h2>
+  <a href="USER_GUIDE.html">User Guide</a>
+<a href="NODE_BUILDER_API.html">Node Builder API</a>
+<a href="AUTOMATION_API.html">Automation API</a>
+<a href="DEVELOPER.html">Developer Documentation</a>
+<a href="DOCUMENTATION.html">Technical Feature List</a>
+  <hr style="border-color:#313244;margin:10px 18px">
+  <h2 style="margin-top:8px">Release Notes</h2>
+  <a class="nav-release" href="RELEASE_v1.8.4.html">Release Notes v1.8.4</a>
+<a class="nav-release" href="RELEASE_v1.8.3.html">Release Notes v1.8.3</a>
+<a class="nav-release" href="RELEASE_v1.8.2.html">Release Notes v1.8.2</a>
+<a class="nav-release" href="RELEASE_v1.8.1.html">Release Notes v1.8.1</a>
+<a class="nav-release" href="RELEASE_v1.8.0.html">Release Notes v1.8.0</a>
+<a class="nav-release" href="RELEASE_v1.7.0.html">Release Notes v1.7.0</a>
+<a class="nav-release" href="RELEASE_v1.6.1.html">Release Notes v1.6.1</a>
+<a class="nav-release" href="RELEASE_v1.6.0.html">Release Notes v1.6.0</a>
+<a class="nav-release" href="RELEASE_v1.5.0.html">Release Notes v1.5.0</a>
+<a class="nav-release" href="RELEASE_v1.4.0.html">Release Notes v1.4.0</a>
+<a class="nav-release" href="RELEASE_v1.3.0.html">Release Notes v1.3.0</a>
+<a class="nav-release" href="RELEASE_v1.2.0.html">Release Notes v1.2.0</a>
+<a class="nav-release" href="RELEASE_v1.1.5.html">Release Notes v1.1.5</a>
+<a class="nav-release" href="RELEASE_v1.1.0.html">Release Notes v1.1.0</a>
+<a class="nav-release" href="RELEASE_v1.0.5.html">Release Notes v1.0.5</a>
+  <hr style="border-color:#313244;margin:10px 18px">
+  <h2 style="margin-top:8px">On this page</h2>
+  <a href="#release-v105-loop-execution-flow-engine-refactor" style="padding-left:18px">Release v1.0.5: Loop Execution &amp; Flow Engine Refactor</a>
+<a href="#overview" style="padding-left:18px">🚀 Overview</a>
+<a href="#key-fixes-improvements" style="padding-left:18px">🛠 Key Fixes &amp; Improvements</a>
+<a href="#1-loop-deadlock-resolution" style="padding-left:32px">1. Loop Deadlock Resolution</a>
+<a href="#2-advanced-flow-engine-enhancements" style="padding-left:32px">2. Advanced Flow Engine Enhancements</a>
+<a href="#3-node-workflow-updates" style="padding-left:32px">3. Node &amp; Workflow Updates</a>
+<a href="#how-to-verify" style="padding-left:18px">📦 How to Verify</a>
+</nav>
+<main class="content">
+<h1 id="release-v105-loop-execution-flow-engine-refactor">Release v1.0.5: Loop Execution &amp; Flow Engine Refactor</h1>
+<h2 id="overview">🚀 Overview</h2>
+<p>This release resolves a critical deadlock in the node execution engine that previously caused "For Loop" and "Loop Body" nodes to stall. It also introduces a more robust flow-based execution model with recursive data pulling.</p>
+<h2 id="key-fixes-improvements">🛠 Key Fixes &amp; Improvements</h2>
+<h3 id="1-loop-deadlock-resolution">1. Loop Deadlock Resolution</h3>
+<ul>
+<li><strong>Removed Non-Reentrant Lock:</strong> Eliminated the <code>_exec_lock</code> in <code>NetworkExecutor</code> that was preventing nested flow calls. This allows nodes like <code>Loop Body</code> to re-trigger the execution flow for every iteration without hanging the engine.</li>
+<li><strong>Sequential Consistency:</strong> Maintained execution order through proper <code>asyncio</code> task tracking and <code>await</code> patterns, ensuring that loops process indices in the correct sequence.</li>
+</ul>
+<h3 id="2-advanced-flow-engine-enhancements">2. Advanced Flow Engine Enhancements</h3>
+<ul>
+<li><strong>Recursive Data Pulling:</strong> Nodes now automatically "pull" updated values from upstream data-only nodes (like Variables or Math nodes) immediately before execution. This ensures that every iteration of a loop uses the most current data.</li>
+<li><strong>Selective Reactive Updates:</strong> Refined the reactive propagation logic. In "Flow Mode," data updates now only trigger downstream nodes if those nodes do not have execution pins (pure data nodes), preventing redundant executions.</li>
+<li><strong><code>use_exec</code> Property:</strong> Introduced a <code>use_exec</code> flag in node definitions. This allows developers to create clean, data-only nodes that don't clutter the UI with execution pins when they aren't needed.</li>
+</ul>
+<h3 id="3-node-workflow-updates">3. Node &amp; Workflow Updates</h3>
+<ul>
+<li><strong>For Loop Node:</strong> Streamlined the Python implementation to be more efficient and trigger only the necessary downstream pins.</li>
+<li><strong>Variable Node:</strong> Added an <code>on_parameter_changed</code> hook to cast and propagate values immediately when edited in the UI.</li>
+<li><strong>Loop Operation Example:</strong> Updated the <code>loop_operation_example.json</code> workflow to demonstrate a 50-iteration string concatenation chain, fully verified to run to completion.</li>
+</ul>
+<h2 id="how-to-verify">📦 How to Verify</h2>
+<ol>
+<li>Load the <code>workflows/loop_operation_example.json</code> in the application.</li>
+<li>Click <strong>Run</strong>.</li>
+<li>Observe the <code>Log Panel</code> or terminal output; you should see "Now printing ::====&gt;&gt;&gt; 0" through "49" without any delays or stalls.</li>
+</ol>
+<hr />
+<p><strong>Full Commit Hash:</strong> <code>396c869</code><br />
+<strong>Tag:</strong> <code>v1.0.5</code></p>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var links = document.querySelectorAll('.sidebar a');
+    var headings = document.querySelectorAll('h1,h2,h3');
+    window.addEventListener('scroll', function() {
+        var cur = '';
+        headings.forEach(function(h) { if (h.offsetTop <= window.scrollY + 80) cur = h.id; });
+        links.forEach(function(a) {
+            a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+        });
+    });
+});
+</script>
+</body>
+</html>
