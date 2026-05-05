@@ -48,8 +48,7 @@ class NodeSearchPopup(QDialog):
         
         # Results list
         self.results_list = QListWidget()
-        self.results_list.itemDoubleClicked.connect(self._on_item_double_clicked)
-        self.results_list.itemActivated.connect(self._on_item_activated)
+        self.results_list.itemClicked.connect(self._on_item_clicked)
         layout.addWidget(self.results_list)
         
         # Status label
@@ -135,15 +134,7 @@ class NodeSearchPopup(QDialog):
         
         self._populate_list(filtered)
     
-    def _on_item_double_clicked(self, item):
-        """Handle double-click on item."""
-        node_id = item.data(Qt.UserRole)
-        if node_id:
-            self.node_selected.emit(node_id)
-            self.accept()
-    
-    def _on_item_activated(self, item):
-        """Handle Enter key on item."""
+    def _on_item_clicked(self, item):
         node_id = item.data(Qt.UserRole)
         if node_id:
             self.node_selected.emit(node_id)

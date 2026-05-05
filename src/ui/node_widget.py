@@ -25,6 +25,31 @@ QPen = QtGui.QPen
 QBrush = QtGui.QBrush
 QPixmap = QtGui.QPixmap
 QPainterPath = QtGui.QPainterPath
+class _MenuCloser(QtCore.QObject):
+    """App-level event filter that closes a popup QMenu on the first mouse
+    press outside it.  Needed because QGraphicsView consumes press events
+    before Qt's built-in popup-dismiss logic can see them."""
+
+    def __init__(self, menu):
+        super().__init__(menu)
+        self._menu = menu
+        QtWidgets.QApplication.instance().installEventFilter(self)
+        menu.aboutToHide.connect(self._remove)
+
+    def _remove(self):
+        QtWidgets.QApplication.instance().removeEventFilter(self)
+
+    def eventFilter(self, obj, event):
+        if event.type() == QtCore.QEvent.MouseButtonPress:
+            menu_rect = QtCore.QRect(
+                self._menu.mapToGlobal(QtCore.QPoint(0, 0)),
+                self._menu.size()
+            )
+            if not menu_rect.contains(QtGui.QCursor.pos()):
+                self._menu.close()
+        return False
+
+
 class QComboBox(_QComboBox):
     """QComboBox that works correctly inside a QGraphicsProxyWidget.
 
@@ -64,23 +89,35 @@ class QComboBox(_QComboBox):
             view.mapFromScene(proxy.mapToScene(combo_bl))
         )
 
-        # QMenu is a native OS window, so it always renders above every
-        # QGraphicsItem and proxy widget in the scene.
-        menu = QtWidgets.QMenu()
-        menu.setMinimumWidth(self.width())
-        menu.setStyleSheet(
+        # Build menu. Stored on self to survive past showPopup() returning
+        # (popup() is non-blocking so the local ref would be GC'd immediately).
+        self._active_menu = QtWidgets.QMenu()
+        self._active_menu.setMinimumWidth(self.width())
+        self._active_menu.setStyleSheet(
             "QMenu { background-color: #2b2b2b; color: #ddd;"
             "        border: 1px solid #555; }"
             "QMenu::item { padding: 4px 16px; }"
             "QMenu::item:selected { background-color: #4a90d9; color: white; }"
         )
         for i in range(self.count()):
-            action = menu.addAction(self.itemText(i))
+            action = self._active_menu.addAction(self.itemText(i))
             action.setData(i)
 
-        chosen = menu.exec_(global_pt)
-        if chosen is not None:
-            self.setCurrentIndex(chosen.data())
+        def _on_triggered(action):
+            self.setCurrentIndex(action.data())
+
+        self._active_menu.triggered.connect(_on_triggered)
+        # Defer ref-clear so Qt finishes all signal emission before C++ teardown.
+        self._active_menu.aboutToHide.connect(
+            lambda: QtCore.QTimer.singleShot(0, lambda: setattr(self, '_active_menu', None))
+        )
+
+        # Install app-level closer so one outside click always dismisses the menu
+        # even when QGraphicsView would otherwise consume the press event.
+        _MenuCloser(self._active_menu)
+
+        self._active_menu.popup(global_pt)
+        self._active_menu.activateWindow()
 
     def _proxy(self):
         w = self
@@ -154,8 +191,38 @@ class NodeWidget(QGraphicsItem):
             if param_label:
                 param_label.setStyleSheet(f"color: {label_color}; font-size: 9px; font-weight: bold; background: transparent;")
 
-            for w in container.findChildren((QLineEdit, QSpinBox, QDoubleSpinBox, QCheckBox, QComboBox, QSlider, QTextEdit)):
+            for w in container.findChildren((QLineEdit, QSpinBox, QDoubleSpinBox, QTextEdit)):
                 w.setStyleSheet(f"background-color: {bg_color}; color: {text_color_name}; border: 1px solid {border_color};")
+
+            for w in container.findChildren(QCheckBox):
+                w.setStyleSheet(f"color: {text_color_name}; background: transparent;")
+
+            # QComboBox: only style the box itself — no ::drop-down or ::down-arrow
+            # overrides so Fusion keeps drawing the native arrow icon.
+            for w in container.findChildren(QComboBox):
+                w.setStyleSheet(
+                    f"QComboBox {{ background-color: {bg_color}; color: {text_color_name};"
+                    f" border: 1px solid {border_color}; padding: 1px 4px; }}"
+                )
+
+            # QSlider: provide groove + handle so the track and thumb are visible.
+            handle_color = "#6699cc" if is_dark else "#4a90d9"
+            groove_bg    = "#555555" if is_dark else "#cccccc"
+            for w in container.findChildren(QSlider):
+                w.setStyleSheet(f"""
+                    QSlider::groove:horizontal {{
+                        height: 4px; background: {groove_bg};
+                        border-radius: 2px; margin: 0px;
+                    }}
+                    QSlider::sub-page:horizontal {{
+                        background: {handle_color}; border-radius: 2px;
+                    }}
+                    QSlider::handle:horizontal {{
+                        background: {handle_color}; border: none;
+                        width: 12px; height: 12px;
+                        margin: -4px 0; border-radius: 6px;
+                    }}
+                """)
 
             # QsciScintilla-based code editors (text_area widgets) use their own theme API
             try:
