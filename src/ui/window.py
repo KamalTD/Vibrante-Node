@@ -410,6 +410,7 @@ class MainWindow(QMainWindow):
 
         release_menu = help_menu.addMenu('Release Notes')
         for ver in [
+            ("v1.8.5", "RELEASE_v1.8.5.md"),
             ("v1.8.4", "RELEASE_v1.8.4.md"),
             ("v1.8.3", "RELEASE_v1.8.3.md"),
             ("v1.8.2", "RELEASE_v1.8.2.md"),
@@ -481,7 +482,7 @@ class MainWindow(QMainWindow):
         )
         
         QMessageBox.about(self, "About Vibrante-Node",
-            f"<h3>Vibrante-Node v1.8.4</h3>"
+            f"<h3>Vibrante-Node v1.8.5</h3>"
             f"<p>{description}</p>"
             f"<hr>"
             f"<p><b>Copyright &copy; 2026 Mahmoud Kamal - KamalTD</b></p>"
