@@ -33,7 +33,6 @@ QProcess = QtCore.QProcess
 
 from src.core.models import WorkflowModel
 from src.ui.code_editor import CodeEditor
-from src.utils.highlighter import PythonHighlighter
 from src.utils.config_manager import config
 
 
@@ -95,6 +94,12 @@ class ExportPythonDialog(QDialog):
         self._ai_worker = None
         self._last_error_output = ""
         self._temp_file_path = None
+        # Detect current app theme
+        try:
+            from src.utils.config_manager import config as _cfg
+            self._is_dark = _cfg.get("ui.theme", "dark") != "light"
+        except Exception:
+            self._is_dark = True
         self._init_ui()
         self._generate()
 
@@ -105,69 +110,29 @@ class ExportPythonDialog(QDialog):
 
         self._ai_result_signal.connect(self._handle_ai_result)
 
-        # Apply Dracula theme to entire dialog
-        self.setStyleSheet("""
-            QDialog {
-                background-color: #21222c;
-                color: #f8f8f2;
-            }
-            QToolBar {
-                background-color: #282a36;
-                border-bottom: 1px solid #44475a;
-                spacing: 4px;
-                padding: 2px 4px;
-            }
-            QToolBar QToolButton {
-                background-color: transparent;
-                color: #f8f8f2;
-                border: 1px solid transparent;
-                border-radius: 3px;
-                padding: 4px 10px;
-                font-size: 10pt;
-            }
-            QToolBar QToolButton:hover {
-                background-color: #44475a;
-                border: 1px solid #6272a4;
-            }
-            QToolBar QToolButton:pressed {
-                background-color: #6272a4;
-            }
-            QToolBar QToolButton:disabled {
-                color: #6272a4;
-            }
-            QToolBar::separator {
-                background-color: #44475a;
-                width: 1px;
-                margin: 4px 6px;
-            }
-            QSplitter::handle {
-                background-color: #44475a;
-                height: 2px;
-            }
-            QLabel {
-                color: #f8f8f2;
-            }
-            QPushButton {
-                background-color: #44475a;
-                color: #f8f8f2;
-                border: 1px solid #6272a4;
-                border-radius: 3px;
-                padding: 2px 8px;
-            }
-            QPushButton:hover {
-                background-color: #6272a4;
-            }
-            QStatusBar {
-                background-color: #191a21;
-                color: #6272a4;
-                border-top: 1px solid #44475a;
-            }
-            QStatusBar QLabel {
-                color: #6272a4;
-                font-size: 9pt;
-                padding: 0 8px;
-            }
-        """)
+        # Theme-aware stylesheet (inherits from app Fusion theme; only override
+        # toolbar / splitter / statusbar which need dialog-specific colours)
+        if self._is_dark:
+            self.setStyleSheet("""
+                QDialog    { background-color: #21222c; color: #f8f8f2; }
+                QToolBar   { background-color: #282a36; border-bottom: 1px solid #44475a;
+                             spacing: 4px; padding: 2px 4px; }
+                QToolBar QToolButton {
+                    background-color: transparent; color: #f8f8f2;
+                    border: 1px solid transparent; border-radius: 3px; padding: 4px 10px; }
+                QToolBar QToolButton:hover   { background-color: #44475a; border: 1px solid #6272a4; }
+                QToolBar QToolButton:pressed { background-color: #6272a4; }
+                QToolBar QToolButton:disabled { color: #6272a4; }
+                QToolBar::separator { background-color: #44475a; width: 1px; margin: 4px 6px; }
+                QSplitter::handle   { background-color: #44475a; }
+                QLabel { color: #f8f8f2; }
+                QPushButton {
+                    background-color: #44475a; color: #f8f8f2;
+                    border: 1px solid #6272a4; border-radius: 3px; padding: 2px 8px; }
+                QPushButton:hover { background-color: #6272a4; }
+                QStatusBar { background-color: #191a21; color: #6272a4; border-top: 1px solid #44475a; }
+                QStatusBar QLabel { color: #6272a4; font-size: 9pt; padding: 0 8px; }
+            """)
 
         # --- Toolbar ---
         self._init_toolbar(layout)
@@ -247,7 +212,6 @@ class ExportPythonDialog(QDialog):
 
     def _init_editor(self):
         self.code_editor = CodeEditor()
-        self._highlighter = PythonHighlighter(self.code_editor.document())
         self.code_editor.cursorPositionChanged.connect(self._update_cursor_pos)
 
         # Dracula-themed professional styling
@@ -285,9 +249,10 @@ class ExportPythonDialog(QDialog):
         self.output_display.setFont(font)
         self.output_display.setLineWrapMode(QPlainTextEdit.NoWrap)
 
-        self.output_display.setStyleSheet(
-            "background-color: #191a21; color: #f8f8f2; border: none; border-top: 1px solid #44475a;"
-        )
+        if self._is_dark:
+            self.output_display.setStyleSheet(
+                "background-color: #191a21; color: #f8f8f2; border: none; border-top: 1px solid #44475a;"
+            )
 
         vlayout.addWidget(self.output_display, 1)
         return container
@@ -504,11 +469,9 @@ class ExportPythonDialog(QDialog):
 
     # ---- Status Bar ----
 
-    def _update_cursor_pos(self):
-        cursor = self.code_editor.textCursor()
-        line = cursor.blockNumber() + 1
-        col = cursor.columnNumber() + 1
-        self._cursor_label.setText(f"Ln {line}, Col {col}")
+    def _update_cursor_pos(self, *_):
+        line, col = self.code_editor.getCursorPosition()
+        self._cursor_label.setText(f"Ln {line + 1}, Col {col + 1}")
 
     def _update_button_states(self):
         is_running = self._process is not None and self._process.state() != QProcess.NotRunning

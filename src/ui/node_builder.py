@@ -17,6 +17,7 @@ QFileDialog = QtWidgets.QFileDialog
 QComboBox = QtWidgets.QComboBox
 
 QCheckBox = QtWidgets.QCheckBox
+QScrollArea = QtWidgets.QScrollArea
 
 Qt = QtCore.Qt
 QTimer = QtCore.QTimer
@@ -24,7 +25,6 @@ import os
 import re
 import ast
 from src.core.loader import ScriptLoader
-from src.utils.highlighter import PythonHighlighter
 from src.core.registry import NodeRegistry
 from src.core.models import NodeDefinitionJSON, PortModel
 from src.ui.code_editor import CodeEditor
@@ -40,13 +40,18 @@ class NodeBuilderDialog(QDialog):
         super().__init__(parent)
         self.editing_node_id = editing_node_id
         self.setWindowTitle("Node Builder")
-        self.resize(1000, 800)
+        self.setWindowFlags(
+            Qt.Window |
+            Qt.WindowCloseButtonHint |
+            Qt.WindowMinimizeButtonHint |
+            Qt.WindowMaximizeButtonHint
+        )
+        self.resize(1400, 900)
         
         self._is_syncing = False
         
         self._init_ui()
-        self.highlighter = PythonHighlighter(self.code_edit.document())
-        
+
         # Debounce timer for code parsing
         self.sync_timer = QTimer()
         self.sync_timer.setSingleShot(True)
@@ -69,9 +74,14 @@ class NodeBuilderDialog(QDialog):
         layout = QVBoxLayout(self)
         splitter = QSplitter(Qt.Horizontal)
         
-        # Left Panel: Configuration
-        config_widget = QWidget()
-        config_layout = QVBoxLayout(config_widget)
+        # Left Panel: Configuration (scrollable so it stays usable when narrow)
+        config_inner = QWidget()
+        config_layout = QVBoxLayout(config_inner)
+        config_scroll = QScrollArea()
+        config_scroll.setWidget(config_inner)
+        config_scroll.setWidgetResizable(True)
+        config_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        config_scroll.setMinimumWidth(400)
         
         config_layout.addWidget(QLabel("Node ID (slug — used for file & class name):"))
         self.name_edit = QLineEdit()
@@ -179,9 +189,16 @@ class NodeBuilderDialog(QDialog):
         self.gemini_chat.get_context_callback = self.get_node_definition
         self.gemini_chat.node_generated.connect(self._on_gemini_node_generated)
         
-        splitter.addWidget(config_widget)
+        splitter.addWidget(config_scroll)
         splitter.addWidget(editor_widget)
         splitter.addWidget(self.gemini_chat)
+
+        # Code editor is the hero — side panels stay compact, center stretches.
+        splitter.setStretchFactor(0, 0)
+        splitter.setStretchFactor(1, 1)
+        splitter.setStretchFactor(2, 0)
+        splitter.setSizes([280, 840, 280])
+
         layout.addWidget(splitter)
         
         # Bottom Buttons
@@ -230,6 +247,8 @@ class {name}(BaseNode):
         \"\"\"Initialize node ports and resources.\"\"\"
         super().__init__(use_exec=True)
         self.icon_path = None
+        self.add_exec_input("exec_in")
+        self.add_exec_output("exec_out")
         # [AUTO-GENERATED-PORTS-START]
         # [AUTO-GENERATED-PORTS-END]
         try:
@@ -361,14 +380,9 @@ def register_node():
             if self._table_needs_update(self.outputs_table, output_list):
                 self._update_table(self.outputs_table, output_list)
 
-            # Detect exec lines and sync checkboxes
-            # Also treat super().__init__() / super().__init__(use_exec=True) as having both exec ports
-            default_exec = bool(
-                re.search(r'super\(\)\.__init__\(\s*\)', code) or
-                re.search(r'super\(\)\.__init__\(use_exec\s*=\s*True\)', code)
-            )
-            has_exec_in = default_exec or bool(re.search(r'add_exec_input', code))
-            has_exec_out = default_exec or bool(re.search(r'add_exec_output', code))
+            # Detect exec ports from explicit add_exec_input / add_exec_output lines
+            has_exec_in = bool(re.search(r'self\.add_exec_input', code))
+            has_exec_out = bool(re.search(r'self\.add_exec_output', code))
             self.exec_in_check.blockSignals(True)
             self.exec_out_check.blockSignals(True)
             self.exec_in_check.setChecked(has_exec_in)
@@ -490,30 +504,24 @@ def register_node():
                 
             injection += "        # [AUTO-GENERATED-PORTS-END]"
 
-            # Decide use_exec based on checkboxes:
-            #   - both checked  -> use_exec=True  (BaseNode auto-adds exec_in + exec_out)
-            #   - only one      -> use_exec=False + explicit add for the one wanted
-            #   - neither       -> use_exec=False (no exec ports at all)
+            # use_exec=True when any exec port is active, False only when both are off.
             wants_in = self.exec_in_check.isChecked()
             wants_out = self.exec_out_check.isChecked()
-            both = wants_in and wants_out
-            either = wants_in or wants_out
+            use_exec_value = "True" if (wants_in or wants_out) else "False"
 
-            use_exec_value = "True" if either else "False"
             code = re.sub(r'super\(\)\.__init__\(\s*\)', f'super().__init__(use_exec={use_exec_value})', code)
             code = re.sub(r'super\(\)\.__init__\(use_exec\s*=\s*(?:True|False)\)',
                           f'super().__init__(use_exec={use_exec_value})', code)
 
-            # Strip any pre-existing explicit exec lines and re-add only when needed
-            # (i.e. only one checkbox checked — both checked is covered by use_exec=True).
+            # Strip all existing exec lines, then re-inject only the checked ones
             code = re.sub(r'\n[ \t]*self\.add_exec_input\([^)]*\)', '', code)
             code = re.sub(r'\n[ \t]*self\.add_exec_output\([^)]*\)', '', code)
-            if either and not both:
-                exec_block = ""
-                if wants_in:
-                    exec_block += '\n        self.add_exec_input("exec_in")'
-                if wants_out:
-                    exec_block += '\n        self.add_exec_output("exec_out")'
+            exec_block = ""
+            if wants_in:
+                exec_block += '\n        self.add_exec_input("exec_in")'
+            if wants_out:
+                exec_block += '\n        self.add_exec_output("exec_out")'
+            if exec_block:
                 code = re.sub(r'(super\(\)\.__init__\([^)]*\))', r'\1' + exec_block, code)
 
             # Sync init_first class attribute with the checkbox

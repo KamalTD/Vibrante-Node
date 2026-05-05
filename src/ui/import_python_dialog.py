@@ -1,17 +1,15 @@
-from src.utils.qt_compat import QtWidgets, QtGui
+from src.utils.qt_compat import QtWidgets
 from src.utils.config_manager import config
-from src.utils.highlighter import PythonHighlighter
+from src.ui.code_editor import CodeEditor
 
 QDialog = QtWidgets.QDialog
 QVBoxLayout = QtWidgets.QVBoxLayout
 QHBoxLayout = QtWidgets.QHBoxLayout
-QPlainTextEdit = QtWidgets.QPlainTextEdit
 QPushButton = QtWidgets.QPushButton
 QLabel = QtWidgets.QLabel
 QFileDialog = QtWidgets.QFileDialog
 QMessageBox = QtWidgets.QMessageBox
 QProgressBar = QtWidgets.QProgressBar
-QFont = QtGui.QFont
 
 
 class ImportPythonDialog(QDialog):
@@ -31,10 +29,8 @@ class ImportPythonDialog(QDialog):
             "Gemini AI will analyze it and generate a node workflow."
         ))
 
-        self.code_input = QPlainTextEdit()
+        self.code_input = CodeEditor()
         self.code_input.setPlaceholderText("Paste your Python code here...")
-        self.code_input.setFont(QFont("Consolas", 10))
-        self._highlighter = PythonHighlighter(self.code_input.document())
         layout.addWidget(self.code_input)
 
         load_layout = QHBoxLayout()

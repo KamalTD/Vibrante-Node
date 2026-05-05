@@ -149,13 +149,22 @@ class NodeWidget(QGraphicsItem):
         for proxy in self.param_widgets.values():
             container = proxy.widget()
             if not container: continue
-            
+
             param_label = container.findChild(QLabel)
             if param_label:
                 param_label.setStyleSheet(f"color: {label_color}; font-size: 9px; font-weight: bold; background: transparent;")
-            
+
             for w in container.findChildren((QLineEdit, QSpinBox, QDoubleSpinBox, QCheckBox, QComboBox, QSlider, QTextEdit)):
                 w.setStyleSheet(f"background-color: {bg_color}; color: {text_color_name}; border: 1px solid {border_color};")
+
+            # QsciScintilla-based code editors (text_area widgets) use their own theme API
+            try:
+                from PyQt5.Qsci import QsciScintilla
+                for w in container.findChildren(QsciScintilla):
+                    if hasattr(w, 'apply_theme'):
+                        w.apply_theme(is_dark)
+            except ImportError:
+                pass
         
         self.update()
 

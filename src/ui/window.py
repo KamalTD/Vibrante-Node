@@ -67,15 +67,6 @@ class _EventLoopRunner:
         self._executor.stop()
 
 
-class _InitPhaseRunner(_EventLoopRunner):
-    """Variant of _EventLoopRunner that runs the executor in init_only mode."""
-
-    def start(self):
-        self._active = True
-        self._task = self._loop.create_task(self._executor.run(init_only=True))
-        self._timer.start()
-
-
 class MainWindow(QMainWindow):
     def __init__(self):
         print("MainWindow init started")
@@ -84,6 +75,10 @@ class MainWindow(QMainWindow):
         self._is_dark_theme = True # Track theme state
         self.setWindowTitle("Vibrante-Node Pipeline Editor")
         self.resize(1200, 800)
+
+        # Apply Fusion style globally for consistent QSS rendering on all platforms.
+        from PyQt5.QtWidgets import QApplication as _QApp
+        _QApp.instance().setStyle("Fusion")
 
         # Apply saved theme stylesheet early (before panels are created) to
         # avoid a dark→light flicker on startup.
@@ -374,7 +369,7 @@ class MainWindow(QMainWindow):
 
         # Themes Menu
         theme_menu = menubar.addMenu('&Themes')
-        dark_act = QAction("Dark Theme", self)
+        dark_act = QAction("Dracula Theme", self)
         dark_act.triggered.connect(self._apply_dark_theme)
         theme_menu.addAction(dark_act)
         
@@ -616,55 +611,339 @@ class MainWindow(QMainWindow):
 
     def _apply_dark_theme(self):
         self._is_dark_theme = True
+        from src.utils.config_manager import config as _cfg
+        _cfg.set("ui.theme", "dark")
+
         from PyQt5.QtWidgets import QApplication
         app = QApplication.instance()
+        app.setStyle("Fusion")
         app.setStyleSheet("""
-            QMainWindow, QDialog { background-color: #2b2b2b; color: #ffffff; }
-            QDockWidget { color: #ffffff; }
-            QDockWidget::title { background: #3c3f41; padding-left: 5px; }
+            /* ── Base ──────────────────────────────────────────────────── */
+            QWidget {
+                background-color: #2b2b2b;
+                color: #ffffff;
+                font-size: 10pt;
+            }
+            QMainWindow, QDialog {
+                background-color: #2b2b2b;
+                color: #ffffff;
+            }
+
+            /* ── Labels ─────────────────────────────────────────────────── */
+            QLabel {
+                color: #ffffff;
+                background: transparent;
+            }
+
+            /* ── Inputs ─────────────────────────────────────────────────── */
+            QLineEdit, QTextEdit, QPlainTextEdit {
+                background-color: #3c3f41;
+                color: #d4d4d4;
+                border: 1px solid #555555;
+                border-radius: 4px;
+                padding: 3px 6px;
+                selection-background-color: #214283;
+                selection-color: #ffffff;
+            }
+            QLineEdit:focus, QTextEdit:focus, QPlainTextEdit:focus {
+                border: 1px solid #6699cc;
+            }
+            QLineEdit:disabled, QTextEdit:disabled, QPlainTextEdit:disabled {
+                color: #6c6c6c;
+                background-color: #333333;
+            }
+
+            /* ── Buttons ─────────────────────────────────────────────────── */
+            QPushButton {
+                background-color: #4b4d4d;
+                color: #ffffff;
+                border: 1px solid #555555;
+                border-radius: 4px;
+                padding: 4px 12px;
+                min-height: 22px;
+            }
+            QPushButton:hover  { background-color: #5c5e5e; border: 1px solid #6699cc; }
+            QPushButton:pressed { background-color: #3c3f41; }
+            QPushButton:disabled { color: #6c6c6c; background-color: #3c3f41; border: 1px solid #444; }
+
+            /* ── CheckBox ────────────────────────────────────────────────── */
+            QCheckBox {
+                color: #ffffff;
+                spacing: 6px;
+                background: transparent;
+            }
+            QCheckBox::indicator {
+                width: 14px;
+                height: 14px;
+                border: 1px solid #555555;
+                border-radius: 3px;
+                background-color: #3c3f41;
+            }
+            QCheckBox::indicator:hover  { border: 1px solid #6699cc; }
+            QCheckBox::indicator:checked {
+                background-color: #50fa7b;
+                border: 1px solid #3dbb5e;
+            }
+            QCheckBox::indicator:checked:hover { border: 1px solid #6699cc; }
+            QCheckBox:disabled { color: #6c6c6c; }
+
+            /* ── RadioButton ─────────────────────────────────────────────── */
+            QRadioButton {
+                color: #ffffff;
+                spacing: 6px;
+                background: transparent;
+            }
+            QRadioButton::indicator {
+                width: 14px;
+                height: 14px;
+                border: 1px solid #555555;
+                border-radius: 7px;
+                background-color: #3c3f41;
+            }
+            QRadioButton::indicator:checked {
+                background-color: #50fa7b;
+                border: 1px solid #3dbb5e;
+            }
+
+            /* ── ComboBox ────────────────────────────────────────────────── */
+            QComboBox {
+                background-color: #3c3f41;
+                color: #ffffff;
+                border: 1px solid #555555;
+                border-radius: 4px;
+                padding: 3px 6px;
+                min-height: 22px;
+            }
+            QComboBox:hover  { border: 1px solid #6699cc; }
+            QComboBox::drop-down { border: none; width: 22px; }
+            QComboBox::down-arrow { image: none; }
+            QComboBox QAbstractItemView {
+                background-color: #3c3f41;
+                color: #ffffff;
+                border: 1px solid #555555;
+                selection-background-color: #214283;
+                selection-color: #ffffff;
+                outline: none;
+            }
+
+            /* ── SpinBox ─────────────────────────────────────────────────── */
+            QSpinBox, QDoubleSpinBox {
+                background-color: #3c3f41;
+                color: #ffffff;
+                border: 1px solid #555555;
+                border-radius: 4px;
+                padding: 3px 6px;
+                min-height: 22px;
+            }
+            QSpinBox:focus, QDoubleSpinBox:focus { border: 1px solid #6699cc; }
+            QSpinBox::up-button, QDoubleSpinBox::up-button,
+            QSpinBox::down-button, QDoubleSpinBox::down-button {
+                background-color: #4b4d4d;
+                border: none;
+                border-left: 1px solid #555555;
+                width: 16px;
+            }
+            QSpinBox::up-button:hover, QDoubleSpinBox::up-button:hover,
+            QSpinBox::down-button:hover, QDoubleSpinBox::down-button:hover {
+                background-color: #5c5e5e;
+            }
+
+            /* ── Slider ──────────────────────────────────────────────────── */
+            QSlider::groove:horizontal {
+                background: #3c3f41;
+                height: 4px;
+                border-radius: 2px;
+            }
+            QSlider::handle:horizontal {
+                background: #50fa7b;
+                width: 14px; height: 14px;
+                border-radius: 7px;
+                margin: -5px 0;
+            }
+            QSlider::groove:vertical {
+                background: #3c3f41;
+                width: 4px;
+                border-radius: 2px;
+            }
+            QSlider::handle:vertical {
+                background: #50fa7b;
+                width: 14px; height: 14px;
+                border-radius: 7px;
+                margin: 0 -5px;
+            }
+
+            /* ── ScrollBar ───────────────────────────────────────────────── */
+            QScrollBar:vertical {
+                background: #2b2b2b;
+                width: 10px;
+                margin: 0;
+                border-radius: 5px;
+            }
+            QScrollBar::handle:vertical {
+                background: #555555;
+                border-radius: 5px;
+                min-height: 24px;
+            }
+            QScrollBar::handle:vertical:hover { background: #6699cc; }
+            QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; }
+            QScrollBar:horizontal {
+                background: #2b2b2b;
+                height: 10px;
+                margin: 0;
+                border-radius: 5px;
+            }
+            QScrollBar::handle:horizontal {
+                background: #555555;
+                border-radius: 5px;
+                min-width: 24px;
+            }
+            QScrollBar::handle:horizontal:hover { background: #6699cc; }
+            QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal { width: 0; }
+
+            /* ── Tabs ────────────────────────────────────────────────────── */
+            QTabBar::tab {
+                background: #3c3f41;
+                color: #aaaaaa;
+                padding: 6px 14px;
+                border: 1px solid #2b2b2b;
+                border-bottom: none;
+                border-top-left-radius: 4px;
+                border-top-right-radius: 4px;
+            }
+            QTabBar::tab:selected { background: #4b4d4d; color: #ffffff; border-bottom: 2px solid #50fa7b; }
+            QTabBar::tab:hover:!selected { background: #4b4d4d; color: #ffffff; }
+            QTabWidget::pane { border: 1px solid #3c3f41; }
+
+            /* ── Tables / Lists / Trees ──────────────────────────────────── */
+            QTableWidget, QListWidget, QTreeWidget {
+                background-color: #2b2b2b;
+                color: #d4d4d4;
+                border: 1px solid #3c3f41;
+                gridline-color: #3c3f41;
+                alternate-background-color: #313131;
+                outline: none;
+            }
+            QTableWidget::item:selected, QListWidget::item:selected, QTreeWidget::item:selected {
+                background-color: #214283;
+                color: #ffffff;
+            }
+            QHeaderView::section {
+                background-color: #3c3f41;
+                color: #ffffff;
+                border: 1px solid #2b2b2b;
+                padding: 4px;
+            }
+
+            /* ── GroupBox ────────────────────────────────────────────────── */
+            QGroupBox {
+                border: 1px solid #555555;
+                border-radius: 4px;
+                margin-top: 10px;
+                color: #ffffff;
+                font-weight: bold;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 10px;
+                padding: 0 4px;
+            }
+
+            /* ── Splitter ────────────────────────────────────────────────── */
+            QSplitter::handle { background: #555555; }
+            QSplitter::handle:horizontal { width: 2px; }
+            QSplitter::handle:vertical   { height: 2px; }
+
+            /* ── Menus ───────────────────────────────────────────────────── */
             QMenuBar { background-color: #3c3f41; color: #ffffff; }
             QMenuBar::item:selected { background-color: #4b4d4d; }
-            QMenu { background-color: #3c3f41; color: #ffffff; border: 1px solid #2b2b2b; }
-            QMenu::item:selected { background-color: #4b4d4d; }
-            QToolBar { background-color: #3c3f41; border: none; }
-            QToolTip { background-color: #4b4d4d; color: #ffffff; border: 1px solid #2b2b2b; }
-            QPushButton { background-color: #4b4d4d; color: white; border: 1px solid #3c3f41; padding: 5px; }
-            QPushButton:hover { background-color: #5c5e5e; }
-            QLineEdit, QTextEdit, QPlainTextEdit, QTableWidget, QHeaderView { background-color: #2b2b2b; color: #d4d4d4; border: 1px solid #3c3f41; }
-            QHeaderView::section { background-color: #3c3f41; color: white; }
-            QLabel { color: #ffffff; }
-            QComboBox, QSpinBox, QDoubleSpinBox { background-color: #3c3f41; color: white; border: 1px solid #2b2b2b; }
-            QTabBar::tab { background: #3c3f41; color: #ffffff; padding: 8px; border: 1px solid #2b2b2b; }
-            QTabBar::tab:selected { background: #4b4d4d; border-bottom: 2px solid #50fa7b; }
+            QMenu {
+                background-color: #3c3f41;
+                color: #ffffff;
+                border: 1px solid #2b2b2b;
+            }
+            QMenu::item:selected { background-color: #214283; }
+            QMenu::separator { height: 1px; background: #555555; margin: 2px 0; }
+
+            /* ── Toolbar ─────────────────────────────────────────────────── */
+            QToolBar { background-color: #3c3f41; border: none; spacing: 2px; }
+            QToolButton {
+                background-color: transparent;
+                color: #ffffff;
+                border: 1px solid transparent;
+                border-radius: 4px;
+                padding: 4px 8px;
+            }
+            QToolButton:hover  { background-color: #4b4d4d; border: 1px solid #555555; }
+            QToolButton:pressed { background-color: #3c3f41; }
+
+            /* ── DockWidget ──────────────────────────────────────────────── */
+            QDockWidget { color: #ffffff; }
+            QDockWidget::title { background: #3c3f41; padding: 4px 6px; }
+
+            /* ── StatusBar ───────────────────────────────────────────────── */
+            QStatusBar { background-color: #3c3f41; color: #aaaaaa; }
+            QStatusBar QLabel { color: #aaaaaa; background: transparent; }
+
+            /* ── ProgressBar ─────────────────────────────────────────────── */
+            QProgressBar {
+                background-color: #3c3f41;
+                border: 1px solid #555555;
+                border-radius: 4px;
+                text-align: center;
+                color: #ffffff;
+            }
+            QProgressBar::chunk { background-color: #50fa7b; border-radius: 3px; }
+
+            /* ── ToolTip ─────────────────────────────────────────────────── */
+            QToolTip {
+                background-color: #4b4d4d;
+                color: #ffffff;
+                border: 1px solid #2b2b2b;
+                padding: 4px;
+            }
         """)
         if hasattr(self, 'library_panel'):
             self.library_panel.apply_theme(is_dark=True)
         if hasattr(self, 'log_panel'):
             self.log_panel.apply_theme(is_dark=True)
-            
-        # Apply to all workflow scenes
         if hasattr(self, 'tabs'):
             for i in range(self.tabs.count()):
                 view = self.tabs.widget(i)
                 if isinstance(view, NodeView):
                     view.scene().apply_theme(is_dark=True)
+        self._cascade_editor_theme(True)
 
     def _apply_light_theme(self):
         self._is_dark_theme = False
+        from src.utils.config_manager import config as _cfg
+        _cfg.set("ui.theme", "light")
+
         from PyQt5.QtWidgets import QApplication
         app = QApplication.instance()
-        app.setStyleSheet("") # Reset to default
+        app.setStyle("Fusion")
+        app.setStyleSheet("")   # Reset to platform default
         if hasattr(self, 'library_panel'):
             self.library_panel.apply_theme(is_dark=False)
         if hasattr(self, 'log_panel'):
             self.log_panel.apply_theme(is_dark=False)
-            
-        # Apply to all workflow scenes
         if hasattr(self, 'tabs'):
             for i in range(self.tabs.count()):
                 view = self.tabs.widget(i)
                 if isinstance(view, NodeView):
                     view.scene().apply_theme(is_dark=False)
+        self._cascade_editor_theme(False)
+
+    def _cascade_editor_theme(self, is_dark: bool):
+        """Push theme to every QsciScintilla CodeEditor in any open window/dialog."""
+        from PyQt5.QtWidgets import QApplication
+        try:
+            from PyQt5.Qsci import QsciScintilla
+        except ImportError:
+            return
+        for widget in QApplication.instance().topLevelWidgets():
+            for ed in widget.findChildren(QsciScintilla):
+                if hasattr(ed, 'apply_theme'):
+                    ed.apply_theme(is_dark)
 
     def _on_node_selected(self, node_id):
         scene = self.get_current_scene()
@@ -937,35 +1216,6 @@ class MainWindow(QMainWindow):
             scene.from_workflow_model(workflow_model)
             scene.file_path = file_path
             self.log_panel.log(f"Workflow loaded: {file_path}", "info")
-
-            # Auto-run init-priority nodes so login/auth/data-init nodes
-            # initialize immediately on load, not just at execution time.
-            self._run_init_phase(scene)
-
-    def _run_init_phase(self, scene):
-        """Run only the init-priority nodes for the given scene."""
-        workflow_model = scene.to_workflow_model()
-        if not any(getattr(n, 'init_priority', 0) > 0 for n in workflow_model.nodes):
-            return  # nothing marked init — skip silently
-
-        from src.core.graph import GraphManager
-        gm = GraphManager()
-        gm.from_model(workflow_model)
-
-        init_executor = NetworkExecutor(gm)
-        init_executor.node_started.connect(self._on_node_started)
-        init_executor.node_finished.connect(self._on_node_finished)
-        init_executor.node_error.connect(self._on_node_error)
-        init_executor.node_output.connect(self._on_node_output)
-        init_executor.node_log.connect(self._on_node_log)
-
-        self.log_panel.log("Running init-priority nodes after load...", "execution")
-
-        runner = _InitPhaseRunner(init_executor)
-        runner.start()
-        # Hold a reference so the runner isn't GC'd mid-execution
-        self._init_runners = getattr(self, '_init_runners', [])
-        self._init_runners.append(runner)
 
     def execute_pipeline(self):
         if self._is_executing:

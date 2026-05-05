@@ -1,4 +1,5 @@
 PyQt5
+QScintilla
 pydantic
 toposort
 pytest

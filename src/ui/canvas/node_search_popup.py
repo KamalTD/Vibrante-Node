@@ -184,6 +184,13 @@ class NodeSearchPopup(QDialog):
         super().showEvent(event)
         self.search_input.setFocus()
         self.search_input.selectAll()
+
+    def mousePressEvent(self, event):
+        """Close the popup when the user clicks outside its bounds."""
+        if not self.rect().contains(event.pos()):
+            self.reject()
+            return
+        super().mousePressEvent(event)
     
     def apply_theme(self, is_dark=True):
         """Apply theme colors."""

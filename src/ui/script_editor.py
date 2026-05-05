@@ -1,6 +1,5 @@
 from src.utils.qt_compat import QtWidgets
 from src.ui.code_editor import CodeEditor
-from src.utils.highlighter import PythonHighlighter
 
 QDialog = QtWidgets.QDialog
 QVBoxLayout = QtWidgets.QVBoxLayout
@@ -19,7 +18,6 @@ class ScriptEditorDialog(QDialog):
         layout.addWidget(QLabel("Write a Python script that reads `inputs` and `params` and sets `result` variable."))
 
         self.editor = CodeEditor()
-        self.highlighter = PythonHighlighter(self.editor.document())
         if initial_code:
             self.editor.setPlainText(initial_code)
         else:
