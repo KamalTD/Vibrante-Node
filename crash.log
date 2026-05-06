@@ -1,8 +1,0 @@
-Traceback (most recent call last):
-  File "G:\MyData\test_python\node_based_pipeline\node_based_app\src\ui\window.py", line 548, in load_workflow
-    workflow_model = WorkflowModel.model_validate_json(json_data)
-  File "C:\Python310\lib\site-packages\pydantic\main.py", line 656, in model_validate_json
-    return cls.__pydantic_validator__.validate_json(json_data, strict=strict, context=context)
-pydantic_core._pydantic_core.ValidationError: 1 validation error for WorkflowModel
-  Invalid JSON: EOF while parsing a value at line 1 column 0 [type=json_invalid, input_value='', input_type=str]
-    For further information visit https://errors.pydantic.dev/2.10/v/json_invalid

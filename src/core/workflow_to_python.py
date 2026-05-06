@@ -72,6 +72,9 @@ class WorkflowToPythonConverter:
             imports.add("import os")
         if node_ids & {"create_folder"}:
             imports.add("from pathlib import Path")
+        if any(nid.startswith("prism_") for nid in node_ids):
+            imports.add("import os")
+            imports.add("import sys")
 
         if imports:
             lines.append("")
@@ -372,6 +375,210 @@ class WorkflowToPythonConverter:
         if nid == "Sequencer":
             # Sequencer just passes data through steps; treat as pass-through
             return [f"{prefix}# Sequencer (pass-through)"]
+
+        # ── Prism ──
+        if nid == "prism_core_init":
+            scripts_path = self._inp(node_id, 'prism_scripts_path')
+            show_ui = self._inp(node_id, 'show_ui')
+            load_project = self._inp(node_id, 'load_project')
+            core_var = self._var(node_id, 'core')
+            ver_var = self._var(node_id, 'version')
+            return [
+                f"{prefix}_prism_path = str({scripts_path})",
+                f"{prefix}if _prism_path and os.path.isdir(_prism_path) and _prism_path not in sys.path:",
+                f"{prefix}    sys.path.append(_prism_path)",
+                f"{prefix}import PrismCore as _PrismCore",
+                f"{prefix}_prism_args = ([] if bool({show_ui}) else ['noUI']) + (['loadProject'] if bool({load_project}) else [])",
+                f"{prefix}{core_var} = _PrismCore.create(prismArgs=_prism_args)",
+                f"{prefix}{ver_var} = str({core_var}.version) if {core_var} else ''",
+            ]
+
+        if nid == "prism_list_projects":
+            core = self._inp(node_id, 'core')
+            projects_var = self._var(node_id, 'projects')
+            count_var = self._var(node_id, 'count')
+            return [
+                f"{prefix}_pm = getattr({core}, 'projects', None)",
+                f"{prefix}{projects_var} = []",
+                f"{prefix}if _pm:",
+                f"{prefix}    for _m in ('getAvailableProjects', 'getRecentProjects'):",
+                f"{prefix}        _fn = getattr(_pm, _m, None)",
+                f"{prefix}        if callable(_fn):",
+                f"{prefix}            try:",
+                f"{prefix}                _r = _fn()",
+                f"{prefix}                if _r: {projects_var} = list(_r); break",
+                f"{prefix}            except Exception: pass",
+                f"{prefix}{count_var} = len({projects_var})",
+            ]
+
+        if nid == "prism_get_project_by_name":
+            core = self._inp(node_id, 'core')
+            name = self._inp(node_id, 'name')
+            project_var = self._var(node_id, 'project')
+            project_path_var = self._var(node_id, 'project_path')
+            config_path_var = self._var(node_id, 'config_path')
+            found_var = self._var(node_id, 'found')
+            return [
+                f"{prefix}_pm = getattr({core}, 'projects', None)",
+                f"{prefix}_all_prjs = []",
+                f"{prefix}if _pm:",
+                f"{prefix}    for _m in ('getAvailableProjects', 'getRecentProjects'):",
+                f"{prefix}        _fn = getattr(_pm, _m, None)",
+                f"{prefix}        if callable(_fn):",
+                f"{prefix}            try:",
+                f"{prefix}                _r = _fn()",
+                f"{prefix}                if _r: _all_prjs = list(_r); break",
+                f"{prefix}            except Exception: pass",
+                f"{prefix}{project_var}, {project_path_var}, {config_path_var}, {found_var} = {{}}, '', '', False",
+                f"{prefix}_tgt = str({name}).lower()",
+                f"{prefix}for _p in _all_prjs:",
+                f"{prefix}    if str(_p.get('name', '')).lower() == _tgt:",
+                f"{prefix}        _cfg = _p.get('configPath', '')",
+                f"{prefix}        {project_var} = _p",
+                f"{prefix}        {config_path_var} = _cfg",
+                f"{prefix}        {project_path_var} = os.path.dirname(os.path.dirname(_cfg)) if _cfg else ''",
+                f"{prefix}        {found_var} = True",
+                f"{prefix}        break",
+            ]
+
+        if nid == "prism_get_shots":
+            core = self._inp(node_id, 'core')
+            sequences_var = self._var(node_id, 'sequences')
+            shots_var = self._var(node_id, 'shots')
+            count_var = self._var(node_id, 'shot_count')
+            return [
+                f"{prefix}{shots_var} = list(({core}).entities.getShots() or [])",
+                f"{prefix}{sequences_var} = list(dict.fromkeys(str(s.get('sequence', '')) for s in {shots_var} if isinstance(s, dict) and s.get('sequence')))",
+                f"{prefix}{count_var} = len({shots_var})",
+            ]
+
+        if nid == "prism_get_sequences_by_project":
+            core = self._inp(node_id, 'core')
+            project = self._inp(node_id, 'project')
+            sequences_var = self._var(node_id, 'sequences')
+            count_var = self._var(node_id, 'count')
+            return [
+                f"{prefix}_prj = {project} or {{}}",
+                f"{prefix}_prj_path = _prj.get('project_path', '') or (os.path.dirname(os.path.dirname(_prj['configPath'])) if _prj.get('configPath') else '')",
+                f"{prefix}{core}.changeProject(_prj_path)",
+                f"{prefix}_shots_raw = list({core}.entities.getShots() or [])",
+                f"{prefix}_seq_names = list(dict.fromkeys(str(s.get('sequence', '')) for s in _shots_raw if isinstance(s, dict) and s.get('sequence')))",
+                f"{prefix}{sequences_var} = [{{'name': s, 'project_path': _prj_path, 'project_name': _prj.get('name', '')}} for s in _seq_names]",
+                f"{prefix}{count_var} = len({sequences_var})",
+            ]
+
+        if nid == "prism_get_assets_by_project":
+            core = self._inp(node_id, 'core')
+            project = self._inp(node_id, 'project')
+            assets_var = self._var(node_id, 'assets')
+            count_var = self._var(node_id, 'count')
+            return [
+                f"{prefix}_prj = {project} or {{}}",
+                f"{prefix}_prj_path = _prj.get('project_path', '') or (os.path.dirname(os.path.dirname(_prj['configPath'])) if _prj.get('configPath') else '')",
+                f"{prefix}{core}.changeProject(_prj_path)",
+                f"{prefix}{assets_var} = list({core}.entities.getAssets() or [])",
+                f"{prefix}{count_var} = len({assets_var})",
+            ]
+
+        if nid == "prism_get_asset_types_by_project":
+            core = self._inp(node_id, 'core')
+            project = self._inp(node_id, 'project')
+            types_var = self._var(node_id, 'asset_types')
+            type_var = self._var(node_id, 'asset_type')
+            count_var = self._var(node_id, 'count')
+            found_var = self._var(node_id, 'found')
+            return [
+                f"{prefix}_prj = {project} or {{}}",
+                f"{prefix}_prj_path = _prj.get('project_path', '') or (os.path.dirname(os.path.dirname(_prj['configPath'])) if _prj.get('configPath') else '')",
+                f"{prefix}{core}.changeProject(_prj_path)",
+                f"{prefix}_all_assets = list({core}.entities.getAssets() or [])",
+                f"{prefix}_seen = {{}}",
+                f"{prefix}for _a in _all_assets:",
+                f"{prefix}    _ap = _a.get('asset_path', _a.get('name', ''))",
+                f"{prefix}    _cat = _ap.replace('\\\\', '/').split('/')[0] if _ap else ''",
+                f"{prefix}    if _cat and _cat.lower() not in _seen: _seen[_cat.lower()] = _cat",
+                f"{prefix}{types_var} = [{{'type': 'asset_type', 'name': n, 'project_path': _prj_path}} for n in _seen.values()]",
+                f"{prefix}{type_var} = {types_var}[0] if {types_var} else {{}}",
+                f"{prefix}{count_var} = len({types_var})",
+                f"{prefix}{found_var} = bool({types_var})",
+            ]
+
+        if nid == "prism_get_asset_type_by_name":
+            core = self._inp(node_id, 'core')
+            project = self._inp(node_id, 'project')
+            name = self._inp(node_id, 'name')
+            type_var = self._var(node_id, 'asset_type')
+            entity_var = self._var(node_id, 'entity')
+            matches_var = self._var(node_id, 'matches')
+            found_var = self._var(node_id, 'found')
+            return [
+                f"{prefix}_prj = {project} or {{}}",
+                f"{prefix}_prj_path = _prj.get('project_path', '') or (os.path.dirname(os.path.dirname(_prj['configPath'])) if _prj.get('configPath') else '')",
+                f"{prefix}{core}.changeProject(_prj_path)",
+                f"{prefix}_all_assets = list({core}.entities.getAssets() or [])",
+                f"{prefix}_seen = {{}}",
+                f"{prefix}for _a in _all_assets:",
+                f"{prefix}    _ap = _a.get('asset_path', _a.get('name', ''))",
+                f"{prefix}    _cat = _ap.replace('\\\\', '/').split('/')[0] if _ap else ''",
+                f"{prefix}    if _cat and _cat.lower() not in _seen: _seen[_cat.lower()] = _cat",
+                f"{prefix}_tgt = str({name}).lower()",
+                f"{prefix}{matches_var} = [{{'type': 'asset_type', 'name': n, 'project_path': _prj_path}} for k, n in _seen.items() if not _tgt or k == _tgt]",
+                f"{prefix}{type_var} = {matches_var}[0] if {matches_var} else {{}}",
+                f"{prefix}{entity_var} = {type_var}",
+                f"{prefix}{found_var} = bool({matches_var})",
+            ]
+
+        if nid == "prism_get_shot_by_name":
+            core = self._inp(node_id, 'core')
+            shots = self._inp(node_id, 'shots')
+            sequence = self._inp(node_id, 'sequence')
+            shot_name = self._inp(node_id, 'shot')
+            shot_var = self._var(node_id, 'shot')
+            entity_var = self._var(node_id, 'entity')
+            found_var = self._var(node_id, 'found')
+            return [
+                f"{prefix}_shots_src = list({shots} or [])",
+                f"{prefix}if not _shots_src: _shots_src = list({core}.entities.getShots() or [])",
+                f"{prefix}_seq_lower = str({sequence}).lower()",
+                f"{prefix}_shot_lower = str({shot_name}).lower()",
+                f"{prefix}{shot_var}, {entity_var}, {found_var} = {{}}, {{}}, False",
+                f"{prefix}for _s in _shots_src:",
+                f"{prefix}    _s_seq = str(_s.get('sequence', '')).lower()",
+                f"{prefix}    _s_shot = str(_s.get('shot', _s.get('name', ''))).lower()",
+                f"{prefix}    if (not _seq_lower or _s_seq == _seq_lower) and (not _shot_lower or _s_shot == _shot_lower):",
+                f"{prefix}        {shot_var} = _s",
+                f"{prefix}        {entity_var} = {{'type': 'shot', 'sequence': _s.get('sequence', ''), 'shot': _s.get('shot', _s.get('name', '')), 'path': _s.get('path', ''), 'location': _s.get('location', 'global')}}",
+                f"{prefix}        {found_var} = True",
+                f"{prefix}        break",
+            ]
+
+        if nid == "prism_get_sequence_by_project":
+            core = self._inp(node_id, 'core')
+            project = self._inp(node_id, 'project')
+            name = self._inp(node_id, 'name')
+            sequence_var = self._var(node_id, 'sequence')
+            found_var = self._var(node_id, 'found')
+            return [
+                f"{prefix}_prj = {project} or {{}}",
+                f"{prefix}_prj_path = _prj.get('project_path', '') or (os.path.dirname(os.path.dirname(_prj['configPath'])) if _prj.get('configPath') else '')",
+                f"{prefix}{core}.changeProject(_prj_path)",
+                f"{prefix}_all_shots = list({core}.entities.getShots() or [])",
+                f"{prefix}_seqs = list(dict.fromkeys(str(s.get('sequence', '')) for s in _all_shots if isinstance(s, dict) and s.get('sequence')))",
+                f"{prefix}_tgt = str({name}).lower()",
+                f"{prefix}{sequence_var}, {found_var} = {{}}, False",
+                f"{prefix}for _seq in _seqs:",
+                f"{prefix}    if str(_seq).lower() == _tgt:",
+                f"{prefix}        {sequence_var} = {{'name': str(_seq), 'project_path': _prj_path, 'project_name': _prj.get('name', '')}}",
+                f"{prefix}        {found_var} = True",
+                f"{prefix}        break",
+            ]
+
+        if nid.startswith("prism_"):
+            lines = [f"{prefix}# Prism node: {nid}"]
+            for conn in self.data_conns_from.get(node_id, []):
+                var = self._var(node_id, conn.from_port)
+                lines.append(f"{prefix}{var} = None  # {conn.from_port}")
+            return lines
 
         # ── Unknown ──
         return [f"{prefix}# Unsupported node: {nid} ({node_id})"]

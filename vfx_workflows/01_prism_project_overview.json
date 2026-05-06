@@ -1,24 +1,6 @@
 {
     "nodes": [
         {
-            "instance_id": "10010000-1000-4100-8100-100000010000",
-            "node_id": "prism_core_init",
-            "position": [
-                72.5,
-                -316.25
-            ],
-            "parameters": {
-                "exec_in": null,
-                "exec_out": true,
-                "prism_scripts_path": "",
-                "load_project": false,
-                "show_ui": false,
-                "version": "v2.1.0"
-            },
-            "state": "idle",
-            "bypassed": false
-        },
-        {
             "instance_id": "10020000-1000-4100-8100-100000020000",
             "node_id": "prism_get_project_by_name",
             "position": [
@@ -34,7 +16,8 @@
                 "found": false
             },
             "state": "idle",
-            "bypassed": false
+            "bypassed": false,
+            "init_priority": 0
         },
         {
             "instance_id": "10030000-1000-4100-8100-100000030000",
@@ -45,12 +28,13 @@
             ],
             "parameters": {
                 "core": null,
-                "project": null,
+                "project": {},
                 "sequences": [],
                 "count": 0
             },
             "state": "idle",
-            "bypassed": false
+            "bypassed": false,
+            "init_priority": 0
         },
         {
             "instance_id": "10040000-1000-4100-8100-100000040000",
@@ -61,14 +45,15 @@
             ],
             "parameters": {
                 "core": null,
-                "project": null,
+                "project": {},
                 "asset_types": [],
                 "asset_type": {},
                 "count": 0,
                 "found": false
             },
             "state": "idle",
-            "bypassed": false
+            "bypassed": false,
+            "init_priority": 0
         },
         {
             "instance_id": "10050000-1000-4100-8100-100000050000",
@@ -79,7 +64,7 @@
             ],
             "parameters": {
                 "core": null,
-                "project": null,
+                "project": {},
                 "name": "chars",
                 "asset_type": {},
                 "entity": {},
@@ -87,7 +72,8 @@
                 "found": false
             },
             "state": "idle",
-            "bypassed": false
+            "bypassed": false,
+            "init_priority": 0
         },
         {
             "instance_id": "10060000-1000-4100-8100-100000060000",
@@ -98,12 +84,13 @@
             ],
             "parameters": {
                 "core": null,
-                "project": null,
+                "project": {},
                 "assets": [],
                 "count": 0
             },
             "state": "idle",
-            "bypassed": false
+            "bypassed": false,
+            "init_priority": 0
         },
         {
             "instance_id": "10070000-1000-4100-8100-100000070000",
@@ -119,7 +106,8 @@
                 "shot_count": 0
             },
             "state": "idle",
-            "bypassed": false
+            "bypassed": false,
+            "init_priority": 0
         },
         {
             "instance_id": "10080000-1000-4100-8100-100000080000",
@@ -137,7 +125,8 @@
                 "found": false
             },
             "state": "idle",
-            "bypassed": false
+            "bypassed": false,
+            "init_priority": 0
         },
         {
             "instance_id": "10090000-1000-4100-8100-100000090000",
@@ -150,10 +139,11 @@
                 "exec_in": null,
                 "exec_out": true,
                 "data": [],
-                "out": "[]"
+                "out": []
             },
             "state": "idle",
-            "bypassed": false
+            "bypassed": false,
+            "init_priority": 0
         },
         {
             "instance_id": "100a0000-1000-4100-8100-1000000a0000",
@@ -166,10 +156,11 @@
                 "exec_in": null,
                 "exec_out": true,
                 "data": [],
-                "out": "[]"
+                "out": []
             },
             "state": "idle",
-            "bypassed": false
+            "bypassed": false,
+            "init_priority": 0
         },
         {
             "instance_id": "100b0000-1000-4100-8100-1000000b0000",
@@ -182,10 +173,11 @@
                 "exec_in": null,
                 "exec_out": true,
                 "data": 0,
-                "out": "0"
+                "out": 0
             },
             "state": "idle",
-            "bypassed": false
+            "bypassed": false,
+            "init_priority": 0
         },
         {
             "instance_id": "100c0000-1000-4100-8100-1000000c0000",
@@ -197,11 +189,12 @@
             "parameters": {
                 "exec_in": null,
                 "exec_out": true,
-                "data": null,
-                "out": "{}"
+                "data": {},
+                "out": {}
             },
             "state": "idle",
-            "bypassed": false
+            "bypassed": false,
+            "init_priority": 0
         },
         {
             "instance_id": "9429a334-2298-4d17-8528-6128483e54b7",
@@ -213,11 +206,12 @@
             "parameters": {
                 "exec_in": null,
                 "exec_out": true,
-                "data": null,
-                "out": "{}"
+                "data": {},
+                "out": {}
             },
             "state": "idle",
-            "bypassed": false
+            "bypassed": false,
+            "init_priority": 0
         },
         {
             "instance_id": "5a00c599-b590-417a-8fd9-457efb1dbd66",
@@ -228,13 +222,14 @@
             ],
             "parameters": {
                 "core": null,
-                "project": null,
+                "project": {},
                 "name": "SEQ_001",
                 "sequence": {},
                 "found": false
             },
             "state": "idle",
-            "bypassed": false
+            "bypassed": false,
+            "init_priority": 0
         },
         {
             "instance_id": "7de031ea-2796-4911-a340-c99df5ffb618",
@@ -246,16 +241,37 @@
             "parameters": {
                 "exec_in": null,
                 "exec_out": true,
-                "data": [],
-                "out": "{}"
+                "data": {},
+                "out": {}
             },
             "state": "idle",
-            "bypassed": false
+            "bypassed": false,
+            "init_priority": 0
+        },
+        {
+            "instance_id": "ba268190-aa8c-45b5-9e3f-bc494637b035",
+            "node_id": "prism_core_init",
+            "position": [
+                99.0,
+                -315.0
+            ],
+            "parameters": {
+                "exec_in": null,
+                "exec_out": null,
+                "prism_scripts_path": "C:/Program Files/Prism2/Scripts",
+                "load_project": true,
+                "show_ui": false,
+                "core": null,
+                "version": ""
+            },
+            "state": "idle",
+            "bypassed": false,
+            "init_priority": 1
         }
     ],
     "connections": [
         {
-            "id": "33bb413e-283f-4d65-9dee-2d1f18210ef4",
+            "id": "2c2b9863-86a1-426e-a9e9-cd43fda967f2",
             "from_node": "10020000-1000-4100-8100-100000020000",
             "from_port": "project",
             "to_node": "10030000-1000-4100-8100-100000030000",
@@ -263,7 +279,7 @@
             "is_exec": false
         },
         {
-            "id": "fc6a0930-fd9d-47b6-9eb3-96f483b80e3d",
+            "id": "604eaa7e-3e37-460d-9d16-babe4c5e2cb2",
             "from_node": "10020000-1000-4100-8100-100000020000",
             "from_port": "project",
             "to_node": "10040000-1000-4100-8100-100000040000",
@@ -271,7 +287,7 @@
             "is_exec": false
         },
         {
-            "id": "0962963f-7673-49b3-9fd7-629937db2766",
+            "id": "a7a5503c-d62d-4bd7-aafe-0c18f826fda1",
             "from_node": "10020000-1000-4100-8100-100000020000",
             "from_port": "project",
             "to_node": "10050000-1000-4100-8100-100000050000",
@@ -279,7 +295,7 @@
             "is_exec": false
         },
         {
-            "id": "0192c351-8d2b-488b-ac83-08a2e5088430",
+            "id": "6c31f3fd-8d99-479d-9890-73f55d577d41",
             "from_node": "10020000-1000-4100-8100-100000020000",
             "from_port": "project",
             "to_node": "10060000-1000-4100-8100-100000060000",
@@ -287,7 +303,7 @@
             "is_exec": false
         },
         {
-            "id": "d7453979-ff13-4d44-91d3-611b5c54f04e",
+            "id": "32512edb-3d58-4e77-9f5a-93b4d2e54f97",
             "from_node": "10060000-1000-4100-8100-100000060000",
             "from_port": "count",
             "to_node": "100b0000-1000-4100-8100-1000000b0000",
@@ -295,7 +311,7 @@
             "is_exec": false
         },
         {
-            "id": "6cbb974f-02e1-460a-a58c-ef7e2898c619",
+            "id": "749f681d-286f-4934-85bc-679439ea0507",
             "from_node": "10070000-1000-4100-8100-100000070000",
             "from_port": "shots",
             "to_node": "10080000-1000-4100-8100-100000080000",
@@ -303,7 +319,7 @@
             "is_exec": false
         },
         {
-            "id": "fe599fd8-88fd-41c5-9600-3899acaac5c2",
+            "id": "c4499780-42de-4c89-88d9-f9fafb45b2f5",
             "from_node": "10080000-1000-4100-8100-100000080000",
             "from_port": "entity",
             "to_node": "100c0000-1000-4100-8100-1000000c0000",
@@ -311,7 +327,7 @@
             "is_exec": false
         },
         {
-            "id": "a3d7c94e-7461-40a3-a995-4a89453594e9",
+            "id": "15542cf6-4194-4d05-9e20-19972d94653e",
             "from_node": "10040000-1000-4100-8100-100000040000",
             "from_port": "asset_types",
             "to_node": "100a0000-1000-4100-8100-1000000a0000",
@@ -319,7 +335,7 @@
             "is_exec": false
         },
         {
-            "id": "4fd10c24-af4f-44eb-9d5e-7fe777dfcfa9",
+            "id": "f43d0142-62aa-4913-bd7d-243cf26665d1",
             "from_node": "10030000-1000-4100-8100-100000030000",
             "from_port": "sequences",
             "to_node": "10090000-1000-4100-8100-100000090000",
@@ -327,7 +343,7 @@
             "is_exec": false
         },
         {
-            "id": "59d668f6-e92c-498a-a581-4b9d320a6987",
+            "id": "2905a80f-7c62-4d34-9240-b7d29e8c7fa7",
             "from_node": "10020000-1000-4100-8100-100000020000",
             "from_port": "project",
             "to_node": "5a00c599-b590-417a-8fd9-457efb1dbd66",
@@ -335,7 +351,7 @@
             "is_exec": false
         },
         {
-            "id": "e8f302aa-2b8b-47ad-97b4-dbbf0a755aeb",
+            "id": "80db60c5-ede8-4a01-bc21-2473bbfa3d29",
             "from_node": "5a00c599-b590-417a-8fd9-457efb1dbd66",
             "from_port": "sequence",
             "to_node": "9429a334-2298-4d17-8528-6128483e54b7",
@@ -343,7 +359,7 @@
             "is_exec": false
         },
         {
-            "id": "5f82a624-2e63-49c8-a7de-548dd359fe62",
+            "id": "32339de5-115f-46bb-acf8-dbef3ea1479b",
             "from_node": "10050000-1000-4100-8100-100000050000",
             "from_port": "asset_type",
             "to_node": "7de031ea-2796-4911-a340-c99df5ffb618",
