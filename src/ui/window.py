@@ -18,6 +18,7 @@ from src.core.engine import NetworkExecutor
 from src.ui.node_widget import NodeWidget
 
 from src.ui.gemini_api_dialog import GeminiApiDialog
+from src.ui.export_python_dialog import ExportPythonDialog
 from src.utils.paths import resource_path, app_dir
 
 
@@ -250,6 +251,13 @@ class MainWindow(QMainWindow):
         load_action.setShortcut('Ctrl+O')
         load_action.triggered.connect(self.load_workflow)
         file_menu.addAction(load_action)
+
+        file_menu.addSeparator()
+
+        export_py_action = QAction('&Export as Python...', self)
+        export_py_action.setShortcut('Ctrl+Shift+E')
+        export_py_action.triggered.connect(self._export_as_python)
+        file_menu.addAction(export_py_action)
 
         # Edit Menu
         edit_menu = menubar.addMenu('&Edit')
@@ -1217,6 +1225,14 @@ class MainWindow(QMainWindow):
             scene.from_workflow_model(workflow_model)
             scene.file_path = file_path
             self.log_panel.log(f"Workflow loaded: {file_path}", "info")
+
+    def _export_as_python(self):
+        scene = self.get_current_scene()
+        if not scene:
+            return
+        workflow_model = scene.to_workflow_model()
+        dialog = ExportPythonDialog(workflow_model, self)
+        dialog.exec_()
 
     def execute_pipeline(self):
         if self._is_executing:
