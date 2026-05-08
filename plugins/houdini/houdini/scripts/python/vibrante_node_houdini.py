@@ -412,7 +412,7 @@ def _ensure_command_server():
         return None
 
 
-def launch(extra_env=None):
+def launch(hip_file="", extra_env=None):
     """Launch Vibrante-Node as a subprocess with Houdini Python on PYTHONPATH.
 
     The application is started as an independent process. Closing Houdini
@@ -424,7 +424,8 @@ def launch(extra_env=None):
     live Houdini session.
 
     Args:
-        extra_env: Additional environment variables to pass
+        hip_file:  Current .hip file path to pass as context (optional).
+        extra_env: Additional environment variables to pass (merged last).
     """
     app_root = get_app_root()
     if not app_root:
@@ -440,7 +441,7 @@ def launch(extra_env=None):
         _show_error(f"Cannot find src/main.py at:\n{app_root}")
         return
 
-    env = setup_env(extra_env=extra_env)
+    env = setup_env(hip_file=hip_file, extra_env=extra_env)
 
     # Start the Houdini command server so Vibrante-Node can talk back
     port = _ensure_command_server()
@@ -495,8 +496,7 @@ def launch_with_context():
     except ImportError:
         hip_file = ""
 
-    env = setup_env(hip_file=hip_file)
-    launch(extra_env=env)
+    launch(hip_file=hip_file)
 
 
 def launch_inprocess():

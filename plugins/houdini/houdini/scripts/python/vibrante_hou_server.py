@@ -29,6 +29,7 @@ DEFAULT_PORT = 18811
 _server_socket = None
 _server_thread = None
 _running = False
+_lock = threading.Lock()
 
 
 # ---------------------------------------------------------------------------
@@ -156,13 +157,19 @@ def _cmd_run_code(params):
 
 
 def _cmd_scene_info(params):
+    # hou.playbar is only available in interactive (GUI) Houdini sessions.
+    # In hbatch / hython / headless builds it raises AttributeError.
+    try:
+        frame_range = list(hou.playbar.frameRange())
+    except AttributeError:
+        frame_range = [1, 240]
     return {
         "hip_file": hou.hipFile.path(),
         "hip_name": hou.hipFile.basename(),
         "houdini_version": hou.applicationVersionString(),
         "fps": hou.fps(),
         "frame": hou.frame(),
-        "frame_range": list(hou.playbar.frameRange()),
+        "frame_range": frame_range,
     }
 
 
@@ -201,7 +208,14 @@ def _cmd_set_display_flag(params):
     node = hou.node(params["path"])
     if not node:
         raise ValueError(f"Node not found: {params['path']}")
-    node.setDisplayFlag(params.get("on", True))
+    # Not all node types support the display flag (e.g. Object-level nodes
+    # only have it on their children).  Guard to avoid hou.OperationFailed.
+    if not callable(getattr(node, "setDisplayFlag", None)):
+        raise ValueError(f"Node does not support display flag: {params['path']}")
+    try:
+        node.setDisplayFlag(params.get("on", True))
+    except hou.OperationFailed as e:
+        raise ValueError(f"Cannot set display flag on {params['path']}: {e}") from e
     return {"set": True}
 
 
@@ -209,7 +223,12 @@ def _cmd_set_render_flag(params):
     node = hou.node(params["path"])
     if not node:
         raise ValueError(f"Node not found: {params['path']}")
-    node.setRenderFlag(params.get("on", True))
+    if not callable(getattr(node, "setRenderFlag", None)):
+        raise ValueError(f"Node does not support render flag: {params['path']}")
+    try:
+        node.setRenderFlag(params.get("on", True))
+    except hou.OperationFailed as e:
+        raise ValueError(f"Cannot set render flag on {params['path']}: {e}") from e
     return {"set": True}
 
 
@@ -457,44 +476,46 @@ def start(port=None):
     """
     global _server_socket, _server_thread, _running
 
-    if _running and _server_socket:
-        p = _server_socket.getsockname()[1]
-        print(f"[Vibrante-Node] Command server already running on port {p}")
-        return p
+    with _lock:
+        if _running and _server_socket:
+            p = _server_socket.getsockname()[1]
+            print(f"[Vibrante-Node] Command server already running on port {p}")
+            return p
 
-    if port is None:
-        port = int(os.environ.get("VIBRANTE_HOU_PORT", DEFAULT_PORT))
+        if port is None:
+            port = int(os.environ.get("VIBRANTE_HOU_PORT", DEFAULT_PORT))
 
-    try:
-        _server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        _server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        _server_socket.bind(("127.0.0.1", port))
-        _server_socket.listen(5)
-    except OSError as e:
-        print(f"[Vibrante-Node] Failed to start server on port {port}: {e}")
-        _server_socket = None
-        return None
+        try:
+            _server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            _server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            _server_socket.bind(("127.0.0.1", port))
+            _server_socket.listen(5)
+        except OSError as e:
+            print(f"[Vibrante-Node] Failed to start server on port {port}: {e}")
+            _server_socket = None
+            return None
 
-    _running = True
-    _server_thread = threading.Thread(target=_accept_loop, args=(_server_socket,), daemon=True)
-    _server_thread.start()
+        _running = True
+        _server_thread = threading.Thread(target=_accept_loop, args=(_server_socket,), daemon=True)
+        _server_thread.start()
 
-    print(f"[Vibrante-Node] Command server started on 127.0.0.1:{port}")
-    return port
+        print(f"[Vibrante-Node] Command server started on 127.0.0.1:{port}")
+        return port
 
 
 def stop():
     """Stop the Houdini command server."""
     global _server_socket, _server_thread, _running
 
-    _running = False
+    with _lock:
+        _running = False
 
-    if _server_socket:
-        try:
-            _server_socket.close()
-        except OSError:
-            pass
-        _server_socket = None
+        if _server_socket:
+            try:
+                _server_socket.close()
+            except OSError:
+                pass
+            _server_socket = None
 
     if _server_thread:
         _server_thread.join(timeout=5)

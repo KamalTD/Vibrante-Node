@@ -29,13 +29,16 @@ class HouBridge:
         self.port = port or int(os.environ.get("VIBRANTE_HOU_PORT", DEFAULT_PORT))
         self._sock = None
         self._id = 0
+        self._lock = __import__("threading").Lock()
 
     def connect(self):
         if self._sock:
             return
-        self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self._sock.settimeout(30)
-        self._sock.connect((self.host, self.port))
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+        sock.settimeout(30)
+        sock.connect((self.host, self.port))
+        self._sock = sock
 
     def disconnect(self):
         if self._sock:
@@ -47,6 +50,10 @@ class HouBridge:
 
     def _send(self, method, params=None):
         """Send a JSON-RPC request and return the result."""
+        with self._lock:
+            return self._send_locked(method, params)
+
+    def _send_locked(self, method, params=None):
         if not self._sock:
             self.connect()
 
@@ -60,15 +67,30 @@ class HouBridge:
             # Reconnect once and retry
             self.disconnect()
             self.connect()
-            self._sock.sendall(payload)
+            try:
+                self._sock.sendall(payload)
+            except OSError as e:
+                raise ConnectionError(f"Houdini bridge reconnect failed: {e}") from e
 
-        # Read response (newline-delimited)
+        # Read response (newline-delimited); recv may need multiple calls for
+        # large payloads (e.g. get_parms on a complex node).
         buf = b""
-        while b"\n" not in buf:
-            chunk = self._sock.recv(4096)
-            if not chunk:
-                raise ConnectionError("Houdini command server closed connection")
-            buf += chunk
+        try:
+            while b"\n" not in buf:
+                chunk = self._sock.recv(4096)
+                if not chunk:
+                    raise ConnectionError("Houdini command server closed connection")
+                buf += chunk
+        except socket.timeout:
+            # Server took longer than 30 s — disconnect so next call reconnects.
+            self.disconnect()
+            raise ConnectionError(
+                f"Houdini command server timed out on method '{method}'. "
+                "Check that Houdini is responsive and not blocked on a long cook."
+            )
+        except OSError as e:
+            self.disconnect()
+            raise ConnectionError(f"Houdini bridge recv error: {e}") from e
 
         line = buf.split(b"\n")[0]
         response = json.loads(line.decode("utf-8"))
