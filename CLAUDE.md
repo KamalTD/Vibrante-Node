@@ -331,6 +331,99 @@ async def execute(self, inputs):
 
 ---
 
+## 6. Houdini Plugin Architecture & Environment Variables
+
+The Houdini integration consists of two sides: code running **inside Houdini** and the Vibrante-Node **subprocess**.
+
+### 6.1 Plugin file layout
+
+```
+plugins/houdini/
+├── vibrante_node.json                  ← Houdini package file (user installs this)
+├── v_nodes_houdini/                    ← Houdini-specific node .json definitions
+│   ├── hou_create_geo.json
+│   └── ...
+├── v_scripts_houdini/                  ← Houdini-specific .py scripts (Scripts menu)
+│   ├── hou_create_box_demo.py
+│   └── ...
+└── houdini/                            ← Added to HOUDINI_PATH by package JSON
+    ├── MainMenuCommon.xml              ← Adds "Vibrante-Node" menu to Houdini menu bar
+    ├── toolbar/vibrante_node.shelf     ← Shelf tool
+    └── scripts/python/
+        ├── pythonrc.py                 ← Runs at Houdini startup; validates env vars
+        ├── vibrante_node_houdini.py    ← launch(), setup_env(), show_about(), etc.
+        └── vibrante_hou_server.py      ← JSON-RPC server running inside Houdini
+```
+
+### 6.2 vibrante_node.json — what the user must configure
+
+```json
+{
+    "env": [
+        { "VIBRANTE_NODE_APP": "/path/to/node_based_app" },
+        { "VIBRANTE_PYTHON_EXE": "C:/Python311/python.exe" }
+    ],
+    "path": "$VIBRANTE_NODE_APP/plugins/houdini/houdini"
+}
+```
+
+- `VIBRANTE_NODE_APP` — absolute path to the app root (where `src/main.py` lives). **Must be set.**
+- `VIBRANTE_PYTHON_EXE` — path to system Python 3.11 with PyQt5. Optional: auto-detected if missing but slower.
+- `path` — adds `plugins/houdini/houdini/` to `HOUDINI_PATH` so Houdini finds `MainMenuCommon.xml`, the shelf, and `pythonrc.py`.
+
+### 6.3 Environment variable flow
+
+When `launch()` is called from Houdini, `setup_env()` builds the subprocess environment:
+
+| Variable | Set by | Consumed by |
+|----------|--------|-------------|
+| `VIBRANTE_NODE_APP` | `vibrante_node.json` | `vibrante_node_houdini.get_app_root()` |
+| `VIBRANTE_PYTHON_EXE` | `vibrante_node.json` | `vibrante_node_houdini._find_system_python()` |
+| `VIBRANTE_HOUDINI_MODE` | `setup_env()` → `"subprocess"` | `src/utils/qt_compat.py` (selects PyQt5) |
+| `VIBRANTE_HOU_PORT` | `setup_env()` after server starts | `src/utils/hou_bridge.py` (default: 18811) |
+| `VIBRANTE_HIP_FILE` | `setup_env()` with hip path | Available in node python_code via `os.environ` |
+| `v_nodes_dir` | `setup_env()` → path to `v_nodes_houdini/` | `NodeRegistry.load_all_with_extras()` in `window.py` |
+| `v_scripts_path` | `setup_env()` → path to `v_scripts_houdini/` | `MainWindow._populate_scripts_menu()` in `window.py` |
+
+**Critical**: `v_nodes_dir` and `v_scripts_path` are only set in the **subprocess** environment (not in Houdini itself). They are computed by `setup_env()` each time `launch()` is called.
+
+### 6.4 Node loading at startup
+
+`src/ui/window.py` initialises the registry in this order:
+1. `NodeRegistry.load_all_with_extras(bundled_nodes)` — loads bundled nodes **and** any paths in `v_nodes_dir`
+2. `NodeRegistry._load_directory(self.nodes_dir)` — loads user-created nodes from next to the exe
+
+Always use `load_all_with_extras`, never plain `load_all`, or the Houdini nodes will be silently skipped.
+
+### 6.5 Scripts menu
+
+`MainWindow._populate_scripts_menu()` scans every directory in `v_scripts_path` for `.py` files and adds a clickable menu item for each. Scripts run via `exec()` with `{'window': self, 'scene': self.get_current_scene()}` as globals. A "Refresh Scripts" item re-scans without restarting.
+
+Scripts in `v_scripts_houdini/` can use `get_bridge()` exactly like node python_code.
+
+### 6.6 Startup diagnostics
+
+`pythonrc.py` runs inside Houdini on every startup and prints to the Houdini Python console:
+- `VIBRANTE_NODE_APP` — OK / ERROR (not set or path doesn't exist)
+- `VIBRANTE_PYTHON_EXE` — OK / WARNING (missing or path not found)
+- `v_nodes_houdini/` — OK / MISSING
+- `v_scripts_houdini/` — OK / MISSING
+
+Use **Vibrante-Node → About Vibrante-Node Integration** in Houdini's menu bar to see the same info on demand, including real-time OK/MISSING status for both plugin folders.
+
+### 6.7 Houdini command server (vibrante_hou_server.py) — known behaviours
+
+- `hou.playbar.frameRange()` raises `AttributeError` in headless Houdini (hbatch / hython). The server catches this and returns `[1, 240]` as fallback.
+- `setDisplayFlag` / `setRenderFlag` raise `hou.OperationFailed` on node types that don't support flags (e.g. `null` at Object level). The server catches and re-raises as `ValueError` with a clear message.
+- `start()` / `stop()` are guarded by a module-level `threading.Lock` to prevent double-bind race conditions.
+
+### 6.8 HouBridge client (src/utils/hou_bridge.py) — known behaviours
+
+- Each `HouBridge` instance has its own `threading.Lock`; `_send()` is thread-safe.
+- `socket.TCP_NODELAY` is set on connect to avoid ~40 ms Nagle delay on Windows.
+- A 30-second `socket.timeout` is set. If the server doesn't respond (e.g. Houdini is blocked cooking), `ConnectionError` is raised with a clear message and the socket is closed so the next call reconnects.
+- On `BrokenPipeError` / `ConnectionResetError` the client reconnects once automatically.
+
 ---
 
 ## 7. Headless Action Nodes (v1.5.0)
@@ -449,3 +542,86 @@ from src.utils.qt_compat import QtWidgets, QtGui, QtCore
 ```
 
 The compat module also ensures `QColor.fromString()` and shiboken stubs exist, which Prism requires at import time.
+
+---
+
+## 9. Code Editor & QScintilla (v1.8.5+)
+
+`src/ui/code_editor.py` provides `CodeEditor`, a Python-aware code editor used in the Node Builder, Script Editor dialog, and Scripting Console.
+
+### 9.1 QScintilla is optional
+
+QScintilla (`PyQt5.Qsci`) is tried first. If it is not installed, the module silently falls back to a `QPlainTextEdit`-based implementation with a `QSyntaxHighlighter`. **Do not re-raise `ImportError`** if QScintilla is missing — the app must still start.
+
+```python
+# Correct pattern inside code_editor.py
+try:
+    from PyQt5.Qsci import QsciScintilla, QsciLexerPython, QsciAPIs
+    _QSCINTILLA_AVAILABLE = True
+except ImportError:
+    _QSCINTILLA_AVAILABLE = False
+    # fallback class defined below
+
+# Do NOT do this — it crashed the app on systems without QScintilla:
+# raise ImportError("QScintilla is required...")
+```
+
+To install the full editor:
+```
+pip install QScintilla
+```
+
+### 9.2 Public API — same in both implementations
+
+| Method / attribute | Notes |
+|--------------------|-------|
+| `setPlainText(text)` | Set editor content |
+| `toPlainText()` | Get editor content |
+| `textChanged` signal | Emitted on every keystroke |
+| `lineNumberArea.hide()` / `.show()` | Compatibility shim |
+| `apply_theme(is_dark: bool)` | Switch Dracula-dark / One-Light palette |
+| `set_completer_list(words)` | Replace autocomplete word list |
+| `append_completer_list(words)` | Add words to autocomplete list |
+| `error_line` | Line number of last syntax error (-1 if none) |
+| Ctrl+Wheel | Zoom in/out |
+
+---
+
+## 10. Bug History & What NOT to Revert (v1.8.5+)
+
+These bugs were found and fixed. Do not revert these changes.
+
+### 10.1 `code_editor.py` — hard crash when QScintilla missing
+**Symptom**: `ImportError: No module named 'PyQt5.Qsci'` on startup, app exits immediately.  
+**Fix**: Wrap import in `try/except`; define a `QPlainTextEdit`-based fallback `CodeEditor` class instead of raising.  
+**File**: `src/ui/code_editor.py`
+
+### 10.2 `hou_bridge.py` — socket issues on Windows
+**Symptoms**: ~40 ms latency per RPC call; silent hangs when Houdini was busy; concurrent node calls corrupted the response stream.  
+**Fixes**:
+- `socket.TCP_NODELAY` set on connect to disable Nagle's algorithm
+- `threading.Lock` per instance; `_send()` acquires lock before touching the socket
+- `socket.timeout` (30 s) caught in `recv()` loop — disconnects and raises `ConnectionError` with a clear message
+- Reconnect retry `sendall` wrapped in `try/except OSError`  
+**File**: `src/utils/hou_bridge.py`
+
+### 10.3 `vibrante_hou_server.py` — crashes in headless / non-interactive Houdini
+**Symptoms**: `AttributeError` on `hou.playbar.frameRange()` when running hbatch or hython; `hou.OperationFailed` when setting display/render flags on unsupported nodes; port double-bind if `start()` called twice concurrently.  
+**Fixes**:
+- `hou.playbar.frameRange()` wrapped in `try/except AttributeError`; fallback `[1, 240]`
+- `setDisplayFlag` / `setRenderFlag` guarded with `getattr` capability check + `try/except hou.OperationFailed`
+- Module-level `threading.Lock` around `start()` / `stop()`  
+**File**: `plugins/houdini/houdini/scripts/python/vibrante_hou_server.py`
+
+### 10.4 `vibrante_node_houdini.py` — double `setup_env()` call
+**Symptom**: Environment variables like `PYTHONHOME` were being stripped twice; `v_nodes_dir` / `v_scripts_path` were appended twice causing duplicate entries.  
+**Fix**: `launch()` accepts `hip_file=""` directly and calls `setup_env()` once internally. `launch_with_context()` calls `launch(hip_file=hip_file)` — no longer calls `setup_env()` itself.  
+**File**: `plugins/houdini/houdini/scripts/python/vibrante_node_houdini.py`
+
+### 10.5 `window.py` — Houdini nodes and scripts never loaded
+**Symptoms**: Nodes from `v_nodes_houdini/` did not appear in the Library after launching from Houdini. No Scripts menu. `v_scripts_path` env var was set but never read.  
+**Fixes**:
+- Changed `NodeRegistry.load_all(bundled_nodes)` → `NodeRegistry.load_all_with_extras(bundled_nodes)` so `v_nodes_dir` is honoured
+- Added `&Scripts` menu in `_init_menu()` populated by `_populate_scripts_menu()` which scans `v_scripts_path`
+- Added `_run_script_file(path)` to execute scripts in window/scene context  
+**File**: `src/ui/window.py`
