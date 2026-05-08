@@ -41,6 +41,19 @@ class ConfigManager:
 
     # --- Specific helpers ---
 
+    def get_recent_files(self) -> list:
+        return self._data.get("recent_files", [])
+
+    def add_recent_file(self, path: str):
+        recent = [p for p in self._data.get("recent_files", []) if p != path]
+        recent.insert(0, path)
+        self._data["recent_files"] = recent[:10]
+        self._save()
+
+    def clear_recent_files(self):
+        self._data["recent_files"] = []
+        self._save()
+
     def get_gemini_api_key(self) -> str:
         return self._data.get("gemini_api_key", "")
 

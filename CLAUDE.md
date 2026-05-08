@@ -618,6 +618,16 @@ These bugs were found and fixed. Do not revert these changes.
 **Fix**: `launch()` accepts `hip_file=""` directly and calls `setup_env()` once internally. `launch_with_context()` calls `launch(hip_file=hip_file)` — no longer calls `setup_env()` itself.  
 **File**: `plugins/houdini/houdini/scripts/python/vibrante_node_houdini.py`
 
+### 10.6 Recent Files (v1.8.6+)
+
+**Feature**: File menu → **Open Recent** submenu lists the last 10 saved/loaded workflows. Entries for files that no longer exist on disk are shown grayed-out (disabled). "Clear Recent Files" wipes the list.
+
+**Storage**: `config.get_recent_files()` / `config.add_recent_file(path)` / `config.clear_recent_files()` in `src/utils/config_manager.py`. Key: `"recent_files"` (JSON list of absolute paths, max 10, newest first).
+
+**Registration**: `MainWindow._add_recent_file(path)` is called at the end of every successful `save_workflow`, `save_workflow_as`, and `load_workflow`. Opening from the menu calls `_load_workflow_from_path(path)` — same logic as `load_workflow` but without the file dialog.
+
+**Menu rebuild**: `file_menu.aboutToShow` triggers `_rebuild_recent_menu()` so the list is always fresh when the File menu opens.
+
 ### 10.5 `window.py` — Houdini nodes and scripts never loaded
 **Symptoms**: Nodes from `v_nodes_houdini/` did not appear in the Library after launching from Houdini. No Scripts menu. `v_scripts_path` env var was set but never read.  
 **Fixes**:

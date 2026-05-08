@@ -253,6 +253,10 @@ class MainWindow(QMainWindow):
         load_action.triggered.connect(self.load_workflow)
         file_menu.addAction(load_action)
 
+        self._recent_menu = QMenu('Open &Recent', self)
+        file_menu.addMenu(self._recent_menu)
+        file_menu.aboutToShow.connect(self._rebuild_recent_menu)
+
         file_menu.addSeparator()
 
         export_py_action = QAction('&Export as Python...', self)
@@ -1217,6 +1221,63 @@ class MainWindow(QMainWindow):
             "success",
         )
 
+    # ------------------------------------------------------------------
+    # Recent files
+    # ------------------------------------------------------------------
+
+    def _rebuild_recent_menu(self):
+        from src.utils.config_manager import config
+        self._recent_menu.clear()
+        recent = config.get_recent_files()
+        if recent:
+            for path in recent:
+                act = QAction(os.path.basename(path), self)
+                act.setToolTip(path)
+                act.setEnabled(os.path.isfile(path))
+                act.triggered.connect(lambda checked, p=path: self._load_workflow_from_path(p))
+                self._recent_menu.addAction(act)
+            self._recent_menu.addSeparator()
+            clear_act = QAction('Clear Recent Files', self)
+            clear_act.triggered.connect(self._clear_recent_files)
+            self._recent_menu.addAction(clear_act)
+        else:
+            empty_act = QAction('(No recent files)', self)
+            empty_act.setEnabled(False)
+            self._recent_menu.addAction(empty_act)
+
+    def _clear_recent_files(self):
+        from src.utils.config_manager import config
+        config.clear_recent_files()
+        self._rebuild_recent_menu()
+
+    def _add_recent_file(self, file_path: str):
+        from src.utils.config_manager import config
+        config.add_recent_file(os.path.abspath(file_path))
+
+    def _load_workflow_from_path(self, file_path: str):
+        """Load a workflow from a known path without showing the open dialog."""
+        if not os.path.isfile(file_path):
+            QMessageBox.critical(self, "Load Error", f"File not found:\n{file_path}")
+            return
+        with open(file_path, "r") as f:
+            json_data = f.read()
+        if not json_data.strip():
+            QMessageBox.critical(self, "Load Error", f"Workflow file is empty or corrupted:\n{file_path}")
+            self.log_panel.log(f"Failed to load workflow — file is empty: {file_path}", "error")
+            return
+        try:
+            workflow_model = WorkflowModel.model_validate_json(json_data)
+        except Exception as e:
+            QMessageBox.critical(self, "Load Error", f"Invalid workflow file:\n{e}")
+            self.log_panel.log(f"Failed to load workflow: {e}", "error")
+            return
+        view = self.add_new_workflow(os.path.basename(file_path))
+        scene = view.scene()
+        scene.from_workflow_model(workflow_model)
+        scene.file_path = file_path
+        self.log_panel.log(f"Workflow loaded: {file_path}", "info")
+        self._add_recent_file(file_path)
+
     @staticmethod
     def _atomic_write(file_path: str, data: str):
         """Write to a temp file then rename so a crash never corrupts the target."""
@@ -1249,6 +1310,7 @@ class MainWindow(QMainWindow):
             scene.file_path = file_path
             self.tabs.setTabText(self.tabs.currentIndex(), os.path.basename(file_path))
             self.log_panel.log(f"Workflow saved: {file_path}", "success")
+            self._add_recent_file(file_path)
 
     def save_workflow_as(self):
         """Save workflow to a new file, always prompting for location."""
@@ -1265,6 +1327,7 @@ class MainWindow(QMainWindow):
             scene.file_path = file_path
             self.tabs.setTabText(self.tabs.currentIndex(), os.path.basename(file_path))
             self.log_panel.log(f"Workflow saved as: {file_path}", "success")
+            self._add_recent_file(file_path)
 
     def load_workflow(self):
         file_path, _ = QFileDialog.getOpenFileName(self, "Load Workflow", "workflows", "Workflow Files (*.json)")
@@ -1288,6 +1351,7 @@ class MainWindow(QMainWindow):
             scene.from_workflow_model(workflow_model)
             scene.file_path = file_path
             self.log_panel.log(f"Workflow loaded: {file_path}", "info")
+            self._add_recent_file(file_path)
 
     def _export_as_python(self):
         scene = self.get_current_scene()
