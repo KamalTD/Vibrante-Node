@@ -618,6 +618,22 @@ These bugs were found and fixed. Do not revert these changes.
 **Fix**: `launch()` accepts `hip_file=""` directly and calls `setup_env()` once internally. `launch_with_context()` calls `launch(hip_file=hip_file)` — no longer calls `setup_env()` itself.  
 **File**: `plugins/houdini/houdini/scripts/python/vibrante_node_houdini.py`
 
+### 10.7 Autosave / Crash Recovery (v1.8.6+)
+
+**Feature**: A `QTimer` fires every 2 minutes and writes all non-empty open tabs to `~/.vibrante_node_autosave.json`. On the next launch, if that file exists, the user is offered a restore dialog. On clean exit (`closeEvent`), the file is deleted so the dialog is never shown unnecessarily.
+
+**Format**:
+```json
+{"version": 1, "tabs": [{"name": "tab label", "file_path": "/saved/path.json or ''", "workflow": {...WorkflowModel dict...}}]}
+```
+
+**Key methods in `MainWindow`**:
+- `_autosave()` — serialises all tabs; skips empty tabs and skips if `_is_executing`; silent on failure (prints to console only)
+- `_try_restore_autosave()` — called in `__init__` before `add_new_workflow()`; returns `True` if any tab was restored (suppresses default empty tab); always deletes the autosave file after the dialog regardless of user choice
+- `closeEvent` — calls `os.remove(_autosave_path)` after `_save_user_settings()`
+
+**Guarded against**: execution in progress (`_is_executing`), empty tabs, corrupt autosave file (silently deleted), missing file on removal.
+
 ### 10.6 Recent Files (v1.8.6+)
 
 **Feature**: File menu → **Open Recent** submenu lists the last 10 saved/loaded workflows. Entries for files that no longer exist on disk are shown grayed-out (disabled). "Clear Recent Files" wipes the list.

@@ -2,6 +2,7 @@ import sys
 import os
 import shutil
 import asyncio
+import json
 from PyQt5.QtWidgets import QMainWindow, QAction, QFileDialog, QVBoxLayout, QWidget, QGraphicsView, QGraphicsScene, QToolBar, QMessageBox, QDockWidget, QMenu, QStyle, QTabWidget, QStatusBar, QLabel
 from PyQt5.QtCore import Qt, QTimer, QByteArray
 import base64
@@ -126,11 +127,21 @@ class MainWindow(QMainWindow):
         self._init_toolbar()
         self._init_statusbar()
 
-        # Create initial tab
-        self.add_new_workflow()
+        # Autosave path used for crash recovery
+        self._autosave_path = os.path.expanduser("~/.vibrante_node_autosave.json")
+
+        # Create initial tab, unless autosave recovery already opens tabs
+        if not self._try_restore_autosave():
+            self.add_new_workflow()
 
         # Restore saved window geometry, dock layout, and theme cascade.
         self._load_user_settings()
+
+        # Autosave every 2 minutes
+        self._autosave_timer = QTimer(self)
+        self._autosave_timer.setInterval(2 * 60 * 1000)
+        self._autosave_timer.timeout.connect(self._autosave)
+        self._autosave_timer.start()
 
     # ------------------------------------------------------------------
     # User settings persistence
@@ -172,6 +183,12 @@ class MainWindow(QMainWindow):
 
     def closeEvent(self, event):
         self._save_user_settings()
+        # Clean exit — remove autosave so recovery is not offered next launch
+        try:
+            if os.path.isfile(self._autosave_path):
+                os.remove(self._autosave_path)
+        except OSError:
+            pass
         super().closeEvent(event)
 
     def _init_statusbar(self):
@@ -1277,6 +1294,91 @@ class MainWindow(QMainWindow):
         scene.file_path = file_path
         self.log_panel.log(f"Workflow loaded: {file_path}", "info")
         self._add_recent_file(file_path)
+
+    # ------------------------------------------------------------------
+    # Autosave / crash recovery
+    # ------------------------------------------------------------------
+
+    def _try_restore_autosave(self) -> bool:
+        """Offer to restore an autosave file. Returns True if any tab was restored."""
+        if not os.path.isfile(self._autosave_path):
+            return False
+        try:
+            with open(self._autosave_path, "r") as f:
+                data = json.load(f)
+            tabs = data.get("tabs", [])
+        except Exception:
+            try:
+                os.remove(self._autosave_path)
+            except OSError:
+                pass
+            return False
+
+        if not tabs:
+            try:
+                os.remove(self._autosave_path)
+            except OSError:
+                pass
+            return False
+
+        reply = QMessageBox.question(
+            self,
+            "Restore Autosave",
+            f"An autosave was found ({len(tabs)} workflow(s)).\n"
+            "The application may not have exited cleanly.\n\n"
+            "Restore autosaved work?",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.Yes,
+        )
+
+        restored = False
+        if reply == QMessageBox.Yes:
+            for tab_data in tabs:
+                try:
+                    workflow_model = WorkflowModel.model_validate(tab_data["workflow"])
+                    name = tab_data.get("name", "Recovered Workflow")
+                    view = self.add_new_workflow(f"[Recovered] {name}")
+                    scene = view.scene()
+                    scene.from_workflow_model(workflow_model)
+                    scene.file_path = tab_data.get("file_path") or ""
+                    self.log_panel.log(f"Autosave restored: {name}", "info")
+                    restored = True
+                except Exception as e:
+                    self.log_panel.log(f"Failed to restore tab '{tab_data.get('name', '?')}': {e}", "error")
+
+        try:
+            os.remove(self._autosave_path)
+        except OSError:
+            pass
+        return restored
+
+    def _autosave(self):
+        """Write all non-empty tabs to the autosave file. Silent on failure."""
+        if self._is_executing:
+            return
+        try:
+            tabs_data = []
+            for i in range(self.tabs.count()):
+                view = self.tabs.widget(i)
+                if not view:
+                    continue
+                scene = view.scene()
+                if not scene:
+                    continue
+                workflow = scene.to_workflow_model()
+                if not workflow.nodes and not workflow.sticky_notes and not workflow.backdrops:
+                    continue
+                tabs_data.append({
+                    "name": self.tabs.tabText(i),
+                    "file_path": scene.file_path or "",
+                    "workflow": json.loads(workflow.model_dump_json()),
+                })
+            if not tabs_data:
+                return
+            payload = json.dumps({"version": 1, "tabs": tabs_data}, indent=2)
+            self._atomic_write(self._autosave_path, payload)
+        except Exception as e:
+            print(f"[Autosave] Failed: {e}")
 
     @staticmethod
     def _atomic_write(file_path: str, data: str):
