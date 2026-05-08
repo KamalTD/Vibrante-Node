@@ -697,3 +697,18 @@ Panning: `self._view.centerOn(node)` after `node.setSelected(True)`.
 - `_on_node_finished`: pops the start time, computes `elapsed = time.perf_counter() - t0`, logs `"Node 'X' finished in {elapsed:.2f}s"` at level `"info"`. `dict.pop(key, None)` guards against any race where finish fires without a matching start.
 
 No changes to `engine.py` or any signal signatures.
+
+### 10.11 Mini-map (v1.8.7+)
+
+**Feature**: A 200×150 px thumbnail of the full canvas is always visible in the bottom-right corner of each `NodeView`. A blue semi-transparent rectangle shows the current viewport. Click or drag the mini-map to pan the main view. Toggle with Ctrl+M or Window → Toggle Mini-map.
+
+**Architecture:**
+- `src/ui/canvas/mini_map.py` — `MiniMap(QGraphicsView)`, child widget of `NodeView`. Shares the same `QGraphicsScene` — Qt renders the scene automatically.
+- `setInteractive(False)` prevents scene items from receiving mouse events through the mini-map; `mousePressEvent`/`mouseMoveEvent` are overridden to call `self._main_view.centerOn(scene_pos)`.
+- `drawForeground()` draws the viewport indicator in scene coordinates: maps `main_view.viewport().rect()` corners to scene space via `main_view.mapToScene()`, then draws a `QRectF`.
+- `_do_fit()` calls `self.fitInView(scene.itemsBoundingRect() + padding, Qt.KeepAspectRatio)` and is debounced at 80 ms via a single-shot `QTimer` connected to `scene.changed`.
+- `NodeView.__init__`: instantiates mini-map, calls `attach_scene(scene)`, connects `horizontalScrollBar().valueChanged` and `verticalScrollBar().valueChanged` to `mini_map.refresh()` (which just calls `update()`). Also calls `mini_map.refresh()` after `scale()` in `wheelEvent` and `mini_map.reposition()` in `resizeEvent`.
+- `NodeView.apply_theme(is_dark)` cascades to `mini_map.apply_theme()` — called from `MainWindow._apply_dark_theme()` / `_apply_light_theme()`.
+- `MainWindow._toggle_mini_map()` toggles `view._mini_map.setVisible(...)` for the current tab.
+
+**Do not** call `setInteractive(True)` on the mini-map — scene item events must stay suppressed.

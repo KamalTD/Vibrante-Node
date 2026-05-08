@@ -1,6 +1,7 @@
 from src.utils.qt_compat import QtWidgets, QtCore, QtGui, exec_dialog
 from src.ui.canvas.node_search_popup import NodeSearchPopup
 from src.ui.canvas.canvas_search_bar import CanvasSearchBar
+from src.ui.canvas.mini_map import MiniMap
 
 QGraphicsView = QtWidgets.QGraphicsView
 QGraphicsScene = QtWidgets.QGraphicsScene
@@ -35,6 +36,12 @@ class NodeView(QGraphicsView):
         self._search_popup = None
         self._last_mouse_scene_pos = QPointF(0, 0)
         self._canvas_search_bar = CanvasSearchBar(self)
+
+        self._mini_map = MiniMap(self)
+        self._mini_map.attach_scene(scene)
+        self._mini_map.reposition()
+        self.horizontalScrollBar().valueChanged.connect(self._mini_map.refresh)
+        self.verticalScrollBar().valueChanged.connect(self._mini_map.refresh)
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasFormat("application/x-node-id") or event.mimeData().hasText():
@@ -220,6 +227,7 @@ class NodeView(QGraphicsView):
                 zoom_factor = zoom_out_factor
 
             self.scale(zoom_factor, zoom_factor)
+            self._mini_map.refresh()
             event.accept()
         else:
             super().wheelEvent(event)
@@ -256,6 +264,9 @@ class NodeView(QGraphicsView):
         popup.move(popup_pos)
         exec_dialog(popup)
 
+    def apply_theme(self, is_dark=True):
+        self._mini_map.apply_theme(is_dark)
+
     def show_canvas_search(self):
         """Show the floating canvas search bar (Ctrl+F)."""
         self._canvas_search_bar.show_bar()
@@ -264,3 +275,5 @@ class NodeView(QGraphicsView):
         super().resizeEvent(event)
         if self._canvas_search_bar.isVisible():
             self._canvas_search_bar._reposition()
+        self._mini_map.reposition()
+        self._mini_map.refresh()

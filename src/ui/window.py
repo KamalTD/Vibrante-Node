@@ -414,6 +414,11 @@ class MainWindow(QMainWindow):
         toggle_script.setText("Show/Hide Scripting Console")
         window_menu.addAction(toggle_script)
 
+        toggle_minimap_act = QAction('Toggle Mini-map', self)
+        toggle_minimap_act.setShortcut('Ctrl+M')
+        toggle_minimap_act.triggered.connect(self._toggle_mini_map)
+        window_menu.addAction(toggle_minimap_act)
+
         # Themes Menu
         theme_menu = menubar.addMenu('&Themes')
         dark_act = QAction("Dracula Theme", self)
@@ -1017,6 +1022,7 @@ class MainWindow(QMainWindow):
                 view = self.tabs.widget(i)
                 if isinstance(view, NodeView):
                     view.scene().apply_theme(is_dark=True)
+                    view.apply_theme(is_dark=True)
         self._cascade_editor_theme(True)
 
     def _apply_light_theme(self):
@@ -1037,6 +1043,7 @@ class MainWindow(QMainWindow):
                 view = self.tabs.widget(i)
                 if isinstance(view, NodeView):
                     view.scene().apply_theme(is_dark=False)
+                    view.apply_theme(is_dark=False)
         self._cascade_editor_theme(False)
 
     def _cascade_editor_theme(self, is_dark: bool):
@@ -1606,6 +1613,12 @@ class MainWindow(QMainWindow):
         view = self.get_current_view()
         if view:
             view.show_canvas_search()
+
+    def _toggle_mini_map(self):
+        view = self.get_current_view()
+        if view:
+            mm = view._mini_map
+            mm.setVisible(not mm.isVisible())
 
     def _undo(self):
         scene = self.get_current_scene()
