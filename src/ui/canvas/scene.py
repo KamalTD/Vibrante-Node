@@ -560,6 +560,12 @@ class NodeScene(QGraphicsScene):
                 for p_name, p_val in node_model.parameters.items():
                     widget.set_parameter(p_name, p_val, propagate=False)
 
+                # Restore dynamic ports from saved parameters (e.g. GroupNode data
+                # ports, Sequencer step ports). Mirrors what the engine does before
+                # each execution — without this, dynamic ports are lost on reload.
+                widget.node_definition.restore_from_parameters(node_model.parameters)
+                widget.rebuild_ports()
+
                 id_to_widget[node_model.instance_id] = widget
 
         # Create connections involving init-first nodes BEFORE all others so
