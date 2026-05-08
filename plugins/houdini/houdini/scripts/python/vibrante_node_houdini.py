@@ -568,6 +568,11 @@ def show_about():
     except ImportError:
         hou_ver = "(not available)"
 
+    nodes_dir = _get_houdini_nodes_dir()
+    scripts_dir = _get_houdini_scripts_dir()
+    nodes_ok = "OK" if (nodes_dir and os.path.isdir(nodes_dir)) else "MISSING"
+    scripts_ok = "OK" if (scripts_dir and os.path.isdir(scripts_dir)) else "MISSING"
+
     msg = (
         "Vibrante-Node Pipeline Editor - Houdini Integration\n"
         "====================================================\n\n"
@@ -575,16 +580,22 @@ def show_about():
         f"Houdini Version:     {hou_ver}\n"
         f"Houdini Python Libs: {hou_python or '(not found)'}\n"
         f"System Python:       {sys_python or '(not found)'}\n\n"
+        "Houdini Plugin Paths (passed to subprocess on launch):\n"
+        f"  v_nodes_dir    = {nodes_dir or '(not found)'}  [{nodes_ok}]\n"
+        f"  v_scripts_path = {scripts_dir or '(not found)'}  [{scripts_ok}]\n\n"
         "Architecture:\n"
         "  Vibrante-Node runs in system Python 3.11 (with PyQt5).\n"
         "  A JSON-RPC command server runs inside Houdini (port 18811).\n"
         "  Houdini nodes in Vibrante-Node send commands to the server\n"
         "  to create/modify nodes in the live Houdini session.\n\n"
-        "Environment Variables:\n"
+        "Environment Variables (vibrante_node.json):\n"
         "  VIBRANTE_NODE_APP    - Path to Vibrante-Node installation\n"
-        "  VIBRANTE_PYTHON_EXE  - Override system Python path\n"
+        "  VIBRANTE_PYTHON_EXE  - Override system Python path\n\n"
+        "Environment Variables (set automatically on launch):\n"
         "  VIBRANTE_HOU_PORT    - Command server port (default: 18811)\n"
-        "  VIBRANTE_HIP_FILE    - Current HIP file (set by Launch with Context)\n\n"
+        "  VIBRANTE_HIP_FILE    - Current HIP file (Launch with Context)\n"
+        "  v_nodes_dir          - Extra node dirs (v_nodes_houdini folder)\n"
+        "  v_scripts_path       - Extra scripts dirs (v_scripts_houdini folder)\n\n"
         "Copyright 2026 Mahmoud Kamal - KamalTD\n"
     )
 

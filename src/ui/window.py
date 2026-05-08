@@ -91,9 +91,10 @@ class MainWindow(QMainWindow):
 
         # Initialize Registry — bundled nodes live in _internal/nodes (resource_path),
         # user-created nodes live next to the exe (app_dir).
+        # load_all_with_extras() also picks up v_nodes_dir (set when launched from Houdini).
         bundled_nodes = resource_path('nodes')
         self.nodes_dir = os.path.join(app_dir(), 'nodes')
-        NodeRegistry.load_all(bundled_nodes)
+        NodeRegistry.load_all_with_extras(bundled_nodes)
         if self.nodes_dir != bundled_nodes and os.path.isdir(self.nodes_dir):
             NodeRegistry._load_directory(self.nodes_dir)
 
@@ -360,6 +361,10 @@ class MainWindow(QMainWindow):
         node_menu.addAction(add_backdrop_action)
         self.add_backdrop_action = add_backdrop_action
 
+        # Scripts Menu — populated from v_scripts_path (set when launched from Houdini)
+        self.scripts_menu = menubar.addMenu('&Scripts')
+        self._populate_scripts_menu()
+
         # Window Menu
         window_menu = menubar.addMenu('&Window')
         
@@ -504,6 +509,64 @@ class MainWindow(QMainWindow):
         webbrowser.open("https://aistudio.google.com/app/api-keys?project=gen-lang-client-0761136562")
         dialog = GeminiApiDialog(self)
         dialog.exec_()
+
+    def _populate_scripts_menu(self):
+        """Scan v_scripts_path directories and rebuild the Scripts menu."""
+        self.scripts_menu.clear()
+
+        scripts_path = os.environ.get('v_scripts_path', '')
+        script_actions = []
+
+        if scripts_path:
+            for scripts_dir in scripts_path.split(os.pathsep):
+                scripts_dir = scripts_dir.strip()
+                if not scripts_dir or not os.path.isdir(scripts_dir):
+                    continue
+                for fname in sorted(os.listdir(scripts_dir)):
+                    if not fname.endswith('.py'):
+                        continue
+                    fpath = os.path.join(scripts_dir, fname)
+                    label = os.path.splitext(fname)[0].replace('_', ' ').title()
+                    act = QAction(label, self)
+                    act.setToolTip(fpath)
+                    act.triggered.connect(lambda checked, p=fpath: self._run_script_file(p))
+                    script_actions.append(act)
+
+        if script_actions:
+            for act in script_actions:
+                self.scripts_menu.addAction(act)
+            self.scripts_menu.addSeparator()
+        else:
+            placeholder = QAction("(No scripts available)", self)
+            placeholder.setEnabled(False)
+            self.scripts_menu.addAction(placeholder)
+            self.scripts_menu.addSeparator()
+
+        refresh_act = QAction("Refresh Scripts", self)
+        refresh_act.triggered.connect(self._populate_scripts_menu)
+        self.scripts_menu.addAction(refresh_act)
+
+    def _run_script_file(self, script_path):
+        """Execute a .py script file in the context of the current window/scene."""
+        try:
+            with open(script_path, 'r', encoding='utf-8') as f:
+                code = f.read()
+            exec_globals = {
+                'window': self,
+                'scene': self.get_current_scene(),
+                '__file__': script_path,
+                '__name__': '__main__',
+            }
+            exec(compile(code, script_path, 'exec'), exec_globals)
+            self.log_panel.log(f"Script executed: {os.path.basename(script_path)}", "info")
+        except Exception as e:
+            import traceback
+            err = traceback.format_exc()
+            self.log_panel.log(f"Script error in {os.path.basename(script_path)}: {e}", "error")
+            QMessageBox.critical(
+                self, "Script Error",
+                f"Failed to run: {os.path.basename(script_path)}\n\n{err}"
+            )
 
     def _init_toolbar(self):
         toolbar = self.addToolBar("Main")
