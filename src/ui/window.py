@@ -3,6 +3,7 @@ import os
 import shutil
 import asyncio
 import json
+import time
 from PyQt5.QtWidgets import QMainWindow, QAction, QFileDialog, QVBoxLayout, QWidget, QGraphicsView, QGraphicsScene, QToolBar, QMessageBox, QDockWidget, QMenu, QStyle, QTabWidget, QStatusBar, QLabel
 from PyQt5.QtCore import Qt, QTimer, QByteArray
 import base64
@@ -306,6 +307,18 @@ class MainWindow(QMainWindow):
         paste_action.triggered.connect(self._paste_selection)
         edit_menu.addAction(paste_action)
 
+        duplicate_action = QAction('&Duplicate', self)
+        duplicate_action.setShortcut('Ctrl+D')
+        duplicate_action.triggered.connect(self._duplicate_selection)
+        edit_menu.addAction(duplicate_action)
+
+        edit_menu.addSeparator()
+
+        find_action = QAction('&Find in Canvas...', self)
+        find_action.setShortcut('Ctrl+F')
+        find_action.triggered.connect(self._find_in_canvas)
+        edit_menu.addAction(find_action)
+
         node_menu = menubar.addMenu('&Nodes')
         new_node_action = QAction('&New Node Builder...', self)
         new_node_action.setShortcut('Ctrl+N')
@@ -400,6 +413,11 @@ class MainWindow(QMainWindow):
         toggle_script = self.scripting_console.toggleViewAction()
         toggle_script.setText("Show/Hide Scripting Console")
         window_menu.addAction(toggle_script)
+
+        toggle_minimap_act = QAction('Toggle Mini-map', self)
+        toggle_minimap_act.setShortcut('Ctrl+M')
+        toggle_minimap_act.triggered.connect(self._toggle_mini_map)
+        window_menu.addAction(toggle_minimap_act)
 
         # Themes Menu
         theme_menu = menubar.addMenu('&Themes')
@@ -1004,6 +1022,7 @@ class MainWindow(QMainWindow):
                 view = self.tabs.widget(i)
                 if isinstance(view, NodeView):
                     view.scene().apply_theme(is_dark=True)
+                    view.apply_theme(is_dark=True)
         self._cascade_editor_theme(True)
 
     def _apply_light_theme(self):
@@ -1024,6 +1043,7 @@ class MainWindow(QMainWindow):
                 view = self.tabs.widget(i)
                 if isinstance(view, NodeView):
                     view.scene().apply_theme(is_dark=False)
+                    view.apply_theme(is_dark=False)
         self._cascade_editor_theme(False)
 
     def _cascade_editor_theme(self, is_dark: bool):
@@ -1486,6 +1506,7 @@ class MainWindow(QMainWindow):
         gm = GraphManager()
         gm.from_model(workflow_model)
         
+        self._node_start_times = {}
         self.current_executor = NetworkExecutor(gm)
         self.current_executor.node_started.connect(self._on_node_started)
         self.current_executor.node_finished.connect(self._on_node_finished)
@@ -1521,6 +1542,7 @@ class MainWindow(QMainWindow):
                 node.set_status("idle")
 
     def _on_node_started(self, node_instance_id):
+        self._node_start_times[node_instance_id] = time.perf_counter()
         widget = self._find_node_widget(node_instance_id)
         name = widget.node_definition.name if widget else "Unknown"
         self.log_panel.log(f"Node '{name}' started", "execution")
@@ -1548,6 +1570,11 @@ class MainWindow(QMainWindow):
     def _on_node_finished(self, node_instance_id, status):
         widget = self._find_node_widget(node_instance_id)
         if widget: widget.set_status(status)
+        name = widget.node_definition.name if widget else "Unknown"
+        t0 = self._node_start_times.pop(node_instance_id, None)
+        if t0 is not None:
+            elapsed = time.perf_counter() - t0
+            self.log_panel.log(f"Node '{name}' finished in {elapsed:.2f}s", "info")
 
     def _on_node_error(self, node_instance_id, error_msg):
         widget = self._find_node_widget(node_instance_id)
@@ -1576,6 +1603,22 @@ class MainWindow(QMainWindow):
             mouse_pos = view.mapFromGlobal(QCursor.pos())
             scene_pos = view.mapToScene(mouse_pos)
             scene.paste_selection(target_pos=scene_pos)
+
+    def _duplicate_selection(self):
+        scene = self.get_current_scene()
+        if scene:
+            scene.duplicate_selection()
+
+    def _find_in_canvas(self):
+        view = self.get_current_view()
+        if view:
+            view.show_canvas_search()
+
+    def _toggle_mini_map(self):
+        view = self.get_current_view()
+        if view:
+            mm = view._mini_map
+            mm.setVisible(not mm.isVisible())
 
     def _undo(self):
         scene = self.get_current_scene()

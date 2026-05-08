@@ -269,6 +269,12 @@ class NodeScene(QGraphicsScene):
         
         return new_items
 
+    def duplicate_selection(self):
+        """Duplicate selected items in place at a +20 px offset. Leaves duplicates selected."""
+        if not self.copy_selection():
+            return
+        self.paste_selection(pos_offset=QPointF(20, 20))
+
     @staticmethod
     def _serializable_params(params: dict) -> dict:
         import json

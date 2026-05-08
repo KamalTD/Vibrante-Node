@@ -665,3 +665,50 @@ These bugs were found and fixed. Do not revert these changes.
 - Added `&Scripts` menu in `_init_menu()` populated by `_populate_scripts_menu()` which scans `v_scripts_path`
 - Added `_run_script_file(path)` to execute scripts in window/scene context  
 **File**: `src/ui/window.py`
+
+### 10.9 Canvas Search Bar — Ctrl+F (v1.8.7+)
+
+**Feature**: Press Ctrl+F (or Edit → Find in Canvas…) to open a floating search bar centred at the top of the canvas. Type to filter `scene.nodes` by display name or `node_id`. The matched node is selected and the view pans to it. Enter/▼ cycles forward; Shift+Enter/▲ cycles backward. Match counter shows "X / N". Escape closes.
+
+**Architecture:**
+- `src/ui/canvas/canvas_search_bar.py` — `CanvasSearchBar(QFrame)`, child widget of `NodeView`. Positioned with `move(x, 8)` on show; repositioned in `NodeView.resizeEvent` if visible.
+- `NodeView` — instantiates `_canvas_search_bar` in `__init__`; exposes `show_canvas_search()`.
+- `MainWindow._init_menu()` — Edit menu separator + "Find in Canvas… Ctrl+F" action → `_find_in_canvas()`.
+- Theme detected from `scene.backgroundBrush().color().lightness() < 128` (same pattern as `NodeSearchPopup`).
+
+**Key search logic** (in `CanvasSearchBar._on_text_changed`):
+```python
+self._matches = [
+    w for w in scene.nodes
+    if t in w.node_definition.name.lower()
+    or t in getattr(w.node_definition, 'node_id', '').lower()
+]
+```
+Panning: `self._view.centerOn(node)` after `node.setSelected(True)`.
+
+### 10.10 Node Execution Timing (v1.8.7+)
+
+**Feature**: The log panel now shows how long each node took to execute — e.g. `Node 'Get Asset' finished in 0.34s`.
+
+**Implementation** — 4 surgical changes to `src/ui/window.py` only:
+- `import time` added to stdlib imports.
+- `self._node_start_times = {}` reset in `execute_pipeline` before the executor is created (per-run isolation).
+- `_on_node_started`: `self._node_start_times[node_instance_id] = time.perf_counter()`
+- `_on_node_finished`: pops the start time, computes `elapsed = time.perf_counter() - t0`, logs `"Node 'X' finished in {elapsed:.2f}s"` at level `"info"`. `dict.pop(key, None)` guards against any race where finish fires without a matching start.
+
+No changes to `engine.py` or any signal signatures.
+
+### 10.11 Mini-map (v1.8.7+)
+
+**Feature**: A 200×150 px thumbnail of the full canvas is always visible in the bottom-right corner of each `NodeView`. A blue semi-transparent rectangle shows the current viewport. Click or drag the mini-map to pan the main view. Toggle with Ctrl+M or Window → Toggle Mini-map.
+
+**Architecture:**
+- `src/ui/canvas/mini_map.py` — `MiniMap(QGraphicsView)`, child widget of `NodeView`. Shares the same `QGraphicsScene` — Qt renders the scene automatically.
+- `setInteractive(False)` prevents scene items from receiving mouse events through the mini-map; `mousePressEvent`/`mouseMoveEvent` are overridden to call `self._main_view.centerOn(scene_pos)`.
+- `drawForeground()` draws the viewport indicator in scene coordinates: maps `main_view.viewport().rect()` corners to scene space via `main_view.mapToScene()`, then draws a `QRectF`.
+- `_do_fit()` calls `self.fitInView(scene.itemsBoundingRect() + padding, Qt.KeepAspectRatio)` and is debounced at 80 ms via a single-shot `QTimer` connected to `scene.changed`.
+- `NodeView.__init__`: instantiates mini-map, calls `attach_scene(scene)`, connects `horizontalScrollBar().valueChanged` and `verticalScrollBar().valueChanged` to `mini_map.refresh()` (which just calls `update()`). Also calls `mini_map.refresh()` after `scale()` in `wheelEvent` and `mini_map.reposition()` in `resizeEvent`.
+- `NodeView.apply_theme(is_dark)` cascades to `mini_map.apply_theme()` — called from `MainWindow._apply_dark_theme()` / `_apply_light_theme()`.
+- `MainWindow._toggle_mini_map()` toggles `view._mini_map.setVisible(...)` for the current tab.
+
+**Do not** call `setInteractive(True)` on the mini-map — scene item events must stay suppressed.
