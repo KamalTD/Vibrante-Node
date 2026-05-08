@@ -712,3 +712,53 @@ No changes to `engine.py` or any signal signatures.
 - `MainWindow._toggle_mini_map()` toggles `view._mini_map.setVisible(...)` for the current tab.
 
 **Do not** call `setInteractive(True)` on the mini-map — scene item events must stay suppressed.
+
+### 10.12 Subgraph / Group Node (v1.9.0+)
+
+**Feature**: Select 2+ connected nodes and press **Ctrl+Shift+G** (Edit → Group Selection) to collapse them into a single `GroupNode` that stores the subgraph as an embedded `WorkflowModel`. Double-click the GroupNode to open the subgraph in a new tab (read-only view — edits there don't propagate back yet).
+
+**Node classes** (`src/nodes/builtins/group_node.py`):
+- `GroupInNode` (`group_in`): `use_exec=False`; input `port_name` (text widget); output `value`. Returns `{"value": self.parameters.get("value")}`.
+- `GroupOutNode` (`group_out`): `use_exec=False`; inputs `port_name` (text widget) + `value`; output `value`. Returns `{"value": inputs.get("value")}`.
+- `GroupNode` (`group_node`): `use_exec=True`; stores `__workflow__` (WorkflowModel dict), `__port_defs__` (list of `{name, type, is_input}`), `__name__` (display name) in `self.parameters`. Dynamic ports are re-added at load time via `restore_from_parameters()`.
+
+**Registry registration** (`src/core/registry.py`):
+```python
+from src.nodes.builtins.group_node import GroupInNode, GroupOutNode, GroupNode
+for _cls in (GroupInNode, GroupOutNode, GroupNode):
+    _cls.node_id = _cls.name
+    cls._classes[_cls.name] = _cls
+```
+Registered in `_classes` only (not `_definitions`) → hidden from the node search popup but still executable and loadable from saved workflows.
+
+**Collapsing** (`NodeScene.group_selection()` in `src/ui/canvas/scene.py`):
+1. Classify all edges incident on selected nodes as boundary_in (external→selected), boundary_out (selected→external), boundary_exec_in, boundary_exec_out, or internal.
+2. Build a `WorkflowModel` with: all selected `NodeInstanceModel`s + one `GroupInNode` per unique boundary_in port + one `GroupOutNode` per unique boundary_out port, wired to the corresponding inner node inputs/outputs.
+3. Remove selected nodes and their edges from the scene.
+4. Create a `GroupNode` widget at the centroid; set `__workflow__`, `__port_defs__`, `__name__` parameters; call `rebuild_ports()` to materialize the dynamic ports.
+5. Reconnect external boundary edges to the new GroupNode's ports.
+
+**UUID safety**: `widget.instance_id` can be a `UUID` object or a string UUID (paste path). Always compare with `str(instance_id)`.
+
+**Double-click to inspect** (`NodeScene.mouseDoubleClickEvent`):
+```python
+def mouseDoubleClickEvent(self, event):
+    for item in self.items(event.scenePos()):
+        target = item
+        while target is not None and not isinstance(target, NodeWidget):
+            target = target.parentItem()
+        if isinstance(target, NodeWidget) and getattr(target.node_definition, 'node_id', '') == 'group_node':
+            parent = self.parent()
+            if parent and hasattr(parent, '_open_subgraph_tab'):
+                parent._open_subgraph_tab(target)
+            event.accept()
+            return
+    super().mouseDoubleClickEvent(event)
+```
+
+**Tab opener** (`MainWindow._open_subgraph_tab(group_widget)`):
+- Reads `group_widget.node_definition.parameters["__workflow__"]`
+- Validates as `WorkflowModel`
+- Calls `add_new_workflow(f"[{group_name}]")` → `view.scene().from_workflow_model(workflow_model)`
+
+**Keyboard shortcut conflict note**: Ctrl+G is already used by "Wrap in Backdrop" in `view.keyPressEvent`. Group Selection uses **Ctrl+Shift+G** instead.

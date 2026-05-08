@@ -88,6 +88,13 @@ class NodeRegistry:
         cls._register_builtin_class(WhileLoopNode)
         cls._register_builtin_class(ListAppendNode)
 
+        # Group nodes — registered in _classes only so they stay hidden from the
+        # node search popup but remain executable and loadable from saved workflows.
+        from src.nodes.builtins.group_node import GroupInNode, GroupOutNode, GroupNode
+        for _cls in (GroupInNode, GroupOutNode, GroupNode):
+            _cls.node_id = _cls.name
+            cls._classes[_cls.name] = _cls
+
     @classmethod
     def _register_builtin_class(cls, node_class: Type[BaseNode]):
         # Create a definition for builtins

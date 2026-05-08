@@ -275,6 +275,201 @@ class NodeScene(QGraphicsScene):
             return
         self.paste_selection(pos_offset=QPointF(20, 20))
 
+    def group_selection(self):
+        """Collapse selected nodes into a single GroupNode with an embedded sub-workflow.
+
+        Boundary data connections are analysed automatically:
+        - External → internal becomes a group input port + group_in node inside.
+        - Internal → external becomes a group output port + group_out node inside.
+        Exec connections crossing the boundary are rewired to the GroupNode's
+        exec_in / exec_out pins.
+        """
+        selected = [i for i in self.selectedItems() if isinstance(i, NodeWidget)]
+        if not selected:
+            return
+
+        selected_str_ids = {str(w.instance_id) for w in selected}
+
+        # Capture current workflow (parameters already serializable)
+        workflow = self.to_workflow_model()
+        conn_list = workflow.connections
+
+        boundary_in = []     # data: external → internal
+        boundary_out = []    # data: internal → external
+        boundary_exec_in = []  # exec: external → internal
+        boundary_exec_out = []  # exec: internal → external
+        internal_conns = []  # connections fully inside the selection
+
+        for conn in conn_list:
+            fi = str(conn.from_node) in selected_str_ids
+            ti = str(conn.to_node) in selected_str_ids
+            if fi and ti:
+                internal_conns.append(conn)
+            elif not fi and ti:
+                (boundary_exec_in if conn.is_exec else boundary_in).append(conn)
+            elif fi and not ti:
+                (boundary_exec_out if conn.is_exec else boundary_out).append(conn)
+
+        # Build group input port list (deduplicated by target port name)
+        group_inputs = []    # [(group_port_name, conn), ...]
+        seen_in = set()
+        in_port_map = {}     # conn → group_port_name
+
+        for conn in boundary_in:
+            base = conn.to_port
+            name = base
+            idx = 1
+            while name in seen_in:
+                name = f"{base}_{idx}"
+                idx += 1
+            seen_in.add(name)
+            group_inputs.append((name, conn))
+            in_port_map[id(conn)] = name
+
+        # Build group output port list (deduplicated by source port name)
+        group_outputs = []   # [(group_port_name, conn), ...]
+        seen_out = set()
+        out_port_map = {}    # conn → group_port_name
+
+        for conn in boundary_out:
+            base = conn.from_port
+            name = base
+            idx = 1
+            while name in seen_out:
+                name = f"{base}_{idx}"
+                idx += 1
+            seen_out.add(name)
+            group_outputs.append((name, conn))
+            out_port_map[id(conn)] = name
+
+        # --- Build internal WorkflowModel ---
+        from src.core.models import WorkflowModel, NodeInstanceModel, ConnectionModel
+        from uuid import uuid4
+
+        selected_models = [
+            m for m in workflow.nodes
+            if str(m.instance_id) in selected_str_ids
+        ]
+
+        internal_nodes = list(selected_models)
+        internal_conns_list = list(internal_conns)
+
+        # Compute bounding rect for positioning boundary nodes
+        min_x = min(w.pos().x() for w in selected)
+        max_x = max(w.pos().x() for w in selected)
+        avg_y = sum(w.pos().y() for w in selected) / len(selected)
+
+        # Add group_in nodes (left of selection)
+        gin_id_map = {}  # group_port_name → internal UUID
+        for i, (port_name, conn) in enumerate(group_inputs):
+            gin_id = uuid4()
+            gin_id_map[port_name] = gin_id
+            internal_nodes.append(NodeInstanceModel(
+                instance_id=gin_id,
+                node_id="group_in",
+                position=(min_x - 250, avg_y + i * 80),
+                parameters={"port_name": port_name, "value": None}
+            ))
+            # Wire group_in.value → original target node's port
+            internal_conns_list.append(ConnectionModel(
+                from_node=gin_id,
+                from_port="value",
+                to_node=conn.to_node,
+                to_port=conn.to_port,
+                is_exec=False
+            ))
+
+        # Add group_out nodes (right of selection)
+        gout_id_map = {}  # group_port_name → internal UUID
+        for i, (port_name, conn) in enumerate(group_outputs):
+            gout_id = uuid4()
+            gout_id_map[port_name] = gout_id
+            internal_nodes.append(NodeInstanceModel(
+                instance_id=gout_id,
+                node_id="group_out",
+                position=(max_x + 250, avg_y + i * 80),
+                parameters={"port_name": port_name, "value": None}
+            ))
+            # Wire original source node's port → group_out.value
+            internal_conns_list.append(ConnectionModel(
+                from_node=conn.from_node,
+                from_port=conn.from_port,
+                to_node=gout_id,
+                to_port="value",
+                is_exec=False
+            ))
+
+        internal_workflow = WorkflowModel(
+            nodes=internal_nodes,
+            connections=internal_conns_list
+        )
+
+        # --- Port definitions for serialization / restore ---
+        port_defs = []
+        for port_name, _ in group_inputs:
+            port_defs.append({"name": port_name, "type": "any", "is_input": True})
+        for port_name, _ in group_outputs:
+            port_defs.append({"name": port_name, "type": "any", "is_input": False})
+
+        self.push_history()
+
+        # --- Remove selected nodes and their edges from the scene ---
+        for edge in list(self.edges):
+            fp = edge.from_port.parentItem() if edge.from_port else None
+            tp = edge.to_port.parentItem() if edge.to_port else None
+            if fp in selected or tp in selected:
+                self.removeItem(edge)
+                self.edges.remove(edge)
+        for widget in selected:
+            self.removeItem(widget)
+            if widget in self.nodes:
+                self.nodes.remove(widget)
+
+        # --- Create GroupNode on canvas ---
+        center_x = sum(w.pos().x() for w in selected) / len(selected)
+        center_y = avg_y
+        group_widget = self.add_node_by_name("group_node", QPointF(center_x, center_y))
+        if not group_widget:
+            return
+
+        # Store embedded workflow and port definitions
+        group_widget.node_definition.parameters["__workflow__"] = internal_workflow.model_dump(mode='json')
+        group_widget.node_definition.parameters["__port_defs__"] = port_defs
+        group_widget.node_definition.parameters["__name__"] = "Group"
+
+        # Add dynamic ports to the node definition, then rebuild the widget
+        for pd in port_defs:
+            if pd["is_input"]:
+                group_widget.node_definition.add_input(pd["name"], pd["type"])
+            else:
+                group_widget.node_definition.add_output(pd["name"], pd["type"])
+        group_widget.rebuild_ports()
+
+        # --- Reconnect external connections to the GroupNode ---
+        for port_name, conn in group_inputs:
+            from_w = next((n for n in self.nodes if str(n.instance_id) == str(conn.from_node)), None)
+            if from_w:
+                self.connect_nodes(from_w, conn.from_port, group_widget, port_name)
+
+        for port_name, conn in group_outputs:
+            to_w = next((n for n in self.nodes if str(n.instance_id) == str(conn.to_node)), None)
+            if to_w:
+                self.connect_nodes(group_widget, port_name, to_w, conn.to_port)
+
+        # Reconnect exec boundary connections to the GroupNode's exec pins
+        for conn in boundary_exec_in:
+            from_w = next((n for n in self.nodes if str(n.instance_id) == str(conn.from_node)), None)
+            if from_w:
+                self.connect_nodes(from_w, conn.from_port, group_widget, "exec_in")
+
+        for conn in boundary_exec_out:
+            to_w = next((n for n in self.nodes if str(n.instance_id) == str(conn.to_node)), None)
+            if to_w:
+                self.connect_nodes(group_widget, "exec_out", to_w, conn.to_port)
+
+        self.clearSelection()
+        group_widget.setSelected(True)
+
     @staticmethod
     def _serializable_params(params: dict) -> dict:
         import json
@@ -528,6 +723,19 @@ class NodeScene(QGraphicsScene):
             event.accept()
         else:
             super().mouseReleaseEvent(event)
+
+    def mouseDoubleClickEvent(self, event):
+        for item in self.items(event.scenePos()):
+            target = item
+            while target is not None and not isinstance(target, NodeWidget):
+                target = target.parentItem()
+            if isinstance(target, NodeWidget) and getattr(target.node_definition, 'node_id', '') == 'group_node':
+                parent = self.parent()
+                if parent and hasattr(parent, '_open_subgraph_tab'):
+                    parent._open_subgraph_tab(target)
+                event.accept()
+                return
+        super().mouseDoubleClickEvent(event)
 
     def keyPressEvent(self, event):
         from PyQt5.QtWidgets import QApplication, QLineEdit, QTextEdit, QPlainTextEdit
