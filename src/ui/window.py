@@ -3,6 +3,7 @@ import os
 import shutil
 import asyncio
 import json
+import time
 from PyQt5.QtWidgets import QMainWindow, QAction, QFileDialog, QVBoxLayout, QWidget, QGraphicsView, QGraphicsScene, QToolBar, QMessageBox, QDockWidget, QMenu, QStyle, QTabWidget, QStatusBar, QLabel
 from PyQt5.QtCore import Qt, QTimer, QByteArray
 import base64
@@ -1498,6 +1499,7 @@ class MainWindow(QMainWindow):
         gm = GraphManager()
         gm.from_model(workflow_model)
         
+        self._node_start_times = {}
         self.current_executor = NetworkExecutor(gm)
         self.current_executor.node_started.connect(self._on_node_started)
         self.current_executor.node_finished.connect(self._on_node_finished)
@@ -1533,6 +1535,7 @@ class MainWindow(QMainWindow):
                 node.set_status("idle")
 
     def _on_node_started(self, node_instance_id):
+        self._node_start_times[node_instance_id] = time.perf_counter()
         widget = self._find_node_widget(node_instance_id)
         name = widget.node_definition.name if widget else "Unknown"
         self.log_panel.log(f"Node '{name}' started", "execution")
@@ -1560,6 +1563,11 @@ class MainWindow(QMainWindow):
     def _on_node_finished(self, node_instance_id, status):
         widget = self._find_node_widget(node_instance_id)
         if widget: widget.set_status(status)
+        name = widget.node_definition.name if widget else "Unknown"
+        t0 = self._node_start_times.pop(node_instance_id, None)
+        if t0 is not None:
+            elapsed = time.perf_counter() - t0
+            self.log_panel.log(f"Node '{name}' finished in {elapsed:.2f}s", "info")
 
     def _on_node_error(self, node_instance_id, error_msg):
         widget = self._find_node_widget(node_instance_id)

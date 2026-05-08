@@ -685,3 +685,15 @@ self._matches = [
 ]
 ```
 Panning: `self._view.centerOn(node)` after `node.setSelected(True)`.
+
+### 10.10 Node Execution Timing (v1.8.7+)
+
+**Feature**: The log panel now shows how long each node took to execute — e.g. `Node 'Get Asset' finished in 0.34s`.
+
+**Implementation** — 4 surgical changes to `src/ui/window.py` only:
+- `import time` added to stdlib imports.
+- `self._node_start_times = {}` reset in `execute_pipeline` before the executor is created (per-run isolation).
+- `_on_node_started`: `self._node_start_times[node_instance_id] = time.perf_counter()`
+- `_on_node_finished`: pops the start time, computes `elapsed = time.perf_counter() - t0`, logs `"Node 'X' finished in {elapsed:.2f}s"` at level `"info"`. `dict.pop(key, None)` guards against any race where finish fires without a matching start.
+
+No changes to `engine.py` or any signal signatures.
