@@ -7,6 +7,7 @@ QPointF = QtCore.QPointF
 QPainterPath = QtGui.QPainterPath
 QPen = QtGui.QPen
 QColor = QtGui.QColor
+QPainterPathStroker = QtGui.QPainterPathStroker
 
 class Edge(QGraphicsPathItem):
     def __init__(self, from_port, to_port=None, parent=None):
@@ -15,7 +16,8 @@ class Edge(QGraphicsPathItem):
         self.to_port = to_port
         self.pos_end = QPointF(0, 0)
         self.is_dark = True
-        
+        self._live_value = None
+
         self.setZValue(-1) # Draw edges behind nodes
         self.setFlag(QGraphicsPathItem.ItemIsSelectable)
         self.apply_theme(True)
@@ -69,3 +71,28 @@ class Edge(QGraphicsPathItem):
     def set_end_pos(self, pos):
         self.pos_end = pos
         self.update_path()
+
+    def shape(self):
+        """Widen the hit area to 12 px so hovering for tooltips is easy."""
+        stroker = QPainterPathStroker()
+        stroker.setWidth(12)
+        return stroker.createStroke(self.path())
+
+    def set_live_value(self, value):
+        """Store a live execution value and show it as a hover tooltip."""
+        self._live_value = value
+        if value is None:
+            self.setToolTip("")
+            return
+        port_name = ""
+        if self.from_port is not None:
+            port_name = getattr(getattr(self.from_port, 'port_definition', None), 'name', '') or ''
+        s = repr(value)
+        if len(s) > 300:
+            s = s[:297] + "..."
+        self.setToolTip(f"{port_name}: {s}" if port_name else s)
+
+    def clear_live_value(self):
+        """Remove the live value tooltip."""
+        self._live_value = None
+        self.setToolTip("")

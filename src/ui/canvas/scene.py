@@ -840,6 +840,20 @@ class NodeScene(QGraphicsScene):
             return edge
         return None
 
+    def update_edge_value(self, node_widget, port_name, value):
+        """Push a live execution value to every edge leaving node_widget's port_name."""
+        for edge in self.edges:
+            if (edge.from_port is not None
+                    and edge.to_port is not None
+                    and edge.from_port.parentItem() is node_widget
+                    and edge.from_port.port_definition.name == port_name):
+                edge.set_live_value(value)
+
+    def clear_edge_values(self):
+        """Clear all live value tooltips from every edge (call at execution start)."""
+        for edge in self.edges:
+            edge.clear_live_value()
+
     def apply_theme(self, is_dark=True):
         if is_dark:
             self.setBackgroundBrush(QColor(40, 40, 40))

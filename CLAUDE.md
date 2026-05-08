@@ -618,6 +618,20 @@ These bugs were found and fixed. Do not revert these changes.
 **Fix**: `launch()` accepts `hip_file=""` directly and calls `setup_env()` once internally. `launch_with_context()` calls `launch(hip_file=hip_file)` — no longer calls `setup_env()` itself.  
 **File**: `plugins/houdini/houdini/scripts/python/vibrante_node_houdini.py`
 
+### 10.8 Live Wire Value Inspector (v1.8.6+)
+
+**Feature**: Hover over any connected wire during or after execution to see the last value that flowed through it as a tooltip (`port_name: repr(value)`, capped at 300 chars).
+
+**How it works:**
+- `Edge.set_live_value(value)` stores the value and calls `self.setToolTip(label)`. Qt shows the tooltip automatically on hover.
+- `Edge.shape()` overrides the default 2 px hit area with a 12 px stroked path so the wire is easy to hover over.
+- `Edge.clear_live_value()` resets both `_live_value` and the tooltip.
+- `NodeScene.update_edge_value(node_widget, port_name, value)` finds every edge whose `from_port.parentItem() is node_widget` and `from_port.port_definition.name == port_name`, then calls `set_live_value()`.
+- `NodeScene.clear_edge_values()` clears all edges — called at the start of each execution run.
+- `MainWindow._on_node_output` calls `scene.update_edge_value()` for every port in `results` immediately after calling `widget.set_parameter()`.
+
+**Values persist after execution** so the user can inspect the final state of every wire without re-running. They are cleared only when the next execution starts.
+
 ### 10.7 Autosave / Crash Recovery (v1.8.6+)
 
 **Feature**: A `QTimer` fires every 2 minutes and writes all non-empty open tabs to `~/.vibrante_node_autosave.json`. On the next launch, if that file exists, the user is offered a restore dialog. On clean exit (`closeEvent`), the file is deleted so the dialog is never shown unnecessarily.

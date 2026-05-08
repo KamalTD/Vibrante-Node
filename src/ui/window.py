@@ -1478,7 +1478,8 @@ class MainWindow(QMainWindow):
         self.status_label.setText("Running...")
         tab_name = self.tabs.tabText(self.tabs.currentIndex())
         self.log_panel.log(f"Starting execution for [{tab_name}]...", "execution")
-        
+        scene.clear_edge_values()
+
         workflow_model = scene.to_workflow_model()
         
         from src.core.graph import GraphManager
@@ -1530,7 +1531,11 @@ class MainWindow(QMainWindow):
         if widget:
             for name, val in results.items():
                 widget.set_parameter(name, val, propagate=False)
-                
+            scene = self.get_current_scene()
+            if scene:
+                for port_name, val in results.items():
+                    scene.update_edge_value(widget, port_name, val)
+
         name = widget.node_definition.name if widget else "Unknown"
         res_str = ", ".join([f"{k}: {v}" for k, v in results.items()])
         self.log_panel.log(f"Node '{name}' output -> {res_str}", "success")
