@@ -91,16 +91,19 @@ class GroupNode(BaseNode):
         from src.core.models import WorkflowModel
         from src.core.graph import GraphManager
         from src.core.engine import NetworkExecutor
+        from src.nodes.base import BaseNode as _BaseNode
 
         workflow_json = self.parameters.get("__workflow__", {})
         if not workflow_json:
             self.log_error("Group node has no internal workflow.")
+            await self.set_output("exec_out", True)
             return {"exec_out": True}
 
         try:
             workflow = WorkflowModel.model_validate(workflow_json)
         except Exception as e:
             self.log_error(f"Failed to load internal workflow: {e}")
+            await self.set_output("exec_out", True)
             return {"exec_out": True}
 
         # Inject external input values into group_in nodes
@@ -110,24 +113,38 @@ class GroupNode(BaseNode):
                 if port_name and port_name in inputs:
                     node_model.parameters["value"] = inputs[port_name]
 
-        # Run the internal workflow with a headless (signal-free) sub-executor
         gm = GraphManager()
         gm.from_model(workflow)
 
+        # Preserve outer execution memory — the sub-executor clears it on entry
+        saved_memory = dict(_BaseNode.memory)
         sub_executor = NetworkExecutor(gm)
-        await sub_executor.run()
+        try:
+            await sub_executor.run()
+        finally:
+            _BaseNode.memory.clear()
+            _BaseNode.memory.update(saved_memory)
 
         # Collect outputs from group_out nodes
-        results = {"exec_out": True}
+        data_results = {}
         for inst_id, node_model in gm.nodes.items():
             if node_model.node_id == "group_out":
                 port_name = node_model.parameters.get("port_name", "")
                 if port_name:
                     node_result = sub_executor.node_results.get(inst_id, {})
-                    results[port_name] = node_result.get("value")
+                    data_results[port_name] = node_result.get("value")
 
         group_name = self.parameters.get("__name__", "Group")
-        self.log_info(
-            f"Group '{group_name}' finished with {len(results) - 1} output(s)."
-        )
-        return results
+        self.log_info(f"Group '{group_name}' finished with {len(data_results)} output(s).")
+
+        # Push data outputs reactively before triggering exec flow so downstream
+        # nodes see correct values when the exec chain continues.
+        for port_name, value in data_results.items():
+            await self.set_output(port_name, value)
+
+        # Propagate exec flow — mirrors the set_output("exec_out", True) pattern
+        # used by every other exec node; without this call downstream nodes never run.
+        await self.set_output("exec_out", True)
+
+        data_results["exec_out"] = True
+        return data_results
