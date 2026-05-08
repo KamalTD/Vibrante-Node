@@ -306,6 +306,11 @@ class MainWindow(QMainWindow):
         paste_action.triggered.connect(self._paste_selection)
         edit_menu.addAction(paste_action)
 
+        duplicate_action = QAction('&Duplicate', self)
+        duplicate_action.setShortcut('Ctrl+D')
+        duplicate_action.triggered.connect(self._duplicate_selection)
+        edit_menu.addAction(duplicate_action)
+
         node_menu = menubar.addMenu('&Nodes')
         new_node_action = QAction('&New Node Builder...', self)
         new_node_action.setShortcut('Ctrl+N')
@@ -1576,6 +1581,11 @@ class MainWindow(QMainWindow):
             mouse_pos = view.mapFromGlobal(QCursor.pos())
             scene_pos = view.mapToScene(mouse_pos)
             scene.paste_selection(target_pos=scene_pos)
+
+    def _duplicate_selection(self):
+        scene = self.get_current_scene()
+        if scene:
+            scene.duplicate_selection()
 
     def _undo(self):
         scene = self.get_current_scene()
