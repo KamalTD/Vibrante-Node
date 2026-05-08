@@ -311,6 +311,13 @@ class MainWindow(QMainWindow):
         duplicate_action.triggered.connect(self._duplicate_selection)
         edit_menu.addAction(duplicate_action)
 
+        edit_menu.addSeparator()
+
+        find_action = QAction('&Find in Canvas...', self)
+        find_action.setShortcut('Ctrl+F')
+        find_action.triggered.connect(self._find_in_canvas)
+        edit_menu.addAction(find_action)
+
         node_menu = menubar.addMenu('&Nodes')
         new_node_action = QAction('&New Node Builder...', self)
         new_node_action.setShortcut('Ctrl+N')
@@ -1586,6 +1593,11 @@ class MainWindow(QMainWindow):
         scene = self.get_current_scene()
         if scene:
             scene.duplicate_selection()
+
+    def _find_in_canvas(self):
+        view = self.get_current_view()
+        if view:
+            view.show_canvas_search()
 
     def _undo(self):
         scene = self.get_current_scene()

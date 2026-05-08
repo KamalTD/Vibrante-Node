@@ -665,3 +665,23 @@ These bugs were found and fixed. Do not revert these changes.
 - Added `&Scripts` menu in `_init_menu()` populated by `_populate_scripts_menu()` which scans `v_scripts_path`
 - Added `_run_script_file(path)` to execute scripts in window/scene context  
 **File**: `src/ui/window.py`
+
+### 10.9 Canvas Search Bar — Ctrl+F (v1.8.7+)
+
+**Feature**: Press Ctrl+F (or Edit → Find in Canvas…) to open a floating search bar centred at the top of the canvas. Type to filter `scene.nodes` by display name or `node_id`. The matched node is selected and the view pans to it. Enter/▼ cycles forward; Shift+Enter/▲ cycles backward. Match counter shows "X / N". Escape closes.
+
+**Architecture:**
+- `src/ui/canvas/canvas_search_bar.py` — `CanvasSearchBar(QFrame)`, child widget of `NodeView`. Positioned with `move(x, 8)` on show; repositioned in `NodeView.resizeEvent` if visible.
+- `NodeView` — instantiates `_canvas_search_bar` in `__init__`; exposes `show_canvas_search()`.
+- `MainWindow._init_menu()` — Edit menu separator + "Find in Canvas… Ctrl+F" action → `_find_in_canvas()`.
+- Theme detected from `scene.backgroundBrush().color().lightness() < 128` (same pattern as `NodeSearchPopup`).
+
+**Key search logic** (in `CanvasSearchBar._on_text_changed`):
+```python
+self._matches = [
+    w for w in scene.nodes
+    if t in w.node_definition.name.lower()
+    or t in getattr(w.node_definition, 'node_id', '').lower()
+]
+```
+Panning: `self._view.centerOn(node)` after `node.setSelected(True)`.
