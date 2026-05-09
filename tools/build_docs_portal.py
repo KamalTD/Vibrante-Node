@@ -334,6 +334,17 @@ td code { font-size: .85em; }
 .callout-warning .callout-title { color: var(--yellow); }
 .callout-danger  .callout-title { color: var(--red);    }
 
+/* Validation badges */
+.val-badge {
+  display: inline-block; font-size: .78em; font-weight: 600;
+  padding: 4px 12px; border-radius: 20px; margin-bottom: 18px;
+  border: 1px solid transparent; letter-spacing: .02em;
+}
+.val-badge-ok      { background: rgba(166,227,161,.12); border-color: var(--green);  color: var(--green);  }
+.val-badge-warn    { background: rgba(249,226,175,.12); border-color: var(--yellow); color: var(--yellow); }
+.val-badge-error   { background: rgba(243,139,168,.12); border-color: var(--red);    color: var(--red);    }
+.val-badge-unknown { background: rgba(108,112,134,.12); border-color: #6c7086;       color: #6c7086;       }
+
 /* Prev/Next navigation */
 .page-nav {
   display: flex; justify-content: space-between;
@@ -765,8 +776,51 @@ def post_process_callouts(html):
 # ---------------------------------------------------------------------------
 # Main builder
 # ---------------------------------------------------------------------------
+def _load_validation(out_dir: Path) -> dict:
+    """Load validation.json from the parent docs/ directory (written by validate_docs.py)."""
+    # out_dir is docs/portal/; validation.json lives in docs/
+    vpath = out_dir.parent / "validation.json"
+    if not vpath.exists():
+        return {}
+    try:
+        import json as _json
+        return _json.loads(vpath.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+def _validation_badge_html(md_filename: str, val_data: dict) -> str:
+    """
+    Return an HTML banner to prepend to the page body.
+    Green = verified, Yellow = warnings, Red = errors, Grey = not validated.
+    """
+    per_page = val_data.get("per_page", {})
+    info = per_page.get(md_filename)
+    if not info:
+        return (
+            '<div class="val-badge val-badge-unknown" title="Not yet validated against source code">'
+            '&#9679; Not validated</div>'
+        )
+    errs = info.get("errors", 0)
+    warns = info.get("warnings", 0)
+    if errs > 0:
+        label = f"&#10006; {errs} error{'s' if errs != 1 else ''}"
+        if warns:
+            label += f", {warns} warning{'s' if warns != 1 else ''}"
+        return f'<div class="val-badge val-badge-error" title="Documentation accuracy issues found">{label}</div>'
+    if warns > 0:
+        return (
+            f'<div class="val-badge val-badge-warn" title="{warns} warning(s) — review recommended">'
+            f'&#9888; {warns} warning{"s" if warns != 1 else ""}</div>'
+        )
+    return '<div class="val-badge val-badge-ok" title="Verified against source code">&#10003; Verified</div>'
+
+
 def build(src_dir: Path, out_dir: Path):
     out_dir.mkdir(parents=True, exist_ok=True)
+
+    # Load validation data (may be empty if validate_docs.py hasn't run yet)
+    val_data = _load_validation(out_dir)
 
     # Collect source files
     md_files = sorted(src_dir.glob("*.md"))
@@ -813,6 +867,10 @@ def build(src_dir: Path, out_dir: Path):
 
         toc_html = build_toc(body_html)
         sidebar_html = build_sidebar(pages, page["key"], GROUPS)
+
+        # Prepend validation badge
+        badge = _validation_badge_html(page["src"].name, val_data)
+        body_html = badge + "\n" + body_html
 
         prev_page = pages[i - 1] if i > 0 else None
         next_page = pages[i + 1] if i < len(pages) - 1 else None

@@ -273,6 +273,17 @@ td code { font-size: .85em; }
 .callout-warning .callout-title { color: var(--yellow); }
 .callout-danger  .callout-title { color: var(--red);    }
 
+/* Validation badges */
+.val-badge {
+  display: inline-block; font-size: .78em; font-weight: 600;
+  padding: 4px 12px; border-radius: 20px; margin-bottom: 18px;
+  border: 1px solid transparent; letter-spacing: .02em;
+}
+.val-badge-ok      { background: rgba(166,227,161,.12); border-color: var(--green);  color: var(--green);  }
+.val-badge-warn    { background: rgba(249,226,175,.12); border-color: var(--yellow); color: var(--yellow); }
+.val-badge-error   { background: rgba(243,139,168,.12); border-color: var(--red);    color: var(--red);    }
+.val-badge-unknown { background: rgba(108,112,134,.12); border-color: #6c7086;       color: #6c7086;       }
+
 /* Prev/Next navigation */
 .page-nav {
   display: flex; justify-content: space-between;
@@ -430,7 +441,8 @@ td code { font-size: .85em; }
 <main class="content">
   <div class="content-inner">
     <nav class="breadcrumb"><a href="index.html">Docs</a><span class="breadcrumb-sep">›</span><span>Backend Architecture</span></nav>
-    <h1 id="06-backend-architecture">06 — Backend Architecture</h1>
+    <div class="val-badge val-badge-error" title="Documentation accuracy issues found">&#10006; 2 errors, 15 warnings</div>
+<h1 id="06-backend-architecture">06 — Backend Architecture</h1>
 <p><strong>Vibrante-Node v2.0.0 — Technical Reference</strong></p>
 <p>This document describes the execution engine, graph model, node registry, and all supporting subsystems that make up the Vibrante-Node backend. It is written for contributors, plugin authors, and advanced users who need to understand what happens between the moment the user clicks <strong>Run</strong> and the moment the last node finishes.</p>
 <hr />

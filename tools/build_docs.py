@@ -207,11 +207,20 @@ with open(os.path.join(DOCS_OUT, "index.html"), "w", encoding="utf-8") as f:
 print("  OK: index.html")
 print(f"\nDocs written to: {DOCS_OUT}")
 
-# Build the full documentation portal (docs_src/ → docs/portal/)
+# Run documentation validation (docs_src/ ↔ source code)
 import subprocess, sys
-portal_script = os.path.join(os.path.dirname(__file__), "build_docs_portal.py")
 docs_src = os.path.join(ROOT, "docs_src")
 portal_out = os.path.join(ROOT, "docs", "portal")
+validate_script = os.path.join(os.path.dirname(__file__), "validate_docs.py")
+if os.path.isdir(docs_src):
+    print("\nValidating documentation against source code...")
+    subprocess.run(
+        [sys.executable, validate_script, "--src", docs_src, "--out", os.path.join(ROOT, "docs")],
+        check=False,
+    )
+
+# Build the full documentation portal (docs_src/ → docs/portal/)
+portal_script = os.path.join(os.path.dirname(__file__), "build_docs_portal.py")
 if os.path.isdir(docs_src):
     print("\nBuilding documentation portal...")
     subprocess.run([sys.executable, portal_script, "--src", docs_src, "--out", portal_out], check=False)

@@ -1,0 +1,1853 @@
+{
+  "total_findings": 227,
+  "errors": 16,
+  "warnings": 211,
+  "example_summary": {
+    "ok": 312,
+    "integration": 34,
+    "syntax_error": 11,
+    "json_error": 4,
+    "skip": 102
+  },
+  "per_page": {
+    "04_workflow_tutorials.md": {
+      "ok": true,
+      "errors": 0,
+      "warnings": 43
+    },
+    "03_user_guide.md": {
+      "ok": false,
+      "errors": 1,
+      "warnings": 10
+    },
+    "07_frontend_architecture.md": {
+      "ok": false,
+      "errors": 1,
+      "warnings": 17
+    },
+    "11_troubleshooting.md": {
+      "ok": false,
+      "errors": 1,
+      "warnings": 8
+    },
+    "09_advanced_topics.md": {
+      "ok": false,
+      "errors": 4,
+      "warnings": 22
+    },
+    "13_general_purpose_automation.md": {
+      "ok": false,
+      "errors": 1,
+      "warnings": 1
+    },
+    "06_backend_architecture.md": {
+      "ok": false,
+      "errors": 2,
+      "warnings": 15
+    },
+    "12_examples_library.md": {
+      "ok": true,
+      "errors": 0,
+      "warnings": 19
+    },
+    "01_introduction.md": {
+      "ok": true,
+      "errors": 0,
+      "warnings": 0
+    },
+    "02_getting_started.md": {
+      "ok": true,
+      "errors": 0,
+      "warnings": 7
+    },
+    "08_api_reference.md": {
+      "ok": false,
+      "errors": 3,
+      "warnings": 31
+    },
+    "14_custom_nodes_api.md": {
+      "ok": true,
+      "errors": 0,
+      "warnings": 18
+    },
+    "05_node_development.md": {
+      "ok": false,
+      "errors": 3,
+      "warnings": 11
+    },
+    "10_contribution_guide.md": {
+      "ok": true,
+      "errors": 0,
+      "warnings": 9
+    }
+  },
+  "findings": [
+    {
+      "severity": "error",
+      "category": "signal",
+      "message": "`NetworkExecutor.node_results` documented but not found in source (checked methods, signals, attributes). Known signals: ['execution_finished', 'node_error', 'node_finished', 'node_log', 'node_output', 'node_started']",
+      "file": "06_backend_architecture.md",
+      "line": 445
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `out_1` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "02_getting_started.md",
+      "line": 348
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `out_2` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "02_getting_started.md",
+      "line": 348
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `out_1` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "02_getting_started.md",
+      "line": 370
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `my_first_workflow` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "02_getting_started.md",
+      "line": 403
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `true_out` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "02_getting_started.md",
+      "line": 447
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `false_out` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "02_getting_started.md",
+      "line": 447
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `instance_id` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "02_getting_started.md",
+      "line": 577
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `icon_path` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "03_user_guide.md",
+      "line": 93
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `text_area` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "03_user_guide.md",
+      "line": 120
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `file_save` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "03_user_guide.md",
+      "line": 127
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `out_1` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "03_user_guide.md",
+      "line": 238
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `out_2` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "03_user_guide.md",
+      "line": 238
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `create_geo` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "03_user_guide.md",
+      "line": 270
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `delete_geo` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "03_user_guide.md",
+      "line": 270
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `node_geo_info` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "03_user_guide.md",
+      "line": 270
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `init_priority` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "03_user_guide.md",
+      "line": 738
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `init_priority` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "03_user_guide.md",
+      "line": 833
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `folder_path` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 43
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `file_list` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 43
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `file_list` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 48
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `loop_exec_out` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 51
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `current_item` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 51
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `current_item` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 56
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `loop_exec_in` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 97
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `folder_path` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 105
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `file_path` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 127
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `json_out` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 166
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `file_path` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 166
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `exec_true` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 227
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `exec_false` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 228
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `exec_true` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 232
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `exec_false` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 236
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `var_name` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 288
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `current_item` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 295
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `current_index` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 296
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `loop_exec_out` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 297
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `var_name` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 310
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `current_list` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 310
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `current_list` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 311
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `appended_list` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 311
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `var_name` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 312
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `appended_list` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 312
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `loop_exec_out` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 314
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `loop_exec_in` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 314
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `final_list` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 319
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `scene_path` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 371
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `log_output` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 408
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `error_message` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 409
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `exec_true` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 414
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `exec_false` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 415
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `error_message` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 415
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `my_box` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 502
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `my_xform` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 502
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `my_xform` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 502
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `project_path` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 536
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `port_name` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 710
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `port_name` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 712
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `final_name` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 712
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `raw_name` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 723
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `final_name` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "04_workflow_tutorials.md",
+      "line": 724
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `log_success` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "05_node_development.md",
+      "line": 50
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `v_nodes_dir` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "05_node_development.md",
+      "line": 86
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `text_area` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "05_node_development.md",
+      "line": 198
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `file_save` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "05_node_development.md",
+      "line": 205
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `exec_step` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "05_node_development.md",
+      "line": 334
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `exec_step` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "05_node_development.md",
+      "line": 335
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `v_nodes_dir` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "05_node_development.md",
+      "line": 603
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `restore_from_parameters` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "05_node_development.md",
+      "line": 642
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `on_parameter_changed` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "05_node_development.md",
+      "line": 643
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `icon_path` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "05_node_development.md",
+      "line": 673
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `icon_path` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "05_node_development.md",
+      "line": 681
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `run_forever` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "06_backend_architecture.md",
+      "line": 76
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `set_output` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "06_backend_architecture.md",
+      "line": 272
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `exec_step` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "06_backend_architecture.md",
+      "line": 279
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `break_condition` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "06_backend_architecture.md",
+      "line": 288
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `break_condition` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "06_backend_architecture.md",
+      "line": 288
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `exec_loop_body` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "06_backend_architecture.md",
+      "line": 293
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `break_condition` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "06_backend_architecture.md",
+      "line": 294
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `inner_errors` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "06_backend_architecture.md",
+      "line": 406
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `inner_errors` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "06_backend_architecture.md",
+      "line": 406
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `to_thread` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "06_backend_architecture.md",
+      "line": 439
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `from_port` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "06_backend_architecture.md",
+      "line": 465
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `node_instances` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "06_backend_architecture.md",
+      "line": 501
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `node_instances` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "06_backend_architecture.md",
+      "line": 510
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `break_condition` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "06_backend_architecture.md",
+      "line": 543
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `python_code` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "06_backend_architecture.md",
+      "line": 596
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `sticky_notes` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "07_frontend_architecture.md",
+      "line": 155
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `redo_stack` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "07_frontend_architecture.md",
+      "line": 158
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `file_path` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "07_frontend_architecture.md",
+      "line": 161
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `grid_pen` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "07_frontend_architecture.md",
+      "line": 165
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `redo_stack` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "07_frontend_architecture.md",
+      "line": 169
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `redo_stack` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "07_frontend_architecture.md",
+      "line": 171
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `scene_pos` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "07_frontend_architecture.md",
+      "line": 183
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `to_port` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "07_frontend_architecture.md",
+      "line": 377
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `scene_pos` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "07_frontend_architecture.md",
+      "line": 428
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `instance_id` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "07_frontend_architecture.md",
+      "line": 592
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `init_priority` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "07_frontend_architecture.md",
+      "line": 592
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `to_port` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "07_frontend_architecture.md",
+      "line": 593
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `sticky_notes` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "07_frontend_architecture.md",
+      "line": 594
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `instance_id` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "07_frontend_architecture.md",
+      "line": 604
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `port_name` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "07_frontend_architecture.md",
+      "line": 604
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `node_selected` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "07_frontend_architecture.md",
+      "line": 688
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `error_line` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "07_frontend_architecture.md",
+      "line": 767
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `icon_path` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "08_api_reference.md",
+      "line": 46
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `parameter_types` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "08_api_reference.md",
+      "line": 56
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `init_only` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "08_api_reference.md",
+      "line": 182
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `node_instances` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "08_api_reference.md",
+      "line": 198
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `ignore_ports` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "08_api_reference.md",
+      "line": 294
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `last_error` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "08_api_reference.md",
+      "line": 333
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `v_nodes_dir` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "08_api_reference.md",
+      "line": 355
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `load_all` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "08_api_reference.md",
+      "line": 357
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `last_error` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "08_api_reference.md",
+      "line": 381
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `python_code` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "08_api_reference.md",
+      "line": 406
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `instance_id` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "08_api_reference.md",
+      "line": 529
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `init_priority` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "08_api_reference.md",
+      "line": 535
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `from_node` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "08_api_reference.md",
+      "line": 563
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `instance_id` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "08_api_reference.md",
+      "line": 563
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `from_port` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "08_api_reference.md",
+      "line": 564
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `to_node` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "08_api_reference.md",
+      "line": 565
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `instance_id` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "08_api_reference.md",
+      "line": 565
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `to_port` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "08_api_reference.md",
+      "line": 566
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `is_exec` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "08_api_reference.md",
+      "line": 567
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `from_port` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "08_api_reference.md",
+      "line": 571
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `to_port` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "08_api_reference.md",
+      "line": 571
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `icon_path` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "08_api_reference.md",
+      "line": 620
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `python_code` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "08_api_reference.md",
+      "line": 624
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `set_parm` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "08_api_reference.md",
+      "line": 1059
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `from_node` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "08_api_reference.md",
+      "line": 1098
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `to_node` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "08_api_reference.md",
+      "line": 1098
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `input_idx` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "08_api_reference.md",
+      "line": 1099
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `frame_range` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "08_api_reference.md",
+      "line": 1164
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `load_project` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "08_api_reference.md",
+      "line": 1438
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `show_ui` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "08_api_reference.md",
+      "line": 1439
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `icon_path` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "08_api_reference.md",
+      "line": 1492
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `v_nodes_dir` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "09_advanced_topics.md",
+      "line": 31
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `v_nodes_dir` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "09_advanced_topics.md",
+      "line": 54
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `v_nodes_dir` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "09_advanced_topics.md",
+      "line": 76
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `v_scripts_path` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "09_advanced_topics.md",
+      "line": 91
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `acme_get_asset` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "09_advanced_topics.md",
+      "line": 104
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `get_asset` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "09_advanced_topics.md",
+      "line": 104
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `icon_path` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "09_advanced_topics.md",
+      "line": 106
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `python_code` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "09_advanced_topics.md",
+      "line": 109
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `v_nodes_dir` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "09_advanced_topics.md",
+      "line": 241
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `v_nodes_dir` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "09_advanced_topics.md",
+      "line": 401
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `v_scripts_path` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "09_advanced_topics.md",
+      "line": 402
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `frame_range` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "09_advanced_topics.md",
+      "line": 426
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `python_code` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "09_advanced_topics.md",
+      "line": 930
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `v_nodes_dir` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "09_advanced_topics.md",
+      "line": 943
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `v_nodes_dir` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "09_advanced_topics.md",
+      "line": 947
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `v_nodes_dir` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "09_advanced_topics.md",
+      "line": 948
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `default_factory` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "09_advanced_topics.md",
+      "line": 969
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `init_priority` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "09_advanced_topics.md",
+      "line": 976
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `sticky_notes` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "09_advanced_topics.md",
+      "line": 977
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `is_exec` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "09_advanced_topics.md",
+      "line": 980
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `python_code` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "09_advanced_topics.md",
+      "line": 1111
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `python_code` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "09_advanced_topics.md",
+      "line": 1111
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `noun_past_tense` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "10_contribution_guide.md",
+      "line": 204
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `action_request` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "10_contribution_guide.md",
+      "line": 205
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `save_requested` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "10_contribution_guide.md",
+      "line": 205
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `run_requested` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "10_contribution_guide.md",
+      "line": 205
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `python_code` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "10_contribution_guide.md",
+      "line": 294
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `python_code` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "10_contribution_guide.md",
+      "line": 296
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `test_init` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "10_contribution_guide.md",
+      "line": 557
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `test_execute` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "10_contribution_guide.md",
+      "line": 557
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `v_nodes_dir` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "10_contribution_guide.md",
+      "line": 695
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `python_code` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "11_troubleshooting.md",
+      "line": 188
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `python_code` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "11_troubleshooting.md",
+      "line": 189
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `v_nodes_dir` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "11_troubleshooting.md",
+      "line": 209
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `python_code` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "11_troubleshooting.md",
+      "line": 227
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `open_scene` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "11_troubleshooting.md",
+      "line": 382
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `port_name` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "11_troubleshooting.md",
+      "line": 467
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `exec_true` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "11_troubleshooting.md",
+      "line": 498
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `python_code` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "11_troubleshooting.md",
+      "line": 654
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `ignore_case` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "12_examples_library.md",
+      "line": 92
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `match_count` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "12_examples_library.md",
+      "line": 93
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `folder_path` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "12_examples_library.md",
+      "line": 321
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `file_list` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "12_examples_library.md",
+      "line": 324
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `smtp_host` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "12_examples_library.md",
+      "line": 414
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `smtp_port` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "12_examples_library.md",
+      "line": 414
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `use_tls` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "12_examples_library.md",
+      "line": 415
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `db_path` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "12_examples_library.md",
+      "line": 493
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `input_path` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "12_examples_library.md",
+      "line": 590
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `output_path` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "12_examples_library.md",
+      "line": 591
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `api_key` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "12_examples_library.md",
+      "line": 697
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `folder_path` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "12_examples_library.md",
+      "line": 801
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `new_files` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "12_examples_library.md",
+      "line": 801
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `watch_seconds` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "12_examples_library.md",
+      "line": 801
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `display_sop` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "12_examples_library.md",
+      "line": 899
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `geo_path` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "12_examples_library.md",
+      "line": 899
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `asset_names` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "12_examples_library.md",
+      "line": 1003
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `entity_type` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "12_examples_library.md",
+      "line": 1004
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `publish_count` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "12_examples_library.md",
+      "line": 1005
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `should_continue` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "13_general_purpose_automation.md",
+      "line": 194
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `icon_path` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "14_custom_nodes_api.md",
+      "line": 49
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `parameter_types` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "14_custom_nodes_api.md",
+      "line": 60
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `set_output` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "14_custom_nodes_api.md",
+      "line": 475
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `set_output` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "14_custom_nodes_api.md",
+      "line": 605
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `icon_path` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "14_custom_nodes_api.md",
+      "line": 751
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `python_code` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "14_custom_nodes_api.md",
+      "line": 755
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `python_code` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "14_custom_nodes_api.md",
+      "line": 792
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `exec_success` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "14_custom_nodes_api.md",
+      "line": 934
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `text_area` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "14_custom_nodes_api.md",
+      "line": 1002
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `file_save` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "14_custom_nodes_api.md",
+      "line": 1002
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `text_area` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "14_custom_nodes_api.md",
+      "line": 1016
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `file_save` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "14_custom_nodes_api.md",
+      "line": 1023
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `icon_path` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "14_custom_nodes_api.md",
+      "line": 1084
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `python_code` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "14_custom_nodes_api.md",
+      "line": 1091
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `python_code` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "14_custom_nodes_api.md",
+      "line": 1093
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `v_nodes_dir` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "14_custom_nodes_api.md",
+      "line": 1104
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `v_nodes_dir` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "14_custom_nodes_api.md",
+      "line": 1120
+    },
+    {
+      "severity": "warning",
+      "category": "node",
+      "message": "Node `last_error` mentioned in docs but not found in nodes/ or builtins.",
+      "file": "14_custom_nodes_api.md",
+      "line": 1165
+    },
+    {
+      "severity": "error",
+      "category": "example",
+      "message": "JSON parse error in code block: Expecting property name enclosed in double quotes: line 7 column 27 (char 156)",
+      "file": "03_user_guide.md",
+      "line": 762
+    },
+    {
+      "severity": "error",
+      "category": "example",
+      "message": "Python syntax error in code block: expected an indented block after 'if' statement on line 1 (05_node_development.md, line 2) (block-relative line 2)",
+      "file": "05_node_development.md",
+      "line": 483
+    },
+    {
+      "severity": "error",
+      "category": "example",
+      "message": "JSON parse error in code block: Extra data: line 1 column 12 (char 11)",
+      "file": "05_node_development.md",
+      "line": 677
+    },
+    {
+      "severity": "error",
+      "category": "example",
+      "message": "JSON parse error in code block: Expecting property name enclosed in double quotes: line 1 column 50 (char 49)",
+      "file": "05_node_development.md",
+      "line": 870
+    },
+    {
+      "severity": "error",
+      "category": "example",
+      "message": "Python syntax error in code block: ':' expected after dictionary key (06_backend_architecture.md, line 3) (block-relative line 3)",
+      "file": "06_backend_architecture.md",
+      "line": 447
+    },
+    {
+      "severity": "error",
+      "category": "example",
+      "message": "JSON parse error in code block: Expecting property name enclosed in double quotes: line 4 column 72 (char 101)",
+      "file": "07_frontend_architecture.md",
+      "line": 128
+    },
+    {
+      "severity": "error",
+      "category": "example",
+      "message": "Python syntax error in code block: invalid syntax (08_api_reference.md, line 2) (block-relative line 2)",
+      "file": "08_api_reference.md",
+      "line": 104
+    },
+    {
+      "severity": "error",
+      "category": "example",
+      "message": "Python syntax error in code block: invalid syntax (08_api_reference.md, line 1) (block-relative line 1)",
+      "file": "08_api_reference.md",
+      "line": 138
+    },
+    {
+      "severity": "error",
+      "category": "example",
+      "message": "Python syntax error in code block: invalid syntax (08_api_reference.md, line 1) (block-relative line 1)",
+      "file": "08_api_reference.md",
+      "line": 947
+    },
+    {
+      "severity": "error",
+      "category": "example",
+      "message": "Python syntax error in code block: expected an indented block after function definition on line 17 (09_advanced_topics.md, line 18) (block-relative line 18)",
+      "file": "09_advanced_topics.md",
+      "line": 281
+    },
+    {
+      "severity": "error",
+      "category": "example",
+      "message": "Python syntax error in code block: positional argument follows keyword argument (09_advanced_topics.md, line 12) (block-relative line 12)",
+      "file": "09_advanced_topics.md",
+      "line": 753
+    },
+    {
+      "severity": "error",
+      "category": "example",
+      "message": "Python syntax error in code block: invalid syntax. Perhaps you forgot a comma? (09_advanced_topics.md, line 2) (block-relative line 2)",
+      "file": "09_advanced_topics.md",
+      "line": 772
+    },
+    {
+      "severity": "error",
+      "category": "example",
+      "message": "Python syntax error in code block: expected an indented block after 'if' statement on line 2 (09_advanced_topics.md, line 3) (block-relative line 3)",
+      "file": "09_advanced_topics.md",
+      "line": 1084
+    },
+    {
+      "severity": "error",
+      "category": "example",
+      "message": "Python syntax error in code block: invalid syntax. Perhaps you forgot a comma? (11_troubleshooting.md, line 6) (block-relative line 6)",
+      "file": "11_troubleshooting.md",
+      "line": 400
+    },
+    {
+      "severity": "error",
+      "category": "example",
+      "message": "Python syntax error in code block: invalid syntax (13_general_purpose_automation.md, line 1) (block-relative line 1)",
+      "file": "13_general_purpose_automation.md",
+      "line": 953
+    }
+  ],
+  "known_node_ids": [
+    "Console Sink",
+    "Data Processor",
+    "Dropdown_Selector",
+    "File Loader",
+    "For Each",
+    "Get Variable",
+    "List Append",
+    "Sequencer",
+    "Set Variable",
+    "Two Way Switch",
+    "While Loop",
+    "add_integers",
+    "blender_action_bake_animation",
+    "blender_action_custom",
+    "blender_action_export_alembic",
+    "blender_action_export_fbx",
+    "blender_action_export_gltf",
+    "blender_action_export_obj",
+    "blender_action_export_usd",
+    "blender_action_import_alembic",
+    "blender_action_import_fbx",
+    "blender_action_import_gltf",
+    "blender_action_import_obj",
+    "blender_action_new_blend",
+    "blender_action_open_blend",
+    "blender_action_render",
+    "blender_action_save_blend",
+    "blender_action_scene_info",
+    "blender_action_set_frame_range",
+    "blender_action_set_render_settings",
+    "blender_get_action_result",
+    "blender_headless",
+    "compare",
+    "console_print",
+    "create_dictionary",
+    "create_folder",
+    "create_list",
+    "deadline_blender_submit",
+    "deadline_houdini_submit",
+    "deadline_job_status",
+    "deadline_maya_submit",
+    "delay_timer",
+    "example_random_float",
+    "file_append",
+    "file_write",
+    "for_loop",
+    "get_dict_value",
+    "get_list_item",
+    "group_in",
+    "group_node",
+    "group_out",
+    "houdini_action_bake_animation",
+    "houdini_action_custom",
+    "houdini_action_export_alembic",
+    "houdini_action_export_camera_alembic",
+    "houdini_action_export_fbx",
+    "houdini_action_import_alembic",
+    "houdini_action_import_camera",
+    "houdini_action_import_fbx",
+    "houdini_action_import_obj",
+    "houdini_action_new_hip",
+    "houdini_action_open_hip",
+    "houdini_action_save_hip",
+    "houdini_action_scene_info",
+    "houdini_action_set_frame_range",
+    "houdini_get_action_result",
+    "houdini_headless",
+    "houdini_scene_snapshot",
+    "if_condition",
+    "list_directory",
+    "list_item_picker",
+    "list_length",
+    "logical_gate",
+    "loop_body",
+    "math_add",
+    "math_divide",
+    "math_modulo",
+    "math_multiply",
+    "math_subtract",
+    "maya_action_assign_material",
+    "maya_action_bake_animation",
+    "maya_action_create_render_layer",
+    "maya_action_custom",
+    "maya_action_export_alembic",
+    "maya_action_export_camera_alembic",
+    "maya_action_export_fbx",
+    "maya_action_import_alembic",
+    "maya_action_import_camera",
+    "maya_action_import_fbx",
+    "maya_action_import_obj",
+    "maya_action_list_references",
+    "maya_action_new_scene",
+    "maya_action_open_scene",
+    "maya_action_playblast",
+    "maya_action_reference_alembic",
+    "maya_action_reference_scene",
+    "maya_action_save_scene",
+    "maya_action_scene_info",
+    "maya_action_set_aovs",
+    "maya_action_set_frame_range",
+    "maya_action_set_render_settings",
+    "maya_get_action_result",
+    "maya_headless",
+    "message_node",
+    "prism_add_integration",
+    "prism_build_entity",
+    "prism_change_project",
+    "prism_core_info",
+    "prism_core_init",
+    "prism_create_category",
+    "prism_create_entity",
+    "prism_create_playblast",
+    "prism_create_product_version",
+    "prism_create_project",
+    "prism_create_scene_from_preset",
+    "prism_eval",
+    "prism_get_aovs",
+    "prism_get_asset_by_name",
+    "prism_get_asset_type_by_name",
+    "prism_get_asset_types_by_project",
+    "prism_get_assets_by_project",
+    "prism_get_assets_by_type",
+    "prism_get_config",
+    "prism_get_current_scene",
+    "prism_get_departments",
+    "prism_get_entity_info",
+    "prism_get_entity_path",
+    "prism_get_export_path",
+    "prism_get_latest_product_path",
+    "prism_get_media",
+    "prism_get_media_versions",
+    "prism_get_plugin",
+    "prism_get_preset_scenes",
+    "prism_get_product_versions",
+    "prism_get_products",
+    "prism_get_project_by_name",
+    "prism_get_project_config_path",
+    "prism_get_scene_files",
+    "prism_get_scene_path",
+    "prism_get_sequence_by_project",
+    "prism_get_sequences_by_project",
+    "prism_get_shot_by_name",
+    "prism_get_shot_by_sequence",
+    "prism_get_shot_info",
+    "prism_get_shots",
+    "prism_get_shots_by_project_sequence",
+    "prism_get_shots_by_sequence",
+    "prism_get_tasks",
+    "prism_import_product",
+    "prism_list_plugins",
+    "prism_list_projects",
+    "prism_login_token",
+    "prism_monkey_patch",
+    "prism_open_scene",
+    "prism_popup",
+    "prism_register_callback",
+    "prism_save_scene_version",
+    "prism_send_cmd",
+    "prism_set_config",
+    "prism_studio_assign_project",
+    "prism_trigger_callback",
+    "prism_usd_department_layer_path",
+    "prism_usd_entity_path",
+    "prism_usd_sublayer_path",
+    "prism_usd_update_department_layer",
+    "prism_usd_update_sublayer",
+    "python_script",
+    "set_dict_value",
+    "string_concat",
+    "string_length",
+    "string_lowercase",
+    "string_replace",
+    "string_split",
+    "string_uppercase",
+    "variable_node",
+    "while_loop"
+  ]
+}
