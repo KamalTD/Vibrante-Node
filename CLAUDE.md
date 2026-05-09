@@ -718,9 +718,12 @@ No changes to `engine.py` or any signal signatures.
 **Feature**: Select 2+ connected nodes and press **Ctrl+Shift+G** (Edit → Group Selection) to collapse them into a single `GroupNode` that stores the subgraph as an embedded `WorkflowModel`. Double-click the GroupNode to open the subgraph in a new tab (read-only view — edits there don't propagate back yet).
 
 **Node classes** (`src/nodes/builtins/group_node.py`):
-- `GroupInNode` (`group_in`): `use_exec=False`; input `port_name` (text widget); output `value`. Returns `{"value": self.parameters.get("value")}`.
-- `GroupOutNode` (`group_out`): `use_exec=False`; inputs `port_name` (text widget) + `value`; output `value`. Returns `{"value": inputs.get("value")}`.
-- `GroupNode` (`group_node`): `use_exec=True`; stores `__workflow__` (WorkflowModel dict), `__port_defs__` (list of `{name, type, is_input}`), `__name__` (display name) in `self.parameters`. Dynamic ports are re-added at load time via `restore_from_parameters()`.
+- `GroupInNode` (`group_in`): `use_exec=False`; input `port_name` (text widget); output `value`. Returns `{"value": self.parameters.get("_injected_value")}`. **Critical**: injection uses `parameters["_injected_value"]`, not `parameters["value"]` — `value` is an output port and the engine's `clear_outputs()` resets it to `None` during node prep, before `execute()` is called.
+- `GroupOutNode` (`group_out`): `use_exec=True`; inputs `exec_in` + `port_name` (text widget) + `value`; outputs `exec_out` + `value`. Calls `set_output("exec_out", True)` so the inner exec chain can route explicitly through it. When no exec connection exists (legacy subgraphs), it runs as a data entry node — backward compatible.
+- `GroupNode` (`group_node`): `use_exec=True`; fixed ports `exec_in`, `exec_out` (success), `exec_fail` (failure); stores `__workflow__` (WorkflowModel dict), `__port_defs__` (list of `{name, type, is_input}`), `__name__` (display name) in `self.parameters`. Dynamic ports are re-added at load time via `restore_from_parameters()`.
+  - `exec_out` fires when the inner graph completes without an unhandled exception — regardless of semantic outcomes (e.g. a DCC node returning `success=False`). The inner graph is responsible for routing its own success/failure via exec pins.
+  - `exec_fail` fires **only** when the inner graph has an unhandled exception (a node threw and `node_error` was emitted). Wire downstream error-handling nodes here for catastrophic failures only.
+  - `group_out` values are read directly from the *source* node's `node_results` (not from `group_out` itself) to avoid a race where `group_out` executes as an entry node before the exec chain populates its value.
 
 **Registry registration** (`src/core/registry.py`):
 ```python
@@ -760,5 +763,6 @@ def mouseDoubleClickEvent(self, event):
 - Reads `group_widget.node_definition.parameters["__workflow__"]`
 - Validates as `WorkflowModel`
 - Calls `add_new_workflow(f"[{group_name}]")` → `view.scene().from_workflow_model(workflow_model)`
+- Sets `scene._sync_callback` — a closure that writes every change back to `group_widget.node_definition.parameters["__workflow__"]` and pushes the parent scene's history. Triggered by `push_history()` (user edits), `undo()`, and `redo()` on the subgraph scene. Subgraph tabs are now fully editable.
 
 **Keyboard shortcut conflict note**: Ctrl+G is already used by "Wrap in Backdrop" in `view.keyPressEvent`. Group Selection uses **Ctrl+Shift+G** instead.
