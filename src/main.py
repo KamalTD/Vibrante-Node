@@ -48,10 +48,13 @@ QPainter = QtGui.QPainter
 Qt = QtCore.Qt
 QTimer = QtCore.QTimer
 
+import signal
 import traceback
 
 def exception_hook(exctype, value, tb):
     """Global function to catch unhandled exceptions."""
+    if exctype is KeyboardInterrupt:
+        sys.exit(0)
     error_msg = "".join(traceback.format_exception(exctype, value, tb))
     print(error_msg)
     with open("crash.log", "w") as f:
@@ -62,7 +65,7 @@ sys.excepthook = exception_hook
 
 
 class SplashScreen(QSplashScreen):
-    VERSION = "v1.8.5"
+    VERSION = "v2.0.0"
     COPYRIGHT = "\u00a9 2026 Mahmoud Kamal - KamalTD"
 
     def __init__(self):
@@ -166,6 +169,14 @@ def main():
 
     # Close splash after a brief moment so the user sees 100%
     QTimer.singleShot(500, splash.close)
+
+    # Let Ctrl+C in the terminal exit cleanly instead of crashing into Qt's event loop.
+    signal.signal(signal.SIGINT, lambda *_: app.quit())
+    # Wake the Python interpreter every 200 ms so SIGINT is processed promptly.
+    _sigint_timer = QTimer()
+    _sigint_timer.setInterval(200)
+    _sigint_timer.timeout.connect(lambda: None)
+    _sigint_timer.start()
 
     print("Entering Event Loop...")
     sys.exit(exec_app(app))

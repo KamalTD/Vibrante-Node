@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Release Notes v2.0.0 — Vibrante-Node v2.0.0</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+       background: #1e1e2e; color: #cdd6f4; line-height: 1.7; }
+.sidebar { position: fixed; top: 0; left: 0; width: 220px; height: 100vh;
+           background: #181825; overflow-y: auto; padding: 20px 0; z-index: 100; }
+.sidebar h2 { font-size: 13px; color: #6c7086; text-transform: uppercase;
+              letter-spacing: .08em; padding: 0 18px 10px; }
+.sidebar a  { display: block; padding: 6px 18px; color: #a6adc8; text-decoration: none;
+              font-size: 13px; border-left: 3px solid transparent; transition: all .15s; }
+.sidebar a:hover, .sidebar a.active { color: #cba6f7; border-left-color: #cba6f7;
+                                       background: #1e1e2e; }
+.sidebar .nav-release { font-size: 12px; padding: 4px 18px; }
+.content { margin-left: 220px; max-width: 920px; padding: 40px 48px; }
+h1 { font-size: 2em; color: #cba6f7; border-bottom: 2px solid #313244; padding-bottom: 10px; margin: 28px 0 16px; }
+h2 { font-size: 1.45em; color: #89b4fa; margin: 32px 0 12px; }
+h3 { font-size: 1.15em; color: #94e2d5; margin: 22px 0 8px; }
+h4 { font-size: 1em; color: #f5c2e7; margin: 16px 0 6px; }
+p  { margin-bottom: 14px; color: #cdd6f4; }
+a  { color: #89b4fa; }
+ul, ol { margin: 10px 0 14px 22px; }
+li { margin-bottom: 5px; }
+code { background: #313244; color: #f38ba8; padding: 2px 6px; border-radius: 4px; font-size: .88em; font-family: 'Consolas','Courier New',monospace; }
+pre  { background: #181825; border: 1px solid #313244; border-radius: 8px;
+       padding: 18px 20px; overflow-x: auto; margin: 14px 0 20px; }
+pre code { background: none; color: #a6e3a1; padding: 0; font-size: .9em; }
+table { border-collapse: collapse; width: 100%; margin: 14px 0 20px; font-size: .92em; }
+th { background: #313244; color: #cba6f7; padding: 9px 14px; text-align: left; }
+td { border-top: 1px solid #313244; padding: 8px 14px; }
+tr:nth-child(even) td { background: #1e1e2e; }
+hr { border: none; border-top: 1px solid #313244; margin: 28px 0; }
+blockquote { border-left: 4px solid #6c7086; padding-left: 16px; color: #a6adc8; margin: 14px 0; }
+@media (max-width: 700px) { .sidebar { display: none; } .content { margin-left: 0; padding: 24px 18px; } }
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <h2>Vibrante-Node</h2>
+  <a href="USER_GUIDE.html">User Guide</a>
+<a href="NODE_BUILDER_API.html">Node Builder API</a>
+<a href="AUTOMATION_API.html">Automation API</a>
+<a href="DEVELOPER.html">Developer Documentation</a>
+<a href="DOCUMENTATION.html">Technical Feature List</a>
+  <hr style="border-color:#313244;margin:10px 18px">
+  <h2 style="margin-top:8px">Release Notes</h2>
+  <a class="nav-release" href="RELEASE_v2.0.0.html">Release Notes v2.0.0</a>
+<a class="nav-release" href="RELEASE_v1.8.5.html">Release Notes v1.8.5</a>
+<a class="nav-release" href="RELEASE_v1.8.4.html">Release Notes v1.8.4</a>
+<a class="nav-release" href="RELEASE_v1.8.3.html">Release Notes v1.8.3</a>
+<a class="nav-release" href="RELEASE_v1.8.2.html">Release Notes v1.8.2</a>
+<a class="nav-release" href="RELEASE_v1.8.1.html">Release Notes v1.8.1</a>
+<a class="nav-release" href="RELEASE_v1.8.0.html">Release Notes v1.8.0</a>
+<a class="nav-release" href="RELEASE_v1.7.0.html">Release Notes v1.7.0</a>
+<a class="nav-release" href="RELEASE_v1.6.1.html">Release Notes v1.6.1</a>
+<a class="nav-release" href="RELEASE_v1.6.0.html">Release Notes v1.6.0</a>
+<a class="nav-release" href="RELEASE_v1.5.0.html">Release Notes v1.5.0</a>
+<a class="nav-release" href="RELEASE_v1.4.0.html">Release Notes v1.4.0</a>
+<a class="nav-release" href="RELEASE_v1.3.0.html">Release Notes v1.3.0</a>
+<a class="nav-release" href="RELEASE_v1.2.0.html">Release Notes v1.2.0</a>
+<a class="nav-release" href="RELEASE_v1.1.5.html">Release Notes v1.1.5</a>
+<a class="nav-release" href="RELEASE_v1.1.0.html">Release Notes v1.1.0</a>
+<a class="nav-release" href="RELEASE_v1.0.5.html">Release Notes v1.0.5</a>
+  <hr style="border-color:#313244;margin:10px 18px">
+  <h2 style="margin-top:8px">On this page</h2>
+  <a href="#release-notes-vibrante-node-v200" style="padding-left:18px">Release Notes — Vibrante-Node v2.0.0</a>
+<a href="#overview" style="padding-left:18px">Overview</a>
+<a href="#new-features" style="padding-left:18px">New Features</a>
+<a href="#subgraph-group-node-ctrlshiftg" style="padding-left:32px">Subgraph / Group Node (Ctrl+Shift+G)</a>
+<a href="#live-wire-value-inspector" style="padding-left:32px">Live Wire Value Inspector</a>
+<a href="#autosave-crash-recovery" style="padding-left:32px">Autosave &amp; Crash Recovery</a>
+<a href="#recent-files-file-open-recent" style="padding-left:32px">Recent Files (File → Open Recent)</a>
+<a href="#canvas-search-bar-ctrlf" style="padding-left:32px">Canvas Search Bar (Ctrl+F)</a>
+<a href="#mini-map-ctrlm" style="padding-left:32px">Mini-map (Ctrl+M)</a>
+<a href="#node-execution-timing" style="padding-left:32px">Node Execution Timing</a>
+<a href="#bug-fixes" style="padding-left:18px">Bug Fixes</a>
+<a href="#groupnode-exec_fail-false-positive" style="padding-left:32px">GroupNode: exec_fail False Positive</a>
+<a href="#groupnode-injected-input-values-lost-on-exec-ports" style="padding-left:32px">GroupNode: Injected Input Values Lost on Exec Ports</a>
+<a href="#groupnode-inner-node-logs-discarded" style="padding-left:32px">GroupNode: Inner Node Logs Discarded</a>
+<a href="#groupnode-exec_out-not-forwarded-through-groupoutnode" style="padding-left:32px">GroupNode: exec_out Not Forwarded Through GroupOutNode</a>
+<a href="#groupnode-subgraph-edits-not-persisted" style="padding-left:32px">GroupNode: Subgraph Edits Not Persisted</a>
+<a href="#groupnode-error-group-node-has-no-internal-workflow-after-saveload" style="padding-left:32px">GroupNode: [ERROR] Group node has no internal workflow. After Save/Load</a>
+<a href="#keyboardinterrupt-crash-ctrlc-in-terminal" style="padding-left:32px">KeyboardInterrupt Crash (Ctrl+C in Terminal)</a>
+<a href="#keyboard-shortcuts" style="padding-left:18px">Keyboard Shortcuts</a>
+<a href="#upgrade-notes" style="padding-left:18px">Upgrade Notes</a>
+</nav>
+<main class="content">
+<h1 id="release-notes-vibrante-node-v200">Release Notes — Vibrante-Node v2.0.0</h1>
+<p><strong>Release date:</strong> 2026-05-10<br />
+<strong>Build:</strong> Python 3.10 / PyInstaller — Windows 64-bit</p>
+<hr />
+<h2 id="overview">Overview</h2>
+<p>v2.0.0 is a major feature release that introduces the Subgraph / Group Node system, Live Wire Inspector, Autosave &amp; Crash Recovery, Canvas Search, Mini-map, Recent Files, Node Execution Timing, and a Ctrl+C crash fix. It consolidates all v1.8.6, v1.8.7, v1.9.0, and post-1.9.0 work into a single stable release with a clean version number reflecting the scope of the changes.</p>
+<hr />
+<h2 id="new-features">New Features</h2>
+<h3 id="subgraph-group-node-ctrlshiftg">Subgraph / Group Node (Ctrl+Shift+G)</h3>
+<p>Select two or more connected nodes and press <strong>Ctrl+Shift+G</strong> (or Edit → Group Selection) to collapse them into a single <strong>GroupNode</strong> that stores the complete subgraph as an embedded workflow.</p>
+<ul>
+<li>The inner graph is preserved in full inside the collapsed node's parameters — saved and loaded transparently with the parent workflow.</li>
+<li><strong>Dynamic ports</strong> are created automatically from the boundary edges: one input per external-to-group connection, one output per group-to-external connection.</li>
+<li><strong>Double-click</strong> the GroupNode to open the subgraph in a new tab for live editing. Changes are written back to the parent GroupNode in real time (undo / redo included).</li>
+<li><code>exec_out</code> fires when the inner graph finishes without an unhandled exception.</li>
+<li><code>exec_fail</code> fires <strong>only</strong> on unhandled exceptions inside the inner graph — semantic failures (e.g. a DCC node returning <code>success=False</code>) are routed by the inner graph's own exec pins and do NOT trigger <code>exec_fail</code>.</li>
+<li>Inner node logs are forwarded through the GroupNode's logger so they appear in the main log panel.</li>
+<li><strong>Keyboard shortcut</strong>: <code>Ctrl+Shift+G</code> (Ctrl+G is reserved for Wrap in Backdrop).</li>
+</ul>
+<h3 id="live-wire-value-inspector">Live Wire Value Inspector</h3>
+<p>Hover over any connected wire during or after execution to see the last value that flowed through it as a tooltip (<code>port_name: repr(value)</code>, capped at 300 characters).</p>
+<ul>
+<li>Values persist after execution ends — inspect the final state of every wire without re-running.</li>
+<li>Values are cleared automatically at the start of each new execution run.</li>
+<li>Wire hit area is 12 px wide (up from 2 px) so wires are easy to hover.</li>
+</ul>
+<h3 id="autosave-crash-recovery">Autosave &amp; Crash Recovery</h3>
+<p>A <code>QTimer</code> fires every 2 minutes and writes all non-empty open tabs to <code>~/.vibrante_node_autosave.json</code>.</p>
+<ul>
+<li>On the next launch, if the autosave file exists, a restore dialog is offered.</li>
+<li>On a clean exit (<code>closeEvent</code>), the autosave file is deleted — the dialog only appears after a crash or force-close.</li>
+<li>Autosave is skipped during active execution to avoid capturing mid-run state.</li>
+</ul>
+<h3 id="recent-files-file-open-recent">Recent Files (File → Open Recent)</h3>
+<p>The File menu now has an <strong>Open Recent</strong> submenu listing the last 10 saved or loaded workflows.</p>
+<ul>
+<li>Files that no longer exist on disk are shown grayed-out (disabled).</li>
+<li><strong>Clear Recent Files</strong> wipes the list.</li>
+<li>The list is rebuilt each time the File menu opens so it is always current.</li>
+</ul>
+<h3 id="canvas-search-bar-ctrlf">Canvas Search Bar (Ctrl+F)</h3>
+<p>Press <strong>Ctrl+F</strong> (or Edit → Find in Canvas…) to open a floating search bar at the top of the canvas.</p>
+<ul>
+<li>Type to filter nodes by display name or <code>node_id</code>.</li>
+<li>The matched node is selected and the view pans to it.</li>
+<li><strong>Enter</strong> / <strong>▼</strong> cycles forward; <strong>Shift+Enter</strong> / <strong>▲</strong> cycles backward.</li>
+<li>Match counter shows "X / N". <strong>Escape</strong> closes.</li>
+</ul>
+<h3 id="mini-map-ctrlm">Mini-map (Ctrl+M)</h3>
+<p>A 200×150 px thumbnail of the full canvas is always visible in the bottom-right corner of each NodeView.</p>
+<ul>
+<li>A blue semi-transparent rectangle shows the current viewport position.</li>
+<li>Click or drag on the mini-map to pan the main view.</li>
+<li>Toggle with <strong>Ctrl+M</strong> or Window → Toggle Mini-map.</li>
+<li>Respects dark / light theme.</li>
+</ul>
+<h3 id="node-execution-timing">Node Execution Timing</h3>
+<p>The log panel now shows how long each node took to execute — e.g. <code>Node 'Get Asset' finished in 0.34s</code>.</p>
+<hr />
+<h2 id="bug-fixes">Bug Fixes</h2>
+<h3 id="groupnode-exec_fail-false-positive">GroupNode: <code>exec_fail</code> False Positive</h3>
+<p><code>exec_fail</code> previously fired whenever any inner node returned a result that looked like a failure (e.g. <code>maya_headless</code> returning <code>success=False</code>). This caused false-positive "Group inner execution reported failure" errors even when the inner graph handled the failure correctly via its own exec routing.</p>
+<p><strong>Fix</strong>: <code>exec_fail</code> now fires <strong>only</strong> when an unhandled exception propagates out of an inner node (i.e. <code>node_error</code> signal is emitted by the sub-executor). Semantic outcomes are the inner graph's responsibility.</p>
+<h3 id="groupnode-injected-input-values-lost-on-exec-ports">GroupNode: Injected Input Values Lost on Exec Ports</h3>
+<p>Group input values were injected into <code>GroupInNode.parameters["value"]</code>, but <code>"value"</code> is an output port — the engine's <code>clear_outputs()</code> call resets all output-port-named parameters to <code>None</code> before <code>execute()</code> runs. Input values were therefore always <code>None</code> by the time the inner node ran.</p>
+<p><strong>Fix</strong>: Injection now uses <code>parameters["_injected_value"]</code> (not a port name, immune to <code>clear_outputs()</code>). <code>GroupInNode.execute()</code> reads from this key.</p>
+<h3 id="groupnode-inner-node-logs-discarded">GroupNode: Inner Node Logs Discarded</h3>
+<p>All log messages from nodes inside a GroupNode were silently dropped — <code>sub_executor.node_log</code> was never connected.</p>
+<p><strong>Fix</strong>: <code>node_log</code> is connected to <code>_forward_log</code> which routes inner messages through the GroupNode's own logger with a <code>[node_label]</code> prefix.</p>
+<h3 id="groupnode-exec_out-not-forwarded-through-groupoutnode">GroupNode: <code>exec_out</code> Not Forwarded Through GroupOutNode</h3>
+<p><code>GroupOutNode</code> was <code>use_exec=False</code>, meaning the inner exec chain could not route through it. If an inner exec chain needed to flow node-A → group_out → (end), the exec pin on group_out was ignored.</p>
+<p><strong>Fix</strong>: <code>GroupOutNode</code> is now <code>use_exec=True</code> with <code>exec_in</code> / <code>exec_out</code> ports. It calls <code>set_output("exec_out", True)</code> so the inner exec chain routes correctly. Legacy subgraphs without exec wiring on group_out still work — the node runs as a data entry node when no exec connection is present.</p>
+<h3 id="groupnode-subgraph-edits-not-persisted">GroupNode: Subgraph Edits Not Persisted</h3>
+<p>Opening a subgraph in a new tab and editing it (adding nodes, changing connections) did not update the parent GroupNode. The <code>__workflow__</code> parameter was never written back.</p>
+<p><strong>Fix</strong>: <code>_open_subgraph_tab</code> sets a <code>_sync_callback</code> on the subgraph <code>NodeScene</code>. The callback fires on every <code>push_history()</code>, <code>undo()</code>, and <code>redo()</code> call and writes the current workflow dict back to <code>group_widget.node_definition.parameters["__workflow__"]</code>, then pushes the parent scene's history so the parent workflow is also saved correctly.</p>
+<h3 id="groupnode-error-group-node-has-no-internal-workflow-after-saveload">GroupNode: <code>[ERROR] Group node has no internal workflow.</code> After Save/Load</h3>
+<p>After editing a subgraph and saving the parent workflow, reloading it produced "Group node has no internal workflow." The <code>__workflow__</code> key was silently dropped from the JSON file.</p>
+<p><strong>Root cause</strong>: <code>push_history()</code> uses <code>model_dump()</code> which returns Python <code>UUID</code> objects. <code>_serializable_params()</code> calls <code>json.dumps()</code> internally — UUID objects raise <code>TypeError</code> and the entire <code>__workflow__</code> key is dropped silently.</p>
+<p><strong>Fix</strong>: <code>_sync_back</code> now calls <code>WorkflowModel.model_validate(workflow_dict).model_dump(mode='json')</code> before storing, converting all UUID objects to strings — matching the format <code>group_selection()</code> uses when first creating the GroupNode.</p>
+<h3 id="keyboardinterrupt-crash-ctrlc-in-terminal">KeyboardInterrupt Crash (Ctrl+C in Terminal)</h3>
+<p>Pressing Ctrl+C in the terminal while the app was running caused a traceback crash through <code>NodeView.event()</code> at the C++/Python boundary of Qt's event loop.</p>
+<p><strong>Fix</strong> (two layers):<br />
+1. <code>signal.signal(signal.SIGINT, lambda *_: app.quit())</code> in <code>main()</code> intercepts SIGINT before it reaches Qt's event loop.<br />
+2. A 200 ms <code>QTimer</code> wakes the Python interpreter periodically so the signal is processed promptly.<br />
+3. <code>NodeView.event()</code> wraps <code>super().event(event)</code> in <code>try/except KeyboardInterrupt</code> as a safety net, calling <code>app.quit()</code> for a clean shutdown.<br />
+4. <code>sys.excepthook</code> now exits cleanly on <code>KeyboardInterrupt</code> instead of writing a crash log.</p>
+<hr />
+<h2 id="keyboard-shortcuts">Keyboard Shortcuts</h2>
+<table>
+<thead>
+<tr>
+<th>Shortcut</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Ctrl+Shift+G</code></td>
+<td>Group / collapse selected nodes into a subgraph</td>
+</tr>
+<tr>
+<td><code>Ctrl+F</code></td>
+<td>Open canvas search bar</td>
+</tr>
+<tr>
+<td><code>Ctrl+M</code></td>
+<td>Toggle mini-map</td>
+</tr>
+<tr>
+<td><code>Tab</code></td>
+<td>Open node-search popup</td>
+</tr>
+<tr>
+<td><code>Ctrl+E</code></td>
+<td>Edit selected node in Node Builder</td>
+</tr>
+<tr>
+<td><code>Ctrl+R</code></td>
+<td>Reload selected node from disk</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+R</code></td>
+<td>Reload all nodes</td>
+</tr>
+<tr>
+<td><code>F5</code></td>
+<td>Run workflow</td>
+</tr>
+<tr>
+<td><code>F</code></td>
+<td>Focus selected nodes</td>
+</tr>
+<tr>
+<td><code>Ctrl+B</code></td>
+<td>Toggle bypass on selected nodes</td>
+</tr>
+<tr>
+<td><code>Ctrl+G</code></td>
+<td>Wrap selection in backdrop</td>
+</tr>
+<tr>
+<td><code>Ctrl+C</code> / <code>Ctrl+V</code></td>
+<td>Copy / Paste nodes</td>
+</tr>
+<tr>
+<td><code>Delete</code></td>
+<td>Delete selected items</td>
+</tr>
+<tr>
+<td><code>Ctrl+Wheel</code></td>
+<td>Zoom canvas</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="upgrade-notes">Upgrade Notes</h2>
+<ul>
+<li>Existing workflows containing GroupNodes saved before v2.0.0 may need to be re-grouped if the <code>__workflow__</code> key was previously lost due to the UUID serialization bug.</li>
+<li><code>QScintilla</code> remains a required dependency (<code>pip install QScintilla</code>). It is bundled in the Windows release build.</li>
+<li>No breaking API changes for custom nodes or automation scripts.</li>
+</ul>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var links = document.querySelectorAll('.sidebar a');
+    var headings = document.querySelectorAll('h1,h2,h3');
+    window.addEventListener('scroll', function() {
+        var cur = '';
+        headings.forEach(function(h) { if (h.offsetTop <= window.scrollY + 80) cur = h.id; });
+        links.forEach(function(a) {
+            a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+        });
+    });
+});
+</script>
+</body>
+</html>

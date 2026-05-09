@@ -41,6 +41,7 @@ class NodeScene(QGraphicsScene):
         self.history = []
         self.redo_stack = []
         self._undoing = False
+        self._sync_callback = None  # Set by MainWindow when this scene is a subgraph tab
 
         self.grid_size = 20
         self.grid_pen = QPen(QColor("#555555"), 0.5)
@@ -52,28 +53,34 @@ class NodeScene(QGraphicsScene):
         self.redo_stack.clear()
         if len(self.history) > 50: # Limit history
             self.history.pop(0)
+        if self._sync_callback:
+            self._sync_callback(snapshot)
 
     def undo(self):
         if not self.history: return
         self._undoing = True
         current = self.to_workflow_model().model_dump()
         self.redo_stack.append(current)
-        
+
         last_state = self.history.pop()
         model = WorkflowModel.model_validate(last_state)
         self.from_workflow_model(model)
         self._undoing = False
+        if self._sync_callback:
+            self._sync_callback(last_state)
 
     def redo(self):
         if not self.redo_stack: return
         self._undoing = True
         current = self.to_workflow_model().model_dump()
         self.history.append(current)
-        
+
         next_state = self.redo_stack.pop()
         model = WorkflowModel.model_validate(next_state)
         self.from_workflow_model(model)
         self._undoing = False
+        if self._sync_callback:
+            self._sync_callback(next_state)
 
     def _safe_async_call(self, coro):
         """Helper to call async methods from the UI thread using a background loop."""

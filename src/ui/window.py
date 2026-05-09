@@ -467,6 +467,7 @@ class MainWindow(QMainWindow):
 
         release_menu = help_menu.addMenu('Release Notes')
         for ver in [
+            ("v2.0.0", "RELEASE_v2.0.0.md"),
             ("v1.8.5", "RELEASE_v1.8.5.md"),
             ("v1.8.4", "RELEASE_v1.8.4.md"),
             ("v1.8.3", "RELEASE_v1.8.3.md"),
@@ -539,7 +540,7 @@ class MainWindow(QMainWindow):
         )
         
         QMessageBox.about(self, "About Vibrante-Node",
-            f"<h3>Vibrante-Node v1.8.5</h3>"
+            f"<h3>Vibrante-Node v2.0.0</h3>"
             f"<p>{description}</p>"
             f"<hr>"
             f"<p><b>Copyright &copy; 2026 Mahmoud Kamal - KamalTD</b></p>"
@@ -1638,7 +1639,23 @@ class MainWindow(QMainWindow):
         group_name = group_widget.node_definition.parameters.get("__name__", "Group")
         view = self.add_new_workflow(f"[{group_name}]")
         view.scene().from_workflow_model(workflow_model)
-        self.log_panel.log(f"Opened subgraph '{group_name}' in new tab.", "info")
+
+        # Sync every subgraph change back to the group node's __workflow__ so
+        # nodes/connections added inside the subgraph tab are persisted.
+        parent_scene = group_widget.scene()
+        def _sync_back(workflow_dict):
+            # push_history() uses model_dump() which yields UUID objects.
+            # _serializable_params() calls json.dumps() and silently drops keys
+            # that aren't serializable, so we must convert to JSON-safe strings
+            # (mode='json') — the same format group_selection() uses.
+            from src.core.models import WorkflowModel
+            json_dict = WorkflowModel.model_validate(workflow_dict).model_dump(mode='json')
+            group_widget.node_definition.parameters["__workflow__"] = json_dict
+            if parent_scene:
+                parent_scene.push_history()
+        view.scene()._sync_callback = _sync_back
+
+        self.log_panel.log(f"Opened subgraph '{group_name}' in new tab (editable).", "info")
 
     def _toggle_mini_map(self):
         view = self.get_current_view()

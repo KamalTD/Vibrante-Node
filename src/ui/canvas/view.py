@@ -84,7 +84,12 @@ class NodeView(QGraphicsView):
             if key_event.key() == Qt.Key_Tab:
                 self.show_node_search_popup()
                 return True
-        return super().event(event)
+        try:
+            return super().event(event)
+        except KeyboardInterrupt:
+            from src.utils.qt_compat import QtWidgets
+            QtWidgets.QApplication.instance().quit()
+            return False
 
     def mousePressEvent(self, event: QMouseEvent):
         # Ensure view has focus for keyboard shortcuts

@@ -22,6 +22,30 @@ The project focuses on flexibility, extensibility, and developer productivity, m
 
 ## 🌟 Latest Enhancements
 
+### 🗂️ Subgraph / Group Node — Ctrl+Shift+G (v2.0.0)
+Collapse any selection of connected nodes into a single **GroupNode** that stores the full subgraph internally:
+- **Double-click** to open the subgraph in a new, fully editable tab. Changes sync back to the parent workflow in real time (undo/redo included).
+- `exec_out` fires on success; `exec_fail` fires only on unhandled exceptions inside the subgraph.
+- Inner node logs are forwarded to the main log panel.
+
+### 🔭 Live Wire Value Inspector (v2.0.0)
+Hover over any connected wire after execution to see the last value that flowed through it as a tooltip. Values persist until the next run.
+
+### 💾 Autosave & Crash Recovery (v2.0.0)
+Every 2 minutes the app writes all open tabs to `~/.vibrante_node_autosave.json`. If the app crashes, a restore dialog is shown on the next launch. On a clean exit the autosave file is deleted automatically.
+
+### 🕐 Recent Files — File → Open Recent (v2.0.0)
+The File menu lists the last 10 saved or loaded workflows. Missing files are shown grayed-out. One click to reopen.
+
+### 🔍 Canvas Search Bar — Ctrl+F (v2.0.0)
+A floating search bar filters all nodes by name or ID. Enter / Shift+Enter cycles through matches; Escape closes.
+
+### 🗺️ Mini-map — Ctrl+M (v2.0.0)
+A 200×150 px thumbnail of the full canvas with a viewport indicator. Click or drag to pan. Toggle with Ctrl+M.
+
+### ⏱️ Node Execution Timing (v2.0.0)
+The log panel shows how long each node took — e.g. `Node 'Get Asset' finished in 0.34s`.
+
 ### 🛠️ Node Reload & Dev Workflow (v1.8.x)
 - **In-Place Node Reload**: Edit a node's JSON definition, then press `Ctrl+R` to reload all live instances on the canvas — ports are rebuilt, saved parameter values are re-applied, and valid connections are preserved.
 - **Registry Source Tracking**: `NodeRegistry` now tracks the on-disk path of every loaded definition via `_source_paths`, and exposes `get_source_path(node_id)` / `reload_node_definition(node_id)` for programmatic reloads.
@@ -153,7 +177,7 @@ Detailed documentation is available for both users and developers:
 -   🤖 **[Automation API](AUTOMATION_API.md)**: Reference for Scripting Console automation.
 -   🛠️ **[Developer Documentation](DEVELOPER.md)**: Technical architecture and internal data flow.
 -   📄 **[Technical Feature List](DOCUMENTATION.md)**: Detailed breakdown of all platform features.
--   📋 **[Release Notes v1.8.3](RELEASE_v1.8.3.md)**: Full changelog for the current release.
+-   📋 **[Release Notes v2.0.0](RELEASE_v2.0.0.md)**: Full changelog for the current release.
 
 ---
 
