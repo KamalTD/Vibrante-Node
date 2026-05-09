@@ -1,0 +1,2316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Vibrante-Node v2.0.0 — API Reference">
+<title>API Reference — Vibrante-Node Docs</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/atom-one-dark.min.css">
+<style>
+/* ── Reset & Variables ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:       #1e1e2e;
+  --surface:  #181825;
+  --surface2: #11111b;
+  --border:   #313244;
+  --text:     #cdd6f4;
+  --subtext:  #a6adc8;
+  --muted:    #6c7086;
+  --lavender: #b4befe;
+  --blue:     #89b4fa;
+  --teal:     #94e2d5;
+  --green:    #a6e3a1;
+  --yellow:   #f9e2af;
+  --peach:    #fab387;
+  --red:      #f38ba8;
+  --pink:     #f5c2e7;
+  --mauve:    #cba6f7;
+  --sidebar-w: 260px;
+  --toc-w:    220px;
+  --header-h: 56px;
+  --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --mono: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+}
+
+/* ── Layout ─────────────────────────────────────────────────────────────── */
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: var(--header-h) 1fr;
+  grid-template-columns: var(--sidebar-w) 1fr var(--toc-w);
+  grid-template-areas:
+    "header header header"
+    "sidebar content toc";
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+.header {
+  grid-area: header;
+  position: sticky; top: 0; z-index: 200;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 16px;
+  padding: 0 24px;
+}
+.header-logo {
+  font-weight: 700; font-size: 1.05em;
+  color: var(--mauve);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.header-version {
+  font-size: .78em;
+  background: var(--border);
+  color: var(--subtext);
+  padding: 2px 8px; border-radius: 12px;
+}
+.header-spacer { flex: 1; }
+.search-wrap { position: relative; }
+#search-input {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: .9em;
+  padding: 6px 14px 6px 36px;
+  width: 260px;
+  outline: none;
+  transition: border-color .15s;
+}
+#search-input:focus { border-color: var(--mauve); }
+.search-icon {
+  position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+  color: var(--muted); pointer-events: none; font-size: .9em;
+}
+#search-results {
+  position: absolute; top: calc(100% + 8px); right: 0;
+  width: 380px; max-height: 420px; overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.5);
+  display: none; z-index: 300;
+}
+#search-results.visible { display: block; }
+.search-result-item {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background .1s;
+}
+.search-result-item:last-child { border-bottom: none; }
+.search-result-item:hover { background: var(--bg); }
+.search-result-title { color: var(--blue); font-weight: 600; font-size: .9em; }
+.search-result-excerpt { color: var(--subtext); font-size: .82em; margin-top: 2px; line-height: 1.4; }
+.search-no-results { padding: 16px; color: var(--muted); text-align: center; font-size: .9em; }
+
+/* ── Sidebar ─────────────────────────────────────────────────────────────── */
+.sidebar {
+  grid-area: sidebar;
+  position: sticky; top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 20px 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.sidebar-group { margin-bottom: 4px; }
+.sidebar-group-title {
+  font-size: .7em;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--muted);
+  padding: 10px 20px 4px;
+  font-weight: 600;
+}
+.sidebar-link {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 20px;
+  color: var(--subtext);
+  text-decoration: none;
+  font-size: .88em;
+  border-left: 3px solid transparent;
+  transition: all .12s;
+  line-height: 1.3;
+}
+.sidebar-link:hover { color: var(--text); background: var(--bg); }
+.sidebar-link.active {
+  color: var(--mauve);
+  border-left-color: var(--mauve);
+  background: rgba(180,190,254,.06);
+  font-weight: 600;
+}
+.sidebar-num {
+  font-size: .7em;
+  color: var(--muted);
+  background: var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  flex-shrink: 0;
+}
+.sidebar-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 12px 16px;
+}
+
+/* ── Content ─────────────────────────────────────────────────────────────── */
+.content {
+  grid-area: content;
+  min-width: 0;
+  padding: 40px 48px 80px;
+  max-width: 860px;
+}
+.content-inner { max-width: 820px; }
+
+/* Breadcrumb */
+.breadcrumb {
+  font-size: .8em;
+  color: var(--muted);
+  margin-bottom: 28px;
+  display: flex; align-items: center; gap: 6px;
+}
+.breadcrumb a { color: var(--blue); text-decoration: none; }
+.breadcrumb a:hover { text-decoration: underline; }
+.breadcrumb-sep { color: var(--border); }
+
+/* Typography */
+h1 { font-size: 2em; color: var(--mauve); border-bottom: 2px solid var(--border); padding-bottom: 12px; margin: 20px 0 20px; }
+h2 { font-size: 1.45em; color: var(--blue); margin: 40px 0 14px; padding-top: 8px; }
+h3 { font-size: 1.15em; color: var(--teal); margin: 28px 0 10px; }
+h4 { font-size: 1em; color: var(--pink); margin: 20px 0 8px; }
+h5 { font-size: .95em; color: var(--yellow); margin: 16px 0 6px; }
+p  { margin-bottom: 16px; color: var(--text); }
+a  { color: var(--blue); }
+a:hover { text-decoration: underline; }
+strong { color: var(--peach); }
+em { color: var(--yellow); font-style: italic; }
+
+ul, ol { margin: 10px 0 16px 24px; }
+li { margin-bottom: 6px; }
+li > ul, li > ol { margin-top: 4px; margin-bottom: 4px; }
+
+blockquote {
+  border-left: 4px solid var(--mauve);
+  padding: 10px 20px;
+  margin: 16px 0;
+  background: rgba(180,190,254,.05);
+  border-radius: 0 8px 8px 0;
+  color: var(--subtext);
+}
+blockquote strong { color: var(--mauve); }
+
+hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+/* Code */
+code {
+  background: var(--surface2);
+  color: var(--red);
+  padding: 2px 7px; border-radius: 5px;
+  font-family: var(--mono); font-size: .87em;
+}
+pre {
+  background: var(--surface2) !important;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px 22px;
+  overflow-x: auto;
+  margin: 16px 0 22px;
+  position: relative;
+}
+pre code {
+  background: none !important;
+  color: inherit !important;
+  padding: 0; font-size: .9em;
+  border-radius: 0;
+}
+/* Copy button */
+.copy-btn {
+  position: absolute; top: 10px; right: 12px;
+  background: var(--border);
+  color: var(--subtext);
+  border: none; border-radius: 5px;
+  padding: 3px 10px; font-size: .75em;
+  cursor: pointer; transition: all .12s;
+  font-family: var(--font);
+}
+.copy-btn:hover { background: var(--mauve); color: var(--surface2); }
+.copy-btn.copied { background: var(--green); color: var(--surface2); }
+
+/* Tables */
+table { border-collapse: collapse; width: 100%; margin: 16px 0 22px; font-size: .9em; }
+th { background: var(--border); color: var(--mauve); padding: 10px 14px; text-align: left; font-weight: 600; }
+td { border-top: 1px solid var(--border); padding: 9px 14px; color: var(--text); }
+tr:nth-child(even) td { background: rgba(17,17,27,.4); }
+td code { font-size: .85em; }
+
+/* Callout boxes */
+.callout {
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin: 16px 0 22px;
+  border-left: 4px solid;
+}
+.callout-note    { background: rgba(137,180,250,.08); border-color: var(--blue);   }
+.callout-tip     { background: rgba(166,227,161,.08); border-color: var(--green);  }
+.callout-warning { background: rgba(249,226,175,.08); border-color: var(--yellow); }
+.callout-danger  { background: rgba(243,139,168,.08); border-color: var(--red);    }
+.callout-title   { font-weight: 700; font-size: .85em; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
+.callout-note    .callout-title { color: var(--blue);   }
+.callout-tip     .callout-title { color: var(--green);  }
+.callout-warning .callout-title { color: var(--yellow); }
+.callout-danger  .callout-title { color: var(--red);    }
+
+/* Prev/Next navigation */
+.page-nav {
+  display: flex; justify-content: space-between;
+  margin-top: 60px; padding-top: 24px;
+  border-top: 1px solid var(--border);
+  gap: 16px;
+}
+.page-nav-link {
+  display: flex; flex-direction: column;
+  text-decoration: none;
+  padding: 14px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  min-width: 200px;
+  transition: border-color .15s;
+  max-width: 48%;
+}
+.page-nav-link:hover { border-color: var(--mauve); }
+.page-nav-label { font-size: .75em; color: var(--muted); margin-bottom: 4px; }
+.page-nav-title { color: var(--blue); font-weight: 600; font-size: .95em; }
+.page-nav-link.prev .page-nav-label::before { content: '← '; }
+.page-nav-link.next { margin-left: auto; text-align: right; }
+.page-nav-link.next .page-nav-label::after { content: ' →'; }
+
+/* ── TOC (right panel) ───────────────────────────────────────────────────── */
+.toc {
+  grid-area: toc;
+  position: sticky; top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  padding: 28px 16px 28px 8px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.toc-title {
+  font-size: .72em;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--muted);
+  font-weight: 600;
+  margin-bottom: 12px;
+  padding-left: 8px;
+}
+.toc-link {
+  display: block;
+  padding: 4px 8px;
+  color: var(--subtext);
+  text-decoration: none;
+  font-size: .82em;
+  border-left: 2px solid transparent;
+  border-radius: 0 4px 4px 0;
+  transition: all .12s;
+  line-height: 1.35;
+  margin-bottom: 1px;
+}
+.toc-link:hover { color: var(--text); border-left-color: var(--border); }
+.toc-link.active { color: var(--mauve); border-left-color: var(--mauve); background: rgba(180,190,254,.05); }
+.toc-link.toc-h3 { padding-left: 20px; font-size: .79em; }
+.toc-link.toc-h4 { padding-left: 32px; font-size: .76em; color: var(--muted); }
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  body { grid-template-columns: var(--sidebar-w) 1fr 0; }
+  .toc { display: none; }
+}
+@media (max-width: 760px) {
+  body { grid-template-columns: 0 1fr 0; grid-template-rows: var(--header-h) 1fr; }
+  .sidebar { display: none; }
+  .content { padding: 24px 20px 60px; }
+  #search-input { width: 180px; }
+}
+
+/* ── Index / landing page ────────────────────────────────────────────────── */
+.hero { text-align: center; padding: 60px 0 48px; }
+.hero h1 { border: none; font-size: 2.8em; }
+.hero .tagline { color: var(--subtext); font-size: 1.15em; margin-top: 10px; }
+.hero .version-badge {
+  display: inline-block;
+  background: var(--border); color: var(--mauve);
+  padding: 4px 14px; border-radius: 20px; font-size: .85em;
+  margin-top: 14px;
+}
+.group-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin: 16px 0 36px; }
+.doc-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  text-decoration: none;
+  color: var(--text);
+  transition: border-color .15s, background .15s;
+  display: block;
+}
+.doc-card:hover { border-color: var(--mauve); background: rgba(180,190,254,.04); }
+.doc-card-num { font-size: .72em; color: var(--muted); margin-bottom: 4px; }
+.doc-card-title { color: var(--blue); font-weight: 700; font-size: 1em; margin-bottom: 6px; }
+.doc-card-desc { color: var(--subtext); font-size: .85em; line-height: 1.5; }
+.group-title { color: var(--teal); font-size: 1.1em; font-weight: 600; margin: 32px 0 10px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+</style>
+<span id="portal-base" data-base="" style="display:none"></span>
+</head>
+<body>
+
+<!-- ── Header ─────────────────────────────────────────────────────────── -->
+<header class="header">
+  <a class="header-logo" href="index.html">Vibrante-Node</a>
+  <span class="header-version">v2.0.0</span>
+  <div class="header-spacer"></div>
+  <div class="search-wrap">
+    <span class="search-icon">&#128269;</span>
+    <input id="search-input" type="text" placeholder="Search docs… (/)" autocomplete="off" spellcheck="false">
+    <div id="search-results"></div>
+  </div>
+</header>
+
+<!-- ── Sidebar ────────────────────────────────────────────────────────── -->
+<nav class="sidebar">
+<div class="sidebar-group">
+<div class="sidebar-group-title">Overview</div>
+<a class="sidebar-link" href="01_introduction.html"><span class="sidebar-num">01</span>Introduction</a>
+<a class="sidebar-link" href="02_getting_started.html"><span class="sidebar-num">02</span>Getting Started</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Using the App</div>
+<a class="sidebar-link" href="03_user_guide.html"><span class="sidebar-num">03</span>User Guide</a>
+<a class="sidebar-link" href="04_workflow_tutorials.html"><span class="sidebar-num">04</span>Workflow Tutorials</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Developing Nodes</div>
+<a class="sidebar-link" href="05_node_development.html"><span class="sidebar-num">05</span>Node Development Guide</a>
+<a class="sidebar-link" href="14_custom_nodes_api.html"><span class="sidebar-num">14</span>Custom Nodes API</a>
+<a class="sidebar-link active" href="08_api_reference.html"><span class="sidebar-num">08</span>API Reference</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Architecture</div>
+<a class="sidebar-link" href="06_backend_architecture.html"><span class="sidebar-num">06</span>Backend Architecture</a>
+<a class="sidebar-link" href="07_frontend_architecture.html"><span class="sidebar-num">07</span>Frontend Architecture</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Advanced</div>
+<a class="sidebar-link" href="09_advanced_topics.html"><span class="sidebar-num">09</span>Advanced Topics</a>
+<a class="sidebar-link" href="10_contribution_guide.html"><span class="sidebar-num">10</span>Contribution Guide</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Reference</div>
+<a class="sidebar-link" href="11_troubleshooting.html"><span class="sidebar-num">11</span>Troubleshooting</a>
+<a class="sidebar-link" href="12_examples_library.html"><span class="sidebar-num">12</span>Examples Library</a>
+<a class="sidebar-link" href="13_general_purpose_automation.html"><span class="sidebar-num">13</span>General Purpose Automation</a>
+</div>
+
+</nav>
+
+<!-- ── Main content ───────────────────────────────────────────────────── -->
+<main class="content">
+  <div class="content-inner">
+    <nav class="breadcrumb"><a href="index.html">Docs</a><span class="breadcrumb-sep">›</span><span>API Reference</span></nav>
+    <h1 id="full-api-reference-vibrante-node-v200">Full API Reference — Vibrante-Node v2.0.0</h1>
+<p>This document is the complete public API reference for all classes, signals,<br />
+and utilities available to node authors, workflow automation scripts, and<br />
+plugin developers.</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#1-basenode">BaseNode</a></li>
+<li><a href="#2-port">Port</a></li>
+<li><a href="#3-networkexecutor">NetworkExecutor</a></li>
+<li><a href="#4-graphmanager">GraphManager</a></li>
+<li><a href="#5-noderegistry">NodeRegistry</a></li>
+<li><a href="#6-workflowmodel">WorkflowModel</a></li>
+<li><a href="#7-nodeinstancemodel">NodeInstanceModel</a></li>
+<li><a href="#8-connectionmodel">ConnectionModel</a></li>
+<li><a href="#9-portmodel">PortModel</a></li>
+<li><a href="#10-nodedefinitionjson">NodeDefinitionJSON</a></li>
+<li><a href="#11-stickynotemodel">StickyNoteModel</a></li>
+<li><a href="#12-backdropmodel">BackdropModel</a></li>
+<li><a href="#13-scripting-console-api">Scripting Console API</a></li>
+<li><a href="#14-automation-api">Automation API</a></li>
+<li><a href="#15-configmanager">ConfigManager</a></li>
+<li><a href="#16-houbridge">HouBridge</a></li>
+<li><a href="#17-prism-integration">Prism Integration</a></li>
+</ol>
+<hr />
+<h2 id="1-basenode">1. BaseNode</h2>
+<p><strong>Module:</strong> <code>src.nodes.base</code></p>
+<p>Abstract base class for all custom nodes. See<br />
+<a href="14_custom_nodes_api.md">14_custom_nodes_api.md</a> for the full developer guide.</p>
+<h3 id="class-attributes">Class attributes</h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td><code>str</code></td>
+<td><code>"BaseNode"</code></td>
+<td>Registry key. Must match <code>node_id</code>.</td>
+</tr>
+<tr>
+<td><code>node_id</code></td>
+<td><code>str</code></td>
+<td>(injected by registry)</td>
+<td>Same as <code>name</code> for JSON nodes.</td>
+</tr>
+<tr>
+<td><code>description</code></td>
+<td><code>str</code></td>
+<td><code>""</code></td>
+<td>Shown in UI tooltips.</td>
+</tr>
+<tr>
+<td><code>category</code></td>
+<td><code>str</code></td>
+<td><code>"General"</code></td>
+<td>Library grouping.</td>
+</tr>
+<tr>
+<td><code>icon_path</code></td>
+<td><code>Optional[str]</code></td>
+<td><code>None</code></td>
+<td>Relative path to SVG/PNG icon.</td>
+</tr>
+<tr>
+<td><code>memory</code></td>
+<td><code>Dict[str, Any]</code></td>
+<td><code>{}</code></td>
+<td>Class-level shared dict, cleared each run.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="instance-attributes">Instance attributes</h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>inputs</code></td>
+<td><code>Dict[str, Port]</code></td>
+<td>Input ports keyed by name.</td>
+</tr>
+<tr>
+<td><code>outputs</code></td>
+<td><code>Dict[str, Port]</code></td>
+<td>Output ports keyed by name.</td>
+</tr>
+<tr>
+<td><code>parameters</code></td>
+<td><code>Dict[str, Any]</code></td>
+<td>Widget values, output cache, internal state.</td>
+</tr>
+<tr>
+<td><code>parameter_types</code></td>
+<td><code>Dict[str, Type]</code></td>
+<td>Optional type hints for <code>add_parameter()</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="constructor">Constructor</h3>
+<pre><code class="language-python">def __init__(self, use_exec: bool = True)
+</code></pre>
+<p>Adds <code>exec_in</code> (input) and <code>exec_out</code> (output) of type <code>exec</code> when<br />
+<code>use_exec=True</code>.</p>
+<h3 id="methods">Methods</h3>
+<table>
+<thead>
+<tr>
+<th>Signature</th>
+<th>Returns</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>add_input(name, type="any", widget_type=None, options=None, default=None)</code></td>
+<td>None</td>
+<td>Add input port + initialize parameter.</td>
+</tr>
+<tr>
+<td><code>add_output(name, type="any", default=None)</code></td>
+<td>None</td>
+<td>Add output port + initialize parameter.</td>
+</tr>
+<tr>
+<td><code>add_exec_input(name="exec_in")</code></td>
+<td>None</td>
+<td>Add exec-type input.</td>
+</tr>
+<tr>
+<td><code>add_exec_output(name="exec_out")</code></td>
+<td>None</td>
+<td>Add exec-type output.</td>
+</tr>
+<tr>
+<td><code>add_parameter(name, param_type, default=None)</code></td>
+<td>None</td>
+<td>Add internal non-port parameter.</td>
+</tr>
+<tr>
+<td><code>rebuild_ports()</code></td>
+<td>None</td>
+<td>Notify canvas to refresh port layout.</td>
+</tr>
+<tr>
+<td><code>is_port_connected(name, is_input)</code></td>
+<td><code>bool</code></td>
+<td>Query wire connection state.</td>
+</tr>
+<tr>
+<td><code>is_stopped()</code></td>
+<td><code>bool</code></td>
+<td>True if pipeline cancellation requested.</td>
+</tr>
+<tr>
+<td><code>async set_output(name, value)</code></td>
+<td>None</td>
+<td>Reactive value push + exec chain trigger.</td>
+</tr>
+<tr>
+<td><code>clear_outputs()</code></td>
+<td>None</td>
+<td>Reset outputs to defaults (called by engine).</td>
+</tr>
+<tr>
+<td><code>set_parameter(name, value)</code></td>
+<td>None</td>
+<td>Set parameter; handles dropdown list updates.</td>
+</tr>
+<tr>
+<td><code>get_parameter(name, default=None)</code></td>
+<td><code>Any</code></td>
+<td>Safe parameter read.</td>
+</tr>
+<tr>
+<td><code>log_info(msg)</code></td>
+<td>None</td>
+<td>Info-level log message.</td>
+</tr>
+<tr>
+<td><code>log_success(msg)</code></td>
+<td>None</td>
+<td>Success-level log message.</td>
+</tr>
+<tr>
+<td><code>log_error(msg)</code></td>
+<td>None</td>
+<td>Error-level log message.</td>
+</tr>
+<tr>
+<td><code>restore_from_parameters(parameters)</code></td>
+<td>None</td>
+<td>Override to recreate dynamic ports.</td>
+</tr>
+<tr>
+<td><code>async on_parameter_changed(name, value)</code></td>
+<td>None</td>
+<td>Override for reactive parameter response.</td>
+</tr>
+<tr>
+<td><code>async on_plug(port, is_input, node, port)</code></td>
+<td>None</td>
+<td>Override for async connection event.</td>
+</tr>
+<tr>
+<td><code>on_plug_sync(port, is_input, node, port)</code></td>
+<td>None</td>
+<td>Override for sync connection event.</td>
+</tr>
+<tr>
+<td><code>async on_unplug(port, is_input)</code></td>
+<td>None</td>
+<td>Override for async disconnect event.</td>
+</tr>
+<tr>
+<td><code>on_unplug_sync(port, is_input)</code></td>
+<td>None</td>
+<td>Override for sync disconnect event.</td>
+</tr>
+<tr>
+<td><code>async execute(inputs)</code></td>
+<td><code>dict</code></td>
+<td><strong>Abstract. Implement in every node.</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-port">2. Port</h2>
+<p><strong>Module:</strong> <code>src.nodes.base</code></p>
+<p>Describes a single input or output connection point.</p>
+<h3 id="constructor_1">Constructor</h3>
+<pre><code class="language-python">Port(
+    name: str,
+    data_type: str = &quot;any&quot;,
+    widget_type: str = None,
+    options: List[str] = None,
+    default: Any = None
+)
+</code></pre>
+<h3 id="attributes">Attributes</h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td><code>str</code></td>
+<td>Port name. Unique within node inputs or outputs.</td>
+</tr>
+<tr>
+<td><code>data_type</code></td>
+<td><code>str</code></td>
+<td><code>string</code>, <code>int</code>, <code>float</code>, <code>bool</code>, <code>list</code>, <code>dict</code>, <code>any</code>, or <code>exec</code>.</td>
+</tr>
+<tr>
+<td><code>widget_type</code></td>
+<td><code>Optional[str]</code></td>
+<td>Inline editor type. <code>None</code> = no editor.</td>
+</tr>
+<tr>
+<td><code>options</code></td>
+<td><code>Optional[List[str]]</code></td>
+<td>Dropdown options. Non-<code>None</code> only for <code>dropdown</code> widgets.</td>
+</tr>
+<tr>
+<td><code>default</code></td>
+<td><code>Any</code></td>
+<td>Default value when unconnected.</td>
+</tr>
+</tbody>
+</table>
+<p>Port objects are data-only and have no methods. Ports are stored in<br />
+<code>node.inputs</code> and <code>node.outputs</code> dicts, keyed by <code>name</code>.</p>
+<hr />
+<h2 id="3-networkexecutor">3. NetworkExecutor</h2>
+<p><strong>Module:</strong> <code>src.core.engine</code></p>
+<p>The async execution engine. Receives a <code>GraphManager</code>, prepares all node<br />
+instances, and runs the graph.</p>
+<h3 id="constructor_2">Constructor</h3>
+<pre><code class="language-python">NetworkExecutor(graph_manager: GraphManager)
+</code></pre>
+<p><code>NetworkExecutor</code> is a <code>QObject</code>. It emits Qt signals for UI feedback.</p>
+<h3 id="signals">Signals</h3>
+<table>
+<thead>
+<tr>
+<th>Signal</th>
+<th>Signature</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>node_started</code></td>
+<td><code>(UUID)</code></td>
+<td>Emitted just before a node's <code>execute()</code> is called.</td>
+</tr>
+<tr>
+<td><code>node_finished</code></td>
+<td><code>(UUID, str)</code></td>
+<td>Emitted after a node completes. <code>str</code> is <code>"success"</code> or <code>"failed"</code>.</td>
+</tr>
+<tr>
+<td><code>node_error</code></td>
+<td><code>(UUID, str)</code></td>
+<td>Emitted when a node raises an unhandled exception. <code>str</code> is the error message.</td>
+</tr>
+<tr>
+<td><code>node_output</code></td>
+<td><code>(UUID, dict)</code></td>
+<td>Emitted after <code>execute()</code> returns or after <code>set_output()</code>. <code>dict</code> maps port names to values.</td>
+</tr>
+<tr>
+<td><code>node_log</code></td>
+<td><code>(UUID, str, str)</code></td>
+<td>Emitted by <code>log_info/error/success</code>. Args: node UUID, message, level string (<code>"info"</code>, <code>"error"</code>, <code>"success"</code>).</td>
+</tr>
+<tr>
+<td><code>execution_finished</code></td>
+<td><code>(bool)</code></td>
+<td>Emitted when the entire pipeline completes. <code>bool</code> is <code>True</code> if not stopped.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="methods_1">Methods</h3>
+<h4 id="run-async">run (async)</h4>
+<pre><code class="language-python">async def run(self, init_only: bool = False) -&gt; None
+</code></pre>
+<p>Executes the full pipeline. The execution sequence:</p>
+<ol>
+<li><code>BaseNode.memory.clear()</code> — shared memory reset.</li>
+<li>Precalculate exec-driven node set and data connection lookup maps.</li>
+<li>For each node: instantiate, <code>restore_from_parameters()</code>, sync parameters,<br />
+<code>clear_outputs()</code>, wire engine hooks.</li>
+<li><code>_bootstrap_prism_if_needed()</code> — initialise PrismCore if a<br />
+<code>prism_core_init</code> node is present.</li>
+<li><code>_run_init_nodes()</code> — run nodes with <code>init_priority &gt; 0</code> sequentially.</li>
+<li>If <code>init_only=True</code>, stop here and emit <code>execution_finished(True)</code>.</li>
+<li>Identify entry nodes (nodes with exec-out but no wired exec-in, plus all<br />
+   data-only connected nodes).</li>
+<li>Kick off all entry nodes as async tasks; wait for all to complete.</li>
+<li>Emit <code>execution_finished(not self._is_stopped)</code>.</li>
+</ol>
+<p>When no exec connections exist, falls back to classic topological-sort<br />
+data-flow execution (layers run in parallel via <code>asyncio.gather</code>).</p>
+<p><strong>Parameters:</strong><br />
+- <code>init_only</code> — When <code>True</code>, only the init phase runs (steps 1–6 above).<br />
+  Used after loading a saved workflow to trigger auth/login nodes automatically.</p>
+<h4 id="stop">stop</h4>
+<pre><code class="language-python">def stop(self) -&gt; None
+</code></pre>
+<p>Requests cancellation. Sets <code>_is_stopped = True</code> and cancels all active<br />
+asyncio tasks. Calls <code>_finished_event.set()</code> to unblock the wait loop.</p>
+<h3 id="internal-attributes-read-only">Internal attributes (read-only)</h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>node_instances</code></td>
+<td><code>Dict[UUID, BaseNode]</code></td>
+<td>Live node instances keyed by UUID.</td>
+</tr>
+<tr>
+<td><code>node_results</code></td>
+<td><code>Dict[UUID, Dict[str, Any]]</code></td>
+<td>Output result cache keyed by UUID → port name.</td>
+</tr>
+<tr>
+<td><code>_is_stopped</code></td>
+<td><code>bool</code></td>
+<td>Cancellation flag.</td>
+</tr>
+<tr>
+<td><code>_executed_nodes</code></td>
+<td><code>Set[UUID]</code></td>
+<td>UUIDs of nodes that completed successfully this run.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-graphmanager">4. GraphManager</h2>
+<p><strong>Module:</strong> <code>src.core.graph</code></p>
+<p>Manages the in-memory graph: nodes and connections. Validates DAG invariants.</p>
+<h3 id="constructor_3">Constructor</h3>
+<pre><code class="language-python">GraphManager()
+</code></pre>
+<h3 id="attributes_1">Attributes</h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>nodes</code></td>
+<td><code>Dict[UUID, NodeInstanceModel]</code></td>
+<td>Node instances keyed by UUID.</td>
+</tr>
+<tr>
+<td><code>connections</code></td>
+<td><code>List[ConnectionModel]</code></td>
+<td>All connection edges.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="methods_2">Methods</h3>
+<h4 id="add_node">add_node</h4>
+<pre><code class="language-python">def add_node(self, node: NodeInstanceModel) -&gt; None
+</code></pre>
+<p>Adds a node to the graph. The node is keyed by <code>node.instance_id</code>.</p>
+<h4 id="remove_node">remove_node</h4>
+<pre><code class="language-python">def remove_node(self, node_id: UUID) -&gt; None
+</code></pre>
+<p>Removes the node and all connections touching it.</p>
+<h4 id="add_connection">add_connection</h4>
+<pre><code class="language-python">def add_connection(self, connection: ConnectionModel) -&gt; bool
+</code></pre>
+<p>Adds a connection edge after checking for cycles. Returns <code>False</code> and discards<br />
+the connection if it would create a cycle (the graph must remain a DAG).</p>
+<pre><code class="language-python">conn = ConnectionModel(
+    from_node=node_a.instance_id,
+    from_port=&quot;result&quot;,
+    to_node=node_b.instance_id,
+    to_port=&quot;input&quot;,
+    is_exec=False,
+)
+if not gm.add_connection(conn):
+    print(&quot;Cycle detected — connection not added.&quot;)
+</code></pre>
+<h4 id="remove_connection">remove_connection</h4>
+<pre><code class="language-python">def remove_connection(self, connection_id: UUID) -&gt; None
+</code></pre>
+<p>Removes the connection with the given UUID.</p>
+<h4 id="is_dag">is_dag</h4>
+<pre><code class="language-python">def is_dag(self) -&gt; bool
+</code></pre>
+<p>Returns <code>True</code> if the current graph contains no cycles. Uses topological sort<br />
+internally; returns <code>False</code> if <code>toposort.CircularDependencyError</code> is raised.</p>
+<h4 id="get_topological_sort">get_topological_sort</h4>
+<pre><code class="language-python">def get_topological_sort(
+    self,
+    ignore_ports: List[str] = None
+) -&gt; List[Set[UUID]]
+</code></pre>
+<p>Returns the nodes in topological order as a list of sets. Each set contains<br />
+nodes that can execute in parallel. Sets are ordered from upstream to<br />
+downstream.</p>
+<p><strong>Parameters:</strong><br />
+- <code>ignore_ports</code> — Port names that are excluded from dependency calculation.<br />
+  Default is <code>["break_condition"]</code>, which prevents <code>WhileLoopNode</code>'s<br />
+  feedback port from creating false cycles.</p>
+<p>Raises <code>toposort.CircularDependencyError</code> if a cycle exists.</p>
+<h4 id="to_model">to_model</h4>
+<pre><code class="language-python">def to_model(self) -&gt; WorkflowModel
+</code></pre>
+<p>Serialises the graph to a <code>WorkflowModel</code> (suitable for JSON export).</p>
+<h4 id="from_model">from_model</h4>
+<pre><code class="language-python">def from_model(self, model: WorkflowModel) -&gt; None
+</code></pre>
+<p>Populates the graph from a <code>WorkflowModel</code>. Replaces any existing nodes and<br />
+connections.</p>
+<hr />
+<h2 id="5-noderegistry">5. NodeRegistry</h2>
+<p><strong>Module:</strong> <code>src.core.registry</code></p>
+<p>Class-level registry that maps <code>node_id</code> strings to <code>NodeDefinitionJSON</code> and<br />
+<code>Type[BaseNode]</code>.</p>
+<h3 id="class-attributes_1">Class attributes</h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>_definitions</code></td>
+<td><code>Dict[str, NodeDefinitionJSON]</code></td>
+<td>All registered definitions.</td>
+</tr>
+<tr>
+<td><code>_classes</code></td>
+<td><code>Dict[str, Type[BaseNode]]</code></td>
+<td>All compiled node classes.</td>
+</tr>
+<tr>
+<td><code>_source_paths</code></td>
+<td><code>Dict[str, str]</code></td>
+<td>node_id → on-disk JSON path (for reload).</td>
+</tr>
+<tr>
+<td><code>last_error</code></td>
+<td><code>Optional[str]</code></td>
+<td>Error message from the most recent failed load.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="methods_3">Methods</h3>
+<h4 id="load_all">load_all</h4>
+<pre><code class="language-python">@classmethod
+def load_all(cls, directory: str) -&gt; None
+</code></pre>
+<p>Loads built-in nodes (via <code>register_builtins()</code>) then recursively scans<br />
+<code>directory</code> for <code>.json</code> files. Creates the directory if it does not exist.</p>
+<h4 id="load_all_with_extras">load_all_with_extras</h4>
+<pre><code class="language-python">@classmethod
+def load_all_with_extras(cls, default_directory: str) -&gt; None
+</code></pre>
+<p>Calls <code>load_all(default_directory)</code> then loads any additional directories<br />
+listed in the <code>v_nodes_dir</code> environment variable (path-separated).</p>
+<p><strong>Always use this method (not <code>load_all</code>) when launching the full application.</strong></p>
+<pre><code class="language-python">NodeRegistry.load_all_with_extras(&quot;nodes&quot;)
+</code></pre>
+<h4 id="_load_directory">_load_directory</h4>
+<pre><code class="language-python">@classmethod
+def _load_directory(cls, directory: str) -&gt; None
+</code></pre>
+<p>Walks a single directory recursively and calls <code>load_node()</code> for every <code>.json</code><br />
+file found. Does not register builtins.</p>
+<h4 id="load_node">load_node</h4>
+<pre><code class="language-python">@classmethod
+def load_node(cls, file_path: str) -&gt; bool
+</code></pre>
+<p>Loads and registers a single <code>.json</code> file. Returns <code>True</code> on success. Sets<br />
+<code>last_error</code> and returns <code>False</code> on failure (JSON parse error, validation<br />
+error, or compile error).</p>
+<h4 id="register_builtins">register_builtins</h4>
+<pre><code class="language-python">@classmethod
+def register_builtins(cls) -&gt; None
+</code></pre>
+<p>Registers all built-in node classes:<br />
+- <code>FileLoaderNode</code>, <code>DataProcessorNode</code>, <code>ConsoleSinkNode</code><br />
+- <code>SequenceNode</code>, <code>SetVariableNode</code>, <code>GetVariableNode</code><br />
+- <code>TwoWaySwitchNode</code>, <code>ForEachNode</code>, <code>ListAppendNode</code>, <code>WhileLoopNode</code><br />
+- <code>GroupInNode</code>, <code>GroupOutNode</code>, <code>GroupNode</code> (in <code>_classes</code> only — hidden<br />
+  from the search popup but loadable from saved workflows)</p>
+<h4 id="register_definition">register_definition</h4>
+<pre><code class="language-python">@classmethod
+def register_definition(cls, definition: NodeDefinitionJSON) -&gt; bool
+</code></pre>
+<p>Normalizes a <code>NodeDefinitionJSON</code> (adds missing exec pins, applies Prism<br />
+auto-patching), compiles the <code>python_code</code>, and stores the result in<br />
+<code>_definitions</code> and <code>_classes</code>. Returns <code>True</code> on success.</p>
+<h4 id="get_definition">get_definition</h4>
+<pre><code class="language-python">@classmethod
+def get_definition(cls, node_id: str) -&gt; Optional[NodeDefinitionJSON]
+</code></pre>
+<p>Returns the registered <code>NodeDefinitionJSON</code> for <code>node_id</code>, or <code>None</code>.</p>
+<h4 id="get_class">get_class</h4>
+<pre><code class="language-python">@classmethod
+def get_class(cls, node_id: str) -&gt; Optional[Type[BaseNode]]
+</code></pre>
+<p>Returns the compiled node class for <code>node_id</code>, or <code>None</code>.</p>
+<h4 id="list_node_ids">list_node_ids</h4>
+<pre><code class="language-python">@classmethod
+def list_node_ids(cls) -&gt; List[str]
+</code></pre>
+<p>Returns all registered <code>node_id</code> strings. Includes only nodes in<br />
+<code>_definitions</code> (i.e., excludes <code>GroupInNode</code>, <code>GroupOutNode</code>, <code>GroupNode</code>).</p>
+<h4 id="get_source_path">get_source_path</h4>
+<pre><code class="language-python">@classmethod
+def get_source_path(cls, node_id: str) -&gt; Optional[str]
+</code></pre>
+<p>Returns the absolute path to the <code>.json</code> file the node was loaded from.<br />
+Returns <code>None</code> for built-in nodes (they have no on-disk JSON).</p>
+<h4 id="reload_node_definition">reload_node_definition</h4>
+<pre><code class="language-python">@classmethod
+def reload_node_definition(cls, node_id: str) -&gt; bool
+</code></pre>
+<p>Re-reads the node's JSON from disk and re-registers it. Returns <code>True</code> on<br />
+success. The updated class is available immediately for new node instances, but<br />
+existing <code>NodeWidget</code> instances in the canvas are not automatically refreshed.</p>
+<h4 id="delete_node">delete_node</h4>
+<pre><code class="language-python">@classmethod
+def delete_node(cls, node_id: str, directory: str) -&gt; None
+</code></pre>
+<p>Removes the node from <code>_definitions</code> and <code>_classes</code>, and deletes the<br />
+corresponding <code>.json</code> file from <code>directory</code> if it exists.</p>
+<hr />
+<h2 id="6-workflowmodel">6. WorkflowModel</h2>
+<p><strong>Module:</strong> <code>src.core.models</code></p>
+<p>Pydantic model representing a complete workflow (all nodes, connections, notes,<br />
+backdrops, and metadata).</p>
+<h3 id="constructor-fields">Constructor / Fields</h3>
+<pre><code class="language-python">class WorkflowModel(BaseModel):
+    nodes:        List[NodeInstanceModel] = []
+    connections:  List[ConnectionModel]  = []
+    sticky_notes: List[StickyNoteModel]  = []
+    backdrops:    List[BackdropModel]    = []
+    metadata:     Dict[str, Any]         = {}
+</code></pre>
+<h3 id="serialisation">Serialisation</h3>
+<pre><code class="language-python"># From dict / JSON:
+workflow = WorkflowModel.model_validate(data_dict)
+
+# To dict (for JSON serialisation):
+data_dict = workflow.model_dump()
+
+# JSON round-trip:
+import json
+json_str = json.dumps(workflow.model_dump())
+workflow  = WorkflowModel.model_validate(json.loads(json_str))
+</code></pre>
+<p>UUIDs are serialised as strings in JSON. When loading, Pydantic coerces string<br />
+UUIDs back to <code>UUID</code> objects automatically.</p>
+<h3 id="metadata-field">metadata field</h3>
+<p><code>metadata</code> is a free-form dict for workflow-level information. Currently unused<br />
+by the engine but available for tooling (e.g., storing author, version,<br />
+description):</p>
+<pre><code class="language-python">workflow.metadata[&quot;author&quot;] = &quot;Studio Pipeline Team&quot;
+workflow.metadata[&quot;vibrante_version&quot;] = &quot;2.0.0&quot;
+</code></pre>
+<hr />
+<h2 id="7-nodeinstancemodel">7. NodeInstanceModel</h2>
+<p><strong>Module:</strong> <code>src.core.models</code></p>
+<p>Pydantic model for a single node placed on the canvas.</p>
+<h3 id="fields">Fields</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>instance_id</code></td>
+<td><code>UUID</code></td>
+<td>auto</td>
+<td>Unique instance ID. Generated by <code>uuid4()</code>.</td>
+</tr>
+<tr>
+<td><code>node_id</code></td>
+<td><code>str</code></td>
+<td>—</td>
+<td>References <code>NodeDefinitionJSON.node_id</code>.</td>
+</tr>
+<tr>
+<td><code>position</code></td>
+<td><code>Tuple[float, float]</code></td>
+<td>—</td>
+<td>(x, y) canvas position in scene coordinates.</td>
+</tr>
+<tr>
+<td><code>parameters</code></td>
+<td><code>Dict[str, Any]</code></td>
+<td><code>{}</code></td>
+<td>Saved widget values and dynamic port state.</td>
+</tr>
+<tr>
+<td><code>state</code></td>
+<td><code>str</code></td>
+<td><code>"idle"</code></td>
+<td>UI state hint. One of <code>"idle"</code>, <code>"running"</code>, <code>"success"</code>, <code>"failed"</code>.</td>
+</tr>
+<tr>
+<td><code>bypassed</code></td>
+<td><code>bool</code></td>
+<td><code>False</code></td>
+<td>When <code>True</code>, the engine skips <code>execute()</code> and passes exec through.</td>
+</tr>
+<tr>
+<td><code>init_priority</code></td>
+<td><code>int</code></td>
+<td><code>0</code></td>
+<td><code>&gt; 0</code> = run this node before the main graph. Higher values run first.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="example">Example</h3>
+<pre><code class="language-python">from uuid import uuid4
+from src.core.models import NodeInstanceModel
+
+node = NodeInstanceModel(
+    node_id=&quot;text_upper&quot;,
+    position=(200.0, 150.0),
+    parameters={&quot;text&quot;: &quot;hello world&quot;},
+)
+</code></pre>
+<hr />
+<h2 id="8-connectionmodel">8. ConnectionModel</h2>
+<p><strong>Module:</strong> <code>src.core.models</code></p>
+<p>Pydantic model for a single connection edge between two node ports.</p>
+<h3 id="fields_1">Fields</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td><code>UUID</code></td>
+<td>auto</td>
+<td>Unique connection ID.</td>
+</tr>
+<tr>
+<td><code>from_node</code></td>
+<td><code>UUID</code></td>
+<td>—</td>
+<td>Source node <code>instance_id</code>.</td>
+</tr>
+<tr>
+<td><code>from_port</code></td>
+<td><code>str</code></td>
+<td>—</td>
+<td>Source port name.</td>
+</tr>
+<tr>
+<td><code>to_node</code></td>
+<td><code>UUID</code></td>
+<td>—</td>
+<td>Target node <code>instance_id</code>.</td>
+</tr>
+<tr>
+<td><code>to_port</code></td>
+<td><code>str</code></td>
+<td>—</td>
+<td>Target port name.</td>
+</tr>
+<tr>
+<td><code>is_exec</code></td>
+<td><code>bool</code></td>
+<td><code>False</code></td>
+<td><code>True</code> for exec-type connections (triggers execution flow).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="is_exec-detection">is_exec detection</h3>
+<p>The engine sets <code>is_exec=True</code> when both <code>from_port</code> and <code>to_port</code> are<br />
+<code>exec</code>-type ports. The UI sets this automatically when drawing wires. When<br />
+building connections programmatically:</p>
+<pre><code class="language-python">conn = ConnectionModel(
+    from_node=a_uuid,
+    from_port=&quot;exec_out&quot;,
+    to_node=b_uuid,
+    to_port=&quot;exec_in&quot;,
+    is_exec=True,   # must be set manually when building programmatically
+)
+</code></pre>
+<hr />
+<h2 id="9-portmodel">9. PortModel</h2>
+<p><strong>Module:</strong> <code>src.core.models</code></p>
+<p>Pydantic model describing a port as stored in a <code>NodeDefinitionJSON</code>. Not the<br />
+same as <code>Port</code> (the runtime object in <code>src.nodes.base</code>).</p>
+<h3 id="fields_2">Fields</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td><code>str</code></td>
+<td>—</td>
+<td>Port name.</td>
+</tr>
+<tr>
+<td><code>type</code></td>
+<td><code>str</code></td>
+<td><code>"any"</code></td>
+<td>Data type string.</td>
+</tr>
+<tr>
+<td><code>widget_type</code></td>
+<td><code>Optional[str]</code></td>
+<td><code>None</code></td>
+<td>Inline editor type.</td>
+</tr>
+<tr>
+<td><code>options</code></td>
+<td><code>Optional[List[str]]</code></td>
+<td><code>None</code></td>
+<td>Dropdown option list.</td>
+</tr>
+<tr>
+<td><code>default</code></td>
+<td><code>Optional[Any]</code></td>
+<td><code>None</code></td>
+<td>Default value.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="10-nodedefinitionjson">10. NodeDefinitionJSON</h2>
+<p><strong>Module:</strong> <code>src.core.models</code></p>
+<p>Pydantic model for the full node definition as stored on disk.</p>
+<h3 id="fields_3">Fields</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>node_id</code></td>
+<td><code>str</code></td>
+<td>—</td>
+<td>Unique identifier.</td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td><code>str</code></td>
+<td>—</td>
+<td>Display name.</td>
+</tr>
+<tr>
+<td><code>description</code></td>
+<td><code>str</code></td>
+<td><code>""</code></td>
+<td>Tooltip text.</td>
+</tr>
+<tr>
+<td><code>category</code></td>
+<td><code>str</code></td>
+<td><code>"General"</code></td>
+<td>Library grouping.</td>
+</tr>
+<tr>
+<td><code>icon_path</code></td>
+<td><code>Optional[str]</code></td>
+<td><code>None</code></td>
+<td>Icon file path.</td>
+</tr>
+<tr>
+<td><code>use_exec</code></td>
+<td><code>bool</code></td>
+<td><code>True</code></td>
+<td>Auto-add exec pins.</td>
+</tr>
+<tr>
+<td><code>inputs</code></td>
+<td><code>List[PortModel]</code></td>
+<td><code>[]</code></td>
+<td>Input port definitions.</td>
+</tr>
+<tr>
+<td><code>outputs</code></td>
+<td><code>List[PortModel]</code></td>
+<td><code>[]</code></td>
+<td>Output port definitions.</td>
+</tr>
+<tr>
+<td><code>python_code</code></td>
+<td><code>str</code></td>
+<td>—</td>
+<td>Full Python source string.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="11-stickynotemodel">11. StickyNoteModel</h2>
+<p><strong>Module:</strong> <code>src.core.models</code></p>
+<p>Pydantic model for a sticky note annotation on the canvas.</p>
+<h3 id="fields_4">Fields</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td><code>UUID</code></td>
+<td>auto</td>
+<td>Unique ID.</td>
+</tr>
+<tr>
+<td><code>position</code></td>
+<td><code>Tuple[float, float]</code></td>
+<td>—</td>
+<td>(x, y) scene position.</td>
+</tr>
+<tr>
+<td><code>size</code></td>
+<td><code>Tuple[float, float]</code></td>
+<td><code>(200.0, 150.0)</code></td>
+<td>(width, height) in scene units.</td>
+</tr>
+<tr>
+<td><code>text</code></td>
+<td><code>str</code></td>
+<td><code>"New Note"</code></td>
+<td>Note content (plain text).</td>
+</tr>
+<tr>
+<td><code>color</code></td>
+<td><code>str</code></td>
+<td><code>"#ffffcc"</code></td>
+<td>Background color (hex string).</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="12-backdropmodel">12. BackdropModel</h2>
+<p><strong>Module:</strong> <code>src.core.models</code></p>
+<p>Pydantic model for a backdrop (network box) grouping visual area on the canvas.</p>
+<h3 id="fields_5">Fields</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td><code>UUID</code></td>
+<td>auto</td>
+<td>Unique ID.</td>
+</tr>
+<tr>
+<td><code>position</code></td>
+<td><code>Tuple[float, float]</code></td>
+<td>—</td>
+<td>(x, y) scene position (top-left corner).</td>
+</tr>
+<tr>
+<td><code>size</code></td>
+<td><code>Tuple[float, float]</code></td>
+<td><code>(400.0, 300.0)</code></td>
+<td>(width, height) in scene units.</td>
+</tr>
+<tr>
+<td><code>title</code></td>
+<td><code>str</code></td>
+<td><code>"Network Box"</code></td>
+<td>Label shown on the backdrop header.</td>
+</tr>
+<tr>
+<td><code>color</code></td>
+<td><code>str</code></td>
+<td><code>"#444444"</code></td>
+<td>Background color (hex string).</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="13-scripting-console-api">13. Scripting Console API</h2>
+<p>The Scripting Console (View → Scripting Console, or Window → Scripting Console)<br />
+provides an interactive Python editor with access to the live application state.</p>
+<h3 id="available-objects">Available objects</h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>app</code></td>
+<td><code>MainWindow</code></td>
+<td>The main application window.</td>
+</tr>
+<tr>
+<td><code>scene</code></td>
+<td><code>NodeScene</code></td>
+<td>The currently active canvas scene.</td>
+</tr>
+<tr>
+<td><code>registry</code></td>
+<td><code>NodeRegistry</code></td>
+<td>The class-level node registry.</td>
+</tr>
+<tr>
+<td><code>print</code></td>
+<td>function</td>
+<td>Redirected — output appears in the log panel and debug panel.</td>
+</tr>
+<tr>
+<td><code>git</code></td>
+<td>Git</td>
+<td>Wrapper around <code>subprocess.run(["git", ...])</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="scene-methods-available-in-scripts">scene methods available in scripts</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Returns</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>scene.add_node_by_name(node_id, (x, y))</code></td>
+<td><code>NodeWidget</code></td>
+<td>Add a node to the canvas.</td>
+</tr>
+<tr>
+<td><code>scene.find_node_by_name(name)</code></td>
+<td><code>NodeWidget \| None</code></td>
+<td>Find the first node by display name.</td>
+</tr>
+<tr>
+<td><code>scene.connect_nodes(from_widget, from_port, to_widget, to_port)</code></td>
+<td><code>Edge \| None</code></td>
+<td>Draw a wire.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="app-methods-available-in-scripts">app methods available in scripts</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>app.get_current_scene()</code></td>
+<td>Returns the <code>NodeScene</code> for the active tab.</td>
+</tr>
+<tr>
+<td><code>app.execute_pipeline()</code></td>
+<td>Starts a pipeline run (same as clicking Run).</td>
+</tr>
+<tr>
+<td><code>app.log_panel.log(msg, level)</code></td>
+<td>Write a message to the log panel. <code>level</code> is <code>"info"</code>, <code>"success"</code>, or <code>"error"</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="example-build-a-small-workflow-from-script">Example: build a small workflow from script</h3>
+<pre><code class="language-python"># Add two nodes
+n1 = scene.add_node_by_name(&quot;text_upper&quot;, (100, 200))
+n2 = scene.add_node_by_name(&quot;Console Sink&quot;, (400, 200))
+
+# Set widget values
+if n1:
+    n1.set_parameter(&quot;text&quot;, &quot;hello from script&quot;)
+
+# Wire them together
+if n1 and n2:
+    edge = scene.connect_nodes(n1, &quot;exec_out&quot;, n2, &quot;exec_in&quot;)
+    data_edge = scene.connect_nodes(n1, &quot;result&quot;, n2, &quot;data&quot;)
+
+# Run the pipeline
+app.execute_pipeline()
+</code></pre>
+<h3 id="example-inspect-all-registered-nodes">Example: inspect all registered nodes</h3>
+<pre><code class="language-python">for node_id in sorted(registry.list_node_ids()):
+    defn = registry.get_definition(node_id)
+    print(f&quot;{node_id} ({defn.category}): {defn.description}&quot;)
+</code></pre>
+<hr />
+<h2 id="14-automation-api">14. Automation API</h2>
+<p>You can run workflows completely headlessly (without Qt or the GUI) from a<br />
+Python script.</p>
+<h3 id="minimal-headless-run">Minimal headless run</h3>
+<pre><code class="language-python">import asyncio
+import json
+from src.core.models import WorkflowModel
+from src.core.graph import GraphManager
+from src.core.engine import NetworkExecutor
+from src.core.registry import NodeRegistry
+
+# 1. Load node definitions
+NodeRegistry.load_all_with_extras(&quot;nodes&quot;)
+
+# 2. Load workflow from file
+with open(&quot;my_workflow.json&quot;) as f:
+    workflow_data = json.load(f)
+workflow = WorkflowModel.model_validate(workflow_data)
+
+# 3. Build graph
+gm = GraphManager()
+gm.from_model(workflow)
+
+# 4. Run
+executor = NetworkExecutor(gm)
+
+# Optional: connect signals for logging
+executor.node_log.connect(lambda uid, msg, lvl: print(f&quot;[{lvl}] {msg}&quot;))
+executor.execution_finished.connect(lambda ok: print(f&quot;Done: {ok}&quot;))
+
+asyncio.run(executor.run())
+</code></pre>
+<p>Note: <code>NetworkExecutor</code> is a <code>QObject</code>. In a fully headless environment you need<br />
+a <code>QCoreApplication</code> instance for the Qt event loop and signal system:</p>
+<pre><code class="language-python">from PyQt5.QtCore import QCoreApplication
+import sys
+app_instance = QCoreApplication(sys.argv)
+# ... then run executor as above
+</code></pre>
+<h3 id="init-only-run-load-time-initialisation">Init-only run (load-time initialisation)</h3>
+<pre><code class="language-python"># Runs init_priority &gt; 0 nodes only (auth/login nodes)
+asyncio.run(executor.run(init_only=True))
+</code></pre>
+<h3 id="accessing-results-after-a-run">Accessing results after a run</h3>
+<pre><code class="language-python"># After asyncio.run(executor.run()):
+for node_uuid, results in executor.node_results.items():
+    node_model = gm.nodes.get(node_uuid)
+    print(f&quot;{node_model.node_id}: {results}&quot;)
+</code></pre>
+<h3 id="building-a-workflow-programmatically">Building a workflow programmatically</h3>
+<pre><code class="language-python">from uuid import uuid4
+from src.core.models import NodeInstanceModel, ConnectionModel, WorkflowModel
+from src.core.graph import GraphManager
+
+gm = GraphManager()
+
+# Create node instances
+n1 = NodeInstanceModel(node_id=&quot;text_upper&quot;, position=(0, 0),
+                        parameters={&quot;text&quot;: &quot;hello&quot;})
+n2 = NodeInstanceModel(node_id=&quot;Console Sink&quot;, position=(300, 0))
+gm.add_node(n1)
+gm.add_node(n2)
+
+# Connect exec chain
+gm.add_connection(ConnectionModel(
+    from_node=n1.instance_id, from_port=&quot;exec_out&quot;,
+    to_node=n2.instance_id,   to_port=&quot;exec_in&quot;,
+    is_exec=True,
+))
+
+# Connect data
+gm.add_connection(ConnectionModel(
+    from_node=n1.instance_id, from_port=&quot;result&quot;,
+    to_node=n2.instance_id,   to_port=&quot;data&quot;,
+))
+
+# Run
+executor = NetworkExecutor(gm)
+asyncio.run(executor.run())
+</code></pre>
+<hr />
+<h2 id="15-configmanager">15. ConfigManager</h2>
+<p><strong>Module:</strong> <code>src.utils.config_manager</code></p>
+<p>Singleton that persists user settings to <code>~/.vibrante_node_config.json</code>.</p>
+<h3 id="accessing-the-singleton">Accessing the singleton</h3>
+<pre><code class="language-python">from src.utils.config_manager import config   # pre-instantiated singleton
+
+# Or:
+from src.utils.config_manager import ConfigManager
+config = ConfigManager()   # returns the same singleton
+</code></pre>
+<h3 id="generic-keyvalue-access">Generic key/value access</h3>
+<h4 id="get">get</h4>
+<pre><code class="language-python">def get(self, key: str, default=None) -&gt; Any
+</code></pre>
+<p>Returns the value for <code>key</code>, or <code>default</code> if not set.</p>
+<pre><code class="language-python">theme = config.get(&quot;theme&quot;, &quot;dark&quot;)
+</code></pre>
+<h4 id="set">set</h4>
+<pre><code class="language-python">def set(self, key: str, value: Any) -&gt; None
+</code></pre>
+<p>Sets <code>key</code> to <code>value</code> and immediately writes to disk.</p>
+<pre><code class="language-python">config.set(&quot;theme&quot;, &quot;light&quot;)
+</code></pre>
+<h3 id="recent-files">Recent files</h3>
+<h4 id="get_recent_files">get_recent_files</h4>
+<pre><code class="language-python">def get_recent_files(self) -&gt; List[str]
+</code></pre>
+<p>Returns the list of up to 10 recently opened file paths (newest first).</p>
+<h4 id="add_recent_file">add_recent_file</h4>
+<pre><code class="language-python">def add_recent_file(self, path: str) -&gt; None
+</code></pre>
+<p>Prepends <code>path</code> to the recent files list, removes any existing entry for the<br />
+same path, and trims to 10 entries. Saves immediately.</p>
+<h4 id="clear_recent_files">clear_recent_files</h4>
+<pre><code class="language-python">def clear_recent_files(self) -&gt; None
+</code></pre>
+<p>Empties the recent files list and saves.</p>
+<h3 id="gemini-api-key">Gemini API key</h3>
+<h4 id="get_gemini_api_key">get_gemini_api_key</h4>
+<pre><code class="language-python">def get_gemini_api_key(self) -&gt; str
+</code></pre>
+<p>Returns the stored Gemini API key string, or <code>""</code> if not set.</p>
+<h4 id="set_gemini_api_key">set_gemini_api_key</h4>
+<pre><code class="language-python">def set_gemini_api_key(self, api_key: str) -&gt; None
+</code></pre>
+<p>Stores the Gemini API key and saves to disk.</p>
+<h3 id="config-file-location">Config file location</h3>
+<pre><code class="language-python">import os
+path = os.path.expanduser(&quot;~/.vibrante_node_config.json&quot;)
+</code></pre>
+<hr />
+<h2 id="16-houbridge">16. HouBridge</h2>
+<p><strong>Module:</strong> <code>src.utils.hou_bridge</code></p>
+<p>JSON-RPC client for the Houdini command server (<code>vibrante_hou_server.py</code>)<br />
+running inside a live Houdini session.</p>
+<h3 id="getting-the-singleton">Getting the singleton</h3>
+<pre><code class="language-python">from src.utils.hou_bridge import get_bridge
+
+bridge = get_bridge()   # returns the module-level HouBridge singleton
+</code></pre>
+<pre><code class="language-python">from src.utils.hou_bridge import is_available
+
+if is_available():
+    bridge = get_bridge()
+    # ... do Houdini work
+else:
+    self.log_error(&quot;Houdini is not connected.&quot;)
+</code></pre>
+<h3 id="constructor-advanced-use">Constructor (advanced use)</h3>
+<pre><code class="language-python">HouBridge(host: str = &quot;127.0.0.1&quot;, port: int = None)
+</code></pre>
+<p><code>port</code> defaults to the value of the <code>VIBRANTE_HOU_PORT</code> environment variable,<br />
+or <code>18811</code> if the variable is not set.</p>
+<h3 id="connection-management">Connection management</h3>
+<p>The bridge connects lazily on the first method call. It uses:<br />
+- <code>socket.TCP_NODELAY</code> — disables Nagle's algorithm (~40 ms latency eliminated<br />
+  on Windows).<br />
+- <code>socket.timeout(30)</code> — 30-second timeout per call. If the server does not<br />
+  respond, a <code>ConnectionError</code> is raised with a descriptive message.<br />
+- Auto-reconnect on <code>BrokenPipeError</code> / <code>ConnectionResetError</code> — the client<br />
+  retries the <code>sendall</code> once after reconnecting.<br />
+- <code>threading.Lock</code> — <code>_send()</code> is fully thread-safe.</p>
+<h3 id="api-methods">API Methods</h3>
+<p>All methods are synchronous. They block until the Houdini server responds (up<br />
+to 30 seconds by default).</p>
+<hr />
+<h4 id="ping">ping</h4>
+<pre><code class="language-python">def ping(self) -&gt; dict
+</code></pre>
+<p>Checks if the server is alive.</p>
+<p><strong>Returns:</strong> <code>{"status": "ok", "version": "&lt;Houdini version string&gt;"}</code></p>
+<hr />
+<h4 id="create_node">create_node</h4>
+<pre><code class="language-python">def create_node(self, parent: str, node_type: str, name: str = &quot;&quot;) -&gt; dict
+</code></pre>
+<p>Creates a new node inside the given parent path.</p>
+<p><strong>Parameters:</strong><br />
+- <code>parent</code> — Parent node path (e.g., <code>"/obj"</code>, <code>"/obj/geo1"</code>).<br />
+- <code>node_type</code> — Houdini node type string (e.g., <code>"geo"</code>, <code>"box"</code>, <code>"attribwrangle"</code>).<br />
+- <code>name</code> — Optional name. Houdini auto-names if empty.</p>
+<p><strong>Returns:</strong> <code>{"path": "/obj/geo1", "name": "geo1", "type": "geo"}</code></p>
+<pre><code class="language-python">result = bridge.create_node(&quot;/obj&quot;, &quot;geo&quot;, &quot;my_geo&quot;)
+geo_path = result[&quot;path&quot;]   # &quot;/obj/my_geo&quot;
+</code></pre>
+<hr />
+<h4 id="delete_node_1">delete_node</h4>
+<pre><code class="language-python">def delete_node(self, path: str) -&gt; dict
+</code></pre>
+<p>Deletes the node at the given path and all its children.</p>
+<p><strong>Returns:</strong> <code>{"deleted": "/obj/my_geo"}</code></p>
+<hr />
+<h4 id="set_parm">set_parm</h4>
+<pre><code class="language-python">def set_parm(self, node: str, parm: str, value: Any) -&gt; dict
+</code></pre>
+<p>Sets a single parameter value.</p>
+<p><strong>Returns:</strong> <code>{"set": True}</code></p>
+<pre><code class="language-python">bridge.set_parm(&quot;/obj/my_geo/alembic1&quot;, &quot;fileName&quot;, &quot;/path/to/file.abc&quot;)
+bridge.set_parm(&quot;/obj/my_geo/null1&quot;, &quot;tx&quot;, 1.5)
+</code></pre>
+<hr />
+<h4 id="get_parm">get_parm</h4>
+<pre><code class="language-python">def get_parm(self, node: str, parm: str) -&gt; dict
+</code></pre>
+<p>Gets the current value of a single parameter.</p>
+<p><strong>Returns:</strong> <code>{"value": &lt;current value&gt;}</code></p>
+<pre><code class="language-python">result = bridge.get_parm(&quot;/obj/my_geo/alembic1&quot;, &quot;fileName&quot;)
+path = result[&quot;value&quot;]
+</code></pre>
+<hr />
+<h4 id="set_parms">set_parms</h4>
+<pre><code class="language-python">def set_parms(self, node: str, parms: dict) -&gt; dict
+</code></pre>
+<p>Sets multiple parameters in a single round-trip. More efficient than calling<br />
+<code>set_parm</code> repeatedly.</p>
+<p><strong>Returns:</strong> <code>{"set": True, "count": N}</code> where N is the number of parameters set.</p>
+<pre><code class="language-python">bridge.set_parms(&quot;/obj/my_geo/null1&quot;, {
+    &quot;tx&quot;: 1.0,
+    &quot;ty&quot;: 2.0,
+    &quot;tz&quot;: 0.0,
+})
+</code></pre>
+<hr />
+<h4 id="get_parms">get_parms</h4>
+<pre><code class="language-python">def get_parms(self, node: str) -&gt; dict
+</code></pre>
+<p>Returns a flat dict of all parameter names and their current values for the<br />
+given node.</p>
+<p><strong>Returns:</strong> <code>{"parm_name": value, ...}</code> — one entry per parameter.</p>
+<hr />
+<h4 id="connect_nodes">connect_nodes</h4>
+<pre><code class="language-python">def connect_nodes(
+    self,
+    from_node: str,
+    to_node: str,
+    output: int = 0,
+    input_idx: int = 0
+) -&gt; dict
+</code></pre>
+<p>Wires <code>from_node</code>'s output index <code>output</code> to <code>to_node</code>'s input index<br />
+<code>input_idx</code>.</p>
+<p><strong>Returns:</strong> <code>{"connected": True}</code></p>
+<pre><code class="language-python">bridge.connect_nodes(&quot;/obj/geo1/alembic1&quot;, &quot;/obj/geo1/convert1&quot;,
+                     output=0, input_idx=0)
+</code></pre>
+<hr />
+<h4 id="cook_node">cook_node</h4>
+<pre><code class="language-python">def cook_node(self, path: str, force: bool = False) -&gt; dict
+</code></pre>
+<p>Forces the node to cook (evaluate). When <code>force=True</code>, invalidates the cook<br />
+cache first.</p>
+<p><strong>Returns:</strong> <code>{"cooked": True}</code></p>
+<hr />
+<h4 id="run_code">run_code</h4>
+<pre><code class="language-python">def run_code(self, code: str) -&gt; dict
+</code></pre>
+<p>Executes arbitrary Python code <strong>inside Houdini</strong>. The <code>hou</code> module is<br />
+available. To return a value, assign to the local variable <code>result</code>.</p>
+<p><strong>Returns:</strong> <code>{"result": &lt;value of local variable 'result', or None&gt;}</code></p>
+<pre><code class="language-python">result = bridge.run_code(
+    &quot;n = hou.node('/obj/my_geo'); &quot;
+    &quot;result = n.displayNode().path() if n and n.displayNode() else None&quot;
+)
+display_path = result.get(&quot;result&quot;)
+</code></pre>
+<hr />
+<h4 id="scene_info">scene_info</h4>
+<pre><code class="language-python">def scene_info(self) -&gt; dict
+</code></pre>
+<p>Returns information about the current Houdini scene.</p>
+<p><strong>Returns:</strong></p>
+<pre><code class="language-python">{
+    &quot;hip_file&quot;:        &quot;/path/to/scene.hip&quot;,
+    &quot;hip_name&quot;:        &quot;scene.hip&quot;,
+    &quot;houdini_version&quot;: &quot;20.5.410&quot;,
+    &quot;fps&quot;:             24.0,
+    &quot;frame&quot;:           1.0,
+    &quot;frame_range&quot;:     [1, 240],   # [1, 240] fallback in headless Houdini
+}
+</code></pre>
+<p>Note: <code>frame_range</code> falls back to <code>[1, 240]</code> in headless Houdini (hbatch /<br />
+hython) because <code>hou.playbar.frameRange()</code> raises <code>AttributeError</code> in that<br />
+context.</p>
+<hr />
+<h4 id="node_info">node_info</h4>
+<pre><code class="language-python">def node_info(self, path: str) -&gt; dict
+</code></pre>
+<p>Returns detailed information about a specific node.</p>
+<p><strong>Returns:</strong></p>
+<pre><code class="language-python">{
+    &quot;path&quot;:              &quot;/obj/my_geo&quot;,
+    &quot;name&quot;:              &quot;my_geo&quot;,
+    &quot;type&quot;:              &quot;geo&quot;,
+    &quot;category&quot;:          &quot;Object&quot;,     # &quot;Object&quot;, &quot;Sop&quot;, &quot;Shop&quot;, etc.
+    &quot;input_connectors&quot;:  0,
+    &quot;output_connectors&quot;: 0,
+    &quot;inputs&quot;:            [&quot;/obj/other&quot;],  # connected input paths (or None)
+    &quot;outputs&quot;:           [&quot;/obj/child&quot;],  # connected output paths
+    &quot;children&quot;:          [&quot;alembic1&quot;, &quot;convert1&quot;],  # child node names
+}
+</code></pre>
+<hr />
+<h4 id="children">children</h4>
+<pre><code class="language-python">def children(self, path: str = &quot;/obj&quot;) -&gt; list
+</code></pre>
+<p>Lists the child nodes of the given path.</p>
+<p><strong>Returns:</strong> List of dicts, each with:</p>
+<pre><code class="language-python">{&quot;name&quot;: &quot;alembic1&quot;, &quot;type&quot;: &quot;alembic&quot;, &quot;path&quot;: &quot;/obj/my_geo/alembic1&quot;}
+</code></pre>
+<pre><code class="language-python">for child in bridge.children(&quot;/obj/my_geo&quot;):
+    print(child[&quot;path&quot;])
+    bridge.delete_node(child[&quot;path&quot;])
+</code></pre>
+<hr />
+<h4 id="node_exists">node_exists</h4>
+<pre><code class="language-python">def node_exists(self, path: str) -&gt; dict
+</code></pre>
+<p>Checks whether a node exists at the given path.</p>
+<p><strong>Returns:</strong> <code>{"exists": True}</code> or <code>{"exists": False}</code></p>
+<pre><code class="language-python">if bridge.node_exists(&quot;/obj/my_geo&quot;)[&quot;exists&quot;]:
+    bridge.delete_node(&quot;/obj/my_geo&quot;)
+</code></pre>
+<hr />
+<h4 id="set_display_flag">set_display_flag</h4>
+<pre><code class="language-python">def set_display_flag(self, path: str, on: bool = True) -&gt; dict
+</code></pre>
+<p>Sets the display flag on a SOP node. Raises <code>ValueError</code> (surfaced from<br />
+<code>hou.OperationFailed</code>) if the node type does not support display flags.</p>
+<p><strong>Returns:</strong> <code>{"set": True}</code></p>
+<hr />
+<h4 id="set_render_flag">set_render_flag</h4>
+<pre><code class="language-python">def set_render_flag(self, path: str, on: bool = True) -&gt; dict
+</code></pre>
+<p>Sets the render flag on a SOP node. Raises <code>ValueError</code> on unsupported types.</p>
+<p><strong>Returns:</strong> <code>{"set": True}</code></p>
+<hr />
+<h4 id="layout_children">layout_children</h4>
+<pre><code class="language-python">def layout_children(self, path: str = &quot;/obj&quot;) -&gt; dict
+</code></pre>
+<p>Auto-layouts all child nodes within the given path.</p>
+<p><strong>Returns:</strong> <code>{"done": True}</code></p>
+<hr />
+<h4 id="save_hip">save_hip</h4>
+<pre><code class="language-python">def save_hip(self, path: str = &quot;&quot;) -&gt; dict
+</code></pre>
+<p>Saves the current HIP file. When <code>path</code> is empty, saves to the current file<br />
+path. When <code>path</code> is provided, saves as a new file at that path.</p>
+<p><strong>Returns:</strong> <code>{"saved": "/path/to/saved.hip"}</code></p>
+<hr />
+<h4 id="set_expression">set_expression</h4>
+<pre><code class="language-python">def set_expression(
+    self,
+    node: str,
+    parm: str,
+    expression: str,
+    language: str = &quot;hscript&quot;
+) -&gt; dict
+</code></pre>
+<p>Sets a parameter expression. <code>language</code> must be <code>"hscript"</code> or <code>"python"</code>.</p>
+<p><strong>Returns:</strong> <code>{"set": True}</code></p>
+<pre><code class="language-python">bridge.set_expression(&quot;/obj/geo1/null1&quot;, &quot;tx&quot;, &quot;sin($F * 0.1)&quot;, language=&quot;hscript&quot;)
+bridge.set_expression(&quot;/obj/geo1/null1&quot;, &quot;ty&quot;, &quot;hou.frame() * 0.05&quot;, language=&quot;python&quot;)
+</code></pre>
+<hr />
+<h4 id="set_keyframe">set_keyframe</h4>
+<pre><code class="language-python">def set_keyframe(
+    self,
+    node: str,
+    parm: str,
+    frame: float,
+    value: float
+) -&gt; dict
+</code></pre>
+<p>Sets a keyframe on a parameter at the given frame.</p>
+<p><strong>Returns:</strong> <code>{"set": True}</code></p>
+<pre><code class="language-python">bridge.set_keyframe(&quot;/obj/geo1/null1&quot;, &quot;tx&quot;, frame=1,   value=0.0)
+bridge.set_keyframe(&quot;/obj/geo1/null1&quot;, &quot;tx&quot;, frame=100, value=10.0)
+</code></pre>
+<hr />
+<h4 id="set_frame">set_frame</h4>
+<pre><code class="language-python">def set_frame(self, frame: float) -&gt; dict
+</code></pre>
+<p>Sets the current frame in Houdini's timeline.</p>
+<p><strong>Returns:</strong> <code>{"frame": &lt;new frame&gt;}</code></p>
+<hr />
+<h4 id="set_playback_range">set_playback_range</h4>
+<pre><code class="language-python">def set_playback_range(self, start: float, end: float) -&gt; dict
+</code></pre>
+<p>Sets the playback frame range.</p>
+<p><strong>Returns:</strong> <code>{"start": &lt;start&gt;, "end": &lt;end&gt;}</code></p>
+<hr />
+<h3 id="error-handling-with-houbridge">Error handling with HouBridge</h3>
+<p>All <code>HouBridge</code> methods raise:</p>
+<ul>
+<li><code>ConnectionError</code> — when the socket cannot connect, times out (30 s), or<br />
+  the server closes the connection unexpectedly.</li>
+<li><code>RuntimeError</code> — when the Houdini server returns an <code>"error"</code> key in the<br />
+  JSON-RPC response (e.g., the node path does not exist, or a Houdini API<br />
+  call fails).</li>
+</ul>
+<p>Standard pattern for Houdini nodes:</p>
+<pre><code class="language-python">from src.utils.hou_bridge import get_bridge
+
+async def execute(self, inputs):
+    try:
+        bridge = get_bridge()
+        result = bridge.create_node(&quot;/obj&quot;, &quot;geo&quot;, &quot;my_geo&quot;)
+        geo_path = result[&quot;path&quot;]
+        # ... more bridge calls ...
+        return {&quot;result_path&quot;: geo_path, &quot;exec_out&quot;: True}
+    except Exception as e:
+        self.log_error(f&quot;Houdini operation failed: {e}&quot;)
+        return {&quot;result_path&quot;: &quot;&quot;, &quot;exec_out&quot;: True}
+</code></pre>
+<hr />
+<h2 id="17-prism-integration">17. Prism Integration</h2>
+<p><strong>Module:</strong> <code>src.utils.prism_core</code></p>
+<p>Utilities for resolving and bootstrapping a <code>PrismCore</code> instance from Prism<br />
+Pipeline 2.x.</p>
+<h3 id="resolve_prism_core">resolve_prism_core</h3>
+<pre><code class="language-python">def resolve_prism_core(inputs: dict = None) -&gt; Optional[PrismCore]
+</code></pre>
+<p>Resolves the active <code>PrismCore</code> instance using the following priority order:</p>
+<ol>
+<li><strong><code>inputs["core"]</code></strong> — if <code>inputs</code> is a dict and contains a <code>"core"</code> key<br />
+   with a non-<code>None</code> value, that value is stored and returned.</li>
+<li><strong><code>BaseNode.memory["_prism_core"]</code></strong> — shared workflow memory (set by the<br />
+   engine's Prism bootstrap step or a previous call to <code>store_prism_core()</code>).</li>
+<li><strong>Module-level cache</strong> (<code>_CACHED_PRISM_CORE</code>) — survives across runs.</li>
+<li><strong><code>__main__.pcore</code></strong> — checks if a <code>pcore</code> attribute exists in <code>__main__</code><br />
+   (present when running from inside a live Prism DCC session).</li>
+</ol>
+<p>Returns <code>None</code> if PrismCore is not available.</p>
+<p><strong>Usage inside a <code>prism_*</code> node (after auto-patching by registry):</strong></p>
+<pre><code class="language-python">async def execute(self, inputs):
+    core = resolve_prism_core(inputs)   # auto-inserted by registry
+    if core is None:
+        self.log_error(&quot;PrismCore not initialized.&quot;)
+        return {&quot;exec_out&quot;: True}
+    # use core normally
+</code></pre>
+<h3 id="bootstrap_prism_core">bootstrap_prism_core</h3>
+<pre><code class="language-python">def bootstrap_prism_core(
+    prism_scripts_path: str = &quot;C:/Program Files/Prism2/Scripts&quot;,
+    load_project: bool = True,
+    show_ui: bool = False,
+) -&gt; PrismCore
+</code></pre>
+<p>Synchronously initialises <code>PrismCore</code> on the calling thread and caches it.<br />
+<strong>Must be called from the Qt main thread</strong> because Prism's Qt widgets must be<br />
+parented to the main event loop.</p>
+<p>Called automatically by <code>NetworkExecutor._bootstrap_prism_if_needed()</code> when a<br />
+<code>prism_core_init</code> node is present in the graph. You rarely need to call this<br />
+directly.</p>
+<p><strong>Parameters:</strong><br />
+- <code>prism_scripts_path</code> — Path to the Prism 2 Scripts directory.<br />
+- <code>load_project</code> — If <code>True</code>, calls Prism with the <code>"loadProject"</code> arg.<br />
+- <code>show_ui</code> — If <code>True</code>, shows the Prism UI; otherwise creates a headless core.</p>
+<p><strong>Returns:</strong> The initialised <code>PrismCore</code> instance.</p>
+<h3 id="store_prism_core">store_prism_core</h3>
+<pre><code class="language-python">def store_prism_core(core: Any) -&gt; Any
+</code></pre>
+<p>Writes <code>core</code> to both <code>BaseNode.memory["_prism_core"]</code> and the module-level<br />
+cache. Returns <code>core</code>. Called automatically by <code>resolve_prism_core()</code> whenever<br />
+it successfully finds a core instance.</p>
+<h3 id="prism-node-pattern">Prism node pattern</h3>
+<pre><code class="language-python">from src.nodes.base import BaseNode
+from src.utils.prism_core import resolve_prism_core
+
+class Prism_Get_Assets(BaseNode):
+    name = &quot;prism_get_assets&quot;
+    category = &quot;Prism&quot;
+
+    def __init__(self):
+        super().__init__()
+        # [AUTO-GENERATED-PORTS-START]
+        self.add_input(&quot;entity&quot;,  &quot;string&quot;, widget_type=&quot;text&quot;)
+        self.add_output(&quot;assets&quot;, &quot;list&quot;)
+        # [AUTO-GENERATED-PORTS-END]
+
+    async def execute(self, inputs):
+        core = resolve_prism_core(inputs)
+        if core is None:
+            self.log_error(&quot;PrismCore not available. Add a prism_core_init node.&quot;)
+            return {&quot;assets&quot;: [], &quot;exec_out&quot;: True}
+        try:
+            assets = core.getAssets(entity=inputs.get(&quot;entity&quot;, &quot;&quot;))
+            return {&quot;assets&quot;: list(assets), &quot;exec_out&quot;: True}
+        except Exception as e:
+            self.log_error(f&quot;Prism error: {e}&quot;)
+            return {&quot;assets&quot;: [], &quot;exec_out&quot;: True}
+
+def register_node():
+    return Prism_Get_Assets
+</code></pre>
+<h3 id="prism-node-conventions">Prism node conventions</h3>
+<table>
+<thead>
+<tr>
+<th>Convention</th>
+<th>Rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>node_id</code></td>
+<td>Must start with <code>prism_</code> (e.g., <code>prism_get_assets</code>)</td>
+</tr>
+<tr>
+<td><code>category</code></td>
+<td>Must be <code>"Prism"</code></td>
+</tr>
+<tr>
+<td><code>icon_path</code></td>
+<td>Use <code>"icons/prism_icon.png"</code></td>
+</tr>
+<tr>
+<td><code>core</code> port</td>
+<td>Do NOT add — resolved automatically</td>
+</tr>
+<tr>
+<td>Guard</td>
+<td>Always check <code>if core is None</code> and return a safe default</td>
+</tr>
+<tr>
+<td>List outputs</td>
+<td>Wrap in <code>list(...)</code> to ensure serializability</td>
+</tr>
+<tr>
+<td><code>prism_core_init</code> node</td>
+<td>Must be present anywhere in the graph; bootstraps automatically</td>
+</tr>
+</tbody>
+</table>
+<h3 id="auto-patching-for-prism_-nodes">Auto-patching for prism_ nodes</h3>
+<p>The <code>NodeRegistry._prepare_definition()</code> method automatically patches any<br />
+node whose <code>node_id</code> starts with <code>prism_</code> (except <code>prism_core_init</code>):</p>
+<ol>
+<li>Prepends <code>from src.utils.prism_core import resolve_prism_core</code> if missing.</li>
+<li>Replaces <code>core = inputs.get('core')</code> with <code>core = resolve_prism_core(inputs)</code>.</li>
+</ol>
+<p>This means existing nodes written with the old <code>core</code> wire pattern continue to<br />
+work without modification. New nodes can write <code>core = inputs.get("core")</code> and<br />
+the registry replaces it at compile time.</p>
+<hr />
+<p><em>For node development tutorials and examples, see <a href="05_node_development.md">05_node_development.md</a>.</em><br />
+<em>For the full custom node SDK reference, see <a href="14_custom_nodes_api.md">14_custom_nodes_api.md</a>.</em></p>
+    <nav class="page-nav">
+      <a class="page-nav-link prev" href="07_frontend_architecture.html"><span class="page-nav-label">Previous</span><span class="page-nav-title">Frontend Architecture</span></a>
+      <a class="page-nav-link next" href="09_advanced_topics.html"><span class="page-nav-label">Next</span><span class="page-nav-title">Advanced Topics</span></a>
+    </nav>
+  </div>
+</main>
+
+<!-- ── TOC ────────────────────────────────────────────────────────────── -->
+<aside class="toc">
+  <div class="toc-title">On this page</div>
+<a class="toc-link toc-h2" href="#table-of-contents">Table of Contents</a>
+<a class="toc-link toc-h2" href="#1-basenode">1. BaseNode</a>
+<a class="toc-link toc-h3" href="#class-attributes">Class attributes</a>
+<a class="toc-link toc-h3" href="#instance-attributes">Instance attributes</a>
+<a class="toc-link toc-h3" href="#constructor">Constructor</a>
+<a class="toc-link toc-h3" href="#methods">Methods</a>
+<a class="toc-link toc-h2" href="#2-port">2. Port</a>
+<a class="toc-link toc-h3" href="#constructor_1">Constructor</a>
+<a class="toc-link toc-h3" href="#attributes">Attributes</a>
+<a class="toc-link toc-h2" href="#3-networkexecutor">3. NetworkExecutor</a>
+<a class="toc-link toc-h3" href="#constructor_2">Constructor</a>
+<a class="toc-link toc-h3" href="#signals">Signals</a>
+<a class="toc-link toc-h3" href="#methods_1">Methods</a>
+<a class="toc-link toc-h4" href="#run-async">run (async)</a>
+<a class="toc-link toc-h4" href="#stop">stop</a>
+<a class="toc-link toc-h3" href="#internal-attributes-read-only">Internal attributes (read-only)</a>
+<a class="toc-link toc-h2" href="#4-graphmanager">4. GraphManager</a>
+<a class="toc-link toc-h3" href="#constructor_3">Constructor</a>
+<a class="toc-link toc-h3" href="#attributes_1">Attributes</a>
+<a class="toc-link toc-h3" href="#methods_2">Methods</a>
+<a class="toc-link toc-h4" href="#add_node">add_node</a>
+<a class="toc-link toc-h4" href="#remove_node">remove_node</a>
+<a class="toc-link toc-h4" href="#add_connection">add_connection</a>
+<a class="toc-link toc-h4" href="#remove_connection">remove_connection</a>
+<a class="toc-link toc-h4" href="#is_dag">is_dag</a>
+<a class="toc-link toc-h4" href="#get_topological_sort">get_topological_sort</a>
+<a class="toc-link toc-h4" href="#to_model">to_model</a>
+<a class="toc-link toc-h4" href="#from_model">from_model</a>
+<a class="toc-link toc-h2" href="#5-noderegistry">5. NodeRegistry</a>
+<a class="toc-link toc-h3" href="#class-attributes_1">Class attributes</a>
+<a class="toc-link toc-h3" href="#methods_3">Methods</a>
+<a class="toc-link toc-h4" href="#load_all">load_all</a>
+<a class="toc-link toc-h4" href="#load_all_with_extras">load_all_with_extras</a>
+<a class="toc-link toc-h4" href="#_load_directory">_load_directory</a>
+<a class="toc-link toc-h4" href="#load_node">load_node</a>
+<a class="toc-link toc-h4" href="#register_builtins">register_builtins</a>
+<a class="toc-link toc-h4" href="#register_definition">register_definition</a>
+<a class="toc-link toc-h4" href="#get_definition">get_definition</a>
+<a class="toc-link toc-h4" href="#get_class">get_class</a>
+<a class="toc-link toc-h4" href="#list_node_ids">list_node_ids</a>
+<a class="toc-link toc-h4" href="#get_source_path">get_source_path</a>
+<a class="toc-link toc-h4" href="#reload_node_definition">reload_node_definition</a>
+<a class="toc-link toc-h4" href="#delete_node">delete_node</a>
+<a class="toc-link toc-h2" href="#6-workflowmodel">6. WorkflowModel</a>
+<a class="toc-link toc-h3" href="#constructor-fields">Constructor / Fields</a>
+<a class="toc-link toc-h3" href="#serialisation">Serialisation</a>
+<a class="toc-link toc-h3" href="#metadata-field">metadata field</a>
+<a class="toc-link toc-h2" href="#7-nodeinstancemodel">7. NodeInstanceModel</a>
+<a class="toc-link toc-h3" href="#fields">Fields</a>
+<a class="toc-link toc-h3" href="#example">Example</a>
+<a class="toc-link toc-h2" href="#8-connectionmodel">8. ConnectionModel</a>
+<a class="toc-link toc-h3" href="#fields_1">Fields</a>
+<a class="toc-link toc-h3" href="#is_exec-detection">is_exec detection</a>
+<a class="toc-link toc-h2" href="#9-portmodel">9. PortModel</a>
+<a class="toc-link toc-h3" href="#fields_2">Fields</a>
+<a class="toc-link toc-h2" href="#10-nodedefinitionjson">10. NodeDefinitionJSON</a>
+<a class="toc-link toc-h3" href="#fields_3">Fields</a>
+<a class="toc-link toc-h2" href="#11-stickynotemodel">11. StickyNoteModel</a>
+<a class="toc-link toc-h3" href="#fields_4">Fields</a>
+<a class="toc-link toc-h2" href="#12-backdropmodel">12. BackdropModel</a>
+<a class="toc-link toc-h3" href="#fields_5">Fields</a>
+<a class="toc-link toc-h2" href="#13-scripting-console-api">13. Scripting Console API</a>
+<a class="toc-link toc-h3" href="#available-objects">Available objects</a>
+<a class="toc-link toc-h3" href="#scene-methods-available-in-scripts">scene methods available in scripts</a>
+<a class="toc-link toc-h3" href="#app-methods-available-in-scripts">app methods available in scripts</a>
+<a class="toc-link toc-h3" href="#example-build-a-small-workflow-from-script">Example: build a small workflow from script</a>
+<a class="toc-link toc-h3" href="#example-inspect-all-registered-nodes">Example: inspect all registered nodes</a>
+<a class="toc-link toc-h2" href="#14-automation-api">14. Automation API</a>
+<a class="toc-link toc-h3" href="#minimal-headless-run">Minimal headless run</a>
+<a class="toc-link toc-h3" href="#init-only-run-load-time-initialisation">Init-only run (load-time initialisation)</a>
+<a class="toc-link toc-h3" href="#accessing-results-after-a-run">Accessing results after a run</a>
+<a class="toc-link toc-h3" href="#building-a-workflow-programmatically">Building a workflow programmatically</a>
+<a class="toc-link toc-h2" href="#15-configmanager">15. ConfigManager</a>
+<a class="toc-link toc-h3" href="#accessing-the-singleton">Accessing the singleton</a>
+<a class="toc-link toc-h3" href="#generic-keyvalue-access">Generic key/value access</a>
+<a class="toc-link toc-h4" href="#get">get</a>
+<a class="toc-link toc-h4" href="#set">set</a>
+<a class="toc-link toc-h3" href="#recent-files">Recent files</a>
+<a class="toc-link toc-h4" href="#get_recent_files">get_recent_files</a>
+<a class="toc-link toc-h4" href="#add_recent_file">add_recent_file</a>
+<a class="toc-link toc-h4" href="#clear_recent_files">clear_recent_files</a>
+<a class="toc-link toc-h3" href="#gemini-api-key">Gemini API key</a>
+<a class="toc-link toc-h4" href="#get_gemini_api_key">get_gemini_api_key</a>
+<a class="toc-link toc-h4" href="#set_gemini_api_key">set_gemini_api_key</a>
+<a class="toc-link toc-h3" href="#config-file-location">Config file location</a>
+<a class="toc-link toc-h2" href="#16-houbridge">16. HouBridge</a>
+<a class="toc-link toc-h3" href="#getting-the-singleton">Getting the singleton</a>
+<a class="toc-link toc-h3" href="#constructor-advanced-use">Constructor (advanced use)</a>
+<a class="toc-link toc-h3" href="#connection-management">Connection management</a>
+<a class="toc-link toc-h3" href="#api-methods">API Methods</a>
+<a class="toc-link toc-h4" href="#ping">ping</a>
+<a class="toc-link toc-h4" href="#create_node">create_node</a>
+<a class="toc-link toc-h4" href="#delete_node_1">delete_node</a>
+<a class="toc-link toc-h4" href="#set_parm">set_parm</a>
+<a class="toc-link toc-h4" href="#get_parm">get_parm</a>
+<a class="toc-link toc-h4" href="#set_parms">set_parms</a>
+<a class="toc-link toc-h4" href="#get_parms">get_parms</a>
+<a class="toc-link toc-h4" href="#connect_nodes">connect_nodes</a>
+<a class="toc-link toc-h4" href="#cook_node">cook_node</a>
+<a class="toc-link toc-h4" href="#run_code">run_code</a>
+<a class="toc-link toc-h4" href="#scene_info">scene_info</a>
+<a class="toc-link toc-h4" href="#node_info">node_info</a>
+<a class="toc-link toc-h4" href="#children">children</a>
+<a class="toc-link toc-h4" href="#node_exists">node_exists</a>
+<a class="toc-link toc-h4" href="#set_display_flag">set_display_flag</a>
+<a class="toc-link toc-h4" href="#set_render_flag">set_render_flag</a>
+<a class="toc-link toc-h4" href="#layout_children">layout_children</a>
+<a class="toc-link toc-h4" href="#save_hip">save_hip</a>
+<a class="toc-link toc-h4" href="#set_expression">set_expression</a>
+<a class="toc-link toc-h4" href="#set_keyframe">set_keyframe</a>
+<a class="toc-link toc-h4" href="#set_frame">set_frame</a>
+<a class="toc-link toc-h4" href="#set_playback_range">set_playback_range</a>
+<a class="toc-link toc-h3" href="#error-handling-with-houbridge">Error handling with HouBridge</a>
+<a class="toc-link toc-h2" href="#17-prism-integration">17. Prism Integration</a>
+<a class="toc-link toc-h3" href="#resolve_prism_core">resolve_prism_core</a>
+<a class="toc-link toc-h3" href="#bootstrap_prism_core">bootstrap_prism_core</a>
+<a class="toc-link toc-h3" href="#store_prism_core">store_prism_core</a>
+<a class="toc-link toc-h3" href="#prism-node-pattern">Prism node pattern</a>
+<a class="toc-link toc-h3" href="#prism-node-conventions">Prism node conventions</a>
+<a class="toc-link toc-h3" href="#auto-patching-for-prism_-nodes">Auto-patching for prism_ nodes</a>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/highlight.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lunr@2.3.9/lunr.min.js"></script>
+<script>
+// ── Search ──────────────────────────────────────────────────────────────
+let _idx = null, _docs = [];
+
+async function initSearch() {
+  try {
+    const base = document.getElementById('portal-base').dataset.base;
+    const resp = await fetch(base + 'search.json');
+    _docs = await resp.json();
+    _idx = lunr(function() {
+      this.ref('id');
+      this.field('title', { boost: 10 });
+      this.field('body');
+      _docs.forEach((d, i) => {
+        this.add({ id: i, title: d.title, body: d.body });
+      });
+    });
+  } catch(e) { console.warn('Search index not available', e); }
+}
+
+function doSearch(q) {
+  const box = document.getElementById('search-results');
+  if (!q || q.length < 2) { box.classList.remove('visible'); return; }
+  if (!_idx) { box.innerHTML = '<div class="search-no-results">Search index loading…</div>'; box.classList.add('visible'); return; }
+  const results = _idx.search(q + '~1');
+  if (!results.length) {
+    box.innerHTML = '<div class="search-no-results">No results for "' + q + '"</div>';
+    box.classList.add('visible'); return;
+  }
+  box.innerHTML = results.slice(0, 8).map(r => {
+    const d = _docs[r.ref];
+    const excerpt = d.body.substring(0, 140).replace(/[#*`]/g, '').trim() + '…';
+    return `<a class="search-result-item" href="${d.url}">
+      <div class="search-result-title">${d.title}</div>
+      <div class="search-result-excerpt">${excerpt}</div>
+    </a>`;
+  }).join('');
+  box.classList.add('visible');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initSearch();
+  const inp = document.getElementById('search-input');
+  if (inp) {
+    inp.addEventListener('input', e => doSearch(e.target.value));
+    inp.addEventListener('keydown', e => { if (e.key === 'Escape') { e.target.value=''; document.getElementById('search-results').classList.remove('visible'); }});
+  }
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.search-wrap')) document.getElementById('search-results')?.classList.remove('visible');
+  });
+  // Keyboard shortcut: / to focus search
+  document.addEventListener('keydown', e => {
+    if (e.key === '/' && !['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) {
+      e.preventDefault(); document.getElementById('search-input')?.focus();
+    }
+  });
+
+  // ── TOC active section ──────────────────────────────────────────────
+  const tocLinks = document.querySelectorAll('.toc-link');
+  const headings = document.querySelectorAll('h2[id],h3[id],h4[id]');
+  if (tocLinks.length && headings.length) {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          tocLinks.forEach(l => l.classList.remove('active'));
+          const link = document.querySelector(`.toc-link[href="#${entry.target.id}"]`);
+          if (link) link.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    headings.forEach(h => obs.observe(h));
+  }
+
+  // ── Copy buttons ────────────────────────────────────────────────────
+  document.querySelectorAll('pre').forEach(pre => {
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn'; btn.textContent = 'Copy';
+    btn.addEventListener('click', () => {
+      const code = pre.querySelector('code');
+      navigator.clipboard.writeText(code ? code.innerText : pre.innerText).then(() => {
+        btn.textContent = 'Copied!'; btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+      });
+    });
+    pre.style.position = 'relative';
+    pre.appendChild(btn);
+  });
+
+  // ── Sidebar active ──────────────────────────────────────────────────
+  const cur = window.location.pathname.split('/').pop();
+  document.querySelectorAll('.sidebar-link').forEach(l => {
+    if (l.getAttribute('href') === cur || l.getAttribute('href').endsWith(cur)) l.classList.add('active');
+  });
+
+  // ── highlight.js ────────────────────────────────────────────────────
+  if (window.hljs) {
+    hljs.configure({ ignoreUnescapedHTML: true });
+    hljs.highlightAll();
+  }
+});
+</script>
+</body>
+</html>

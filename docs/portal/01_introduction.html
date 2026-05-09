@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Vibrante-Node v2.0.0 — Introduction">
+<title>Introduction — Vibrante-Node Docs</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/atom-one-dark.min.css">
+<style>
+/* ── Reset & Variables ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:       #1e1e2e;
+  --surface:  #181825;
+  --surface2: #11111b;
+  --border:   #313244;
+  --text:     #cdd6f4;
+  --subtext:  #a6adc8;
+  --muted:    #6c7086;
+  --lavender: #b4befe;
+  --blue:     #89b4fa;
+  --teal:     #94e2d5;
+  --green:    #a6e3a1;
+  --yellow:   #f9e2af;
+  --peach:    #fab387;
+  --red:      #f38ba8;
+  --pink:     #f5c2e7;
+  --mauve:    #cba6f7;
+  --sidebar-w: 260px;
+  --toc-w:    220px;
+  --header-h: 56px;
+  --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --mono: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+}
+
+/* ── Layout ─────────────────────────────────────────────────────────────── */
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: var(--header-h) 1fr;
+  grid-template-columns: var(--sidebar-w) 1fr var(--toc-w);
+  grid-template-areas:
+    "header header header"
+    "sidebar content toc";
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+.header {
+  grid-area: header;
+  position: sticky; top: 0; z-index: 200;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 16px;
+  padding: 0 24px;
+}
+.header-logo {
+  font-weight: 700; font-size: 1.05em;
+  color: var(--mauve);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.header-version {
+  font-size: .78em;
+  background: var(--border);
+  color: var(--subtext);
+  padding: 2px 8px; border-radius: 12px;
+}
+.header-spacer { flex: 1; }
+.search-wrap { position: relative; }
+#search-input {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: .9em;
+  padding: 6px 14px 6px 36px;
+  width: 260px;
+  outline: none;
+  transition: border-color .15s;
+}
+#search-input:focus { border-color: var(--mauve); }
+.search-icon {
+  position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+  color: var(--muted); pointer-events: none; font-size: .9em;
+}
+#search-results {
+  position: absolute; top: calc(100% + 8px); right: 0;
+  width: 380px; max-height: 420px; overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.5);
+  display: none; z-index: 300;
+}
+#search-results.visible { display: block; }
+.search-result-item {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background .1s;
+}
+.search-result-item:last-child { border-bottom: none; }
+.search-result-item:hover { background: var(--bg); }
+.search-result-title { color: var(--blue); font-weight: 600; font-size: .9em; }
+.search-result-excerpt { color: var(--subtext); font-size: .82em; margin-top: 2px; line-height: 1.4; }
+.search-no-results { padding: 16px; color: var(--muted); text-align: center; font-size: .9em; }
+
+/* ── Sidebar ─────────────────────────────────────────────────────────────── */
+.sidebar {
+  grid-area: sidebar;
+  position: sticky; top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 20px 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.sidebar-group { margin-bottom: 4px; }
+.sidebar-group-title {
+  font-size: .7em;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--muted);
+  padding: 10px 20px 4px;
+  font-weight: 600;
+}
+.sidebar-link {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 20px;
+  color: var(--subtext);
+  text-decoration: none;
+  font-size: .88em;
+  border-left: 3px solid transparent;
+  transition: all .12s;
+  line-height: 1.3;
+}
+.sidebar-link:hover { color: var(--text); background: var(--bg); }
+.sidebar-link.active {
+  color: var(--mauve);
+  border-left-color: var(--mauve);
+  background: rgba(180,190,254,.06);
+  font-weight: 600;
+}
+.sidebar-num {
+  font-size: .7em;
+  color: var(--muted);
+  background: var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  flex-shrink: 0;
+}
+.sidebar-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 12px 16px;
+}
+
+/* ── Content ─────────────────────────────────────────────────────────────── */
+.content {
+  grid-area: content;
+  min-width: 0;
+  padding: 40px 48px 80px;
+  max-width: 860px;
+}
+.content-inner { max-width: 820px; }
+
+/* Breadcrumb */
+.breadcrumb {
+  font-size: .8em;
+  color: var(--muted);
+  margin-bottom: 28px;
+  display: flex; align-items: center; gap: 6px;
+}
+.breadcrumb a { color: var(--blue); text-decoration: none; }
+.breadcrumb a:hover { text-decoration: underline; }
+.breadcrumb-sep { color: var(--border); }
+
+/* Typography */
+h1 { font-size: 2em; color: var(--mauve); border-bottom: 2px solid var(--border); padding-bottom: 12px; margin: 20px 0 20px; }
+h2 { font-size: 1.45em; color: var(--blue); margin: 40px 0 14px; padding-top: 8px; }
+h3 { font-size: 1.15em; color: var(--teal); margin: 28px 0 10px; }
+h4 { font-size: 1em; color: var(--pink); margin: 20px 0 8px; }
+h5 { font-size: .95em; color: var(--yellow); margin: 16px 0 6px; }
+p  { margin-bottom: 16px; color: var(--text); }
+a  { color: var(--blue); }
+a:hover { text-decoration: underline; }
+strong { color: var(--peach); }
+em { color: var(--yellow); font-style: italic; }
+
+ul, ol { margin: 10px 0 16px 24px; }
+li { margin-bottom: 6px; }
+li > ul, li > ol { margin-top: 4px; margin-bottom: 4px; }
+
+blockquote {
+  border-left: 4px solid var(--mauve);
+  padding: 10px 20px;
+  margin: 16px 0;
+  background: rgba(180,190,254,.05);
+  border-radius: 0 8px 8px 0;
+  color: var(--subtext);
+}
+blockquote strong { color: var(--mauve); }
+
+hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+/* Code */
+code {
+  background: var(--surface2);
+  color: var(--red);
+  padding: 2px 7px; border-radius: 5px;
+  font-family: var(--mono); font-size: .87em;
+}
+pre {
+  background: var(--surface2) !important;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px 22px;
+  overflow-x: auto;
+  margin: 16px 0 22px;
+  position: relative;
+}
+pre code {
+  background: none !important;
+  color: inherit !important;
+  padding: 0; font-size: .9em;
+  border-radius: 0;
+}
+/* Copy button */
+.copy-btn {
+  position: absolute; top: 10px; right: 12px;
+  background: var(--border);
+  color: var(--subtext);
+  border: none; border-radius: 5px;
+  padding: 3px 10px; font-size: .75em;
+  cursor: pointer; transition: all .12s;
+  font-family: var(--font);
+}
+.copy-btn:hover { background: var(--mauve); color: var(--surface2); }
+.copy-btn.copied { background: var(--green); color: var(--surface2); }
+
+/* Tables */
+table { border-collapse: collapse; width: 100%; margin: 16px 0 22px; font-size: .9em; }
+th { background: var(--border); color: var(--mauve); padding: 10px 14px; text-align: left; font-weight: 600; }
+td { border-top: 1px solid var(--border); padding: 9px 14px; color: var(--text); }
+tr:nth-child(even) td { background: rgba(17,17,27,.4); }
+td code { font-size: .85em; }
+
+/* Callout boxes */
+.callout {
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin: 16px 0 22px;
+  border-left: 4px solid;
+}
+.callout-note    { background: rgba(137,180,250,.08); border-color: var(--blue);   }
+.callout-tip     { background: rgba(166,227,161,.08); border-color: var(--green);  }
+.callout-warning { background: rgba(249,226,175,.08); border-color: var(--yellow); }
+.callout-danger  { background: rgba(243,139,168,.08); border-color: var(--red);    }
+.callout-title   { font-weight: 700; font-size: .85em; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
+.callout-note    .callout-title { color: var(--blue);   }
+.callout-tip     .callout-title { color: var(--green);  }
+.callout-warning .callout-title { color: var(--yellow); }
+.callout-danger  .callout-title { color: var(--red);    }
+
+/* Prev/Next navigation */
+.page-nav {
+  display: flex; justify-content: space-between;
+  margin-top: 60px; padding-top: 24px;
+  border-top: 1px solid var(--border);
+  gap: 16px;
+}
+.page-nav-link {
+  display: flex; flex-direction: column;
+  text-decoration: none;
+  padding: 14px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  min-width: 200px;
+  transition: border-color .15s;
+  max-width: 48%;
+}
+.page-nav-link:hover { border-color: var(--mauve); }
+.page-nav-label { font-size: .75em; color: var(--muted); margin-bottom: 4px; }
+.page-nav-title { color: var(--blue); font-weight: 600; font-size: .95em; }
+.page-nav-link.prev .page-nav-label::before { content: '← '; }
+.page-nav-link.next { margin-left: auto; text-align: right; }
+.page-nav-link.next .page-nav-label::after { content: ' →'; }
+
+/* ── TOC (right panel) ───────────────────────────────────────────────────── */
+.toc {
+  grid-area: toc;
+  position: sticky; top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  padding: 28px 16px 28px 8px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.toc-title {
+  font-size: .72em;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--muted);
+  font-weight: 600;
+  margin-bottom: 12px;
+  padding-left: 8px;
+}
+.toc-link {
+  display: block;
+  padding: 4px 8px;
+  color: var(--subtext);
+  text-decoration: none;
+  font-size: .82em;
+  border-left: 2px solid transparent;
+  border-radius: 0 4px 4px 0;
+  transition: all .12s;
+  line-height: 1.35;
+  margin-bottom: 1px;
+}
+.toc-link:hover { color: var(--text); border-left-color: var(--border); }
+.toc-link.active { color: var(--mauve); border-left-color: var(--mauve); background: rgba(180,190,254,.05); }
+.toc-link.toc-h3 { padding-left: 20px; font-size: .79em; }
+.toc-link.toc-h4 { padding-left: 32px; font-size: .76em; color: var(--muted); }
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  body { grid-template-columns: var(--sidebar-w) 1fr 0; }
+  .toc { display: none; }
+}
+@media (max-width: 760px) {
+  body { grid-template-columns: 0 1fr 0; grid-template-rows: var(--header-h) 1fr; }
+  .sidebar { display: none; }
+  .content { padding: 24px 20px 60px; }
+  #search-input { width: 180px; }
+}
+
+/* ── Index / landing page ────────────────────────────────────────────────── */
+.hero { text-align: center; padding: 60px 0 48px; }
+.hero h1 { border: none; font-size: 2.8em; }
+.hero .tagline { color: var(--subtext); font-size: 1.15em; margin-top: 10px; }
+.hero .version-badge {
+  display: inline-block;
+  background: var(--border); color: var(--mauve);
+  padding: 4px 14px; border-radius: 20px; font-size: .85em;
+  margin-top: 14px;
+}
+.group-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin: 16px 0 36px; }
+.doc-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  text-decoration: none;
+  color: var(--text);
+  transition: border-color .15s, background .15s;
+  display: block;
+}
+.doc-card:hover { border-color: var(--mauve); background: rgba(180,190,254,.04); }
+.doc-card-num { font-size: .72em; color: var(--muted); margin-bottom: 4px; }
+.doc-card-title { color: var(--blue); font-weight: 700; font-size: 1em; margin-bottom: 6px; }
+.doc-card-desc { color: var(--subtext); font-size: .85em; line-height: 1.5; }
+.group-title { color: var(--teal); font-size: 1.1em; font-weight: 600; margin: 32px 0 10px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+</style>
+<span id="portal-base" data-base="" style="display:none"></span>
+</head>
+<body>
+
+<!-- ── Header ─────────────────────────────────────────────────────────── -->
+<header class="header">
+  <a class="header-logo" href="index.html">Vibrante-Node</a>
+  <span class="header-version">v2.0.0</span>
+  <div class="header-spacer"></div>
+  <div class="search-wrap">
+    <span class="search-icon">&#128269;</span>
+    <input id="search-input" type="text" placeholder="Search docs… (/)" autocomplete="off" spellcheck="false">
+    <div id="search-results"></div>
+  </div>
+</header>
+
+<!-- ── Sidebar ────────────────────────────────────────────────────────── -->
+<nav class="sidebar">
+<div class="sidebar-group">
+<div class="sidebar-group-title">Overview</div>
+<a class="sidebar-link active" href="01_introduction.html"><span class="sidebar-num">01</span>Introduction</a>
+<a class="sidebar-link" href="02_getting_started.html"><span class="sidebar-num">02</span>Getting Started</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Using the App</div>
+<a class="sidebar-link" href="03_user_guide.html"><span class="sidebar-num">03</span>User Guide</a>
+<a class="sidebar-link" href="04_workflow_tutorials.html"><span class="sidebar-num">04</span>Workflow Tutorials</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Developing Nodes</div>
+<a class="sidebar-link" href="05_node_development.html"><span class="sidebar-num">05</span>Node Development Guide</a>
+<a class="sidebar-link" href="14_custom_nodes_api.html"><span class="sidebar-num">14</span>Custom Nodes API</a>
+<a class="sidebar-link" href="08_api_reference.html"><span class="sidebar-num">08</span>API Reference</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Architecture</div>
+<a class="sidebar-link" href="06_backend_architecture.html"><span class="sidebar-num">06</span>Backend Architecture</a>
+<a class="sidebar-link" href="07_frontend_architecture.html"><span class="sidebar-num">07</span>Frontend Architecture</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Advanced</div>
+<a class="sidebar-link" href="09_advanced_topics.html"><span class="sidebar-num">09</span>Advanced Topics</a>
+<a class="sidebar-link" href="10_contribution_guide.html"><span class="sidebar-num">10</span>Contribution Guide</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Reference</div>
+<a class="sidebar-link" href="11_troubleshooting.html"><span class="sidebar-num">11</span>Troubleshooting</a>
+<a class="sidebar-link" href="12_examples_library.html"><span class="sidebar-num">12</span>Examples Library</a>
+<a class="sidebar-link" href="13_general_purpose_automation.html"><span class="sidebar-num">13</span>General Purpose Automation</a>
+</div>
+
+</nav>
+
+<!-- ── Main content ───────────────────────────────────────────────────── -->
+<main class="content">
+  <div class="content-inner">
+    <nav class="breadcrumb"><a href="index.html">Docs</a><span class="breadcrumb-sep">›</span><span>Introduction</span></nav>
+    <h1 id="vibrante-node-v200-introduction">Vibrante-Node v2.0.0 — Introduction</h1>
+<p><strong>Vibrante-Node</strong> is a Python-based visual node graph automation platform that lets you build, run, and maintain complex multi-step workflows by wiring together reusable node blocks on an interactive canvas. It ships with a PyQt5 graphical interface, an asyncio-based execution engine, and a growing library of nodes covering general-purpose automation, filesystem operations, DCC application control (Maya, Houdini, Blender), studio pipeline management (Prism Pipeline), and render farm submission (Deadline). Every node is a self-contained unit of logic defined in a single JSON file paired with Python code, making the platform trivially extensible by any Python developer without requiring modifications to the core application.</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#core-philosophy">Core Philosophy</a></li>
+<li><a href="#who-is-this-for">Who Is This For</a></li>
+<li><a href="#feature-overview">Feature Overview</a></li>
+<li><a href="#why-visual-node-graphs">Why Visual Node Graphs</a></li>
+<li><a href="#beyond-vfx--general-automation">Beyond VFX — General Automation</a></li>
+<li><a href="#supported-integrations">Supported Integrations</a></li>
+<li><a href="#architecture-overview">Architecture Overview</a></li>
+<li><a href="#version-history">Version History</a></li>
+<li><a href="#documentation-map">Documentation Map</a></li>
+</ol>
+<hr />
+<h2 id="core-philosophy">Core Philosophy</h2>
+<h3 id="why-node-based">Why Node-Based?</h3>
+<p>Scripts are linear. Node graphs are not. When a pipeline task grows beyond a handful of steps — conditional branching, parallel tracks, optional DCC calls, error routing — a script becomes a wall of nested <code>if</code> statements and callback chains that is hard to read, hard to modify, and impossible to hand off to a non-programmer. A node graph externalises the control flow into a visual structure that anyone can understand at a glance: data flows left to right, execution flows top to bottom, and every node is an isolated contract with defined inputs and outputs.</p>
+<p>Vibrante-Node adopts the Unreal Engine Blueprint model of <strong>exec pins</strong> alongside data pins. Exec pins (the white square connectors) explicitly wire the order of operations. Data pins (the coloured circles) carry values between nodes. This dual-channel approach lets you build workflows that are simultaneously readable as flowcharts and correct as programs.</p>
+<h3 id="why-async">Why Async?</h3>
+<p>DCC operations — cooking a Houdini geometry, rendering a Maya scene, querying a Prism Pipeline project database — can take seconds or minutes. A synchronous engine would freeze the UI and prevent you from monitoring progress, reading log output, or stopping a runaway task. Vibrante-Node runs the execution engine on an asyncio event loop that shares the Qt event loop via <code>qasync</code>. Every node's <code>execute()</code> method is a Python coroutine (<code>async def</code>). This means:</p>
+<ul>
+<li>The UI stays responsive during execution.</li>
+<li>Long-running nodes can <code>await</code> external results without blocking.</li>
+<li>The Stop button works immediately.</li>
+<li>Multiple parallel execution branches can run concurrently.</li>
+</ul>
+<h3 id="why-extensible">Why Extensible?</h3>
+<p>No automation platform ships with every node you will ever need. Vibrante-Node is designed so that adding a new node requires exactly one file: a <code>.json</code> file containing the port definitions and the Python code. There is no registration step, no recompile, no plugin manifest beyond dropping the file in the <code>nodes/</code> directory. The <code>NodeRegistry</code> discovers and registers it automatically on startup. For DCC-specific nodes, the Houdini plugin package (<code>plugins/houdini/</code>) adds nodes from <code>v_nodes_houdini/</code> and scripts from <code>v_scripts_houdini/</code> via environment variables — no changes to the core application.</p>
+<hr />
+<h2 id="who-is-this-for">Who Is This For</h2>
+<p>Vibrante-Node is built for three overlapping audiences.</p>
+<h3 id="visual-users-and-technical-artists">Visual Users and Technical Artists</h3>
+<p>Artists who need to automate repetitive tasks — renaming files, batch-exporting assets, running Houdini geometry operations — but do not want to write Python scripts. They build workflows by dragging nodes from the Library panel, connecting them on the canvas, and pressing F5. The node library is organised by category, searchable by name, and produces immediate visual feedback through the log panel and live wire value inspector.</p>
+<p><strong>Typical tasks</strong>: batch asset export, scene setup automation, file organisation, render submission.</p>
+<h3 id="pipeline-tds-and-studio-engineers">Pipeline TDs and Studio Engineers</h3>
+<p>Technical Directors who build and maintain shared workflows for a team. They author custom nodes using the Node Builder or by editing JSON files directly, package them as Houdini plugin additions or standalone <code>nodes/</code> files, and distribute them to artists. They integrate with Prism Pipeline for project/asset/shot management and with Deadline for render farm submission.</p>
+<p><strong>Typical tasks</strong>: pipeline integration nodes, studio-specific workflow templates, Prism entity queries, Deadline job configuration.</p>
+<h3 id="python-developers">Python Developers</h3>
+<p>Developers who want to build automated systems with a visual interface without writing a UI framework from scratch. They subclass <code>BaseNode</code>, implement <code>async def execute(self, inputs)</code>, and return a dict. The engine, canvas, log panel, autosave, and all other infrastructure are provided. They can also drive Vibrante-Node programmatically via the automation API (<code>AUTOMATION_API.md</code>).</p>
+<p><strong>Typical tasks</strong>: custom automation tooling, CI/CD pipeline steps, data processing workflows, service integrations.</p>
+<hr />
+<h2 id="feature-overview">Feature Overview</h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Description</th>
+<th>Shortcut / API</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Interactive Canvas</strong></td>
+<td>Pan, zoom, rubber-band select on a QGraphicsScene/View canvas</td>
+<td>Middle Mouse / Alt+LMB, Ctrl+Wheel, drag</td>
+</tr>
+<tr>
+<td><strong>Node Search Popup</strong></td>
+<td>Fuzzy-search all registered nodes by name or ID</td>
+<td>Tab</td>
+</tr>
+<tr>
+<td><strong>Exec Flow Pins</strong></td>
+<td>White square pins enforce execution order; data pins carry values</td>
+<td>Drag output to input</td>
+</tr>
+<tr>
+<td><strong>Async Execution Engine</strong></td>
+<td>asyncio coroutines keep the UI responsive during long operations</td>
+<td>F5 to run, Stop button to cancel</td>
+</tr>
+<tr>
+<td><strong>GroupNode / Subgraph</strong></td>
+<td>Collapse 2+ nodes into a single reusable subgraph node</td>
+<td>Ctrl+Shift+G</td>
+</tr>
+<tr>
+<td><strong>Mini-map</strong></td>
+<td>200x150 px canvas thumbnail with viewport indicator in bottom-right</td>
+<td>Ctrl+M to toggle</td>
+</tr>
+<tr>
+<td><strong>Canvas Search Bar</strong></td>
+<td>Find any node by name in the current canvas</td>
+<td>Ctrl+F</td>
+</tr>
+<tr>
+<td><strong>Live Wire Inspector</strong></td>
+<td>Hover a connected wire to see the last value that flowed through it</td>
+<td>Mouse hover</td>
+</tr>
+<tr>
+<td><strong>Bypass Mode</strong></td>
+<td>Skip a node; exec chain continues through it transparently</td>
+<td>Ctrl+B</td>
+</tr>
+<tr>
+<td><strong>Backdrop / Network Box</strong></td>
+<td>Label and visually group regions of the canvas</td>
+<td>Ctrl+G</td>
+</tr>
+<tr>
+<td><strong>Sticky Notes</strong></td>
+<td>Free-floating text annotations</td>
+<td>Right-click canvas</td>
+</tr>
+<tr>
+<td><strong>Node Builder</strong></td>
+<td>GUI editor for creating and editing node JSON + Python code</td>
+<td>Ctrl+E</td>
+</tr>
+<tr>
+<td><strong>Script Editor</strong></td>
+<td>Standalone Python editor with QScintilla and syntax highlighting</td>
+<td>Window menu</td>
+</tr>
+<tr>
+<td><strong>Scripting Console</strong></td>
+<td>Interactive Python REPL inside the app</td>
+<td>Window menu</td>
+</tr>
+<tr>
+<td><strong>Autosave</strong></td>
+<td>Writes all open tabs to <code>~/.vibrante_node_autosave.json</code> every 2 minutes</td>
+<td>Automatic</td>
+</tr>
+<tr>
+<td><strong>Crash Recovery</strong></td>
+<td>On next launch, offers to restore tabs from the autosave file</td>
+<td>Automatic</td>
+</tr>
+<tr>
+<td><strong>Recent Files</strong></td>
+<td>File &gt; Open Recent lists the last 10 workflows</td>
+<td>File menu</td>
+</tr>
+<tr>
+<td><strong>Node Execution Timing</strong></td>
+<td>Log panel shows how long each node took, e.g. <code>finished in 0.34s</code></td>
+<td>Automatic</td>
+</tr>
+<tr>
+<td><strong>Copy / Paste</strong></td>
+<td>Copy and paste node selections within or across workflows</td>
+<td>Ctrl+C / Ctrl+V</td>
+</tr>
+<tr>
+<td><strong>Reload Node</strong></td>
+<td>Re-read a node's JSON from disk and apply changes live</td>
+<td>Ctrl+R</td>
+</tr>
+<tr>
+<td><strong>Houdini Bridge</strong></td>
+<td>TCP JSON-RPC connection to a live Houdini session</td>
+<td><code>get_bridge()</code></td>
+</tr>
+<tr>
+<td><strong>Maya Headless</strong></td>
+<td>Headless Maya batch executor via action-list pattern</td>
+<td><code>maya_headless</code> node</td>
+</tr>
+<tr>
+<td><strong>Blender Headless</strong></td>
+<td>Headless Blender batch executor via action-list pattern</td>
+<td><code>blender_action_*</code> nodes</td>
+</tr>
+<tr>
+<td><strong>Prism Pipeline</strong></td>
+<td>60+ nodes for project/asset/shot/product management</td>
+<td><code>prism_*</code> nodes</td>
+</tr>
+<tr>
+<td><strong>Deadline Submission</strong></td>
+<td>Submit render jobs to Thinkbox Deadline</td>
+<td><code>deadline_*</code> nodes</td>
+</tr>
+<tr>
+<td><strong>Gemini AI Integration</strong></td>
+<td>Chat with Google Gemini AI from within the app</td>
+<td>Window menu</td>
+</tr>
+<tr>
+<td><strong>Export to Python</strong></td>
+<td>Export a workflow as a standalone Python script</td>
+<td>File &gt; Export</td>
+</tr>
+<tr>
+<td><strong>Dark / Light Theme</strong></td>
+<td>Toggle between Dracula dark and One-Light themes</td>
+<td>Window &gt; Theme</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="why-visual-node-graphs">Why Visual Node Graphs</h2>
+<h3 id="the-problem-with-plain-scripts">The Problem with Plain Scripts</h3>
+<p>Consider a pipeline task: open a Maya scene, export alembic geometry, import it into Houdini, run a simulation, export the result, and submit a Deadline render job — but only if the simulation produces more than 1000 points, otherwise skip the render and log a warning. In a Python script this requires careful state management, nested conditionals, error handling at every step, and careful documentation so the next person can understand what it does.</p>
+<p>In Vibrante-Node, this is five to ten nodes on a canvas. The conditional branch is visible as two exec paths. Error handling is a separate exec path from <code>exec_fail</code>. Anyone can understand the flow in ten seconds.</p>
+<h3 id="specific-benefits">Specific Benefits</h3>
+<p><strong>Discoverability.</strong> Every available operation is in the node library, searchable by name. There is no need to remember function names or read API documentation to get started.</p>
+<p><strong>Reusability.</strong> A GroupNode packages any sub-workflow into a single named block that can be duplicated, shared, or nested. Workflows can be saved as templates and reused across projects.</p>
+<p><strong>Live inspection.</strong> The live wire inspector shows the last value that flowed through every connection after execution. There is no need to add print statements and re-run to debug data flow — hover the wire.</p>
+<p><strong>Non-destructive iteration.</strong> Bypass a node with Ctrl+B to skip it without deleting it. Reconnect differently. The canvas is a whiteboard that invites experimentation.</p>
+<p><strong>Team collaboration.</strong> A workflow file is a JSON document. It can be checked into version control, diffed, and merged. Artists can build workflows without writing code; developers can build nodes without building UIs.</p>
+<hr />
+<h2 id="beyond-vfx-general-automation">Beyond VFX — General Automation</h2>
+<p>While Vibrante-Node ships with deep VFX and animation pipeline integrations, the core platform is entirely domain-agnostic. The execution engine, canvas, node library, and file format do not have any VFX-specific logic. Any Python task can become a node.</p>
+<p><strong>Examples of non-VFX use cases:</strong></p>
+<ul>
+<li><strong>File processing pipelines</strong> — watch a folder, process new files, move or rename outputs, write a report.</li>
+<li><strong>Data transformation</strong> — load JSON or CSV, filter, transform, write results. The <code>python_script</code> node runs arbitrary Python inline.</li>
+<li><strong>API orchestration</strong> — call REST APIs in sequence, pass results between calls, handle errors on separate branches.</li>
+<li><strong>Build and deployment automation</strong> — run shell commands via <code>python_script</code>, check exit codes via <code>compare</code> or <code>logical_gate</code>, conditionally proceed.</li>
+<li><strong>Machine learning experiments</strong> — string together data loading, preprocessing, model training, and evaluation steps with visual control flow.</li>
+<li><strong>Database workflows</strong> — query databases, transform results, insert or update records, log summaries.</li>
+<li><strong>Report generation</strong> — pull data from multiple sources, aggregate, format, write files.</li>
+</ul>
+<p>Any step that can be expressed as a Python function with typed inputs and outputs can be a Vibrante-Node node.</p>
+<hr />
+<h2 id="supported-integrations">Supported Integrations</h2>
+<h3 id="houdini-interactive-bridge">Houdini (Interactive Bridge)</h3>
+<p>The Houdini integration runs a JSON-RPC server (<code>vibrante_hou_server.py</code>) inside a live Houdini session over a local TCP socket. Vibrante-Node nodes call <code>bridge.create_node()</code>, <code>bridge.set_parm()</code>, <code>bridge.cook_node()</code>, and other methods to build and run Houdini networks interactively. The bridge supports all common Houdini operations: create/delete nodes, set parameters, wire connections, cook, save hip files, set keyframes, run arbitrary Python code inside Houdini via <code>bridge.run_code()</code>.</p>
+<p>The Houdini plugin is installed by placing <code>plugins/houdini/vibrante_node.json</code> in the Houdini packages folder. It adds the Vibrante-Node menu to Houdini's menu bar, loads a shelf tool, and provides <strong>Launch Vibrante-Node</strong> and <strong>Reconnect</strong> commands.</p>
+<h3 id="maya-headless-executor">Maya (Headless Executor)</h3>
+<p>Maya nodes follow an "action list" pattern. Each <code>maya_action_*</code> node appends a dictionary to a list. The <code>maya_headless</code> node receives the completed action list and passes it to a headless Maya subprocess (<code>mayapy</code>) that executes each action in sequence. This approach does not require a running Maya session — it is suitable for batch processing and render farm pipelines.</p>
+<p>Actions include: open/save/new scene, import/export alembic/FBX/OBJ, import/export camera, reference scene, assign material, create render layer, set AOVs, set render settings, set frame range, playblast, and custom Python.</p>
+<h3 id="blender-headless-executor">Blender (Headless Executor)</h3>
+<p>Blender nodes use the same action-list pattern as Maya. Each <code>blender_action_*</code> node appends an action dict. The executor runs Blender in background mode (<code>blender --background --python</code>). Actions include: open/save/new blend file, import/export alembic/FBX/glTF/OBJ/USD, render, set render settings, set frame range, scene info, and custom Python.</p>
+<h3 id="prism-pipeline">Prism Pipeline</h3>
+<p>Prism Pipeline is a studio-grade project management system. Vibrante-Node ships with over 60 Prism nodes covering the full Prism API surface: initialise PrismCore, list/create/switch projects, query assets/shots/sequences, get product versions, export paths, save scene versions, create playblasts, manage USD layers, trigger callbacks, and more.</p>
+<p>PrismCore is resolved automatically from a shared cache — there is no need to wire a <code>core</code> output between every Prism node. Place a <code>prism_core_init</code> node anywhere in the graph and all <code>prism_*</code> nodes find the same instance.</p>
+<h3 id="deadline-thinkbox">Deadline (Thinkbox)</h3>
+<p>Deadline submission nodes (<code>deadline_maya_submit</code>, <code>deadline_houdini_submit</code>, <code>deadline_blender_submit</code>) wrap the Deadline command-line client to submit render jobs with configurable job name, pool, priority, frame range, and renderer settings.</p>
+<hr />
+<h2 id="architecture-overview">Architecture Overview</h2>
+<p>The following diagram shows how the major components relate to one another at runtime.</p>
+<pre><code>+----------------------------------------------------------+
+|                     MainWindow (PyQt5)                   |
+|  Menu Bar | Toolbar | Tab Bar                            |
+|  +--------------------+  +----------------------------+  |
+|  |  Library Panel     |  |  NodeView (QGraphicsView)  |  |
+|  |  (node categories) |  |  +----------------------+  |  |
+|  |  [search box]      |  |  |  NodeScene           |  |  |
+|  |  [node list]       |  |  |  (QGraphicsScene)    |  |  |
+|  +--------------------+  |  |  NodeWidget items    |  |  |
+|                          |  |  Edge items          |  |  |
+|  +--------------------+  |  |  Backdrop items      |  |  |
+|  |  Log Panel         |  |  |  StickyNote items    |  |  |
+|  |  [info/warn/err]   |  |  +----------------------+  |  |
+|  +--------------------+  |  |  MiniMap overlay     |  |  |
+|                          |  |  CanvasSearchBar     |  |  |
+|                          +----------------------------+  |
++----------------------------------------------------------+
+          |                          |
+          | F5 / Run                 | Scene -&gt; WorkflowModel
+          v                          v
++--------------------+    +------------------------+
+|  GraphManager      |    |  Persistence           |
+|  (DAG + toposort)  |    |  (JSON load/save)      |
++--------------------+    +------------------------+
+          |
+          v
++--------------------+
+|  NetworkExecutor   |   (QObject, asyncio coroutines)
+|  node_started      |--&gt;  UI: highlights running node
+|  node_finished     |--&gt;  UI: clears highlight
+|  node_log          |--&gt;  Log Panel
+|  node_output       |--&gt;  Live Wire Inspector
+|  execution_finished|--&gt;  UI: re-enable Run button
++--------------------+
+          |
+          | instantiates &amp; calls execute()
+          v
++------------------------------------------+
+|  BaseNode subclasses (per node)          |
+|  JSON nodes  |  Python builtins          |
++------------------------------------------+
+          |
+          | (Houdini nodes)     (Maya/Blender)    (Prism)
+          v                     v                  v
++---------------+   +-------------------+   +-----------+
+|  HouBridge    |   |  Headless         |   | PrismCore |
+|  TCP JSON-RPC |   |  Subprocess       |   | (shared)  |
+|  port 18811   |   |  (mayapy/blender) |   |           |
++---------------+   +-------------------+   +-----------+
+          |
+          v
+   Live Houdini session
+   (vibrante_hou_server.py)
+</code></pre>
+<p><strong>Data flow summary:</strong></p>
+<ol>
+<li>The user builds a workflow on the <strong>NodeScene</strong> canvas. Each node is a <code>NodeWidget</code>; each connection is an <code>Edge</code>.</li>
+<li>On F5, <code>MainWindow</code> serialises the scene to a <code>WorkflowModel</code> (Pydantic), builds a <code>GraphManager</code> from it, and creates a <code>NetworkExecutor</code>.</li>
+<li>The executor identifies entry nodes (nodes with no connected <code>exec_in</code>), fires their <code>execute()</code> coroutines, and follows <code>exec_out</code> connections to chain subsequent nodes.</li>
+<li>Data flows backward by pulling: when a node needs an input value from an upstream data node, the executor runs that upstream node first.</li>
+<li>Results are broadcast via Qt signals: <code>node_output</code> updates the live wire inspector, <code>node_log</code> writes to the log panel, <code>node_started</code>/<code>node_finished</code> update node widget state.</li>
+<li>DCC nodes call out to their respective bridges or subprocesses. All DCC calls are blocking within an <code>async def execute()</code> — the <code>await</code> call yields control to the event loop while waiting.</li>
+</ol>
+<hr />
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Release</th>
+<th>Major Milestones</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>v1.0</strong></td>
+<td>2024 Q1</td>
+<td>Initial release. JSON node format, PyQt5 canvas, async engine, exec/data pins, Library panel, log panel, dark theme.</td>
+</tr>
+<tr>
+<td><strong>v1.5</strong></td>
+<td>2024 Q3</td>
+<td>Headless action node pattern for Maya, Houdini, and Blender. Deadline submission nodes. <code>python_script</code> inline node.</td>
+</tr>
+<tr>
+<td><strong>v1.6</strong></td>
+<td>2024 Q4</td>
+<td>Prism Pipeline integration (40+ nodes). <code>prism_core_init</code> auto-bootstrap. Shared PrismCore cache.</td>
+</tr>
+<tr>
+<td><strong>v1.8.4</strong></td>
+<td>2025 Q1</td>
+<td>Node Builder GUI. Scripting Console. Script Editor with QScintilla. Export to Python. Import from Python.</td>
+</tr>
+<tr>
+<td><strong>v1.8.5</strong></td>
+<td>2025 Q2</td>
+<td>QScintilla optional fallback (no hard crash on missing dependency). Houdini bridge socket fixes (TCP_NODELAY, lock, timeout). <code>vibrante_hou_server.py</code> headless fixes. <code>window.py</code> Houdini node/script loading fix.</td>
+</tr>
+<tr>
+<td><strong>v1.8.6</strong></td>
+<td>2025 Q3</td>
+<td>Live Wire Value Inspector. Autosave / Crash Recovery. Recent Files. Node Execution Timing.</td>
+</tr>
+<tr>
+<td><strong>v1.8.7</strong></td>
+<td>2025 Q4</td>
+<td>Canvas Search Bar (Ctrl+F). Mini-map (Ctrl+M). Ctrl+C crash fix (SIGINT handler).</td>
+</tr>
+<tr>
+<td><strong>v1.9.0</strong></td>
+<td>2026 Q1</td>
+<td>Subgraph / Group Node (Ctrl+Shift+G). Double-click to open subgraph in new tab. Dynamic ports. <code>exec_fail</code> pin.</td>
+</tr>
+<tr>
+<td><strong>v2.0.0</strong></td>
+<td>2026-05-10</td>
+<td>Consolidation release. All v1.8.6 through v1.9.0 features stable. GroupNode bugs fixed: exec_fail false positive, injected value lost, logs discarded, subgraph edits not persisted, UUID serialization. Subgraph tabs fully editable with sync-back. KeyboardInterrupt crash fix.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="documentation-map">Documentation Map</h2>
+<table>
+<thead>
+<tr>
+<th>Document</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>01_introduction.md</strong> (this file)</td>
+<td>What Vibrante-Node is, philosophy, audiences, architecture</td>
+</tr>
+<tr>
+<td><strong>02_getting_started.md</strong></td>
+<td>Installation, first launch, your first workflow tutorial</td>
+</tr>
+<tr>
+<td><strong>03_user_guide.md</strong></td>
+<td>Canvas navigation, node anatomy, execution flow, all features</td>
+</tr>
+<tr>
+<td><code>DEVELOPER.md</code></td>
+<td>Node authoring deep-dive, Python code rules, bridge API</td>
+</tr>
+<tr>
+<td><code>CLAUDE.md</code></td>
+<td>Node file format specification for AI-assisted node authoring</td>
+</tr>
+<tr>
+<td><code>AUTOMATION_API.md</code></td>
+<td>Programmatic control of Vibrante-Node from external scripts</td>
+</tr>
+<tr>
+<td><code>NODE_BUILDER_API.md</code></td>
+<td>Node Builder GUI reference</td>
+</tr>
+<tr>
+<td><code>RELEASE_v2.0.0.md</code></td>
+<td>Detailed changelog for v2.0.0</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>Vibrante-Node v2.0.0 — Released 2026-05-10</em></p>
+    <nav class="page-nav">
+      
+      <a class="page-nav-link next" href="02_getting_started.html"><span class="page-nav-label">Next</span><span class="page-nav-title">Getting Started</span></a>
+    </nav>
+  </div>
+</main>
+
+<!-- ── TOC ────────────────────────────────────────────────────────────── -->
+<aside class="toc">
+  <div class="toc-title">On this page</div>
+<a class="toc-link toc-h2" href="#table-of-contents">Table of Contents</a>
+<a class="toc-link toc-h2" href="#core-philosophy">Core Philosophy</a>
+<a class="toc-link toc-h3" href="#why-node-based">Why Node-Based?</a>
+<a class="toc-link toc-h3" href="#why-async">Why Async?</a>
+<a class="toc-link toc-h3" href="#why-extensible">Why Extensible?</a>
+<a class="toc-link toc-h2" href="#who-is-this-for">Who Is This For</a>
+<a class="toc-link toc-h3" href="#visual-users-and-technical-artists">Visual Users and Technical Artists</a>
+<a class="toc-link toc-h3" href="#pipeline-tds-and-studio-engineers">Pipeline TDs and Studio Engineers</a>
+<a class="toc-link toc-h3" href="#python-developers">Python Developers</a>
+<a class="toc-link toc-h2" href="#feature-overview">Feature Overview</a>
+<a class="toc-link toc-h2" href="#why-visual-node-graphs">Why Visual Node Graphs</a>
+<a class="toc-link toc-h3" href="#the-problem-with-plain-scripts">The Problem with Plain Scripts</a>
+<a class="toc-link toc-h3" href="#specific-benefits">Specific Benefits</a>
+<a class="toc-link toc-h2" href="#beyond-vfx-general-automation">Beyond VFX — General Automation</a>
+<a class="toc-link toc-h2" href="#supported-integrations">Supported Integrations</a>
+<a class="toc-link toc-h3" href="#houdini-interactive-bridge">Houdini (Interactive Bridge)</a>
+<a class="toc-link toc-h3" href="#maya-headless-executor">Maya (Headless Executor)</a>
+<a class="toc-link toc-h3" href="#blender-headless-executor">Blender (Headless Executor)</a>
+<a class="toc-link toc-h3" href="#prism-pipeline">Prism Pipeline</a>
+<a class="toc-link toc-h3" href="#deadline-thinkbox">Deadline (Thinkbox)</a>
+<a class="toc-link toc-h2" href="#architecture-overview">Architecture Overview</a>
+<a class="toc-link toc-h2" href="#version-history">Version History</a>
+<a class="toc-link toc-h2" href="#documentation-map">Documentation Map</a>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/highlight.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lunr@2.3.9/lunr.min.js"></script>
+<script>
+// ── Search ──────────────────────────────────────────────────────────────
+let _idx = null, _docs = [];
+
+async function initSearch() {
+  try {
+    const base = document.getElementById('portal-base').dataset.base;
+    const resp = await fetch(base + 'search.json');
+    _docs = await resp.json();
+    _idx = lunr(function() {
+      this.ref('id');
+      this.field('title', { boost: 10 });
+      this.field('body');
+      _docs.forEach((d, i) => {
+        this.add({ id: i, title: d.title, body: d.body });
+      });
+    });
+  } catch(e) { console.warn('Search index not available', e); }
+}
+
+function doSearch(q) {
+  const box = document.getElementById('search-results');
+  if (!q || q.length < 2) { box.classList.remove('visible'); return; }
+  if (!_idx) { box.innerHTML = '<div class="search-no-results">Search index loading…</div>'; box.classList.add('visible'); return; }
+  const results = _idx.search(q + '~1');
+  if (!results.length) {
+    box.innerHTML = '<div class="search-no-results">No results for "' + q + '"</div>';
+    box.classList.add('visible'); return;
+  }
+  box.innerHTML = results.slice(0, 8).map(r => {
+    const d = _docs[r.ref];
+    const excerpt = d.body.substring(0, 140).replace(/[#*`]/g, '').trim() + '…';
+    return `<a class="search-result-item" href="${d.url}">
+      <div class="search-result-title">${d.title}</div>
+      <div class="search-result-excerpt">${excerpt}</div>
+    </a>`;
+  }).join('');
+  box.classList.add('visible');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initSearch();
+  const inp = document.getElementById('search-input');
+  if (inp) {
+    inp.addEventListener('input', e => doSearch(e.target.value));
+    inp.addEventListener('keydown', e => { if (e.key === 'Escape') { e.target.value=''; document.getElementById('search-results').classList.remove('visible'); }});
+  }
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.search-wrap')) document.getElementById('search-results')?.classList.remove('visible');
+  });
+  // Keyboard shortcut: / to focus search
+  document.addEventListener('keydown', e => {
+    if (e.key === '/' && !['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) {
+      e.preventDefault(); document.getElementById('search-input')?.focus();
+    }
+  });
+
+  // ── TOC active section ──────────────────────────────────────────────
+  const tocLinks = document.querySelectorAll('.toc-link');
+  const headings = document.querySelectorAll('h2[id],h3[id],h4[id]');
+  if (tocLinks.length && headings.length) {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          tocLinks.forEach(l => l.classList.remove('active'));
+          const link = document.querySelector(`.toc-link[href="#${entry.target.id}"]`);
+          if (link) link.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    headings.forEach(h => obs.observe(h));
+  }
+
+  // ── Copy buttons ────────────────────────────────────────────────────
+  document.querySelectorAll('pre').forEach(pre => {
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn'; btn.textContent = 'Copy';
+    btn.addEventListener('click', () => {
+      const code = pre.querySelector('code');
+      navigator.clipboard.writeText(code ? code.innerText : pre.innerText).then(() => {
+        btn.textContent = 'Copied!'; btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+      });
+    });
+    pre.style.position = 'relative';
+    pre.appendChild(btn);
+  });
+
+  // ── Sidebar active ──────────────────────────────────────────────────
+  const cur = window.location.pathname.split('/').pop();
+  document.querySelectorAll('.sidebar-link').forEach(l => {
+    if (l.getAttribute('href') === cur || l.getAttribute('href').endsWith(cur)) l.classList.add('active');
+  });
+
+  // ── highlight.js ────────────────────────────────────────────────────
+  if (window.hljs) {
+    hljs.configure({ ignoreUnescapedHTML: true });
+    hljs.highlightAll();
+  }
+});
+</script>
+</body>
+</html>

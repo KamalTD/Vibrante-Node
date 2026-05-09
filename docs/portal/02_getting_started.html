@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Vibrante-Node v2.0.0 — Getting Started">
+<title>Getting Started — Vibrante-Node Docs</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/atom-one-dark.min.css">
+<style>
+/* ── Reset & Variables ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:       #1e1e2e;
+  --surface:  #181825;
+  --surface2: #11111b;
+  --border:   #313244;
+  --text:     #cdd6f4;
+  --subtext:  #a6adc8;
+  --muted:    #6c7086;
+  --lavender: #b4befe;
+  --blue:     #89b4fa;
+  --teal:     #94e2d5;
+  --green:    #a6e3a1;
+  --yellow:   #f9e2af;
+  --peach:    #fab387;
+  --red:      #f38ba8;
+  --pink:     #f5c2e7;
+  --mauve:    #cba6f7;
+  --sidebar-w: 260px;
+  --toc-w:    220px;
+  --header-h: 56px;
+  --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --mono: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+}
+
+/* ── Layout ─────────────────────────────────────────────────────────────── */
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: var(--header-h) 1fr;
+  grid-template-columns: var(--sidebar-w) 1fr var(--toc-w);
+  grid-template-areas:
+    "header header header"
+    "sidebar content toc";
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+.header {
+  grid-area: header;
+  position: sticky; top: 0; z-index: 200;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 16px;
+  padding: 0 24px;
+}
+.header-logo {
+  font-weight: 700; font-size: 1.05em;
+  color: var(--mauve);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.header-version {
+  font-size: .78em;
+  background: var(--border);
+  color: var(--subtext);
+  padding: 2px 8px; border-radius: 12px;
+}
+.header-spacer { flex: 1; }
+.search-wrap { position: relative; }
+#search-input {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: .9em;
+  padding: 6px 14px 6px 36px;
+  width: 260px;
+  outline: none;
+  transition: border-color .15s;
+}
+#search-input:focus { border-color: var(--mauve); }
+.search-icon {
+  position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+  color: var(--muted); pointer-events: none; font-size: .9em;
+}
+#search-results {
+  position: absolute; top: calc(100% + 8px); right: 0;
+  width: 380px; max-height: 420px; overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.5);
+  display: none; z-index: 300;
+}
+#search-results.visible { display: block; }
+.search-result-item {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background .1s;
+}
+.search-result-item:last-child { border-bottom: none; }
+.search-result-item:hover { background: var(--bg); }
+.search-result-title { color: var(--blue); font-weight: 600; font-size: .9em; }
+.search-result-excerpt { color: var(--subtext); font-size: .82em; margin-top: 2px; line-height: 1.4; }
+.search-no-results { padding: 16px; color: var(--muted); text-align: center; font-size: .9em; }
+
+/* ── Sidebar ─────────────────────────────────────────────────────────────── */
+.sidebar {
+  grid-area: sidebar;
+  position: sticky; top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 20px 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.sidebar-group { margin-bottom: 4px; }
+.sidebar-group-title {
+  font-size: .7em;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--muted);
+  padding: 10px 20px 4px;
+  font-weight: 600;
+}
+.sidebar-link {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 20px;
+  color: var(--subtext);
+  text-decoration: none;
+  font-size: .88em;
+  border-left: 3px solid transparent;
+  transition: all .12s;
+  line-height: 1.3;
+}
+.sidebar-link:hover { color: var(--text); background: var(--bg); }
+.sidebar-link.active {
+  color: var(--mauve);
+  border-left-color: var(--mauve);
+  background: rgba(180,190,254,.06);
+  font-weight: 600;
+}
+.sidebar-num {
+  font-size: .7em;
+  color: var(--muted);
+  background: var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  flex-shrink: 0;
+}
+.sidebar-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 12px 16px;
+}
+
+/* ── Content ─────────────────────────────────────────────────────────────── */
+.content {
+  grid-area: content;
+  min-width: 0;
+  padding: 40px 48px 80px;
+  max-width: 860px;
+}
+.content-inner { max-width: 820px; }
+
+/* Breadcrumb */
+.breadcrumb {
+  font-size: .8em;
+  color: var(--muted);
+  margin-bottom: 28px;
+  display: flex; align-items: center; gap: 6px;
+}
+.breadcrumb a { color: var(--blue); text-decoration: none; }
+.breadcrumb a:hover { text-decoration: underline; }
+.breadcrumb-sep { color: var(--border); }
+
+/* Typography */
+h1 { font-size: 2em; color: var(--mauve); border-bottom: 2px solid var(--border); padding-bottom: 12px; margin: 20px 0 20px; }
+h2 { font-size: 1.45em; color: var(--blue); margin: 40px 0 14px; padding-top: 8px; }
+h3 { font-size: 1.15em; color: var(--teal); margin: 28px 0 10px; }
+h4 { font-size: 1em; color: var(--pink); margin: 20px 0 8px; }
+h5 { font-size: .95em; color: var(--yellow); margin: 16px 0 6px; }
+p  { margin-bottom: 16px; color: var(--text); }
+a  { color: var(--blue); }
+a:hover { text-decoration: underline; }
+strong { color: var(--peach); }
+em { color: var(--yellow); font-style: italic; }
+
+ul, ol { margin: 10px 0 16px 24px; }
+li { margin-bottom: 6px; }
+li > ul, li > ol { margin-top: 4px; margin-bottom: 4px; }
+
+blockquote {
+  border-left: 4px solid var(--mauve);
+  padding: 10px 20px;
+  margin: 16px 0;
+  background: rgba(180,190,254,.05);
+  border-radius: 0 8px 8px 0;
+  color: var(--subtext);
+}
+blockquote strong { color: var(--mauve); }
+
+hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+/* Code */
+code {
+  background: var(--surface2);
+  color: var(--red);
+  padding: 2px 7px; border-radius: 5px;
+  font-family: var(--mono); font-size: .87em;
+}
+pre {
+  background: var(--surface2) !important;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px 22px;
+  overflow-x: auto;
+  margin: 16px 0 22px;
+  position: relative;
+}
+pre code {
+  background: none !important;
+  color: inherit !important;
+  padding: 0; font-size: .9em;
+  border-radius: 0;
+}
+/* Copy button */
+.copy-btn {
+  position: absolute; top: 10px; right: 12px;
+  background: var(--border);
+  color: var(--subtext);
+  border: none; border-radius: 5px;
+  padding: 3px 10px; font-size: .75em;
+  cursor: pointer; transition: all .12s;
+  font-family: var(--font);
+}
+.copy-btn:hover { background: var(--mauve); color: var(--surface2); }
+.copy-btn.copied { background: var(--green); color: var(--surface2); }
+
+/* Tables */
+table { border-collapse: collapse; width: 100%; margin: 16px 0 22px; font-size: .9em; }
+th { background: var(--border); color: var(--mauve); padding: 10px 14px; text-align: left; font-weight: 600; }
+td { border-top: 1px solid var(--border); padding: 9px 14px; color: var(--text); }
+tr:nth-child(even) td { background: rgba(17,17,27,.4); }
+td code { font-size: .85em; }
+
+/* Callout boxes */
+.callout {
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin: 16px 0 22px;
+  border-left: 4px solid;
+}
+.callout-note    { background: rgba(137,180,250,.08); border-color: var(--blue);   }
+.callout-tip     { background: rgba(166,227,161,.08); border-color: var(--green);  }
+.callout-warning { background: rgba(249,226,175,.08); border-color: var(--yellow); }
+.callout-danger  { background: rgba(243,139,168,.08); border-color: var(--red);    }
+.callout-title   { font-weight: 700; font-size: .85em; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
+.callout-note    .callout-title { color: var(--blue);   }
+.callout-tip     .callout-title { color: var(--green);  }
+.callout-warning .callout-title { color: var(--yellow); }
+.callout-danger  .callout-title { color: var(--red);    }
+
+/* Prev/Next navigation */
+.page-nav {
+  display: flex; justify-content: space-between;
+  margin-top: 60px; padding-top: 24px;
+  border-top: 1px solid var(--border);
+  gap: 16px;
+}
+.page-nav-link {
+  display: flex; flex-direction: column;
+  text-decoration: none;
+  padding: 14px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  min-width: 200px;
+  transition: border-color .15s;
+  max-width: 48%;
+}
+.page-nav-link:hover { border-color: var(--mauve); }
+.page-nav-label { font-size: .75em; color: var(--muted); margin-bottom: 4px; }
+.page-nav-title { color: var(--blue); font-weight: 600; font-size: .95em; }
+.page-nav-link.prev .page-nav-label::before { content: '← '; }
+.page-nav-link.next { margin-left: auto; text-align: right; }
+.page-nav-link.next .page-nav-label::after { content: ' →'; }
+
+/* ── TOC (right panel) ───────────────────────────────────────────────────── */
+.toc {
+  grid-area: toc;
+  position: sticky; top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  padding: 28px 16px 28px 8px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.toc-title {
+  font-size: .72em;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--muted);
+  font-weight: 600;
+  margin-bottom: 12px;
+  padding-left: 8px;
+}
+.toc-link {
+  display: block;
+  padding: 4px 8px;
+  color: var(--subtext);
+  text-decoration: none;
+  font-size: .82em;
+  border-left: 2px solid transparent;
+  border-radius: 0 4px 4px 0;
+  transition: all .12s;
+  line-height: 1.35;
+  margin-bottom: 1px;
+}
+.toc-link:hover { color: var(--text); border-left-color: var(--border); }
+.toc-link.active { color: var(--mauve); border-left-color: var(--mauve); background: rgba(180,190,254,.05); }
+.toc-link.toc-h3 { padding-left: 20px; font-size: .79em; }
+.toc-link.toc-h4 { padding-left: 32px; font-size: .76em; color: var(--muted); }
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  body { grid-template-columns: var(--sidebar-w) 1fr 0; }
+  .toc { display: none; }
+}
+@media (max-width: 760px) {
+  body { grid-template-columns: 0 1fr 0; grid-template-rows: var(--header-h) 1fr; }
+  .sidebar { display: none; }
+  .content { padding: 24px 20px 60px; }
+  #search-input { width: 180px; }
+}
+
+/* ── Index / landing page ────────────────────────────────────────────────── */
+.hero { text-align: center; padding: 60px 0 48px; }
+.hero h1 { border: none; font-size: 2.8em; }
+.hero .tagline { color: var(--subtext); font-size: 1.15em; margin-top: 10px; }
+.hero .version-badge {
+  display: inline-block;
+  background: var(--border); color: var(--mauve);
+  padding: 4px 14px; border-radius: 20px; font-size: .85em;
+  margin-top: 14px;
+}
+.group-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin: 16px 0 36px; }
+.doc-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  text-decoration: none;
+  color: var(--text);
+  transition: border-color .15s, background .15s;
+  display: block;
+}
+.doc-card:hover { border-color: var(--mauve); background: rgba(180,190,254,.04); }
+.doc-card-num { font-size: .72em; color: var(--muted); margin-bottom: 4px; }
+.doc-card-title { color: var(--blue); font-weight: 700; font-size: 1em; margin-bottom: 6px; }
+.doc-card-desc { color: var(--subtext); font-size: .85em; line-height: 1.5; }
+.group-title { color: var(--teal); font-size: 1.1em; font-weight: 600; margin: 32px 0 10px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+</style>
+<span id="portal-base" data-base="" style="display:none"></span>
+</head>
+<body>
+
+<!-- ── Header ─────────────────────────────────────────────────────────── -->
+<header class="header">
+  <a class="header-logo" href="index.html">Vibrante-Node</a>
+  <span class="header-version">v2.0.0</span>
+  <div class="header-spacer"></div>
+  <div class="search-wrap">
+    <span class="search-icon">&#128269;</span>
+    <input id="search-input" type="text" placeholder="Search docs… (/)" autocomplete="off" spellcheck="false">
+    <div id="search-results"></div>
+  </div>
+</header>
+
+<!-- ── Sidebar ────────────────────────────────────────────────────────── -->
+<nav class="sidebar">
+<div class="sidebar-group">
+<div class="sidebar-group-title">Overview</div>
+<a class="sidebar-link" href="01_introduction.html"><span class="sidebar-num">01</span>Introduction</a>
+<a class="sidebar-link active" href="02_getting_started.html"><span class="sidebar-num">02</span>Getting Started</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Using the App</div>
+<a class="sidebar-link" href="03_user_guide.html"><span class="sidebar-num">03</span>User Guide</a>
+<a class="sidebar-link" href="04_workflow_tutorials.html"><span class="sidebar-num">04</span>Workflow Tutorials</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Developing Nodes</div>
+<a class="sidebar-link" href="05_node_development.html"><span class="sidebar-num">05</span>Node Development Guide</a>
+<a class="sidebar-link" href="14_custom_nodes_api.html"><span class="sidebar-num">14</span>Custom Nodes API</a>
+<a class="sidebar-link" href="08_api_reference.html"><span class="sidebar-num">08</span>API Reference</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Architecture</div>
+<a class="sidebar-link" href="06_backend_architecture.html"><span class="sidebar-num">06</span>Backend Architecture</a>
+<a class="sidebar-link" href="07_frontend_architecture.html"><span class="sidebar-num">07</span>Frontend Architecture</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Advanced</div>
+<a class="sidebar-link" href="09_advanced_topics.html"><span class="sidebar-num">09</span>Advanced Topics</a>
+<a class="sidebar-link" href="10_contribution_guide.html"><span class="sidebar-num">10</span>Contribution Guide</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Reference</div>
+<a class="sidebar-link" href="11_troubleshooting.html"><span class="sidebar-num">11</span>Troubleshooting</a>
+<a class="sidebar-link" href="12_examples_library.html"><span class="sidebar-num">12</span>Examples Library</a>
+<a class="sidebar-link" href="13_general_purpose_automation.html"><span class="sidebar-num">13</span>General Purpose Automation</a>
+</div>
+
+</nav>
+
+<!-- ── Main content ───────────────────────────────────────────────────── -->
+<main class="content">
+  <div class="content-inner">
+    <nav class="breadcrumb"><a href="index.html">Docs</a><span class="breadcrumb-sep">›</span><span>Getting Started</span></nav>
+    <h1 id="vibrante-node-v200-getting-started">Vibrante-Node v2.0.0 — Getting Started</h1>
+<p>This guide takes you from a fresh machine to running your first workflow. It covers installation, the project layout, a complete first-workflow tutorial, and a detailed explanation of what happens when you press F5.</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#system-requirements">System Requirements</a></li>
+<li><a href="#installation-on-windows">Installation on Windows</a></li>
+<li><a href="#macos-and-linux-notes">macOS and Linux Notes</a></li>
+<li><a href="#running-from-source-vs-running-the-exe">Running from Source vs. Running the .exe</a></li>
+<li><a href="#project-structure-walkthrough">Project Structure Walkthrough</a></li>
+<li><a href="#first-launch--what-you-see">First Launch — What You See</a></li>
+<li><a href="#your-first-workflow--step-by-step">Your First Workflow — Step by Step</a></li>
+<li><a href="#understanding-execution-flow">Understanding Execution Flow</a></li>
+<li><a href="#the-node-library-panel">The Node Library Panel</a></li>
+<li><a href="#saving-and-loading-workflows">Saving and Loading Workflows</a></li>
+</ol>
+<hr />
+<h2 id="system-requirements">System Requirements</h2>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Minimum</th>
+<th>Recommended</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Operating System</strong></td>
+<td>Windows 10 64-bit</td>
+<td>Windows 11 64-bit</td>
+</tr>
+<tr>
+<td><strong>Python</strong></td>
+<td>3.10</td>
+<td>3.11</td>
+</tr>
+<tr>
+<td><strong>PyQt5</strong></td>
+<td>5.15</td>
+<td>5.15.x latest</td>
+</tr>
+<tr>
+<td><strong>QScintilla</strong></td>
+<td>2.13</td>
+<td>2.14</td>
+</tr>
+<tr>
+<td><strong>pydantic</strong></td>
+<td>2.0</td>
+<td>2.x latest</td>
+</tr>
+<tr>
+<td><strong>toposort</strong></td>
+<td>1.10</td>
+<td>1.10</td>
+</tr>
+<tr>
+<td><strong>RAM</strong></td>
+<td>4 GB</td>
+<td>8 GB</td>
+</tr>
+<tr>
+<td><strong>Disk</strong></td>
+<td>200 MB</td>
+<td>1 GB (for workflows and assets)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Optional dependencies by integration:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Integration</th>
+<th>Additional Requirement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Houdini Bridge</td>
+<td>Houdini 19.5 or 20.x with the <code>plugins/houdini/</code> package installed</td>
+</tr>
+<tr>
+<td>Maya Headless</td>
+<td>Autodesk Maya 2022+ with <code>mayapy</code> on PATH</td>
+</tr>
+<tr>
+<td>Blender Headless</td>
+<td>Blender 3.x or 4.x with <code>blender</code> on PATH</td>
+</tr>
+<tr>
+<td>Prism Pipeline</td>
+<td>Prism 2.x installed, <code>PrismCore</code> importable from Python</td>
+</tr>
+<tr>
+<td>Deadline</td>
+<td>Thinkbox Deadline 10.x client installed</td>
+</tr>
+<tr>
+<td>Gemini AI</td>
+<td><code>google-generativeai</code> Python package, valid API key</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="installation-on-windows">Installation on Windows</h2>
+<h3 id="step-1-install-python">Step 1 — Install Python</h3>
+<p>Download Python 3.11 from <a href="https://www.python.org/downloads/">python.org</a>. During installation:</p>
+<ul>
+<li>Check <strong>Add Python to PATH</strong>.</li>
+<li>Check <strong>Install pip</strong>.</li>
+</ul>
+<p>Verify the installation:</p>
+<pre><code>python --version
+pip --version
+</code></pre>
+<h3 id="step-2-clone-the-repository">Step 2 — Clone the Repository</h3>
+<pre><code>git clone https://github.com/your-org/vibrante-node.git
+cd vibrante-node
+</code></pre>
+<p>If you received a ZIP archive instead of a git URL, extract it to a folder of your choice (e.g. <code>C:\vibrante-node</code>).</p>
+<h3 id="step-3-install-python-dependencies">Step 3 — Install Python Dependencies</h3>
+<p>From inside the project root (the folder containing <code>requirements.txt</code>):</p>
+<pre><code>pip install -r requirements.txt
+</code></pre>
+<p>This installs: <code>PyQt5</code>, <code>QScintilla</code>, <code>pydantic</code>, <code>toposort</code>, <code>pytest</code>, <code>pytest-qt</code>, <code>google-generativeai</code>, and <code>pytest-asyncio</code>.</p>
+<p>If <code>QScintilla</code> fails on your system, the app will still run — it falls back to a plain <code>QPlainTextEdit</code>-based code editor automatically. To install QScintilla manually:</p>
+<pre><code>pip install QScintilla
+</code></pre>
+<h3 id="step-4-run-the-application">Step 4 — Run the Application</h3>
+<pre><code>python src/main.py
+</code></pre>
+<p>The splash screen appears briefly, then the main window opens.</p>
+<h3 id="step-5-optional-install-the-houdini-plugin">Step 5 — (Optional) Install the Houdini Plugin</h3>
+<p>If you use Houdini and want to control it from Vibrante-Node:</p>
+<ol>
+<li>Locate your Houdini packages folder. On Windows this is typically:<br />
+<code>C:\Users\&lt;username&gt;\Documents\houdini20.5\packages\</code></li>
+<li>Copy <code>plugins/houdini/vibrante_node.json</code> into that folder.</li>
+<li>Open the file in a text editor and set the two required paths:<br />
+<code>json
+   {
+       "env": [
+           { "VIBRANTE_NODE_APP": "C:/vibrante-node" },
+           { "VIBRANTE_PYTHON_EXE": "C:/Python311/python.exe" }
+       ],
+       "path": "$VIBRANTE_NODE_APP/plugins/houdini/houdini"
+   }</code></li>
+<li><code>VIBRANTE_NODE_APP</code> must be the absolute path to the project root (where <code>src/main.py</code> lives).</li>
+<li><code>VIBRANTE_PYTHON_EXE</code> must point to a Python 3.11 executable that has PyQt5 installed.</li>
+<li>Restart Houdini. The <strong>Vibrante-Node</strong> menu appears in the Houdini menu bar.</li>
+<li>Use <strong>Vibrante-Node &gt; Launch Vibrante-Node</strong> to start the app from inside Houdini.</li>
+</ol>
+<hr />
+<h2 id="macos-and-linux-notes">macOS and Linux Notes</h2>
+<p>Vibrante-Node is developed and tested on Windows. macOS and Linux are supported on a best-effort basis.</p>
+<h3 id="pyqt5-on-macos">PyQt5 on macOS</h3>
+<p>Install PyQt5 via pip. If you encounter issues with Qt platform plugins:</p>
+<pre><code class="language-bash">pip install PyQt5
+export QT_QPA_PLATFORM=xcb   # Linux only
+</code></pre>
+<p>On macOS, Homebrew Python 3.11 is recommended over the system Python.</p>
+<h3 id="pyqt5-on-linux">PyQt5 on Linux</h3>
+<p>Ubuntu / Debian:</p>
+<pre><code class="language-bash">sudo apt-get install python3-pyqt5 python3-pyqt5.qsci
+pip install pydantic toposort
+</code></pre>
+<p>Or install everything via pip (requires Qt development libraries):</p>
+<pre><code class="language-bash">sudo apt-get install libgles2-mesa-dev libxcb-xinerama0
+pip install -r requirements.txt
+</code></pre>
+<h3 id="known-limitations-on-non-windows">Known Limitations on Non-Windows</h3>
+<ul>
+<li>The Windows <code>.exe</code> build (<code>dist/vibrante_node.exe</code>) does not run on macOS or Linux.</li>
+<li>Houdini plugin features (<code>vibrante_node.json</code>, <code>pythonrc.py</code>) are tested only on Windows and Linux.</li>
+<li>The Blender and Maya headless executors depend on DCC executables being accessible on PATH, which varies by OS.</li>
+</ul>
+<hr />
+<h2 id="running-from-source-vs-running-the-exe">Running from Source vs. Running the .exe</h2>
+<h3 id="from-source">From Source</h3>
+<pre><code>python src/main.py
+</code></pre>
+<p>Use this during development or when you need to modify nodes, add Python nodes, or debug. Changes to <code>.json</code> node files are picked up on the next launch (or after Ctrl+Shift+R to reload all nodes). Changes to Python node files or source code require restarting the application.</p>
+<h3 id="from-the-exe">From the .exe</h3>
+<p>The <code>dist/vibrante_node.exe</code> is a PyInstaller-bundled single-file executable for Windows. It includes Python 3.10, PyQt5, QScintilla, pydantic, toposort, and all bundled nodes. It does not require a separate Python installation.</p>
+<p><strong>Limitations of the .exe:</strong></p>
+<ul>
+<li>You cannot modify source files inside the bundle.</li>
+<li>Custom nodes must be placed next to the <code>.exe</code> in a <code>nodes/</code> folder — the registry scans this location at startup.</li>
+<li>For the Houdini plugin, <code>VIBRANTE_PYTHON_EXE</code> must still point to a system Python 3.11 with PyQt5 because the plugin launches Vibrante-Node as a subprocess, not the bundled <code>.exe</code>.</li>
+</ul>
+<hr />
+<h2 id="project-structure-walkthrough">Project Structure Walkthrough</h2>
+<pre><code>vibrante-node/
+├── src/                        Main application source code
+│   ├── main.py                 Entry point; creates QApplication and MainWindow
+│   ├── core/
+│   │   ├── engine.py           NetworkExecutor — async graph runner
+│   │   ├── graph.py            GraphManager — DAG with toposort
+│   │   ├── models.py           Pydantic data models (WorkflowModel, etc.)
+│   │   ├── registry.py         NodeRegistry — loads JSON + Python nodes
+│   │   ├── persistence.py      Workflow JSON serialisation / deserialisation
+│   │   └── loader.py           Node JSON file loader utilities
+│   ├── nodes/
+│   │   ├── base.py             BaseNode abstract class
+│   │   └── builtins/           Built-in Python nodes (Sequence, ForEach, etc.)
+│   ├── ui/
+│   │   ├── window.py           MainWindow — top-level Qt window
+│   │   ├── library_panel.py    Node library sidebar
+│   │   ├── log_panel.py        Execution log display
+│   │   ├── node_widget.py      NodeWidget (QGraphicsItem)
+│   │   ├── port_widget.py      Port widgets on node cards
+│   │   ├── code_editor.py      Python code editor (QScintilla or fallback)
+│   │   ├── node_builder.py     Node Builder dialog
+│   │   ├── script_editor.py    Standalone script editor dialog
+│   │   ├── scripting_console.py Interactive Python REPL
+│   │   └── canvas/
+│   │       ├── scene.py        NodeScene (QGraphicsScene)
+│   │       ├── view.py         NodeView (QGraphicsView)
+│   │       ├── edge.py         Edge (wire) items
+│   │       ├── mini_map.py     MiniMap overlay widget
+│   │       ├── canvas_search_bar.py  Ctrl+F search bar
+│   │       ├── node_search_popup.py  Tab node search
+│   │       ├── backdrop.py     Backdrop / network box items
+│   │       └── sticky_note.py  Sticky note annotation items
+│   └── utils/
+│       ├── hou_bridge.py       HouBridge TCP client (Houdini integration)
+│       ├── prism_core.py       PrismCore resolver and bootstrap
+│       ├── config_manager.py   App settings and recent files
+│       ├── qt_compat.py        PyQt5 / Qt6 compatibility shims
+│       └── runtime.py          SafeRuntime for wrapping async node execution
+│
+├── nodes/                      JSON node definitions (loaded at startup)
+│   ├── console_print.json
+│   ├── python_script.json
+│   ├── if_condition.json
+│   ├── prism_core_init.json
+│   ├── maya_headless.json
+│   └── ...                     (90+ node files)
+│
+├── plugins/
+│   └── houdini/
+│       ├── vibrante_node.json  Houdini package file (user installs this)
+│       ├── v_nodes_houdini/    Houdini-specific node JSON files
+│       ├── v_scripts_houdini/  Houdini-specific Python scripts (Scripts menu)
+│       └── houdini/
+│           ├── MainMenuCommon.xml
+│           ├── toolbar/vibrante_node.shelf
+│           └── scripts/python/
+│               ├── pythonrc.py
+│               ├── vibrante_node_houdini.py
+│               └── vibrante_hou_server.py
+│
+├── workflows/                  Saved workflow JSON files (user-created)
+├── docs_src/                   Documentation source (this folder)
+├── examples/                   Example workflow JSON files
+├── icons/                      SVG and PNG icons used by node definitions
+├── requirements.txt            Python package dependencies
+├── CLAUDE.md                   Node authoring guide for AI assistants
+└── DEVELOPER.md                Developer reference documentation
+</code></pre>
+<hr />
+<h2 id="first-launch-what-you-see">First Launch — What You See</h2>
+<p>When Vibrante-Node starts for the first time, the main window is divided into four areas.</p>
+<pre><code>+------------------------------------------------------------------+
+|  Menu Bar: File  Edit  Window  Help                              |
+|  Toolbar:  [New] [Open] [Save] [Run] [Stop] [Add Node] [Edit]   |
++------------------------------------------------------------------+
+|           |                                     |                |
+|  Library  |           Canvas (NodeView)         |                |
+|  Panel    |                                     |                |
+|           |   (empty — grey or dark grid)       |                |
+|  Search:  |                                     |                |
+|  [______] |                                     |   [mini-map]   |
+|           |                                     |   200x150 px   |
+|  General  |                                     |   bottom-right |
+|  &gt; print  |                                     |                |
+|  &gt; script |                                     |                |
+|  &gt; concat |                                     |                |
+|  Houdini  |                                     |                |
+|  &gt; create |                                     |                |
+|  ...      |                                     |                |
+|           |                                     |                |
++-----------+-------------------------------------+----------------+
+|  Log Panel                                                       |
+|  [info]  Welcome to Vibrante-Node v2.0.0                        |
++------------------------------------------------------------------+
+</code></pre>
+<h3 id="the-canvas">The Canvas</h3>
+<p>The large central area is the <strong>canvas</strong> — a <code>NodeView</code> (QGraphicsView) containing a <code>NodeScene</code> (QGraphicsScene). This is where you place and connect nodes. It starts empty. A grid pattern is drawn in the background.</p>
+<p>The <strong>mini-map</strong> thumbnail appears in the bottom-right corner of the canvas. It shows a scaled-down view of the entire scene and a blue rectangle indicating the current viewport. Toggle it with Ctrl+M.</p>
+<h3 id="the-library-panel">The Library Panel</h3>
+<p>The left sidebar lists every registered node, organised by category. Expand a category by clicking its header. Click a node to select it; double-click to add it to the centre of the canvas. You can also search nodes by typing in the search box at the top of the panel.</p>
+<p>Categories you will see on first launch:</p>
+<ul>
+<li><strong>General</strong> — console print, python script, math, string, list, dictionary, file, logic, control flow</li>
+<li><strong>Houdini</strong> — create geo, set parm, cook node, save hip, scene info (if running standalone without the Houdini plugin, these appear greyed out)</li>
+<li><strong>Maya</strong> — headless Maya batch actions</li>
+<li><strong>Blender</strong> — headless Blender batch actions</li>
+<li><strong>Prism</strong> — Prism Pipeline project/asset/shot management</li>
+<li><strong>Deadline</strong> — render farm submission</li>
+</ul>
+<h3 id="the-log-panel">The Log Panel</h3>
+<p>The bottom strip is the <strong>log panel</strong>. Every node that calls <code>self.log_info()</code>, <code>self.log_success()</code>, or <code>self.log_error()</code> in its Python code writes a timestamped line here. The engine also writes timing lines: <code>Node 'X' finished in 0.34s</code>. Messages are colour-coded: grey for info, green for success, red for error.</p>
+<h3 id="the-toolbar">The Toolbar</h3>
+<table>
+<thead>
+<tr>
+<th>Button</th>
+<th>Action</th>
+<th>Shortcut</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>New</td>
+<td>Create a new empty workflow tab</td>
+<td>Ctrl+N</td>
+</tr>
+<tr>
+<td>Open</td>
+<td>Open a saved workflow JSON file</td>
+<td>Ctrl+O</td>
+</tr>
+<tr>
+<td>Save</td>
+<td>Save the current workflow</td>
+<td>Ctrl+S</td>
+</tr>
+<tr>
+<td>Run</td>
+<td>Execute the workflow</td>
+<td>F5</td>
+</tr>
+<tr>
+<td>Stop</td>
+<td>Cancel a running execution</td>
+<td>(toolbar only)</td>
+</tr>
+<tr>
+<td>Add Node</td>
+<td>Open the node search popup</td>
+<td>Tab</td>
+</tr>
+<tr>
+<td>Edit Node</td>
+<td>Open selected node in Node Builder</td>
+<td>Ctrl+E</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="your-first-workflow-step-by-step">Your First Workflow — Step by Step</h2>
+<p>In this tutorial you will build a minimal workflow: a text value flows into a print node, which prints it to the log panel when you press F5.</p>
+<h3 id="step-1-open-the-application">Step 1 — Open the Application</h3>
+<p>Run <code>python src/main.py</code> (or double-click the <code>.exe</code>). The main window opens with an empty canvas.</p>
+<h3 id="step-2-add-a-console-print-node">Step 2 — Add a Console Print Node</h3>
+<p>Press <strong>Tab</strong> to open the node search popup. A floating search box appears at the cursor position.</p>
+<p>Type <code>print</code>. The list narrows to show <code>console_print</code>. Press <strong>Enter</strong> or click <code>console_print</code>.</p>
+<p>A node labelled <strong>console_print</strong> appears on the canvas near where you pressed Tab. It has:<br />
+- A white square input pin on the left labelled <code>exec_in</code><br />
+- A text input widget labelled <code>message</code><br />
+- A white square output pin on the right labelled <code>exec_out</code></p>
+<h3 id="step-3-add-an-exec-start-trigger">Step 3 — Add an Exec Start Trigger</h3>
+<p>You need something to fire <code>exec_in</code> on the print node. Any node whose <code>exec_out</code> is connected to another node's <code>exec_in</code> will trigger it.</p>
+<p>Press <strong>Tab</strong> again and search for <code>sequence</code>. Add a <strong>sequence</strong> node. This node has one <code>exec_in</code> and two <code>exec_out</code> pins (<code>out_1</code> and <code>out_2</code>), and it fires them in order. It is a good starting trigger.</p>
+<p>Alternatively, the <code>console_print</code> node has no dependency on an upstream exec trigger — the engine will run any node whose <code>exec_in</code> is not connected, treating it as an entry point. So if you skip this step, <code>console_print</code> will still run when you press F5.</p>
+<h3 id="step-4-add-a-variable-node-and-wire-it">Step 4 — Add a Variable Node and Wire It</h3>
+<p>Press <strong>Tab</strong> and search for <code>variable</code>. Add a <strong>variable_node</strong>. This node has:<br />
+- A text widget labelled <code>value</code> (your input)<br />
+- A data output pin labelled <code>out</code><br />
+- No exec pins — it is a pure data node</p>
+<p>Click on the <code>value</code> text field in the variable node and type <code>Hello, Vibrante-Node!</code>.</p>
+<p>Now wire the variable node to the print node:<br />
+1. <strong>Hover</strong> over the variable node's <code>out</code> port (right side, coloured circle).<br />
+2. <strong>Click and drag</strong> from <code>out</code> toward the <code>console_print</code> node.<br />
+3. <strong>Release</strong> on the <code>message</code> input port (left side) of the <code>console_print</code> node.</p>
+<p>A curved line (wire) now connects the two nodes. The wire colour matches the port data type.</p>
+<h3 id="step-5-connect-exec-pins-optional">Step 5 — Connect Exec Pins (Optional)</h3>
+<p>If you added a sequence node, drag from its <code>out_1</code> exec output to the <code>exec_in</code> of <code>console_print</code>. This creates an exec wire (white, square connectors).</p>
+<p>If you did not add a sequence node, skip this step. The engine will treat <code>console_print</code> as an entry point because its <code>exec_in</code> has no incoming connection.</p>
+<h3 id="step-6-press-f5-to-run">Step 6 — Press F5 to Run</h3>
+<p>Press <strong>F5</strong> (or click the <strong>Run</strong> button in the toolbar). The engine executes the workflow.</p>
+<p>Watch the canvas: the running node briefly highlights in a different colour. When it finishes, the highlight clears.</p>
+<p>In the <strong>log panel</strong> at the bottom, you should see:</p>
+<pre><code>[info]  Hello, Vibrante-Node!
+[info]  Node 'console_print' finished in 0.00s
+</code></pre>
+<p>The text you typed in the variable node has flowed through the wire and been printed.</p>
+<h3 id="step-7-inspect-the-wire">Step 7 — Inspect the Wire</h3>
+<p>After execution, hover your mouse over the wire connecting the variable node's <code>out</code> port to the <code>console_print</code> node's <code>message</code> port.</p>
+<p>A tooltip appears showing:</p>
+<pre><code>message: 'Hello, Vibrante-Node!'
+</code></pre>
+<p>This is the <strong>live wire value inspector</strong>. It shows the last value that flowed through every connected wire, without needing to re-run.</p>
+<h3 id="step-8-save-the-workflow">Step 8 — Save the Workflow</h3>
+<p>Press <strong>Ctrl+S</strong>. A file dialog opens. Choose a location, enter a filename (e.g. <code>my_first_workflow</code>), and click Save. The file is saved as a <code>.json</code> file.</p>
+<p>The title bar updates to show the filename. The workflow is now in <strong>File &gt; Open Recent</strong> for quick access.</p>
+<h3 id="step-9-reload-and-re-run">Step 9 — Reload and Re-run</h3>
+<p>Close the workflow tab (click the X on the tab). Open it again with <strong>Ctrl+O</strong> or via <strong>File &gt; Open Recent &gt; my_first_workflow.json</strong>. Press F5. The same output appears in the log panel.</p>
+<hr />
+<h2 id="understanding-execution-flow">Understanding Execution Flow</h2>
+<p>When you press F5, the following sequence occurs:</p>
+<h3 id="1-serialise-the-scene">1. Serialise the Scene</h3>
+<p><code>MainWindow</code> calls <code>scene.to_workflow_model()</code>, which traverses all <code>NodeWidget</code> and <code>Edge</code> items in the <code>NodeScene</code> and builds a <code>WorkflowModel</code> — a Pydantic model containing lists of <code>NodeInstanceModel</code>, <code>ConnectionModel</code>, <code>StickyNoteModel</code>, and <code>BackdropModel</code> objects.</p>
+<h3 id="2-build-the-graph">2. Build the Graph</h3>
+<p>A <code>GraphManager</code> is constructed from the <code>WorkflowModel</code>. It stores nodes in a dict keyed by UUID and connections in a list. The <code>GraphManager</code> uses the <code>toposort</code> library to detect cycles — if you accidentally created a cycle, an error is reported and execution stops.</p>
+<h3 id="3-create-node-instances">3. Create Node Instances</h3>
+<p>For each <code>NodeInstanceModel</code>, <code>NetworkExecutor</code> looks up the corresponding class in <code>NodeRegistry</code>. For JSON nodes, this is a dynamically generated <code>BaseNode</code> subclass created when the JSON was loaded. For builtin nodes (like <code>SequenceNode</code>, <code>ForEachNode</code>), it is the hand-written Python class. An instance is created, its parameters are restored from the saved workflow, and engine hooks are set up.</p>
+<h3 id="4-identify-entry-nodes">4. Identify Entry Nodes</h3>
+<p>The engine scans all node instances. <strong>Entry nodes</strong> are those whose <code>exec_in</code> pin has no incoming exec connection. If a node has no exec pins at all (a pure data node), it is evaluated lazily — only when another node needs its output.</p>
+<h3 id="5-execute-entry-nodes">5. Execute Entry Nodes</h3>
+<p>Each entry node's <code>execute()</code> coroutine is scheduled as an <code>asyncio.Task</code>. Multiple entry nodes run concurrently if they are independent.</p>
+<p>Inside <code>execute()</code>, the engine:<br />
+1. <strong>Pulls upstream data nodes</strong> — for every input port that has an incoming data connection, the upstream node is executed first (if it has not already run).<br />
+2. <strong>Syncs parameters</strong> — the upstream node's output values are written into the current node's input parameters.<br />
+3. <strong>Calls <code>execute(inputs)</code></strong> — the node's Python code runs. <code>inputs</code> is a dict of all parameter values.<br />
+4. <strong>Processes the return dict</strong> — each key-value pair in the returned dict is stored in <code>node_results</code> and emitted via <code>node_output</code>.</p>
+<h3 id="6-follow-exec-pins">6. Follow Exec Pins</h3>
+<p>When a node calls <code>await self.set_output("exec_out", True)</code>, or returns <code>{"exec_out": True}</code> from <code>execute()</code>, the engine finds all exec connections from that pin and schedules the downstream node for execution. This is the exec chain: the <code>exec_out</code> of one node fires the <code>exec_in</code> of the next.</p>
+<p>Nodes with multiple exec outputs (like <code>if_condition</code> with <code>true_out</code> / <code>false_out</code>, or <code>GroupNode</code> with <code>exec_out</code> / <code>exec_fail</code>) route selectively — only the pin that is set to <code>True</code> fires its downstream chain.</p>
+<h3 id="7-complete-and-signal">7. Complete and Signal</h3>
+<p>When all scheduled tasks complete (or the Stop button cancels them), the executor emits <code>execution_finished(success)</code>. The UI re-enables the Run button, and the log panel shows any final messages.</p>
+<h3 id="execution-flow-diagram">Execution Flow Diagram</h3>
+<pre><code>F5 pressed
+    |
+    v
+WorkflowModel built from scene
+    |
+    v
+GraphManager + NetworkExecutor created
+    |
+    v
+Node instances created + parameters restored
+    |
+    v
+Entry nodes identified (exec_in unconnected)
+    |
+    +---- Entry Node A ----+---- Entry Node B ----+
+    |                      |                      |
+    v (async)              v (async)              v (async)
+execute() called    execute() called        execute() called
+    |
+    | pulls upstream data nodes recursively
+    |
+    v
+inputs dict built
+    |
+    v
+node python code runs
+    |
+    v
+returns {&quot;some_output&quot;: value, &quot;exec_out&quot;: True}
+    |                   |
+    v                   v
+node_results updated    exec chain fires
+live wire updated       downstream node executes
+log panel updated
+    |
+    v
+All tasks complete
+    |
+    v
+execution_finished emitted
+UI re-enabled
+</code></pre>
+<hr />
+<h2 id="the-node-library-panel">The Node Library Panel</h2>
+<p>The Library panel is the left sidebar that lists all registered nodes.</p>
+<h3 id="categories">Categories</h3>
+<p>Nodes are grouped by their <code>category</code> field in the JSON definition. Standard categories are:</p>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>General</td>
+<td>Math, string, list, dict, file, logic, control flow, print, script</td>
+</tr>
+<tr>
+<td>Houdini</td>
+<td>Create node, set parm, cook, save hip, scene snapshot</td>
+</tr>
+<tr>
+<td>Maya</td>
+<td>Headless Maya batch actions</td>
+</tr>
+<tr>
+<td>Blender</td>
+<td>Headless Blender batch actions</td>
+</tr>
+<tr>
+<td>Prism</td>
+<td>60+ Prism Pipeline nodes</td>
+</tr>
+<tr>
+<td>Deadline</td>
+<td>Render farm submission</td>
+</tr>
+</tbody>
+</table>
+<h3 id="searching-nodes">Searching Nodes</h3>
+<p>Type in the search box at the top of the Library panel to filter all categories simultaneously. The filter matches against both the display name and the <code>node_id</code>. Results update as you type.</p>
+<h3 id="adding-nodes-from-the-library">Adding Nodes from the Library</h3>
+<ul>
+<li><strong>Double-click</strong> a node in the Library to add it to the centre of the current canvas view.</li>
+<li><strong>Drag</strong> a node from the Library onto the canvas to place it at a specific position.</li>
+</ul>
+<h3 id="the-node-search-popup-tab">The Node Search Popup (Tab)</h3>
+<p>Press <strong>Tab</strong> anywhere on the canvas to open a floating search popup at the cursor position. Type to search, click or press Enter to add the node at the cursor position. This is faster than the Library panel for experienced users.</p>
+<hr />
+<h2 id="saving-and-loading-workflows">Saving and Loading Workflows</h2>
+<h3 id="workflow-file-format">Workflow File Format</h3>
+<p>Workflows are saved as human-readable JSON files. A minimal workflow looks like this:</p>
+<pre><code class="language-json">{
+    &quot;nodes&quot;: [
+        {
+            &quot;instance_id&quot;: &quot;550e8400-e29b-41d4-a716-446655440000&quot;,
+            &quot;node_id&quot;: &quot;variable_node&quot;,
+            &quot;position&quot;: [100.0, 200.0],
+            &quot;parameters&quot;: { &quot;value&quot;: &quot;Hello, Vibrante-Node!&quot; },
+            &quot;state&quot;: &quot;idle&quot;,
+            &quot;bypassed&quot;: false,
+            &quot;init_priority&quot;: 0
+        },
+        {
+            &quot;instance_id&quot;: &quot;550e8400-e29b-41d4-a716-446655440001&quot;,
+            &quot;node_id&quot;: &quot;console_print&quot;,
+            &quot;position&quot;: [400.0, 200.0],
+            &quot;parameters&quot;: { &quot;message&quot;: &quot;&quot; },
+            &quot;state&quot;: &quot;idle&quot;,
+            &quot;bypassed&quot;: false,
+            &quot;init_priority&quot;: 0
+        }
+    ],
+    &quot;connections&quot;: [
+        {
+            &quot;id&quot;: &quot;550e8400-e29b-41d4-a716-446655440002&quot;,
+            &quot;from_node&quot;: &quot;550e8400-e29b-41d4-a716-446655440000&quot;,
+            &quot;from_port&quot;: &quot;out&quot;,
+            &quot;to_node&quot;: &quot;550e8400-e29b-41d4-a716-446655440001&quot;,
+            &quot;to_port&quot;: &quot;message&quot;,
+            &quot;is_exec&quot;: false
+        }
+    ],
+    &quot;sticky_notes&quot;: [],
+    &quot;backdrops&quot;: [],
+    &quot;metadata&quot;: {}
+}
+</code></pre>
+<p>Each node is identified by its <code>instance_id</code> (UUID) and its <code>node_id</code> (the type identifier matching a <code>.json</code> definition file). Connections reference source and target nodes by UUID.</p>
+<h3 id="saving">Saving</h3>
+<ul>
+<li><strong>Ctrl+S</strong> — save to the current file path. If the workflow has never been saved, prompts for a filename.</li>
+<li><strong>Ctrl+Shift+S</strong> (File &gt; Save As) — always prompts for a new filename.</li>
+</ul>
+<h3 id="loading">Loading</h3>
+<ul>
+<li><strong>Ctrl+O</strong> — open a file picker and load a workflow into a new tab.</li>
+<li><strong>File &gt; Open Recent</strong> — load one of the last 10 workflows directly without a file picker.</li>
+</ul>
+<h3 id="tabs">Tabs</h3>
+<p>Vibrante-Node supports multiple workflows open simultaneously, each in its own tab. Click the <strong>+</strong> button at the right of the tab bar to add a new empty tab. Click a tab to switch. Click the X on a tab to close it (with a save prompt if unsaved changes exist).</p>
+<h3 id="autosave-and-crash-recovery">Autosave and Crash Recovery</h3>
+<p>Every 2 minutes, Vibrante-Node silently writes all non-empty open tabs to:</p>
+<pre><code>~/.vibrante_node_autosave.json
+</code></pre>
+<p>If the application exits cleanly, this file is deleted. If the application crashes or is force-closed, the file remains. On the next launch, a dialog offers to restore the last session. Accepting restores all tabs; declining discards the autosave and opens fresh.</p>
+<p>The autosave file is never used as a substitute for an explicit Save — it only appears after an unexpected exit.</p>
+<hr />
+<p><em>Vibrante-Node v2.0.0 — Released 2026-05-10</em></p>
+    <nav class="page-nav">
+      <a class="page-nav-link prev" href="01_introduction.html"><span class="page-nav-label">Previous</span><span class="page-nav-title">Introduction</span></a>
+      <a class="page-nav-link next" href="03_user_guide.html"><span class="page-nav-label">Next</span><span class="page-nav-title">User Guide</span></a>
+    </nav>
+  </div>
+</main>
+
+<!-- ── TOC ────────────────────────────────────────────────────────────── -->
+<aside class="toc">
+  <div class="toc-title">On this page</div>
+<a class="toc-link toc-h2" href="#table-of-contents">Table of Contents</a>
+<a class="toc-link toc-h2" href="#system-requirements">System Requirements</a>
+<a class="toc-link toc-h2" href="#installation-on-windows">Installation on Windows</a>
+<a class="toc-link toc-h3" href="#step-1-install-python">Step 1 — Install Python</a>
+<a class="toc-link toc-h3" href="#step-2-clone-the-repository">Step 2 — Clone the Repository</a>
+<a class="toc-link toc-h3" href="#step-3-install-python-dependencies">Step 3 — Install Python Dependencies</a>
+<a class="toc-link toc-h3" href="#step-4-run-the-application">Step 4 — Run the Application</a>
+<a class="toc-link toc-h3" href="#step-5-optional-install-the-houdini-plugin">Step 5 — (Optional) Install the Houdini Plugin</a>
+<a class="toc-link toc-h2" href="#macos-and-linux-notes">macOS and Linux Notes</a>
+<a class="toc-link toc-h3" href="#pyqt5-on-macos">PyQt5 on macOS</a>
+<a class="toc-link toc-h3" href="#pyqt5-on-linux">PyQt5 on Linux</a>
+<a class="toc-link toc-h3" href="#known-limitations-on-non-windows">Known Limitations on Non-Windows</a>
+<a class="toc-link toc-h2" href="#running-from-source-vs-running-the-exe">Running from Source vs. Running the .exe</a>
+<a class="toc-link toc-h3" href="#from-source">From Source</a>
+<a class="toc-link toc-h3" href="#from-the-exe">From the .exe</a>
+<a class="toc-link toc-h2" href="#project-structure-walkthrough">Project Structure Walkthrough</a>
+<a class="toc-link toc-h2" href="#first-launch-what-you-see">First Launch — What You See</a>
+<a class="toc-link toc-h3" href="#the-canvas">The Canvas</a>
+<a class="toc-link toc-h3" href="#the-library-panel">The Library Panel</a>
+<a class="toc-link toc-h3" href="#the-log-panel">The Log Panel</a>
+<a class="toc-link toc-h3" href="#the-toolbar">The Toolbar</a>
+<a class="toc-link toc-h2" href="#your-first-workflow-step-by-step">Your First Workflow — Step by Step</a>
+<a class="toc-link toc-h3" href="#step-1-open-the-application">Step 1 — Open the Application</a>
+<a class="toc-link toc-h3" href="#step-2-add-a-console-print-node">Step 2 — Add a Console Print Node</a>
+<a class="toc-link toc-h3" href="#step-3-add-an-exec-start-trigger">Step 3 — Add an Exec Start Trigger</a>
+<a class="toc-link toc-h3" href="#step-4-add-a-variable-node-and-wire-it">Step 4 — Add a Variable Node and Wire It</a>
+<a class="toc-link toc-h3" href="#step-5-connect-exec-pins-optional">Step 5 — Connect Exec Pins (Optional)</a>
+<a class="toc-link toc-h3" href="#step-6-press-f5-to-run">Step 6 — Press F5 to Run</a>
+<a class="toc-link toc-h3" href="#step-7-inspect-the-wire">Step 7 — Inspect the Wire</a>
+<a class="toc-link toc-h3" href="#step-8-save-the-workflow">Step 8 — Save the Workflow</a>
+<a class="toc-link toc-h3" href="#step-9-reload-and-re-run">Step 9 — Reload and Re-run</a>
+<a class="toc-link toc-h2" href="#understanding-execution-flow">Understanding Execution Flow</a>
+<a class="toc-link toc-h3" href="#1-serialise-the-scene">1. Serialise the Scene</a>
+<a class="toc-link toc-h3" href="#2-build-the-graph">2. Build the Graph</a>
+<a class="toc-link toc-h3" href="#3-create-node-instances">3. Create Node Instances</a>
+<a class="toc-link toc-h3" href="#4-identify-entry-nodes">4. Identify Entry Nodes</a>
+<a class="toc-link toc-h3" href="#5-execute-entry-nodes">5. Execute Entry Nodes</a>
+<a class="toc-link toc-h3" href="#6-follow-exec-pins">6. Follow Exec Pins</a>
+<a class="toc-link toc-h3" href="#7-complete-and-signal">7. Complete and Signal</a>
+<a class="toc-link toc-h3" href="#execution-flow-diagram">Execution Flow Diagram</a>
+<a class="toc-link toc-h2" href="#the-node-library-panel">The Node Library Panel</a>
+<a class="toc-link toc-h3" href="#categories">Categories</a>
+<a class="toc-link toc-h3" href="#searching-nodes">Searching Nodes</a>
+<a class="toc-link toc-h3" href="#adding-nodes-from-the-library">Adding Nodes from the Library</a>
+<a class="toc-link toc-h3" href="#the-node-search-popup-tab">The Node Search Popup (Tab)</a>
+<a class="toc-link toc-h2" href="#saving-and-loading-workflows">Saving and Loading Workflows</a>
+<a class="toc-link toc-h3" href="#workflow-file-format">Workflow File Format</a>
+<a class="toc-link toc-h3" href="#saving">Saving</a>
+<a class="toc-link toc-h3" href="#loading">Loading</a>
+<a class="toc-link toc-h3" href="#tabs">Tabs</a>
+<a class="toc-link toc-h3" href="#autosave-and-crash-recovery">Autosave and Crash Recovery</a>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/highlight.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lunr@2.3.9/lunr.min.js"></script>
+<script>
+// ── Search ──────────────────────────────────────────────────────────────
+let _idx = null, _docs = [];
+
+async function initSearch() {
+  try {
+    const base = document.getElementById('portal-base').dataset.base;
+    const resp = await fetch(base + 'search.json');
+    _docs = await resp.json();
+    _idx = lunr(function() {
+      this.ref('id');
+      this.field('title', { boost: 10 });
+      this.field('body');
+      _docs.forEach((d, i) => {
+        this.add({ id: i, title: d.title, body: d.body });
+      });
+    });
+  } catch(e) { console.warn('Search index not available', e); }
+}
+
+function doSearch(q) {
+  const box = document.getElementById('search-results');
+  if (!q || q.length < 2) { box.classList.remove('visible'); return; }
+  if (!_idx) { box.innerHTML = '<div class="search-no-results">Search index loading…</div>'; box.classList.add('visible'); return; }
+  const results = _idx.search(q + '~1');
+  if (!results.length) {
+    box.innerHTML = '<div class="search-no-results">No results for "' + q + '"</div>';
+    box.classList.add('visible'); return;
+  }
+  box.innerHTML = results.slice(0, 8).map(r => {
+    const d = _docs[r.ref];
+    const excerpt = d.body.substring(0, 140).replace(/[#*`]/g, '').trim() + '…';
+    return `<a class="search-result-item" href="${d.url}">
+      <div class="search-result-title">${d.title}</div>
+      <div class="search-result-excerpt">${excerpt}</div>
+    </a>`;
+  }).join('');
+  box.classList.add('visible');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initSearch();
+  const inp = document.getElementById('search-input');
+  if (inp) {
+    inp.addEventListener('input', e => doSearch(e.target.value));
+    inp.addEventListener('keydown', e => { if (e.key === 'Escape') { e.target.value=''; document.getElementById('search-results').classList.remove('visible'); }});
+  }
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.search-wrap')) document.getElementById('search-results')?.classList.remove('visible');
+  });
+  // Keyboard shortcut: / to focus search
+  document.addEventListener('keydown', e => {
+    if (e.key === '/' && !['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) {
+      e.preventDefault(); document.getElementById('search-input')?.focus();
+    }
+  });
+
+  // ── TOC active section ──────────────────────────────────────────────
+  const tocLinks = document.querySelectorAll('.toc-link');
+  const headings = document.querySelectorAll('h2[id],h3[id],h4[id]');
+  if (tocLinks.length && headings.length) {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          tocLinks.forEach(l => l.classList.remove('active'));
+          const link = document.querySelector(`.toc-link[href="#${entry.target.id}"]`);
+          if (link) link.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    headings.forEach(h => obs.observe(h));
+  }
+
+  // ── Copy buttons ────────────────────────────────────────────────────
+  document.querySelectorAll('pre').forEach(pre => {
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn'; btn.textContent = 'Copy';
+    btn.addEventListener('click', () => {
+      const code = pre.querySelector('code');
+      navigator.clipboard.writeText(code ? code.innerText : pre.innerText).then(() => {
+        btn.textContent = 'Copied!'; btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+      });
+    });
+    pre.style.position = 'relative';
+    pre.appendChild(btn);
+  });
+
+  // ── Sidebar active ──────────────────────────────────────────────────
+  const cur = window.location.pathname.split('/').pop();
+  document.querySelectorAll('.sidebar-link').forEach(l => {
+    if (l.getAttribute('href') === cur || l.getAttribute('href').endsWith(cur)) l.classList.add('active');
+  });
+
+  // ── highlight.js ────────────────────────────────────────────────────
+  if (window.hljs) {
+    hljs.configure({ ignoreUnescapedHTML: true });
+    hljs.highlightAll();
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Vibrante-Node v2.0.0 — Custom Nodes API">
+<title>Custom Nodes API — Vibrante-Node Docs</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/atom-one-dark.min.css">
+<style>
+/* ── Reset & Variables ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:       #1e1e2e;
+  --surface:  #181825;
+  --surface2: #11111b;
+  --border:   #313244;
+  --text:     #cdd6f4;
+  --subtext:  #a6adc8;
+  --muted:    #6c7086;
+  --lavender: #b4befe;
+  --blue:     #89b4fa;
+  --teal:     #94e2d5;
+  --green:    #a6e3a1;
+  --yellow:   #f9e2af;
+  --peach:    #fab387;
+  --red:      #f38ba8;
+  --pink:     #f5c2e7;
+  --mauve:    #cba6f7;
+  --sidebar-w: 260px;
+  --toc-w:    220px;
+  --header-h: 56px;
+  --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --mono: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+}
+
+/* ── Layout ─────────────────────────────────────────────────────────────── */
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: var(--header-h) 1fr;
+  grid-template-columns: var(--sidebar-w) 1fr var(--toc-w);
+  grid-template-areas:
+    "header header header"
+    "sidebar content toc";
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+.header {
+  grid-area: header;
+  position: sticky; top: 0; z-index: 200;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 16px;
+  padding: 0 24px;
+}
+.header-logo {
+  font-weight: 700; font-size: 1.05em;
+  color: var(--mauve);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.header-version {
+  font-size: .78em;
+  background: var(--border);
+  color: var(--subtext);
+  padding: 2px 8px; border-radius: 12px;
+}
+.header-spacer { flex: 1; }
+.search-wrap { position: relative; }
+#search-input {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: .9em;
+  padding: 6px 14px 6px 36px;
+  width: 260px;
+  outline: none;
+  transition: border-color .15s;
+}
+#search-input:focus { border-color: var(--mauve); }
+.search-icon {
+  position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+  color: var(--muted); pointer-events: none; font-size: .9em;
+}
+#search-results {
+  position: absolute; top: calc(100% + 8px); right: 0;
+  width: 380px; max-height: 420px; overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.5);
+  display: none; z-index: 300;
+}
+#search-results.visible { display: block; }
+.search-result-item {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background .1s;
+}
+.search-result-item:last-child { border-bottom: none; }
+.search-result-item:hover { background: var(--bg); }
+.search-result-title { color: var(--blue); font-weight: 600; font-size: .9em; }
+.search-result-excerpt { color: var(--subtext); font-size: .82em; margin-top: 2px; line-height: 1.4; }
+.search-no-results { padding: 16px; color: var(--muted); text-align: center; font-size: .9em; }
+
+/* ── Sidebar ─────────────────────────────────────────────────────────────── */
+.sidebar {
+  grid-area: sidebar;
+  position: sticky; top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 20px 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.sidebar-group { margin-bottom: 4px; }
+.sidebar-group-title {
+  font-size: .7em;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--muted);
+  padding: 10px 20px 4px;
+  font-weight: 600;
+}
+.sidebar-link {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 20px;
+  color: var(--subtext);
+  text-decoration: none;
+  font-size: .88em;
+  border-left: 3px solid transparent;
+  transition: all .12s;
+  line-height: 1.3;
+}
+.sidebar-link:hover { color: var(--text); background: var(--bg); }
+.sidebar-link.active {
+  color: var(--mauve);
+  border-left-color: var(--mauve);
+  background: rgba(180,190,254,.06);
+  font-weight: 600;
+}
+.sidebar-num {
+  font-size: .7em;
+  color: var(--muted);
+  background: var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  flex-shrink: 0;
+}
+.sidebar-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 12px 16px;
+}
+
+/* ── Content ─────────────────────────────────────────────────────────────── */
+.content {
+  grid-area: content;
+  min-width: 0;
+  padding: 40px 48px 80px;
+  max-width: 860px;
+}
+.content-inner { max-width: 820px; }
+
+/* Breadcrumb */
+.breadcrumb {
+  font-size: .8em;
+  color: var(--muted);
+  margin-bottom: 28px;
+  display: flex; align-items: center; gap: 6px;
+}
+.breadcrumb a { color: var(--blue); text-decoration: none; }
+.breadcrumb a:hover { text-decoration: underline; }
+.breadcrumb-sep { color: var(--border); }
+
+/* Typography */
+h1 { font-size: 2em; color: var(--mauve); border-bottom: 2px solid var(--border); padding-bottom: 12px; margin: 20px 0 20px; }
+h2 { font-size: 1.45em; color: var(--blue); margin: 40px 0 14px; padding-top: 8px; }
+h3 { font-size: 1.15em; color: var(--teal); margin: 28px 0 10px; }
+h4 { font-size: 1em; color: var(--pink); margin: 20px 0 8px; }
+h5 { font-size: .95em; color: var(--yellow); margin: 16px 0 6px; }
+p  { margin-bottom: 16px; color: var(--text); }
+a  { color: var(--blue); }
+a:hover { text-decoration: underline; }
+strong { color: var(--peach); }
+em { color: var(--yellow); font-style: italic; }
+
+ul, ol { margin: 10px 0 16px 24px; }
+li { margin-bottom: 6px; }
+li > ul, li > ol { margin-top: 4px; margin-bottom: 4px; }
+
+blockquote {
+  border-left: 4px solid var(--mauve);
+  padding: 10px 20px;
+  margin: 16px 0;
+  background: rgba(180,190,254,.05);
+  border-radius: 0 8px 8px 0;
+  color: var(--subtext);
+}
+blockquote strong { color: var(--mauve); }
+
+hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+/* Code */
+code {
+  background: var(--surface2);
+  color: var(--red);
+  padding: 2px 7px; border-radius: 5px;
+  font-family: var(--mono); font-size: .87em;
+}
+pre {
+  background: var(--surface2) !important;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px 22px;
+  overflow-x: auto;
+  margin: 16px 0 22px;
+  position: relative;
+}
+pre code {
+  background: none !important;
+  color: inherit !important;
+  padding: 0; font-size: .9em;
+  border-radius: 0;
+}
+/* Copy button */
+.copy-btn {
+  position: absolute; top: 10px; right: 12px;
+  background: var(--border);
+  color: var(--subtext);
+  border: none; border-radius: 5px;
+  padding: 3px 10px; font-size: .75em;
+  cursor: pointer; transition: all .12s;
+  font-family: var(--font);
+}
+.copy-btn:hover { background: var(--mauve); color: var(--surface2); }
+.copy-btn.copied { background: var(--green); color: var(--surface2); }
+
+/* Tables */
+table { border-collapse: collapse; width: 100%; margin: 16px 0 22px; font-size: .9em; }
+th { background: var(--border); color: var(--mauve); padding: 10px 14px; text-align: left; font-weight: 600; }
+td { border-top: 1px solid var(--border); padding: 9px 14px; color: var(--text); }
+tr:nth-child(even) td { background: rgba(17,17,27,.4); }
+td code { font-size: .85em; }
+
+/* Callout boxes */
+.callout {
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin: 16px 0 22px;
+  border-left: 4px solid;
+}
+.callout-note    { background: rgba(137,180,250,.08); border-color: var(--blue);   }
+.callout-tip     { background: rgba(166,227,161,.08); border-color: var(--green);  }
+.callout-warning { background: rgba(249,226,175,.08); border-color: var(--yellow); }
+.callout-danger  { background: rgba(243,139,168,.08); border-color: var(--red);    }
+.callout-title   { font-weight: 700; font-size: .85em; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
+.callout-note    .callout-title { color: var(--blue);   }
+.callout-tip     .callout-title { color: var(--green);  }
+.callout-warning .callout-title { color: var(--yellow); }
+.callout-danger  .callout-title { color: var(--red);    }
+
+/* Prev/Next navigation */
+.page-nav {
+  display: flex; justify-content: space-between;
+  margin-top: 60px; padding-top: 24px;
+  border-top: 1px solid var(--border);
+  gap: 16px;
+}
+.page-nav-link {
+  display: flex; flex-direction: column;
+  text-decoration: none;
+  padding: 14px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  min-width: 200px;
+  transition: border-color .15s;
+  max-width: 48%;
+}
+.page-nav-link:hover { border-color: var(--mauve); }
+.page-nav-label { font-size: .75em; color: var(--muted); margin-bottom: 4px; }
+.page-nav-title { color: var(--blue); font-weight: 600; font-size: .95em; }
+.page-nav-link.prev .page-nav-label::before { content: '← '; }
+.page-nav-link.next { margin-left: auto; text-align: right; }
+.page-nav-link.next .page-nav-label::after { content: ' →'; }
+
+/* ── TOC (right panel) ───────────────────────────────────────────────────── */
+.toc {
+  grid-area: toc;
+  position: sticky; top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  padding: 28px 16px 28px 8px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.toc-title {
+  font-size: .72em;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--muted);
+  font-weight: 600;
+  margin-bottom: 12px;
+  padding-left: 8px;
+}
+.toc-link {
+  display: block;
+  padding: 4px 8px;
+  color: var(--subtext);
+  text-decoration: none;
+  font-size: .82em;
+  border-left: 2px solid transparent;
+  border-radius: 0 4px 4px 0;
+  transition: all .12s;
+  line-height: 1.35;
+  margin-bottom: 1px;
+}
+.toc-link:hover { color: var(--text); border-left-color: var(--border); }
+.toc-link.active { color: var(--mauve); border-left-color: var(--mauve); background: rgba(180,190,254,.05); }
+.toc-link.toc-h3 { padding-left: 20px; font-size: .79em; }
+.toc-link.toc-h4 { padding-left: 32px; font-size: .76em; color: var(--muted); }
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  body { grid-template-columns: var(--sidebar-w) 1fr 0; }
+  .toc { display: none; }
+}
+@media (max-width: 760px) {
+  body { grid-template-columns: 0 1fr 0; grid-template-rows: var(--header-h) 1fr; }
+  .sidebar { display: none; }
+  .content { padding: 24px 20px 60px; }
+  #search-input { width: 180px; }
+}
+
+/* ── Index / landing page ────────────────────────────────────────────────── */
+.hero { text-align: center; padding: 60px 0 48px; }
+.hero h1 { border: none; font-size: 2.8em; }
+.hero .tagline { color: var(--subtext); font-size: 1.15em; margin-top: 10px; }
+.hero .version-badge {
+  display: inline-block;
+  background: var(--border); color: var(--mauve);
+  padding: 4px 14px; border-radius: 20px; font-size: .85em;
+  margin-top: 14px;
+}
+.group-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin: 16px 0 36px; }
+.doc-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  text-decoration: none;
+  color: var(--text);
+  transition: border-color .15s, background .15s;
+  display: block;
+}
+.doc-card:hover { border-color: var(--mauve); background: rgba(180,190,254,.04); }
+.doc-card-num { font-size: .72em; color: var(--muted); margin-bottom: 4px; }
+.doc-card-title { color: var(--blue); font-weight: 700; font-size: 1em; margin-bottom: 6px; }
+.doc-card-desc { color: var(--subtext); font-size: .85em; line-height: 1.5; }
+.group-title { color: var(--teal); font-size: 1.1em; font-weight: 600; margin: 32px 0 10px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+</style>
+<span id="portal-base" data-base="" style="display:none"></span>
+</head>
+<body>
+
+<!-- ── Header ─────────────────────────────────────────────────────────── -->
+<header class="header">
+  <a class="header-logo" href="index.html">Vibrante-Node</a>
+  <span class="header-version">v2.0.0</span>
+  <div class="header-spacer"></div>
+  <div class="search-wrap">
+    <span class="search-icon">&#128269;</span>
+    <input id="search-input" type="text" placeholder="Search docs… (/)" autocomplete="off" spellcheck="false">
+    <div id="search-results"></div>
+  </div>
+</header>
+
+<!-- ── Sidebar ────────────────────────────────────────────────────────── -->
+<nav class="sidebar">
+<div class="sidebar-group">
+<div class="sidebar-group-title">Overview</div>
+<a class="sidebar-link" href="01_introduction.html"><span class="sidebar-num">01</span>Introduction</a>
+<a class="sidebar-link" href="02_getting_started.html"><span class="sidebar-num">02</span>Getting Started</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Using the App</div>
+<a class="sidebar-link" href="03_user_guide.html"><span class="sidebar-num">03</span>User Guide</a>
+<a class="sidebar-link" href="04_workflow_tutorials.html"><span class="sidebar-num">04</span>Workflow Tutorials</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Developing Nodes</div>
+<a class="sidebar-link" href="05_node_development.html"><span class="sidebar-num">05</span>Node Development Guide</a>
+<a class="sidebar-link active" href="14_custom_nodes_api.html"><span class="sidebar-num">14</span>Custom Nodes API</a>
+<a class="sidebar-link" href="08_api_reference.html"><span class="sidebar-num">08</span>API Reference</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Architecture</div>
+<a class="sidebar-link" href="06_backend_architecture.html"><span class="sidebar-num">06</span>Backend Architecture</a>
+<a class="sidebar-link" href="07_frontend_architecture.html"><span class="sidebar-num">07</span>Frontend Architecture</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Advanced</div>
+<a class="sidebar-link" href="09_advanced_topics.html"><span class="sidebar-num">09</span>Advanced Topics</a>
+<a class="sidebar-link" href="10_contribution_guide.html"><span class="sidebar-num">10</span>Contribution Guide</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Reference</div>
+<a class="sidebar-link" href="11_troubleshooting.html"><span class="sidebar-num">11</span>Troubleshooting</a>
+<a class="sidebar-link" href="12_examples_library.html"><span class="sidebar-num">12</span>Examples Library</a>
+<a class="sidebar-link" href="13_general_purpose_automation.html"><span class="sidebar-num">13</span>General Purpose Automation</a>
+</div>
+
+</nav>
+
+<!-- ── Main content ───────────────────────────────────────────────────── -->
+<main class="content">
+  <div class="content-inner">
+    <nav class="breadcrumb"><a href="index.html">Docs</a><span class="breadcrumb-sep">›</span><span>Custom Nodes API</span></nav>
+    <h1 id="custom-nodes-sdk-api-reference-vibrante-node-v200">Custom Nodes SDK / API Reference — Vibrante-Node v2.0.0</h1>
+<p>This document is the authoritative reference for every class, method, attribute,<br />
+and hook exposed to custom node authors. It covers the full lifecycle from<br />
+<code>__init__</code> through execution, persistence, dynamic ports, and packaging.</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#1-basenode-class-reference">BaseNode Class Reference</a></li>
+<li><a href="#2-port-class-reference">Port Class Reference</a></li>
+<li><a href="#3-exec-pin-mechanics">Exec Pin Mechanics</a></li>
+<li><a href="#4-set_output-reactive-system">set_output() Reactive System</a></li>
+<li><a href="#5-clear_outputs-call-sequence">clear_outputs() Call Sequence</a></li>
+<li><a href="#6-is_stopped-cancellation">is_stopped() Cancellation</a></li>
+<li><a href="#7-restore_from_parameters">restore_from_parameters()</a></li>
+<li><a href="#8-on_parameter_changed-hook">on_parameter_changed() Hook</a></li>
+<li><a href="#9-on_plug--on_unplug-hooks">on_plug / on_unplug Hooks</a></li>
+<li><a href="#10-node-lifecycle">Node Lifecycle</a></li>
+<li><a href="#11-json-schema-reference">JSON Schema Reference</a></li>
+<li><a href="#12-python_code-compilation">python_code Compilation</a></li>
+<li><a href="#13-register_node-function">register_node() Function</a></li>
+<li><a href="#14-exec-flow-semantics">Exec Flow Semantics</a></li>
+<li><a href="#15-multiple-exec-outputs">Multiple Exec Outputs</a></li>
+<li><a href="#16-groupnode-pattern">GroupNode Pattern</a></li>
+<li><a href="#17-quick-reference-tables">Quick-Reference Tables</a></li>
+<li><a href="#18-packaging-node-plugins">Packaging Node Plugins</a></li>
+<li><a href="#19-distributing-nodes">Distributing Nodes</a></li>
+</ol>
+<hr />
+<h2 id="1-basenode-class-reference">1. BaseNode Class Reference</h2>
+<pre><code class="language-python">from src.nodes.base import BaseNode
+</code></pre>
+<p><code>BaseNode</code> is an abstract class. Every custom node must inherit from it and<br />
+implement <code>execute()</code>.</p>
+<h3 id="class-attributes">Class Attributes</h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td><code>str</code></td>
+<td><code>"BaseNode"</code></td>
+<td>Must match <code>node_id</code> in the JSON file. Used as the primary key in the registry.</td>
+</tr>
+<tr>
+<td><code>description</code></td>
+<td><code>str</code></td>
+<td><code>""</code></td>
+<td>Human-readable description shown in the library and node tooltip.</td>
+</tr>
+<tr>
+<td><code>category</code></td>
+<td><code>str</code></td>
+<td><code>"General"</code></td>
+<td>Groups the node in the library panel.</td>
+</tr>
+<tr>
+<td><code>icon_path</code></td>
+<td><code>Optional[str]</code></td>
+<td><code>None</code></td>
+<td>Relative path from app root to an SVG or PNG icon.</td>
+</tr>
+<tr>
+<td><code>memory</code></td>
+<td><code>Dict[str, Any]</code></td>
+<td><code>{}</code></td>
+<td><strong>Class-level</strong> shared dict. Cleared to <code>{}</code> at the start of each pipeline run. All instances see the same dict within a run.</td>
+</tr>
+<tr>
+<td><code>node_id</code></td>
+<td><code>str</code></td>
+<td>(set by registry)</td>
+<td>Set by <code>NodeRegistry</code> at registration time. Mirrors <code>name</code> for JSON-defined nodes.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="instance-attributes">Instance Attributes</h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>inputs</code></td>
+<td><code>Dict[str, Port]</code></td>
+<td>All input ports, keyed by port name. Populated in <code>__init__</code>.</td>
+</tr>
+<tr>
+<td><code>outputs</code></td>
+<td><code>Dict[str, Port]</code></td>
+<td>All output ports, keyed by port name. Populated in <code>__init__</code>.</td>
+</tr>
+<tr>
+<td><code>parameters</code></td>
+<td><code>Dict[str, Any]</code></td>
+<td>Persistent key/value store. Widget values, output values, and internal state all live here.</td>
+</tr>
+<tr>
+<td><code>parameter_types</code></td>
+<td><code>Dict[str, Type]</code></td>
+<td>Optional type hints per parameter key (used by <code>add_parameter()</code>).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="internal-hooks-do-not-set-manually">Internal Hooks (do not set manually)</h3>
+<p>These are set by the engine and UI at runtime. They are documented here for<br />
+completeness but you should never assign to them directly in your node.</p>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Set by</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>_on_log</code></td>
+<td>Engine</td>
+<td>Routes <code>log_*</code> calls to the log panel signal.</td>
+</tr>
+<tr>
+<td><code>_pending_logs</code></td>
+<td>BaseNode</td>
+<td>Buffer for log calls made before <code>_on_log</code> is wired.</td>
+</tr>
+<tr>
+<td><code>_on_output</code></td>
+<td>Engine</td>
+<td>Called by <code>set_output()</code> to propagate values and trigger exec chains.</td>
+</tr>
+<tr>
+<td><code>_check_stopped</code></td>
+<td>Engine</td>
+<td>Returns <code>True</code> if the user clicked Stop.</td>
+</tr>
+<tr>
+<td><code>_on_ports_changed</code></td>
+<td>UI</td>
+<td>Called by <code>rebuild_ports()</code> to refresh the canvas widget.</td>
+</tr>
+<tr>
+<td><code>_is_port_connected</code></td>
+<td>UI</td>
+<td>Returns <code>True</code> if a named port has a connected wire.</td>
+</tr>
+<tr>
+<td><code>_on_dropdown_options_changed</code></td>
+<td>UI</td>
+<td>Called by <code>set_parameter()</code> when a dropdown's option list changes.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="constructor">Constructor</h3>
+<pre><code class="language-python">def __init__(self, use_exec: bool = True)
+</code></pre>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>use_exec</code> — When <code>True</code> (the default), automatically adds <code>exec_in</code> (input)<br />
+  and <code>exec_out</code> (output) ports of data_type <code>exec</code>. Pass <code>False</code> for<br />
+  data-only nodes.</li>
+</ul>
+<p><strong>You must call <code>super().__init__()</code> as the very first line of your <code>__init__</code>.</strong><br />
+Do not pass arguments unless you intentionally want <code>use_exec=False</code>:</p>
+<pre><code class="language-python">def __init__(self):
+    super().__init__()            # use_exec=True (default)
+    # ... add your ports here
+</code></pre>
+<pre><code class="language-python">def __init__(self):
+    super().__init__(use_exec=False)   # no exec pins
+    # ... add your ports here
+</code></pre>
+<hr />
+<h3 id="port-management-methods">Port Management Methods</h3>
+<h4 id="add_input">add_input</h4>
+<pre><code class="language-python">def add_input(
+    self,
+    name: str,
+    data_type: str = &quot;any&quot;,
+    widget_type: str = None,
+    options: List[str] = None,
+    default: Any = None
+) -&gt; None
+</code></pre>
+<p>Adds an input port. Also initializes <code>self.parameters[name]</code> to <code>default</code> if<br />
+the key does not already exist. Default values are coerced by type if <code>default</code><br />
+is <code>None</code>:</p>
+<table>
+<thead>
+<tr>
+<th><code>data_type</code></th>
+<th>Auto-default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>string</code></td>
+<td><code>""</code></td>
+</tr>
+<tr>
+<td><code>list</code></td>
+<td><code>[]</code></td>
+</tr>
+<tr>
+<td><code>bool</code></td>
+<td><code>False</code></td>
+</tr>
+<tr>
+<td><code>int</code> / <code>float</code> / <code>number</code></td>
+<td><code>0</code></td>
+</tr>
+<tr>
+<td>others</td>
+<td><code>None</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Call this only inside <code>__init__</code> or <code>restore_from_parameters()</code>.</strong> Calling it<br />
+during <code>execute()</code> creates ports mid-run which the engine was not prepared for.</p>
+<h4 id="add_output">add_output</h4>
+<pre><code class="language-python">def add_output(
+    self,
+    name: str,
+    data_type: str = &quot;any&quot;,
+    default: Any = None
+) -&gt; None
+</code></pre>
+<p>Adds an output port. Applies the same type-based auto-default as <code>add_input</code>.<br />
+Also initializes <code>self.parameters[name]</code> to <code>default</code>.</p>
+<h4 id="add_exec_input">add_exec_input</h4>
+<pre><code class="language-python">def add_exec_input(self, name: str = &quot;exec_in&quot;) -&gt; None
+</code></pre>
+<p>Convenience wrapper: calls <code>add_input(name, data_type="exec")</code>. Rarely needed<br />
+directly — <code>super().__init__(use_exec=True)</code> already calls it.</p>
+<h4 id="add_exec_output">add_exec_output</h4>
+<pre><code class="language-python">def add_exec_output(self, name: str = &quot;exec_out&quot;) -&gt; None
+</code></pre>
+<p>Convenience wrapper: calls <code>add_output(name, data_type="exec")</code>. Use this to<br />
+add additional exec outputs beyond the default <code>exec_out</code>:</p>
+<pre><code class="language-python">self.add_exec_output(&quot;exec_fail&quot;)   # adds a failure branch
+</code></pre>
+<h4 id="add_parameter">add_parameter</h4>
+<pre><code class="language-python">def add_parameter(self, name: str, param_type: Type, default: Any = None) -&gt; None
+</code></pre>
+<p>Adds an internal parameter (not a port). Useful for storing typed configuration<br />
+that does not appear as a port but is saved/restored with the workflow.</p>
+<h4 id="rebuild_ports">rebuild_ports</h4>
+<pre><code class="language-python">def rebuild_ports(self) -&gt; None
+</code></pre>
+<p>Notifies the UI canvas to redraw this node's ports. Call once after all<br />
+<code>add_input</code> / <code>del self.inputs[name]</code> operations are complete.</p>
+<hr />
+<h3 id="parameter-access-methods">Parameter Access Methods</h3>
+<h4 id="set_parameter">set_parameter</h4>
+<pre><code class="language-python">def set_parameter(self, name: str, value: Any) -&gt; None
+</code></pre>
+<p>Sets <code>self.parameters[name] = value</code>. When <code>value</code> is a list <strong>and</strong> the named<br />
+port has <code>widget_type="dropdown"</code>, the dropdown's option list is replaced and<br />
+<code>_on_dropdown_options_changed</code> is fired. The current selection is preserved if<br />
+it still exists in the new list; otherwise the first option is selected.</p>
+<h4 id="get_parameter">get_parameter</h4>
+<pre><code class="language-python">def get_parameter(self, name: str, default: Any = None) -&gt; Any
+</code></pre>
+<p>Returns <code>self.parameters.get(name, default)</code>. Safe to call at any time.</p>
+<h4 id="__getitem__-shortcut"><code>__getitem__</code> shortcut</h4>
+<pre><code class="language-python">value = node[&quot;port_name&quot;]   # equivalent to node.get_parameter(&quot;port_name&quot;)
+</code></pre>
+<hr />
+<h3 id="connection-query-methods">Connection Query Methods</h3>
+<h4 id="is_port_connected">is_port_connected</h4>
+<pre><code class="language-python">def is_port_connected(self, name: str, is_input: bool) -&gt; bool
+</code></pre>
+<p>Returns <code>True</code> if the named port currently has a connected wire. Queries the<br />
+UI via the <code>_is_port_connected</code> hook. Returns <code>False</code> if the hook is not set<br />
+(e.g., when running headlessly or in tests).</p>
+<hr />
+<h3 id="logging-methods">Logging Methods</h3>
+<h4 id="log_info">log_info</h4>
+<pre><code class="language-python">def log_info(self, msg: str) -&gt; None
+</code></pre>
+<p>Emits an informational (white/grey) message to the log panel.</p>
+<h4 id="log_success">log_success</h4>
+<pre><code class="language-python">def log_success(self, msg: str) -&gt; None
+</code></pre>
+<p>Emits a success (green) message to the log panel.</p>
+<h4 id="log_error">log_error</h4>
+<pre><code class="language-python">def log_error(self, msg: str) -&gt; None
+</code></pre>
+<p>Emits an error (red) message to the log panel.</p>
+<p>All three methods buffer the message if <code>_on_log</code> is not yet wired (which can<br />
+happen if you log during <code>__init__</code>). The buffer is flushed when the engine<br />
+wires the hook before calling <code>execute()</code>.</p>
+<hr />
+<h3 id="output-methods">Output Methods</h3>
+<h4 id="set_output-async">set_output (async)</h4>
+<pre><code class="language-python">async def set_output(self, name: str, value: Any) -&gt; None
+</code></pre>
+<p>Pushes <code>value</code> to the named output port reactively — before <code>execute()</code><br />
+returns. The engine immediately:</p>
+<ol>
+<li>Updates <code>self.parameters[name]</code> and the engine's <code>node_results</code> cache.</li>
+<li>Propagates the value to all downstream nodes connected to this port.</li>
+<li>If <code>name</code> is an <code>exec</code>-type port and <code>value</code> is truthy, triggers the<br />
+   full exec chain of every downstream node connected to it.</li>
+</ol>
+<p><strong>Must be awaited.</strong> Calling without <code>await</code> discards the coroutine silently.</p>
+<h4 id="clear_outputs">clear_outputs</h4>
+<pre><code class="language-python">def clear_outputs(self) -&gt; None
+</code></pre>
+<p>Resets every output port's value in <code>self.parameters</code> to its default.<br />
+Called by the engine during node preparation, before <code>execute()</code> is called.<br />
+You should not call this manually.</p>
+<hr />
+<h3 id="cancellation">Cancellation</h3>
+<h4 id="is_stopped">is_stopped</h4>
+<pre><code class="language-python">def is_stopped(self) -&gt; bool
+</code></pre>
+<p>Returns <code>True</code> if the user has requested pipeline cancellation (clicked Stop).<br />
+Check this inside long loops or before expensive operations:</p>
+<pre><code class="language-python">for item in items:
+    if self.is_stopped():
+        self.log_info(&quot;Cancelled by user.&quot;)
+        break
+    process(item)
+</code></pre>
+<p>Returns <code>False</code> when running headlessly (no hook wired).</p>
+<hr />
+<h3 id="abstract-method">Abstract Method</h3>
+<h4 id="execute-async-abstract">execute (async, abstract)</h4>
+<pre><code class="language-python">@abstractmethod
+async def execute(self, inputs: Dict[str, Any]) -&gt; Dict[str, Any]
+</code></pre>
+<p><strong>You must implement this method.</strong> It is the main execution entry point.</p>
+<ul>
+<li><strong><code>inputs</code></strong> — A snapshot of <code>self.parameters</code> after all upstream values have<br />
+  been merged in. Read input values from here rather than from <code>self.parameters</code><br />
+  to avoid race conditions with reactive propagation.</li>
+<li><strong>Return value</strong> — A dict mapping output port names to values. Include<br />
+<code>"exec_out": True</code> for exec-flow nodes to continue the chain. Return an empty<br />
+  dict or <code>None</code> if you have no outputs (rare).</li>
+</ul>
+<hr />
+<h2 id="2-port-class-reference">2. Port Class Reference</h2>
+<pre><code class="language-python">from src.nodes.base import Port
+</code></pre>
+<p><code>Port</code> describes a single connection point on a node.</p>
+<h3 id="attributes">Attributes</h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td><code>str</code></td>
+<td>Unique name within the node's inputs or outputs dict.</td>
+</tr>
+<tr>
+<td><code>data_type</code></td>
+<td><code>str</code></td>
+<td>One of <code>string</code>, <code>int</code>, <code>float</code>, <code>bool</code>, <code>list</code>, <code>dict</code>, <code>any</code>, <code>exec</code>.</td>
+</tr>
+<tr>
+<td><code>widget_type</code></td>
+<td><code>Optional[str]</code></td>
+<td>Inline editor type shown when the port is unconnected.</td>
+</tr>
+<tr>
+<td><code>options</code></td>
+<td><code>Optional[List[str]]</code></td>
+<td>Option list for <code>dropdown</code> widgets. <code>None</code> for all other types.</td>
+</tr>
+<tr>
+<td><code>default</code></td>
+<td><code>Any</code></td>
+<td>Value used when no wire is connected and no widget value has been set.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="accessing-ports">Accessing ports</h3>
+<pre><code class="language-python">port = instance.inputs[&quot;my_port&quot;]
+print(port.name, port.data_type, port.default)
+
+port = instance.outputs[&quot;result&quot;]
+print(port.widget_type)   # always None for outputs
+</code></pre>
+<p>Ports are plain data objects — they do not have methods. To query whether a<br />
+port is connected, use <code>self.is_port_connected()</code>.</p>
+<hr />
+<h2 id="3-exec-pin-mechanics">3. Exec Pin Mechanics</h2>
+<p>Exec pins are ports with <code>data_type="exec"</code>. They represent the <strong>execution<br />
+flow</strong> — the sequence in which nodes fire.</p>
+<h3 id="exec_in">exec_in</h3>
+<p>An exec-type input. When the upstream node fires <code>exec_out</code> (or any exec output<br />
+wired to this node's <code>exec_in</code>), the engine calls <code>execute()</code> on this node.</p>
+<p>Nodes with <code>exec_in</code> only run when an exec signal arrives. They are <strong>not</strong> run<br />
+automatically by the engine's data-pull mechanism.</p>
+<h3 id="exec_out">exec_out</h3>
+<p>An exec-type output. When your <code>execute()</code> returns <code>{"exec_out": True}</code> or you<br />
+call <code>await self.set_output("exec_out", True)</code>, the engine recursively executes<br />
+all nodes whose <code>exec_in</code> is wired to this port.</p>
+<h3 id="how-the-exec-chain-works">How the exec chain works</h3>
+<pre><code>Node A (exec_out) ──► Node B (exec_in / exec_out) ──► Node C (exec_in)
+</code></pre>
+<ol>
+<li>Node A's <code>execute()</code> returns <code>{"exec_out": True}</code>.</li>
+<li>The engine sees <code>exec_out</code> is truthy and its port type is <code>exec</code>.</li>
+<li>The engine calls <code>_execute_flow(Node B)</code>.</li>
+<li>Node B's <code>execute()</code> runs and returns <code>{"exec_out": True}</code>.</li>
+<li>The engine calls <code>_execute_flow(Node C)</code>.</li>
+<li>Node C's <code>execute()</code> runs.</li>
+</ol>
+<p>The chain is depth-first. If Node B has two downstream exec nodes they are<br />
+triggered in order of connection.</p>
+<h3 id="exec-pins-added-by-superinit">exec pins added by super().<strong>init</strong>()</h3>
+<p>When <code>use_exec=True</code>:<br />
+- <code>exec_in</code> is added to <code>self.inputs</code> with <code>data_type="exec"</code>.<br />
+- <code>exec_out</code> is added to <code>self.outputs</code> with <code>data_type="exec"</code>.</p>
+<p>These are plain <code>Port</code> objects. The engine identifies exec ports by checking<br />
+<code>port.data_type == "exec"</code>.</p>
+<h3 id="deleting-the-default-exec_out">Deleting the default exec_out</h3>
+<p>Some built-in nodes (e.g., <code>ForEachNode</code>) delete the default <code>exec_out</code> and<br />
+replace it with more descriptive outputs:</p>
+<pre><code class="language-python">def __init__(self):
+    super().__init__(use_exec=True)
+    if &quot;exec_out&quot; in self.outputs:
+        del self.outputs[&quot;exec_out&quot;]
+    self.add_exec_output(&quot;each_item&quot;)
+    self.add_exec_output(&quot;exec_on_finished&quot;)
+</code></pre>
+<p>This is safe — the engine treats any <code>exec</code>-type output the same way.</p>
+<hr />
+<h2 id="4-set_output-reactive-system">4. set_output() Reactive System</h2>
+<p><code>await self.set_output(name, value)</code> is the mechanism for reactive, mid-<br />
+execution value propagation.</p>
+<h3 id="what-happens-when-you-call-set_output">What happens when you call set_output</h3>
+<p>Inside the engine's <code>_on_output</code> handler (set up per-node before execution):</p>
+<ol>
+<li><code>node_results[node_id][name] = value</code> — result cache updated immediately.</li>
+<li><code>node_output</code> signal emitted — the UI updates wire tooltips.</li>
+<li>For every data connection from this port to a downstream node:</li>
+<li><code>target.parameters[conn.to_port] = value</code> — downstream parameter updated.</li>
+<li><code>target_node_results[to_port] = value</code> — downstream result cache updated.</li>
+<li>If the target node is not exec-driven (<code>to_node not in _driven_by_flow</code>),<br />
+     it is <strong>invalidated</strong> from <code>_executed_nodes</code> so it re-runs on next pull.</li>
+<li><code>await target.on_parameter_changed(to_port, value)</code> — reactive hook called.</li>
+<li>If <code>name</code> is an exec port and <code>value</code> is truthy:</li>
+<li>For every exec connection from this port, <code>_execute_flow(downstream_node)</code><br />
+     is awaited sequentially.</li>
+</ol>
+<h3 id="ordering-set_output-vs-return-dict">Ordering: set_output vs. return dict</h3>
+<p>The return dict is processed <strong>after</strong> <code>execute()</code> returns. Values pushed via<br />
+<code>set_output()</code> arrive at downstream nodes earlier. This matters for loops:</p>
+<pre><code class="language-python"># Loop iteration pattern
+for item in items:
+    await self.set_output(&quot;current_item&quot;, item)   # downstream sees item NOW
+    await self.set_output(&quot;exec_step&quot;, True)       # trigger downstream exec chain
+    await asyncio.sleep(0)                          # yield
+
+return {&quot;current_item&quot;: last_item, &quot;exec_out&quot;: True}  # final cleanup
+</code></pre>
+<h3 id="set_output-is-safe-to-call-multiple-times">set_output is safe to call multiple times</h3>
+<p>You can call <code>set_output</code> for the same port multiple times. Each call fully<br />
+propagates before the next <code>await</code> returns.</p>
+<h3 id="set_output-on-exec-ports-flow-control">set_output on exec ports: flow control</h3>
+<pre><code class="language-python">await self.set_output(&quot;exec_out&quot;, True)   # continues the chain
+await self.set_output(&quot;exec_fail&quot;, True)  # continues the failure branch
+</code></pre>
+<p>You can fire both in the same execute() call — both chains will run. To<br />
+restrict to one branch, use conditional logic.</p>
+<hr />
+<h2 id="5-clear_outputs-call-sequence">5. clear_outputs() Call Sequence</h2>
+<p>The engine calls <code>instance.clear_outputs()</code> during node preparation — after<br />
+<code>restore_from_parameters()</code> but before syncing upstream values or calling<br />
+<code>execute()</code>.</p>
+<pre><code class="language-python">def clear_outputs(self) -&gt; None:
+    for name, port in self.outputs.items():
+        self.parameters[name] = port.default
+</code></pre>
+<p>This resets every output port's cached value to its declared default (e.g.,<br />
+<code>""</code> for string, <code>[]</code> for list, <code>False</code> for bool).</p>
+<p><strong>Why this matters for GroupInNode:</strong> The <code>value</code> output port is reset to<br />
+<code>None</code> by <code>clear_outputs()</code> before <code>execute()</code> runs. That is why <code>GroupInNode</code><br />
+reads from <code>self.parameters["_injected_value"]</code> (not <code>"value"</code>) — the injected<br />
+value is stored under a different key that <code>clear_outputs()</code> does not touch.</p>
+<hr />
+<h2 id="6-is_stopped-cancellation">6. is_stopped() Cancellation</h2>
+<pre><code class="language-python">def is_stopped(self) -&gt; bool
+</code></pre>
+<p>Internally calls <code>self._check_stopped()</code>, which is wired by the engine to<br />
+<code>NetworkExecutor._is_stopped</code>. Returns <code>False</code> if the hook is not set.</p>
+<h3 id="pattern-for-long-operations">Pattern for long operations</h3>
+<pre><code class="language-python">async def execute(self, inputs):
+    for i, path in enumerate(file_list):
+        if self.is_stopped():
+            self.log_info(f&quot;Stopped after {i} files.&quot;)
+            return {&quot;processed&quot;: i, &quot;exec_out&quot;: True}
+
+        process_file(path)
+        if i % 10 == 0:
+            await asyncio.sleep(0)   # yield periodically
+
+    return {&quot;processed&quot;: len(file_list), &quot;exec_out&quot;: True}
+</code></pre>
+<h3 id="pattern-for-async-operations">Pattern for async operations</h3>
+<p>The engine also cancels active <code>asyncio.Task</code> objects when <code>stop()</code> is called.<br />
+If your node is inside an <code>await</code>, the task receives <code>asyncio.CancelledError</code>.<br />
+Catch it if you need to clean up:</p>
+<pre><code class="language-python">try:
+    result = await some_long_operation()
+except asyncio.CancelledError:
+    self.log_info(&quot;Operation cancelled.&quot;)
+    raise   # re-raise so the engine knows the task was cancelled
+</code></pre>
+<hr />
+<h2 id="7-restore_from_parameters">7. restore_from_parameters()</h2>
+<pre><code class="language-python">def restore_from_parameters(self, parameters: Dict[str, Any]) -&gt; None
+</code></pre>
+<p>Called by the engine during node preparation — after the node class is<br />
+instantiated but before <code>clear_outputs()</code> and <code>execute()</code>. The <code>parameters</code><br />
+argument is the dict loaded from the saved workflow file.</p>
+<p>The base implementation does nothing (<code>pass</code>). Override it to recreate<br />
+<strong>dynamic ports</strong> from saved state.</p>
+<h3 id="when-to-override">When to override</h3>
+<p>Override <code>restore_from_parameters()</code> if your node:<br />
+- Adds input or output ports dynamically at runtime.<br />
+- Needs to restore non-port state before execution (e.g., parse a config).</p>
+<h3 id="typical-pattern">Typical pattern</h3>
+<pre><code class="language-python">def restore_from_parameters(self, parameters: Dict[str, Any]) -&gt; None:
+    # Recreate any step_N ports that were saved
+    for key in parameters:
+        if key.startswith(&quot;step_&quot;) and key not in self.inputs:
+            self.add_input(key, &quot;any&quot;)
+
+    # Update internal counter
+    count = max(
+        (int(k.split(&quot;_&quot;)[1]) + 1 for k in parameters if k.startswith(&quot;step_&quot;)),
+        default=1,
+    )
+    self._step_count = count
+</code></pre>
+<h3 id="important-do-not-call-rebuild_ports-here">Important: do not call rebuild_ports() here</h3>
+<p><code>restore_from_parameters()</code> runs in the engine before the UI canvas exists<br />
+(when running headlessly) or before the canvas widget has been fully<br />
+initialized. Calling <code>rebuild_ports()</code> here is safe but unnecessary — the UI<br />
+rebuilds all ports when it creates the <code>NodeWidget</code>.</p>
+<hr />
+<h2 id="8-on_parameter_changed-hook">8. on_parameter_changed() Hook</h2>
+<pre><code class="language-python">async def on_parameter_changed(self, name: str, value: Any) -&gt; None
+</code></pre>
+<p>Called by the engine's reactive propagation system when an upstream node<br />
+pushes a new value to a data port of this node (via <code>set_output</code>). At this<br />
+point <code>self.parameters[name]</code> has already been updated.</p>
+<p><strong>This is not called during <code>execute()</code> pre-sync.</strong> It is only triggered by<br />
+reactive propagation mid-run.</p>
+<h3 id="use-cases">Use cases</h3>
+<ul>
+<li>Recompute a derived output when an upstream value changes (e.g., <code>TwoWaySwitchNode</code>).</li>
+<li>Update dropdown options based on a connected category port.</li>
+<li>Log changes for debugging.</li>
+</ul>
+<h3 id="example-reactive-switch">Example: reactive switch</h3>
+<pre><code class="language-python">async def on_parameter_changed(self, name: str, value: Any) -&gt; None:
+    if name in (&quot;condition&quot;, &quot;input_1&quot;, &quot;input_2&quot;):
+        cond = bool(self.get_parameter(&quot;condition&quot;, False))
+        val1 = self.get_parameter(&quot;input_1&quot;)
+        val2 = self.get_parameter(&quot;input_2&quot;)
+        await self.set_output(&quot;output&quot;, val1 if cond else val2)
+</code></pre>
+<p>This pattern allows <code>TwoWaySwitchNode</code> to update its output in real-time as<br />
+upstream nodes push new values during a <code>ForEachNode</code> loop, without waiting for<br />
+its own exec trigger.</p>
+<hr />
+<h2 id="9-on_plug-on_unplug-hooks">9. on_plug / on_unplug Hooks</h2>
+<p>Four hooks fire when connections are created or removed in the canvas.</p>
+<h3 id="on_plug-async">on_plug (async)</h3>
+<pre><code class="language-python">async def on_plug(
+    self,
+    port_name: str,
+    is_input: bool,
+    other_node: BaseNode,
+    other_port_name: str
+) -&gt; None
+</code></pre>
+<p>Called asynchronously when a wire is connected to one of this node's ports.<br />
+Use for async operations that should happen when a port is connected (e.g.,<br />
+fetching options from a connected node).</p>
+<h3 id="on_plug_sync">on_plug_sync</h3>
+<pre><code class="language-python">def on_plug_sync(
+    self,
+    port_name: str,
+    is_input: bool,
+    other_node: BaseNode,
+    other_port_name: str
+) -&gt; None
+</code></pre>
+<p>Called synchronously when a wire is connected. Use for immediate UI updates<br />
+such as adding a dynamic port:</p>
+<pre><code class="language-python">def on_plug_sync(self, port_name, is_input, other_node, other_port_name):
+    if is_input and port_name == f&quot;step_{self._step_count - 1}&quot;:
+        self.add_input(f&quot;step_{self._step_count}&quot;, &quot;any&quot;)
+        self._step_count += 1
+        self.rebuild_ports()
+</code></pre>
+<h3 id="on_unplug-async">on_unplug (async)</h3>
+<pre><code class="language-python">async def on_unplug(self, port_name: str, is_input: bool) -&gt; None
+</code></pre>
+<p>Called asynchronously when a wire is removed from one of this node's ports.</p>
+<h3 id="on_unplug_sync">on_unplug_sync</h3>
+<pre><code class="language-python">def on_unplug_sync(self, port_name: str, is_input: bool) -&gt; None
+</code></pre>
+<p>Called synchronously when a wire is removed. Use for immediate port cleanup.</p>
+<hr />
+<h2 id="10-node-lifecycle">10. Node Lifecycle</h2>
+<p>The complete sequence from workflow load to execution completion:</p>
+<pre><code>1. NodeRegistry.get_class(node_id) → node_class
+2. instance = node_class()
+       │
+       └── BaseNode.__init__(use_exec=True)
+               ├── self.inputs = {}
+               ├── self.outputs = {}
+               ├── self.parameters = {}
+               ├── add_exec_input(&quot;exec_in&quot;)
+               ├── add_exec_output(&quot;exec_out&quot;)
+               └── [your __init__ code: add_input(), add_output(), ...]
+
+3. instance.restore_from_parameters(workflow_node.parameters)
+       └── [your override: recreate dynamic ports from saved state]
+
+4. Sync parameters from workflow:
+       ├── For ports with incoming data connections: reset to port default
+       └── For all other parameters: copy from saved workflow
+
+5. instance.clear_outputs()
+       └── self.parameters[output_name] = port.default  (for every output)
+
+6. Upstream data nodes are pulled recursively (if not exec-driven)
+
+7. Incoming connection values merged into instance.parameters
+
+8. inputs = instance.parameters.copy()
+
+9. instance.execute(inputs)
+       ├── [your code: read inputs, compute results]
+       ├── await self.set_output(...)  → reactive propagation + exec triggers
+       └── return {output_name: value, ..., &quot;exec_out&quot;: True}
+
+10. result merged into node_results[node_id]
+11. node_output signal emitted
+12. node_finished signal emitted
+</code></pre>
+<hr />
+<h2 id="11-json-schema-reference">11. JSON Schema Reference</h2>
+<p>Every node JSON file must conform to the <code>NodeDefinitionJSON</code> Pydantic model.</p>
+<h3 id="top-level-fields">Top-level fields</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>node_id</code></td>
+<td><code>str</code></td>
+<td>Yes</td>
+<td>Unique identifier. Snake_case recommended. Must match <code>name</code> class attribute.</td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td><code>str</code></td>
+<td>Yes</td>
+<td>Display name. Usually identical to <code>node_id</code>.</td>
+</tr>
+<tr>
+<td><code>description</code></td>
+<td><code>str</code></td>
+<td>No</td>
+<td>Shown in library tooltip. Defaults to <code>""</code>.</td>
+</tr>
+<tr>
+<td><code>category</code></td>
+<td><code>str</code></td>
+<td>No</td>
+<td>Library grouping. Defaults to <code>"General"</code>.</td>
+</tr>
+<tr>
+<td><code>icon_path</code></td>
+<td><code>str \| null</code></td>
+<td>No</td>
+<td>Relative path to an icon file.</td>
+</tr>
+<tr>
+<td><code>use_exec</code></td>
+<td><code>bool</code></td>
+<td>No</td>
+<td>Adds exec_in/exec_out if <code>true</code>. Defaults to <code>true</code>.</td>
+</tr>
+<tr>
+<td><code>inputs</code></td>
+<td><code>PortModel[]</code></td>
+<td>No</td>
+<td>List of input port definitions.</td>
+</tr>
+<tr>
+<td><code>outputs</code></td>
+<td><code>PortModel[]</code></td>
+<td>No</td>
+<td>List of output port definitions.</td>
+</tr>
+<tr>
+<td><code>python_code</code></td>
+<td><code>str</code></td>
+<td>Yes</td>
+<td>Full Python source as a single string. Use <code>\n</code> for newlines.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="portmodel-fields">PortModel fields</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td><code>str</code></td>
+<td>Yes</td>
+<td>Port name. Must be unique within inputs (or outputs).</td>
+</tr>
+<tr>
+<td><code>type</code></td>
+<td><code>str</code></td>
+<td>No</td>
+<td>Data type. Defaults to <code>"any"</code>.</td>
+</tr>
+<tr>
+<td><code>widget_type</code></td>
+<td><code>str \| null</code></td>
+<td>No</td>
+<td>Inline editor. <code>null</code> = no widget.</td>
+</tr>
+<tr>
+<td><code>options</code></td>
+<td><code>str[] \| null</code></td>
+<td>No</td>
+<td>Options list for <code>dropdown</code> widgets.</td>
+</tr>
+<tr>
+<td><code>default</code></td>
+<td><code>any</code></td>
+<td>No</td>
+<td>Default value. <code>null</code> defers to type-based auto-default.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="exec-pin-normalization">Exec pin normalization</h3>
+<p>When <code>use_exec=true</code>, the registry normalizes the JSON before compiling:</p>
+<ul>
+<li>If no input named <code>"exec_in"</code> exists, one is prepended automatically.</li>
+<li>If no output named <code>"exec_out"</code> exists, one is prepended automatically.</li>
+</ul>
+<p>This means you can safely declare <code>"use_exec": true</code> and omit the exec pins<br />
+from the <code>inputs</code>/<code>outputs</code> arrays — the registry adds them. However, for<br />
+clarity it is recommended to include them explicitly.</p>
+<h3 id="minimal-valid-json">Minimal valid JSON</h3>
+<pre><code class="language-json">{
+    &quot;node_id&quot;: &quot;hello_world&quot;,
+    &quot;name&quot;: &quot;hello_world&quot;,
+    &quot;python_code&quot;: &quot;from src.nodes.base import BaseNode\n\nclass Hello_World(BaseNode):\n    name = 'hello_world'\n\n    async def execute(self, inputs):\n        self.log_info('Hello, World!')\n        return {'exec_out': True}\n\ndef register_node():\n    return Hello_World&quot;
+}
+</code></pre>
+<hr />
+<h2 id="12-python_code-compilation">12. python_code Compilation</h2>
+<p>The registry compiles <code>python_code</code> using Python's built-in <code>exec()</code>:</p>
+<pre><code class="language-python">namespace = {}
+exec(definition.python_code, namespace)
+</code></pre>
+<p>The compiled namespace is inspected for:</p>
+<ol>
+<li>
+<p><strong><code>register_node</code> function</strong> (preferred) — called to get the node class:<br />
+<code>python
+   node_class = namespace['register_node']()</code></p>
+</li>
+<li>
+<p><strong><code>execute</code> function</strong> (simplified format) — if no <code>register_node</code> but an<br />
+<code>execute</code> function exists, a <code>DynamicNode</code> class is generated automatically.<br />
+   Any function in the namespace whose name starts with <code>_</code> is promoted to a<br />
+   class method.</p>
+</li>
+</ol>
+<h3 id="class-attribute-injection">Class attribute injection</h3>
+<p>After the class is retrieved, the registry injects class attributes from the<br />
+JSON definition:</p>
+<pre><code class="language-python">node_class.name = definition.name
+node_class.node_id = definition.node_id
+node_class.category = definition.category
+node_class.description = definition.description
+node_class.icon_path = definition.icon_path
+</code></pre>
+<p>This means you do not need to set these in the class body — but setting them<br />
+there is harmless and useful for IDE autocomplete during development.</p>
+<h3 id="prism-node-auto-patching">Prism node auto-patching</h3>
+<p>For nodes whose <code>node_id</code> starts with <code>prism_</code> (except <code>prism_core_init</code>), the<br />
+registry automatically:</p>
+<ol>
+<li>Prepends <code>from src.utils.prism_core import resolve_prism_core</code> if not already present.</li>
+<li>Replaces <code>core = inputs.get('core')</code> with <code>core = resolve_prism_core(inputs)</code>.</li>
+<li>Replaces <code>core = inputs.get("core")</code> with <code>core = resolve_prism_core(inputs)</code>.</li>
+</ol>
+<p>This means <code>prism_*</code> nodes never need to wire a <code>core</code> input — PrismCore is<br />
+resolved automatically from the shared cache.</p>
+<h3 id="compilation-errors">Compilation errors</h3>
+<p>If <code>exec()</code> raises or the resulting class does not subclass <code>BaseNode</code>,<br />
+<code>NodeRegistry.last_error</code> is set to a descriptive message and the node is not<br />
+registered. Check this attribute after loading if a node silently disappears.</p>
+<hr />
+<h2 id="13-register_node-function">13. register_node() Function</h2>
+<pre><code class="language-python">def register_node() -&gt; Type[BaseNode]:
+    return My_Node_Class
+</code></pre>
+<p><code>register_node</code> must be a module-level function (not a method) that returns the<br />
+node class (not an instance). The registry calls it once at load time.</p>
+<h3 id="why-not-just-import-the-class">Why not just import the class?</h3>
+<p>Using a function makes the registry agnostic to the class name. The function<br />
+acts as an explicit declaration: "this is the node class for this file."</p>
+<h3 id="alternative-no-register_node">Alternative: no register_node</h3>
+<p>If <code>register_node</code> is absent but an <code>execute</code> function exists at module level,<br />
+the registry creates a <code>DynamicNode</code> wrapper. This simplified format works for<br />
+stateless one-file nodes but does not support lifecycle hooks.</p>
+<hr />
+<h2 id="14-exec-flow-semantics">14. Exec Flow Semantics</h2>
+<h3 id="when-exec_out-fires">When exec_out fires</h3>
+<p><code>exec_out</code> fires in two ways:</p>
+<ol>
+<li><strong>Via return dict</strong> — <code>return {"exec_out": True}</code>. The engine processes the<br />
+   full return dict after <code>execute()</code> returns, then triggers exec chains.</li>
+<li><strong>Via set_output</strong> — <code>await self.set_output("exec_out", True)</code>. The exec<br />
+   chain fires immediately at that point, before <code>execute()</code> returns.</li>
+</ol>
+<p>For simple nodes, use the return dict. For loops and streaming patterns, use<br />
+<code>set_output()</code>.</p>
+<h3 id="when-set_output-fires-vs-return-dict">When set_output fires vs. return dict</h3>
+<pre><code>execute() called
+    │
+    ├── await self.set_output(&quot;partial&quot;, val)   ← fires NOW (reactive)
+    │       └── downstream data nodes updated
+    │
+    ├── await self.set_output(&quot;exec_step&quot;, True) ← fires NOW (exec chain)
+    │       └── downstream exec nodes run to completion
+    │       └── control returns here after all downstream nodes finish
+    │
+    ├── ... more loop iterations ...
+    │
+    └── return {&quot;result&quot;: val, &quot;exec_out&quot;: True}
+            └── exec_out chain fires AFTER execute() returns
+</code></pre>
+<h3 id="bypass-mode">Bypass mode</h3>
+<p>When a node is bypassed (user right-clicked → Bypass), the engine skips<br />
+<code>execute()</code> and instead fires all exec outputs unconditionally, passing data<br />
+through unchanged. This allows the pipeline to run end-to-end even when<br />
+individual nodes are disabled.</p>
+<hr />
+<h2 id="15-multiple-exec-outputs">15. Multiple Exec Outputs</h2>
+<p>Use multiple exec outputs to implement branching:</p>
+<pre><code class="language-python">self.add_exec_output(&quot;exec_success&quot;)   # fires when operation succeeds
+self.add_exec_output(&quot;exec_fail&quot;)      # fires when operation fails
+</code></pre>
+<p>Only one branch fires per run (unless you explicitly fire both):</p>
+<pre><code class="language-python">async def execute(self, inputs):
+    try:
+        result = risky_operation()
+        await self.set_output(&quot;exec_success&quot;, True)
+        return {&quot;result&quot;: result, &quot;exec_success&quot;: True, &quot;exec_fail&quot;: False}
+    except Exception as e:
+        self.log_error(str(e))
+        await self.set_output(&quot;exec_fail&quot;, True)
+        return {&quot;result&quot;: None, &quot;exec_success&quot;: False, &quot;exec_fail&quot;: True}
+</code></pre>
+<p>Wire <code>exec_success</code> to normal downstream nodes and <code>exec_fail</code> to error<br />
+handling nodes (e.g., a notification node or a cleanup node).</p>
+<h3 id="groupnode-exec-branches">GroupNode exec branches</h3>
+<p><code>GroupNode</code> uses exactly this pattern:<br />
+- <code>exec_out</code> fires when the inner graph completes without exceptions.<br />
+- <code>exec_fail</code> fires when an inner node emits <code>node_error</code>.</p>
+<hr />
+<h2 id="16-groupnode-pattern">16. GroupNode Pattern</h2>
+<p>A <code>GroupNode</code> is a node that embeds a complete <code>WorkflowModel</code> and executes it<br />
+via a headless <code>NetworkExecutor</code> sub-process when triggered.</p>
+<h3 id="how-groupnode-executes">How GroupNode executes</h3>
+<pre><code class="language-python">async def execute(self, inputs):
+    workflow = WorkflowModel.model_validate(self.parameters[&quot;__workflow__&quot;])
+
+    # Inject external inputs into group_in nodes
+    for node_model in workflow.nodes:
+        if node_model.node_id == &quot;group_in&quot;:
+            port_name = node_model.parameters.get(&quot;port_name&quot;, &quot;&quot;)
+            if port_name in inputs:
+                node_model.parameters[&quot;_injected_value&quot;] = inputs[port_name]
+
+    gm = GraphManager()
+    gm.from_model(workflow)
+
+    sub_executor = NetworkExecutor(gm)
+    await sub_executor.run()
+
+    # Collect outputs from group_out nodes
+    for inst_id, node_model in gm.nodes.items():
+        if node_model.node_id == &quot;group_out&quot;:
+            port_name = node_model.parameters.get(&quot;port_name&quot;, &quot;&quot;)
+            value = sub_executor.node_results.get(inst_id, {}).get(&quot;value&quot;)
+            await self.set_output(port_name, value)
+</code></pre>
+<h3 id="creating-nodes-that-run-sub-executors">Creating nodes that run sub-executors</h3>
+<p>If you want a custom node that runs a sub-workflow, follow this pattern:<br />
+- Store the sub-workflow as <code>self.parameters["__workflow__"]</code> (a dict).<br />
+- In <code>restore_from_parameters()</code>, recreate dynamic ports from <code>parameters["__port_defs__"]</code>.<br />
+- In <code>execute()</code>, instantiate <code>GraphManager</code>, call <code>gm.from_model(workflow)</code>,<br />
+  create <code>NetworkExecutor(gm)</code>, and <code>await sub_executor.run()</code>.<br />
+- Save outer <code>BaseNode.memory</code> before and restore it after (the sub-executor<br />
+  clears memory on startup).</p>
+<h3 id="groupinnode-injection-key">GroupInNode injection key</h3>
+<p>GroupInNode reads <code>self.parameters["_injected_value"]</code> — not <code>"value"</code>. This<br />
+is critical because <code>"value"</code> is an output port and <code>clear_outputs()</code> resets it<br />
+to <code>None</code> before <code>execute()</code> is called. The <code>"_injected_value"</code> key is written<br />
+by the parent GroupNode after <code>clear_outputs()</code> has already run.</p>
+<hr />
+<h2 id="17-quick-reference-tables">17. Quick-Reference Tables</h2>
+<h3 id="all-port-data-types">All port data types</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Widget types available</th>
+<th>Default value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>string</code></td>
+<td><code>text</code>, <code>text_area</code>, <code>dropdown</code>, <code>file</code>, <code>file_save</code></td>
+<td><code>""</code></td>
+</tr>
+<tr>
+<td><code>int</code></td>
+<td><code>int</code>, <code>slider</code></td>
+<td><code>0</code></td>
+</tr>
+<tr>
+<td><code>float</code></td>
+<td><code>float</code>, <code>slider</code></td>
+<td><code>0</code></td>
+</tr>
+<tr>
+<td><code>bool</code></td>
+<td><code>bool</code> (checkbox)</td>
+<td><code>False</code></td>
+</tr>
+<tr>
+<td><code>list</code></td>
+<td>none</td>
+<td><code>[]</code></td>
+</tr>
+<tr>
+<td><code>dict</code></td>
+<td>none</td>
+<td><code>{}</code></td>
+</tr>
+<tr>
+<td><code>any</code></td>
+<td>none (generic)</td>
+<td><code>None</code></td>
+</tr>
+<tr>
+<td><code>exec</code></td>
+<td>none (internal)</td>
+<td><code>None</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="all-widget-types">All widget types</h3>
+<table>
+<thead>
+<tr>
+<th><code>widget_type</code></th>
+<th>Data type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>text</code></td>
+<td>string</td>
+<td>Single-line text input</td>
+</tr>
+<tr>
+<td><code>text_area</code></td>
+<td>string</td>
+<td>Multi-line text editor</td>
+</tr>
+<tr>
+<td><code>int</code></td>
+<td>int</td>
+<td>Integer spinner</td>
+</tr>
+<tr>
+<td><code>float</code></td>
+<td>float</td>
+<td>Float spinner</td>
+</tr>
+<tr>
+<td><code>bool</code></td>
+<td>bool</td>
+<td>Checkbox toggle</td>
+</tr>
+<tr>
+<td><code>dropdown</code></td>
+<td>string</td>
+<td>Combo box; requires <code>options</code> list</td>
+</tr>
+<tr>
+<td><code>slider</code></td>
+<td>int or float</td>
+<td>0–100 range slider</td>
+</tr>
+<tr>
+<td><code>file</code></td>
+<td>string</td>
+<td>File path picker (open)</td>
+</tr>
+<tr>
+<td><code>file_save</code></td>
+<td>string</td>
+<td>File path picker (save)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="all-basenode-methods">All BaseNode methods</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Async</th>
+<th>Returns</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>add_input(name, type, widget_type, options, default)</code></td>
+<td>No</td>
+<td>None</td>
+<td>Add input port</td>
+</tr>
+<tr>
+<td><code>add_output(name, type, default)</code></td>
+<td>No</td>
+<td>None</td>
+<td>Add output port</td>
+</tr>
+<tr>
+<td><code>add_exec_input(name)</code></td>
+<td>No</td>
+<td>None</td>
+<td>Add exec input port</td>
+</tr>
+<tr>
+<td><code>add_exec_output(name)</code></td>
+<td>No</td>
+<td>None</td>
+<td>Add exec output port</td>
+</tr>
+<tr>
+<td><code>add_parameter(name, type, default)</code></td>
+<td>No</td>
+<td>None</td>
+<td>Add internal parameter</td>
+</tr>
+<tr>
+<td><code>rebuild_ports()</code></td>
+<td>No</td>
+<td>None</td>
+<td>Notify UI to redraw ports</td>
+</tr>
+<tr>
+<td><code>is_port_connected(name, is_input)</code></td>
+<td>No</td>
+<td><code>bool</code></td>
+<td>Check if port has a wire</td>
+</tr>
+<tr>
+<td><code>is_stopped()</code></td>
+<td>No</td>
+<td><code>bool</code></td>
+<td>Check if pipeline was cancelled</td>
+</tr>
+<tr>
+<td><code>set_output(name, value)</code></td>
+<td>Yes</td>
+<td>None</td>
+<td>Reactive value push</td>
+</tr>
+<tr>
+<td><code>clear_outputs()</code></td>
+<td>No</td>
+<td>None</td>
+<td>Reset outputs to defaults</td>
+</tr>
+<tr>
+<td><code>set_parameter(name, value)</code></td>
+<td>No</td>
+<td>None</td>
+<td>Set parameter (handles dropdown)</td>
+</tr>
+<tr>
+<td><code>get_parameter(name, default)</code></td>
+<td>No</td>
+<td><code>Any</code></td>
+<td>Safe parameter read</td>
+</tr>
+<tr>
+<td><code>log_info(msg)</code></td>
+<td>No</td>
+<td>None</td>
+<td>Info log message</td>
+</tr>
+<tr>
+<td><code>log_success(msg)</code></td>
+<td>No</td>
+<td>None</td>
+<td>Success log message</td>
+</tr>
+<tr>
+<td><code>log_error(msg)</code></td>
+<td>No</td>
+<td>None</td>
+<td>Error log message</td>
+</tr>
+<tr>
+<td><code>execute(inputs)</code></td>
+<td>Yes</td>
+<td><code>dict</code></td>
+<td><strong>Abstract — implement this</strong></td>
+</tr>
+<tr>
+<td><code>restore_from_parameters(params)</code></td>
+<td>No</td>
+<td>None</td>
+<td>Override to restore dynamic ports</td>
+</tr>
+<tr>
+<td><code>on_parameter_changed(name, value)</code></td>
+<td>Yes</td>
+<td>None</td>
+<td>Override for reactive response</td>
+</tr>
+<tr>
+<td><code>on_plug(port, is_input, node, port)</code></td>
+<td>Yes</td>
+<td>None</td>
+<td>Override for async connection event</td>
+</tr>
+<tr>
+<td><code>on_plug_sync(port, is_input, node, port)</code></td>
+<td>No</td>
+<td>None</td>
+<td>Override for sync connection event</td>
+</tr>
+<tr>
+<td><code>on_unplug(port, is_input)</code></td>
+<td>Yes</td>
+<td>None</td>
+<td>Override for async disconnect event</td>
+</tr>
+<tr>
+<td><code>on_unplug_sync(port, is_input)</code></td>
+<td>No</td>
+<td>None</td>
+<td>Override for sync disconnect event</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="18-packaging-node-plugins">18. Packaging Node Plugins</h2>
+<p>A node plugin is a directory containing one or more node files plus an optional<br />
+metadata manifest.</p>
+<h3 id="recommended-directory-structure">Recommended directory structure</h3>
+<pre><code>my_nodes/
+├── README.md                  ← (optional) human docs
+├── nodes/
+│   ├── my_category/
+│   │   ├── my_node_a.json
+│   │   └── my_node_b.json
+│   └── my_other_node.json
+├── icons/
+│   └── my_icon.svg
+└── scripts/
+    └── my_script.py
+</code></pre>
+<p>The <code>NodeRegistry._load_directory()</code> method walks the directory recursively, so<br />
+any depth of nesting works.</p>
+<h3 id="icon-paths">Icon paths</h3>
+<p>If your nodes reference custom icons, use paths relative to the <strong>app root</strong><br />
+(where <code>src/main.py</code> lives), not relative to the plugin directory. When<br />
+distributing a plugin, either:<br />
+- Include the icons in the app's <code>icons/</code> directory.<br />
+- Use absolute paths in <code>icon_path</code>.<br />
+- Accept that icons will be missing on other machines (the node still works).</p>
+<h3 id="node-file-format-checklist">Node file format checklist</h3>
+<p>Before packaging:<br />
+- <code>node_id</code> and <code>name</code> match and are snake_case.<br />
+- <code>python_code</code> compiles without errors (<code>exec(code, {})</code> in a Python REPL).<br />
+- All ports declared in <code>inputs</code>/<code>outputs</code> have matching <code>add_input</code>/<code>add_output</code><br />
+  calls in <code>python_code</code>.<br />
+- <code>exec_in</code>/<code>exec_out</code> are not added manually in <code>__init__</code> for <code>use_exec=true</code> nodes.<br />
+- <code>register_node()</code> returns the correct class.<br />
+- The class has <code>name = "node_id"</code> matching the JSON.</p>
+<hr />
+<h2 id="19-distributing-nodes">19. Distributing Nodes</h2>
+<h3 id="using-the-v_nodes_dir-environment-variable">Using the v_nodes_dir environment variable</h3>
+<p>Set <code>v_nodes_dir</code> to a colon-separated (Unix) or semicolon-separated (Windows)<br />
+list of directories. <code>NodeRegistry.load_all_with_extras()</code> loads nodes from<br />
+every directory in this list after loading the bundled nodes.</p>
+<pre><code class="language-bash"># Unix
+export v_nodes_dir=&quot;/home/user/my_nodes:/shared/studio_nodes&quot;
+
+# Windows
+set v_nodes_dir=C:\my_nodes;\\fileserver\studio_nodes
+</code></pre>
+<h3 id="houdini-plugin-integration">Houdini plugin integration</h3>
+<p>For nodes specific to Houdini, place them in the plugin's <code>v_nodes_houdini/</code><br />
+folder. The Houdini launch script (<code>vibrante_node_houdini.py</code>) sets<br />
+<code>v_nodes_dir</code> to include this folder automatically.</p>
+<pre><code>plugins/houdini/
+└── v_nodes_houdini/
+    ├── hou_create_geo.json
+    ├── hou_set_parm.json
+    └── ...
+</code></pre>
+<p>These nodes appear in the library only when the app is launched from Houdini.</p>
+<h3 id="registering-nodes-programmatically">Registering nodes programmatically</h3>
+<pre><code class="language-python">from src.core.registry import NodeRegistry
+
+# Load an entire directory
+NodeRegistry._load_directory(&quot;/path/to/my_nodes&quot;)
+
+# Load a single file
+NodeRegistry.load_node(&quot;/path/to/my_node.json&quot;)
+
+# Register a Python class directly (for built-ins)
+NodeRegistry._register_builtin_class(MyNodeClass)
+</code></pre>
+<h3 id="reloading-a-node-after-editing">Reloading a node after editing</h3>
+<pre><code class="language-python"># After editing my_node.json on disk:
+NodeRegistry.reload_node_definition(&quot;my_node&quot;)
+</code></pre>
+<p>This re-reads the JSON, re-compiles the Python code, and replaces the class in<br />
+<code>_classes</code>. Existing <code>NodeWidget</code> instances in the canvas are <strong>not</strong> updated<br />
+automatically — close and reopen the workflow, or refresh via the Node Builder.</p>
+<h3 id="checking-for-registration-errors">Checking for registration errors</h3>
+<pre><code class="language-python">if not NodeRegistry.load_node(&quot;/path/to/my_node.json&quot;):
+    print(NodeRegistry.last_error)
+</code></pre>
+<p><code>last_error</code> is a string describing the most recent load failure, or <code>None</code> if<br />
+the last load succeeded.</p>
+    <nav class="page-nav">
+      <a class="page-nav-link prev" href="13_general_purpose_automation.html"><span class="page-nav-label">Previous</span><span class="page-nav-title">General Purpose Automation</span></a>
+      
+    </nav>
+  </div>
+</main>
+
+<!-- ── TOC ────────────────────────────────────────────────────────────── -->
+<aside class="toc">
+  <div class="toc-title">On this page</div>
+<a class="toc-link toc-h2" href="#table-of-contents">Table of Contents</a>
+<a class="toc-link toc-h2" href="#1-basenode-class-reference">1. BaseNode Class Reference</a>
+<a class="toc-link toc-h3" href="#class-attributes">Class Attributes</a>
+<a class="toc-link toc-h3" href="#instance-attributes">Instance Attributes</a>
+<a class="toc-link toc-h3" href="#internal-hooks-do-not-set-manually">Internal Hooks (do not set manually)</a>
+<a class="toc-link toc-h3" href="#constructor">Constructor</a>
+<a class="toc-link toc-h3" href="#port-management-methods">Port Management Methods</a>
+<a class="toc-link toc-h4" href="#add_input">add_input</a>
+<a class="toc-link toc-h4" href="#add_output">add_output</a>
+<a class="toc-link toc-h4" href="#add_exec_input">add_exec_input</a>
+<a class="toc-link toc-h4" href="#add_exec_output">add_exec_output</a>
+<a class="toc-link toc-h4" href="#add_parameter">add_parameter</a>
+<a class="toc-link toc-h4" href="#rebuild_ports">rebuild_ports</a>
+<a class="toc-link toc-h3" href="#parameter-access-methods">Parameter Access Methods</a>
+<a class="toc-link toc-h4" href="#set_parameter">set_parameter</a>
+<a class="toc-link toc-h4" href="#get_parameter">get_parameter</a>
+<a class="toc-link toc-h4" href="#__getitem__-shortcut">__getitem__ shortcut</a>
+<a class="toc-link toc-h3" href="#connection-query-methods">Connection Query Methods</a>
+<a class="toc-link toc-h4" href="#is_port_connected">is_port_connected</a>
+<a class="toc-link toc-h3" href="#logging-methods">Logging Methods</a>
+<a class="toc-link toc-h4" href="#log_info">log_info</a>
+<a class="toc-link toc-h4" href="#log_success">log_success</a>
+<a class="toc-link toc-h4" href="#log_error">log_error</a>
+<a class="toc-link toc-h3" href="#output-methods">Output Methods</a>
+<a class="toc-link toc-h4" href="#set_output-async">set_output (async)</a>
+<a class="toc-link toc-h4" href="#clear_outputs">clear_outputs</a>
+<a class="toc-link toc-h3" href="#cancellation">Cancellation</a>
+<a class="toc-link toc-h4" href="#is_stopped">is_stopped</a>
+<a class="toc-link toc-h3" href="#abstract-method">Abstract Method</a>
+<a class="toc-link toc-h4" href="#execute-async-abstract">execute (async, abstract)</a>
+<a class="toc-link toc-h2" href="#2-port-class-reference">2. Port Class Reference</a>
+<a class="toc-link toc-h3" href="#attributes">Attributes</a>
+<a class="toc-link toc-h3" href="#accessing-ports">Accessing ports</a>
+<a class="toc-link toc-h2" href="#3-exec-pin-mechanics">3. Exec Pin Mechanics</a>
+<a class="toc-link toc-h3" href="#exec_in">exec_in</a>
+<a class="toc-link toc-h3" href="#exec_out">exec_out</a>
+<a class="toc-link toc-h3" href="#how-the-exec-chain-works">How the exec chain works</a>
+<a class="toc-link toc-h3" href="#exec-pins-added-by-superinit">exec pins added by super().init()</a>
+<a class="toc-link toc-h3" href="#deleting-the-default-exec_out">Deleting the default exec_out</a>
+<a class="toc-link toc-h2" href="#4-set_output-reactive-system">4. set_output() Reactive System</a>
+<a class="toc-link toc-h3" href="#what-happens-when-you-call-set_output">What happens when you call set_output</a>
+<a class="toc-link toc-h3" href="#ordering-set_output-vs-return-dict">Ordering: set_output vs. return dict</a>
+<a class="toc-link toc-h3" href="#set_output-is-safe-to-call-multiple-times">set_output is safe to call multiple times</a>
+<a class="toc-link toc-h3" href="#set_output-on-exec-ports-flow-control">set_output on exec ports: flow control</a>
+<a class="toc-link toc-h2" href="#5-clear_outputs-call-sequence">5. clear_outputs() Call Sequence</a>
+<a class="toc-link toc-h2" href="#6-is_stopped-cancellation">6. is_stopped() Cancellation</a>
+<a class="toc-link toc-h3" href="#pattern-for-long-operations">Pattern for long operations</a>
+<a class="toc-link toc-h3" href="#pattern-for-async-operations">Pattern for async operations</a>
+<a class="toc-link toc-h2" href="#7-restore_from_parameters">7. restore_from_parameters()</a>
+<a class="toc-link toc-h3" href="#when-to-override">When to override</a>
+<a class="toc-link toc-h3" href="#typical-pattern">Typical pattern</a>
+<a class="toc-link toc-h3" href="#important-do-not-call-rebuild_ports-here">Important: do not call rebuild_ports() here</a>
+<a class="toc-link toc-h2" href="#8-on_parameter_changed-hook">8. on_parameter_changed() Hook</a>
+<a class="toc-link toc-h3" href="#use-cases">Use cases</a>
+<a class="toc-link toc-h3" href="#example-reactive-switch">Example: reactive switch</a>
+<a class="toc-link toc-h2" href="#9-on_plug-on_unplug-hooks">9. on_plug / on_unplug Hooks</a>
+<a class="toc-link toc-h3" href="#on_plug-async">on_plug (async)</a>
+<a class="toc-link toc-h3" href="#on_plug_sync">on_plug_sync</a>
+<a class="toc-link toc-h3" href="#on_unplug-async">on_unplug (async)</a>
+<a class="toc-link toc-h3" href="#on_unplug_sync">on_unplug_sync</a>
+<a class="toc-link toc-h2" href="#10-node-lifecycle">10. Node Lifecycle</a>
+<a class="toc-link toc-h2" href="#11-json-schema-reference">11. JSON Schema Reference</a>
+<a class="toc-link toc-h3" href="#top-level-fields">Top-level fields</a>
+<a class="toc-link toc-h3" href="#portmodel-fields">PortModel fields</a>
+<a class="toc-link toc-h3" href="#exec-pin-normalization">Exec pin normalization</a>
+<a class="toc-link toc-h3" href="#minimal-valid-json">Minimal valid JSON</a>
+<a class="toc-link toc-h2" href="#12-python_code-compilation">12. python_code Compilation</a>
+<a class="toc-link toc-h3" href="#class-attribute-injection">Class attribute injection</a>
+<a class="toc-link toc-h3" href="#prism-node-auto-patching">Prism node auto-patching</a>
+<a class="toc-link toc-h3" href="#compilation-errors">Compilation errors</a>
+<a class="toc-link toc-h2" href="#13-register_node-function">13. register_node() Function</a>
+<a class="toc-link toc-h3" href="#why-not-just-import-the-class">Why not just import the class?</a>
+<a class="toc-link toc-h3" href="#alternative-no-register_node">Alternative: no register_node</a>
+<a class="toc-link toc-h2" href="#14-exec-flow-semantics">14. Exec Flow Semantics</a>
+<a class="toc-link toc-h3" href="#when-exec_out-fires">When exec_out fires</a>
+<a class="toc-link toc-h3" href="#when-set_output-fires-vs-return-dict">When set_output fires vs. return dict</a>
+<a class="toc-link toc-h3" href="#bypass-mode">Bypass mode</a>
+<a class="toc-link toc-h2" href="#15-multiple-exec-outputs">15. Multiple Exec Outputs</a>
+<a class="toc-link toc-h3" href="#groupnode-exec-branches">GroupNode exec branches</a>
+<a class="toc-link toc-h2" href="#16-groupnode-pattern">16. GroupNode Pattern</a>
+<a class="toc-link toc-h3" href="#how-groupnode-executes">How GroupNode executes</a>
+<a class="toc-link toc-h3" href="#creating-nodes-that-run-sub-executors">Creating nodes that run sub-executors</a>
+<a class="toc-link toc-h3" href="#groupinnode-injection-key">GroupInNode injection key</a>
+<a class="toc-link toc-h2" href="#17-quick-reference-tables">17. Quick-Reference Tables</a>
+<a class="toc-link toc-h3" href="#all-port-data-types">All port data types</a>
+<a class="toc-link toc-h3" href="#all-widget-types">All widget types</a>
+<a class="toc-link toc-h3" href="#all-basenode-methods">All BaseNode methods</a>
+<a class="toc-link toc-h2" href="#18-packaging-node-plugins">18. Packaging Node Plugins</a>
+<a class="toc-link toc-h3" href="#recommended-directory-structure">Recommended directory structure</a>
+<a class="toc-link toc-h3" href="#icon-paths">Icon paths</a>
+<a class="toc-link toc-h3" href="#node-file-format-checklist">Node file format checklist</a>
+<a class="toc-link toc-h2" href="#19-distributing-nodes">19. Distributing Nodes</a>
+<a class="toc-link toc-h3" href="#using-the-v_nodes_dir-environment-variable">Using the v_nodes_dir environment variable</a>
+<a class="toc-link toc-h3" href="#houdini-plugin-integration">Houdini plugin integration</a>
+<a class="toc-link toc-h3" href="#registering-nodes-programmatically">Registering nodes programmatically</a>
+<a class="toc-link toc-h3" href="#reloading-a-node-after-editing">Reloading a node after editing</a>
+<a class="toc-link toc-h3" href="#checking-for-registration-errors">Checking for registration errors</a>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/highlight.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lunr@2.3.9/lunr.min.js"></script>
+<script>
+// ── Search ──────────────────────────────────────────────────────────────
+let _idx = null, _docs = [];
+
+async function initSearch() {
+  try {
+    const base = document.getElementById('portal-base').dataset.base;
+    const resp = await fetch(base + 'search.json');
+    _docs = await resp.json();
+    _idx = lunr(function() {
+      this.ref('id');
+      this.field('title', { boost: 10 });
+      this.field('body');
+      _docs.forEach((d, i) => {
+        this.add({ id: i, title: d.title, body: d.body });
+      });
+    });
+  } catch(e) { console.warn('Search index not available', e); }
+}
+
+function doSearch(q) {
+  const box = document.getElementById('search-results');
+  if (!q || q.length < 2) { box.classList.remove('visible'); return; }
+  if (!_idx) { box.innerHTML = '<div class="search-no-results">Search index loading…</div>'; box.classList.add('visible'); return; }
+  const results = _idx.search(q + '~1');
+  if (!results.length) {
+    box.innerHTML = '<div class="search-no-results">No results for "' + q + '"</div>';
+    box.classList.add('visible'); return;
+  }
+  box.innerHTML = results.slice(0, 8).map(r => {
+    const d = _docs[r.ref];
+    const excerpt = d.body.substring(0, 140).replace(/[#*`]/g, '').trim() + '…';
+    return `<a class="search-result-item" href="${d.url}">
+      <div class="search-result-title">${d.title}</div>
+      <div class="search-result-excerpt">${excerpt}</div>
+    </a>`;
+  }).join('');
+  box.classList.add('visible');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initSearch();
+  const inp = document.getElementById('search-input');
+  if (inp) {
+    inp.addEventListener('input', e => doSearch(e.target.value));
+    inp.addEventListener('keydown', e => { if (e.key === 'Escape') { e.target.value=''; document.getElementById('search-results').classList.remove('visible'); }});
+  }
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.search-wrap')) document.getElementById('search-results')?.classList.remove('visible');
+  });
+  // Keyboard shortcut: / to focus search
+  document.addEventListener('keydown', e => {
+    if (e.key === '/' && !['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) {
+      e.preventDefault(); document.getElementById('search-input')?.focus();
+    }
+  });
+
+  // ── TOC active section ──────────────────────────────────────────────
+  const tocLinks = document.querySelectorAll('.toc-link');
+  const headings = document.querySelectorAll('h2[id],h3[id],h4[id]');
+  if (tocLinks.length && headings.length) {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          tocLinks.forEach(l => l.classList.remove('active'));
+          const link = document.querySelector(`.toc-link[href="#${entry.target.id}"]`);
+          if (link) link.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    headings.forEach(h => obs.observe(h));
+  }
+
+  // ── Copy buttons ────────────────────────────────────────────────────
+  document.querySelectorAll('pre').forEach(pre => {
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn'; btn.textContent = 'Copy';
+    btn.addEventListener('click', () => {
+      const code = pre.querySelector('code');
+      navigator.clipboard.writeText(code ? code.innerText : pre.innerText).then(() => {
+        btn.textContent = 'Copied!'; btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+      });
+    });
+    pre.style.position = 'relative';
+    pre.appendChild(btn);
+  });
+
+  // ── Sidebar active ──────────────────────────────────────────────────
+  const cur = window.location.pathname.split('/').pop();
+  document.querySelectorAll('.sidebar-link').forEach(l => {
+    if (l.getAttribute('href') === cur || l.getAttribute('href').endsWith(cur)) l.classList.add('active');
+  });
+
+  // ── highlight.js ────────────────────────────────────────────────────
+  if (window.hljs) {
+    hljs.configure({ ignoreUnescapedHTML: true });
+    hljs.highlightAll();
+  }
+});
+</script>
+</body>
+</html>

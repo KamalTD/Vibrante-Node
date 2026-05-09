@@ -28,7 +28,7 @@ datas = google_datas + grpc_datas + [
     ('workflows', 'workflows'),
     # Examples
     ('examples', 'examples'),
-    # HTML documentation (Help menu)
+    # HTML documentation (Help menu) + full documentation portal
     ('docs', 'docs'),
 ]
 

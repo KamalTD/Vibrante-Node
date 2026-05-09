@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Vibrante-Node v2.0.0 — Backend Architecture">
+<title>Backend Architecture — Vibrante-Node Docs</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/atom-one-dark.min.css">
+<style>
+/* ── Reset & Variables ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:       #1e1e2e;
+  --surface:  #181825;
+  --surface2: #11111b;
+  --border:   #313244;
+  --text:     #cdd6f4;
+  --subtext:  #a6adc8;
+  --muted:    #6c7086;
+  --lavender: #b4befe;
+  --blue:     #89b4fa;
+  --teal:     #94e2d5;
+  --green:    #a6e3a1;
+  --yellow:   #f9e2af;
+  --peach:    #fab387;
+  --red:      #f38ba8;
+  --pink:     #f5c2e7;
+  --mauve:    #cba6f7;
+  --sidebar-w: 260px;
+  --toc-w:    220px;
+  --header-h: 56px;
+  --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --mono: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+}
+
+/* ── Layout ─────────────────────────────────────────────────────────────── */
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: var(--header-h) 1fr;
+  grid-template-columns: var(--sidebar-w) 1fr var(--toc-w);
+  grid-template-areas:
+    "header header header"
+    "sidebar content toc";
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+.header {
+  grid-area: header;
+  position: sticky; top: 0; z-index: 200;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 16px;
+  padding: 0 24px;
+}
+.header-logo {
+  font-weight: 700; font-size: 1.05em;
+  color: var(--mauve);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.header-version {
+  font-size: .78em;
+  background: var(--border);
+  color: var(--subtext);
+  padding: 2px 8px; border-radius: 12px;
+}
+.header-spacer { flex: 1; }
+.search-wrap { position: relative; }
+#search-input {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: .9em;
+  padding: 6px 14px 6px 36px;
+  width: 260px;
+  outline: none;
+  transition: border-color .15s;
+}
+#search-input:focus { border-color: var(--mauve); }
+.search-icon {
+  position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+  color: var(--muted); pointer-events: none; font-size: .9em;
+}
+#search-results {
+  position: absolute; top: calc(100% + 8px); right: 0;
+  width: 380px; max-height: 420px; overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.5);
+  display: none; z-index: 300;
+}
+#search-results.visible { display: block; }
+.search-result-item {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background .1s;
+}
+.search-result-item:last-child { border-bottom: none; }
+.search-result-item:hover { background: var(--bg); }
+.search-result-title { color: var(--blue); font-weight: 600; font-size: .9em; }
+.search-result-excerpt { color: var(--subtext); font-size: .82em; margin-top: 2px; line-height: 1.4; }
+.search-no-results { padding: 16px; color: var(--muted); text-align: center; font-size: .9em; }
+
+/* ── Sidebar ─────────────────────────────────────────────────────────────── */
+.sidebar {
+  grid-area: sidebar;
+  position: sticky; top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 20px 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.sidebar-group { margin-bottom: 4px; }
+.sidebar-group-title {
+  font-size: .7em;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--muted);
+  padding: 10px 20px 4px;
+  font-weight: 600;
+}
+.sidebar-link {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 20px;
+  color: var(--subtext);
+  text-decoration: none;
+  font-size: .88em;
+  border-left: 3px solid transparent;
+  transition: all .12s;
+  line-height: 1.3;
+}
+.sidebar-link:hover { color: var(--text); background: var(--bg); }
+.sidebar-link.active {
+  color: var(--mauve);
+  border-left-color: var(--mauve);
+  background: rgba(180,190,254,.06);
+  font-weight: 600;
+}
+.sidebar-num {
+  font-size: .7em;
+  color: var(--muted);
+  background: var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  flex-shrink: 0;
+}
+.sidebar-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 12px 16px;
+}
+
+/* ── Content ─────────────────────────────────────────────────────────────── */
+.content {
+  grid-area: content;
+  min-width: 0;
+  padding: 40px 48px 80px;
+  max-width: 860px;
+}
+.content-inner { max-width: 820px; }
+
+/* Breadcrumb */
+.breadcrumb {
+  font-size: .8em;
+  color: var(--muted);
+  margin-bottom: 28px;
+  display: flex; align-items: center; gap: 6px;
+}
+.breadcrumb a { color: var(--blue); text-decoration: none; }
+.breadcrumb a:hover { text-decoration: underline; }
+.breadcrumb-sep { color: var(--border); }
+
+/* Typography */
+h1 { font-size: 2em; color: var(--mauve); border-bottom: 2px solid var(--border); padding-bottom: 12px; margin: 20px 0 20px; }
+h2 { font-size: 1.45em; color: var(--blue); margin: 40px 0 14px; padding-top: 8px; }
+h3 { font-size: 1.15em; color: var(--teal); margin: 28px 0 10px; }
+h4 { font-size: 1em; color: var(--pink); margin: 20px 0 8px; }
+h5 { font-size: .95em; color: var(--yellow); margin: 16px 0 6px; }
+p  { margin-bottom: 16px; color: var(--text); }
+a  { color: var(--blue); }
+a:hover { text-decoration: underline; }
+strong { color: var(--peach); }
+em { color: var(--yellow); font-style: italic; }
+
+ul, ol { margin: 10px 0 16px 24px; }
+li { margin-bottom: 6px; }
+li > ul, li > ol { margin-top: 4px; margin-bottom: 4px; }
+
+blockquote {
+  border-left: 4px solid var(--mauve);
+  padding: 10px 20px;
+  margin: 16px 0;
+  background: rgba(180,190,254,.05);
+  border-radius: 0 8px 8px 0;
+  color: var(--subtext);
+}
+blockquote strong { color: var(--mauve); }
+
+hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+/* Code */
+code {
+  background: var(--surface2);
+  color: var(--red);
+  padding: 2px 7px; border-radius: 5px;
+  font-family: var(--mono); font-size: .87em;
+}
+pre {
+  background: var(--surface2) !important;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px 22px;
+  overflow-x: auto;
+  margin: 16px 0 22px;
+  position: relative;
+}
+pre code {
+  background: none !important;
+  color: inherit !important;
+  padding: 0; font-size: .9em;
+  border-radius: 0;
+}
+/* Copy button */
+.copy-btn {
+  position: absolute; top: 10px; right: 12px;
+  background: var(--border);
+  color: var(--subtext);
+  border: none; border-radius: 5px;
+  padding: 3px 10px; font-size: .75em;
+  cursor: pointer; transition: all .12s;
+  font-family: var(--font);
+}
+.copy-btn:hover { background: var(--mauve); color: var(--surface2); }
+.copy-btn.copied { background: var(--green); color: var(--surface2); }
+
+/* Tables */
+table { border-collapse: collapse; width: 100%; margin: 16px 0 22px; font-size: .9em; }
+th { background: var(--border); color: var(--mauve); padding: 10px 14px; text-align: left; font-weight: 600; }
+td { border-top: 1px solid var(--border); padding: 9px 14px; color: var(--text); }
+tr:nth-child(even) td { background: rgba(17,17,27,.4); }
+td code { font-size: .85em; }
+
+/* Callout boxes */
+.callout {
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin: 16px 0 22px;
+  border-left: 4px solid;
+}
+.callout-note    { background: rgba(137,180,250,.08); border-color: var(--blue);   }
+.callout-tip     { background: rgba(166,227,161,.08); border-color: var(--green);  }
+.callout-warning { background: rgba(249,226,175,.08); border-color: var(--yellow); }
+.callout-danger  { background: rgba(243,139,168,.08); border-color: var(--red);    }
+.callout-title   { font-weight: 700; font-size: .85em; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
+.callout-note    .callout-title { color: var(--blue);   }
+.callout-tip     .callout-title { color: var(--green);  }
+.callout-warning .callout-title { color: var(--yellow); }
+.callout-danger  .callout-title { color: var(--red);    }
+
+/* Prev/Next navigation */
+.page-nav {
+  display: flex; justify-content: space-between;
+  margin-top: 60px; padding-top: 24px;
+  border-top: 1px solid var(--border);
+  gap: 16px;
+}
+.page-nav-link {
+  display: flex; flex-direction: column;
+  text-decoration: none;
+  padding: 14px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  min-width: 200px;
+  transition: border-color .15s;
+  max-width: 48%;
+}
+.page-nav-link:hover { border-color: var(--mauve); }
+.page-nav-label { font-size: .75em; color: var(--muted); margin-bottom: 4px; }
+.page-nav-title { color: var(--blue); font-weight: 600; font-size: .95em; }
+.page-nav-link.prev .page-nav-label::before { content: '← '; }
+.page-nav-link.next { margin-left: auto; text-align: right; }
+.page-nav-link.next .page-nav-label::after { content: ' →'; }
+
+/* ── TOC (right panel) ───────────────────────────────────────────────────── */
+.toc {
+  grid-area: toc;
+  position: sticky; top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  padding: 28px 16px 28px 8px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.toc-title {
+  font-size: .72em;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--muted);
+  font-weight: 600;
+  margin-bottom: 12px;
+  padding-left: 8px;
+}
+.toc-link {
+  display: block;
+  padding: 4px 8px;
+  color: var(--subtext);
+  text-decoration: none;
+  font-size: .82em;
+  border-left: 2px solid transparent;
+  border-radius: 0 4px 4px 0;
+  transition: all .12s;
+  line-height: 1.35;
+  margin-bottom: 1px;
+}
+.toc-link:hover { color: var(--text); border-left-color: var(--border); }
+.toc-link.active { color: var(--mauve); border-left-color: var(--mauve); background: rgba(180,190,254,.05); }
+.toc-link.toc-h3 { padding-left: 20px; font-size: .79em; }
+.toc-link.toc-h4 { padding-left: 32px; font-size: .76em; color: var(--muted); }
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  body { grid-template-columns: var(--sidebar-w) 1fr 0; }
+  .toc { display: none; }
+}
+@media (max-width: 760px) {
+  body { grid-template-columns: 0 1fr 0; grid-template-rows: var(--header-h) 1fr; }
+  .sidebar { display: none; }
+  .content { padding: 24px 20px 60px; }
+  #search-input { width: 180px; }
+}
+
+/* ── Index / landing page ────────────────────────────────────────────────── */
+.hero { text-align: center; padding: 60px 0 48px; }
+.hero h1 { border: none; font-size: 2.8em; }
+.hero .tagline { color: var(--subtext); font-size: 1.15em; margin-top: 10px; }
+.hero .version-badge {
+  display: inline-block;
+  background: var(--border); color: var(--mauve);
+  padding: 4px 14px; border-radius: 20px; font-size: .85em;
+  margin-top: 14px;
+}
+.group-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin: 16px 0 36px; }
+.doc-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  text-decoration: none;
+  color: var(--text);
+  transition: border-color .15s, background .15s;
+  display: block;
+}
+.doc-card:hover { border-color: var(--mauve); background: rgba(180,190,254,.04); }
+.doc-card-num { font-size: .72em; color: var(--muted); margin-bottom: 4px; }
+.doc-card-title { color: var(--blue); font-weight: 700; font-size: 1em; margin-bottom: 6px; }
+.doc-card-desc { color: var(--subtext); font-size: .85em; line-height: 1.5; }
+.group-title { color: var(--teal); font-size: 1.1em; font-weight: 600; margin: 32px 0 10px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+</style>
+<span id="portal-base" data-base="" style="display:none"></span>
+</head>
+<body>
+
+<!-- ── Header ─────────────────────────────────────────────────────────── -->
+<header class="header">
+  <a class="header-logo" href="index.html">Vibrante-Node</a>
+  <span class="header-version">v2.0.0</span>
+  <div class="header-spacer"></div>
+  <div class="search-wrap">
+    <span class="search-icon">&#128269;</span>
+    <input id="search-input" type="text" placeholder="Search docs… (/)" autocomplete="off" spellcheck="false">
+    <div id="search-results"></div>
+  </div>
+</header>
+
+<!-- ── Sidebar ────────────────────────────────────────────────────────── -->
+<nav class="sidebar">
+<div class="sidebar-group">
+<div class="sidebar-group-title">Overview</div>
+<a class="sidebar-link" href="01_introduction.html"><span class="sidebar-num">01</span>Introduction</a>
+<a class="sidebar-link" href="02_getting_started.html"><span class="sidebar-num">02</span>Getting Started</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Using the App</div>
+<a class="sidebar-link" href="03_user_guide.html"><span class="sidebar-num">03</span>User Guide</a>
+<a class="sidebar-link" href="04_workflow_tutorials.html"><span class="sidebar-num">04</span>Workflow Tutorials</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Developing Nodes</div>
+<a class="sidebar-link" href="05_node_development.html"><span class="sidebar-num">05</span>Node Development Guide</a>
+<a class="sidebar-link" href="14_custom_nodes_api.html"><span class="sidebar-num">14</span>Custom Nodes API</a>
+<a class="sidebar-link" href="08_api_reference.html"><span class="sidebar-num">08</span>API Reference</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Architecture</div>
+<a class="sidebar-link active" href="06_backend_architecture.html"><span class="sidebar-num">06</span>Backend Architecture</a>
+<a class="sidebar-link" href="07_frontend_architecture.html"><span class="sidebar-num">07</span>Frontend Architecture</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Advanced</div>
+<a class="sidebar-link" href="09_advanced_topics.html"><span class="sidebar-num">09</span>Advanced Topics</a>
+<a class="sidebar-link" href="10_contribution_guide.html"><span class="sidebar-num">10</span>Contribution Guide</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Reference</div>
+<a class="sidebar-link" href="11_troubleshooting.html"><span class="sidebar-num">11</span>Troubleshooting</a>
+<a class="sidebar-link" href="12_examples_library.html"><span class="sidebar-num">12</span>Examples Library</a>
+<a class="sidebar-link" href="13_general_purpose_automation.html"><span class="sidebar-num">13</span>General Purpose Automation</a>
+</div>
+
+</nav>
+
+<!-- ── Main content ───────────────────────────────────────────────────── -->
+<main class="content">
+  <div class="content-inner">
+    <nav class="breadcrumb"><a href="index.html">Docs</a><span class="breadcrumb-sep">›</span><span>Backend Architecture</span></nav>
+    <h1 id="06-backend-architecture">06 — Backend Architecture</h1>
+<p><strong>Vibrante-Node v2.0.0 — Technical Reference</strong></p>
+<p>This document describes the execution engine, graph model, node registry, and all supporting subsystems that make up the Vibrante-Node backend. It is written for contributors, plugin authors, and advanced users who need to understand what happens between the moment the user clicks <strong>Run</strong> and the moment the last node finishes.</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#1-execution-engine-overview">Execution Engine Overview</a></li>
+<li><a href="#2-event-loop-integration">Event Loop Integration</a></li>
+<li><a href="#3-execution-flow-diagram">Execution Flow Diagram</a></li>
+<li><a href="#4-entry-node-detection">Entry Node Detection</a></li>
+<li><a href="#5-data-pull-recursion">Data-Pull Recursion</a></li>
+<li><a href="#6-execution-order-guarantees">Execution Order Guarantees</a></li>
+<li><a href="#7-loop-execution">Loop Execution</a></li>
+<li><a href="#8-groupnode-sub-executor">GroupNode Sub-Executor</a></li>
+<li><a href="#9-bypass-handling">Bypass Handling</a></li>
+<li><a href="#10-init_priority-system">init_priority System</a></li>
+<li><a href="#11-error-propagation">Error Propagation</a></li>
+<li><a href="#12-cancellation">Cancellation</a></li>
+<li><a href="#13-node_results-dictionary">node_results Dictionary</a></li>
+<li><a href="#14-signal-catalogue">Signal Catalogue</a></li>
+<li><a href="#15-state-management">State Management</a></li>
+<li><a href="#16-graphmanager">GraphManager</a></li>
+<li><a href="#17-noderegistry">NodeRegistry</a></li>
+<li><a href="#18-basenode-contract">BaseNode Contract</a></li>
+<li><a href="#19-saferuntime-and-error-isolation">SafeRuntime and Error Isolation</a></li>
+<li><a href="#20-performance-considerations">Performance Considerations</a></li>
+</ol>
+<hr />
+<h2 id="1-execution-engine-overview">1. Execution Engine Overview</h2>
+<p><code>NetworkExecutor</code> (<code>src/core/engine.py</code>) is the central execution engine. It inherits from <code>QObject</code> so it can emit Qt signals from within async code. The engine operates entirely on the Qt main thread — there are no worker threads for node execution. Async I/O is achieved by running an <code>asyncio</code> event loop that is manually stepped by a zero-delay <code>QTimer</code>.</p>
+<h3 id="what-networkexecutor-does">What NetworkExecutor does</h3>
+<ol>
+<li>Receives a <code>GraphManager</code> instance containing the full node graph.</li>
+<li>Instantiates one <code>BaseNode</code> subclass per <code>NodeInstanceModel</code>, restoring its dynamic ports and parameter values from the saved workflow.</li>
+<li>Determines which nodes are <em>entry nodes</em> and which are <em>data-pull nodes</em>.</li>
+<li>Starts all entry nodes as concurrent asyncio tasks.</li>
+<li>After each node's <code>execute()</code> returns, propagates outputs to downstream nodes' inputs reactively.</li>
+<li>Triggers downstream execution via exec-port connections.</li>
+<li>Emits Qt signals after every state transition so the UI stays in sync.</li>
+</ol>
+<h3 id="why-async">Why async</h3>
+<p>Node <code>execute()</code> coroutines may perform I/O: reading files, making HTTP requests, talking to the Houdini command server over TCP, or calling subprocess-based DCCs. If these were synchronous, they would block the Qt event loop and freeze the entire UI. By using <code>asyncio</code>, multiple nodes can be waiting on I/O simultaneously without any threading overhead. A single OS thread handles everything; the event loop interleaves coroutines cooperatively.</p>
+<p>The practical rule is: <strong>anything that blocks for more than a few milliseconds must use <code>await</code></strong>. CPU-bound work that cannot be split into coroutines should use <code>asyncio.to_thread()</code> to push it to a thread pool without blocking the event loop (see <a href="#20-performance-considerations">Performance Considerations</a>).</p>
+<hr />
+<h2 id="2-event-loop-integration">2. Event Loop Integration</h2>
+<p>Qt and asyncio each expect to own the thread's event loop. Vibrante-Node bridges them with <code>_EventLoopRunner</code> (<code>src/ui/window.py</code>), a lightweight adapter that drives the asyncio loop from inside Qt's event loop.</p>
+<h3 id="how-_eventlooprunner-works">How _EventLoopRunner works</h3>
+<pre><code>QTimer(interval=0) ──► _EventLoopRunner._step()
+                              │
+                              ├─ loop.call_soon(loop.stop)
+                              │      schedules a stop callback at end of ready queue
+                              │
+                              └─ loop.run_forever()
+                                     runs until the stop callback fires
+                                     (processes exactly one round of ready callbacks)
+</code></pre>
+<p><code>_step()</code> is called by Qt every time the event loop is idle (interval = 0). Each call to <code>_step()</code>:</p>
+<ol>
+<li>Queues a <code>loop.stop</code> at the back of the asyncio ready queue.</li>
+<li>Calls <code>loop.run_forever()</code>. Because <code>loop.stop</code> was queued last, <code>run_forever</code> returns after draining all currently-ready callbacks — typically in microseconds.</li>
+<li>Checks whether the main task is done, and if so calls <code>_cleanup()</code>.</li>
+</ol>
+<p>This scheme means:</p>
+<ul>
+<li>All <code>await</code> suspensions resume on the Qt main thread.</li>
+<li>All Qt signals emitted from within <code>async</code> code are queued connections that deliver on the main thread — no cross-thread marshalling is ever needed.</li>
+<li><code>QBasicTimer</code> warnings ("timer can only be used with threads started with QThread") cannot occur because the asyncio loop never runs on a background thread.</li>
+</ul>
+<h3 id="lifecycle">Lifecycle</h3>
+<pre><code class="language-python">runner = _EventLoopRunner(executor)
+runner.start()   # creates asyncio task, starts QTimer
+# ... Qt main loop runs ...
+runner.stop()    # calls executor.stop(); loop keeps pumping until task finishes
+</code></pre>
+<p><code>_EventLoopRunner</code> creates a brand-new <code>asyncio.new_event_loop()</code> for each run, so there are no stale tasks or leftover state between executions.</p>
+<hr />
+<h2 id="3-execution-flow-diagram">3. Execution Flow Diagram</h2>
+<pre><code>User clicks Run
+      │
+      ▼
+MainWindow.execute_pipeline()
+      │
+      ├─ Build GraphManager from WorkflowModel
+      ├─ Create NetworkExecutor(graph_manager)
+      ├─ Create _EventLoopRunner(executor)
+      └─ runner.start()
+              │
+              ▼
+        executor.run()   [async coroutine]
+              │
+              ├─ 1. PRE-CALCULATE LOOKUP MAPS
+              │       _incoming_data_conns: {node_id → [ConnectionModel]}
+              │       _driven_by_flow: set of node_ids with exec_in connected
+              │
+              ├─ 2. PREPARE ALL NODES
+              │       for each NodeInstanceModel:
+              │           instantiate node_class()
+              │           restore_from_parameters()   (dynamic ports)
+              │           sync parameters (skip ports with live data connections)
+              │           clear_outputs()
+              │           install _on_log, _on_output, _check_stopped hooks
+              │
+              ├─ 3. PRISM BOOTSTRAP (if prism_core_init present)
+              │
+              ├─ 4. INIT NODES (init_priority &gt; 0, descending order)
+              │       each init node's full exec chain completes before next
+              │
+              ├─ 5. ENTRY NODE DETECTION
+              │       exec_conns present?
+              │         YES → flow mode:
+              │               entry = nodes with exec_out but no connected exec_in
+              │                      OR nodes with no exec pins at all
+              │         NO  → data-flow mode:
+              │               layers = graph_manager.get_topological_sort()
+              │               execute layer by layer with asyncio.gather()
+              │
+              └─ 6. FLOW EXECUTION  [per entry node, concurrent tasks]
+                      _execute_flow(node_id)
+                            │
+                            ├─ BYPASS CHECK → short-circuit if bypassed
+                            │
+                            ├─ PULL UPSTREAM DATA NODES
+                            │       for each input port (in port definition order):
+                            │           if upstream node not in _driven_by_flow:
+                            │               _run_single_node_impl(upstream, is_data_pull=True)
+                            │
+                            ├─ node_started signal
+                            │
+                            ├─ reset exec output parameters
+                            │
+                            ├─ sync all inputs from node_results cache
+                            │
+                            ├─ SafeRuntime.run_node_safe(instance.execute, inputs)
+                            │
+                            ├─ SUCCESS:
+                            │     node_results[node_id].update(result)
+                            │     node_output signal
+                            │     node_finished(&quot;success&quot;) signal
+                            │
+                            └─ FAILURE:
+                                  node_error signal
+                                  node_finished(&quot;failed&quot;) signal
+                                  [exec chain stops here]
+
+     set_output(&quot;exec_out&quot;, True) called inside execute()
+              │
+              ├─ stores value in node_results
+              ├─ node_output signal (for live wire inspector)
+              ├─ REACTIVE DATA PROPAGATION:
+              │     for each data connection from this port:
+              │         target.parameters[to_port] = value
+              │         node_results[to_node][to_port] = value
+              │         if target not in _driven_by_flow:
+              │             discard from _executed_nodes  (force re-run in loops)
+              │         await target.on_parameter_changed(port, value)
+              └─ FLOW ROUTING (if port type == 'exec' and value is truthy):
+                    for each exec connection from this port:
+                        await _execute_flow(to_node)
+</code></pre>
+<hr />
+<h2 id="4-entry-node-detection">4. Entry Node Detection</h2>
+<p>Entry node detection depends on whether the graph contains any exec connections.</p>
+<h3 id="flow-mode-exec-connections-present">Flow Mode (exec connections present)</h3>
+<p>A node is an entry node if <strong>either</strong> of these conditions is true:</p>
+<ol>
+<li><strong>No exec_in pin</strong> — the node has only data ports. Examples: <code>GetVariable</code>, constant value nodes, the <code>prism_core_init</code> node. These never need to be triggered by an upstream exec; they run when data-pulled.</li>
+<li><strong>Has exec_in pin but no connection to it</strong> — the node is the start of an exec chain. This is the primary category: the first node the user wires up (e.g. a <code>Sequencer</code> or a Houdini node with <code>exec_in</code> connected to nothing).</li>
+</ol>
+<p>Both categories apply even within a single graph. A graph might have two independent exec chains, each starting their own entry node. Both are detected and tracked as concurrent tasks.</p>
+<p>Nodes already executed by the init phase (<code>_executed_nodes</code>) are excluded from entry detection to avoid double-execution.</p>
+<pre><code class="language-python"># From engine.py (simplified)
+entry_nodes = []
+for node_id, instance in self.node_instances.items():
+    if node_id not in connected_nodes: continue
+    if node_id in self._executed_nodes: continue
+
+    has_exec_in_pin = any(p.data_type == 'exec' for p in instance.inputs.values())
+
+    if not has_exec_in_pin:
+        entry_nodes.append(node_id)
+    elif node_id not in has_exec_in_conn:
+        entry_nodes.append(node_id)
+</code></pre>
+<h3 id="data-flow-mode-no-exec-connections">Data-Flow Mode (no exec connections)</h3>
+<p>When the graph has no exec connections at all, the engine falls back to classic topological sort execution. Every node in the graph is placed in a dependency layer, and layers are executed in order using <code>asyncio.gather()</code>. This mode is provided for backward compatibility and for simple graphs that do not need flow control.</p>
+<hr />
+<h2 id="5-data-pull-recursion">5. Data-Pull Recursion</h2>
+<p>Before executing any node, the engine recursively evaluates all upstream <em>data-only</em> nodes. This is called a data pull. Data-only nodes are those not in <code>_driven_by_flow</code> (i.e. no exec connection feeds into them).</p>
+<h3 id="the-data-pull-algorithm">The data-pull algorithm</h3>
+<pre><code class="language-python"># Pull in port-definition order so values arrive in a predictable sequence
+for port_name in instance.inputs:
+    for conn in incoming:
+        if conn.to_port == port_name:
+            from_id = conn.from_node
+            is_driven_by_flow = from_id in self._driven_by_flow
+            if not is_driven_by_flow:
+                await self._run_single_node_impl(from_id, is_data_pull=True)
+</code></pre>
+<h3 id="guards-against-double-execution">Guards against double-execution</h3>
+<p><code>_run_single_node_impl</code> has two guards:</p>
+<ol>
+<li><strong>Data-pull guard</strong> — if <code>is_data_pull=True</code> and the node is already in <code>_executed_nodes</code>, it is skipped immediately. A data node never needs to run twice within one chain of data pulls.</li>
+<li><strong>Re-entrancy guard</strong> — if the node is in <code>_currently_executing</code>, the call returns immediately. This prevents infinite recursion if a cycle somehow survived DAG validation.</li>
+</ol>
+<h3 id="cache-invalidation-in-loops">Cache invalidation in loops</h3>
+<p>When a node calls <code>set_output()</code> with a new value during loop iteration, the engine discards all downstream data-only nodes from <code>_executed_nodes</code>. This forces them to re-run and pick up the new value on the next iteration rather than serving a stale cached result. This is essential for patterns like <code>ForEach → GetListItem → SomeDataTransform → HoudiniNode</code>.</p>
+<hr />
+<h2 id="6-execution-order-guarantees">6. Execution Order Guarantees</h2>
+<h3 id="exec-chain-order">Exec-chain order</h3>
+<p>Within a single exec chain, nodes execute strictly sequentially. Node B does not start until node A's <code>execute()</code> coroutine returns and all reactive data propagation has completed. This is because <code>_execute_flow</code> is a single <code>await</code> chain: A calls <code>set_output("exec_out", True)</code>, which <code>await</code>s <code>_execute_flow(B)</code>, and so on.</p>
+<h3 id="parallel-chains">Parallel chains</h3>
+<p>Multiple independent exec chains (multiple entry nodes) are launched as concurrent asyncio tasks. They interleave at <code>await</code> points, which means I/O in one chain does not block progress in another. Shared state (e.g. <code>BaseNode.memory</code>) is not protected by a lock; if two chains write to the same variable key simultaneously, the result is non-deterministic. Design parallel chains to be independent or to use different variable namespaces.</p>
+<h3 id="data-node-order">Data node order</h3>
+<p>In data-flow mode (no exec connections), nodes in the same topological layer run concurrently via <code>asyncio.gather()</code>. Nodes in later layers are guaranteed to run after all nodes in earlier layers have completed.</p>
+<p>In flow mode, data-only upstream nodes are pulled in port-definition order. The order in which ports were added to the node definition determines the order upstream data nodes are evaluated.</p>
+<hr />
+<h2 id="7-loop-execution">7. Loop Execution</h2>
+<p>Two builtin nodes implement looping: <code>ForEachNode</code> and <code>WhileLoopNode</code>. Both use <code>set_output</code> to trigger exec flow from within a single <code>execute()</code> coroutine.</p>
+<h3 id="foreach">ForEach</h3>
+<p><code>ForEachNode.execute()</code> iterates over a list. For each element it:</p>
+<ol>
+<li>Calls <code>await self.set_output("current_item", element)</code> and <code>await self.set_output("current_index", i)</code>. This propagates the values to downstream data nodes and marks those nodes as stale in <code>_executed_nodes</code> (via the reactive propagation logic in the engine).</li>
+<li>Calls <code>await self.set_output("exec_step", True)</code>. The engine sees an exec output become truthy and follows all exec connections from <code>exec_step</code>, executing the downstream chain to completion.</li>
+<li>Repeats for the next element.</li>
+</ol>
+<p>After all elements are processed, <code>ForEachNode</code> calls <code>await self.set_output("exec_out", True)</code> to signal completion.</p>
+<p>Because each <code>set_output("exec_step", True)</code> call awaits the full downstream chain before returning, iterations are strictly sequential — there is no concurrency between loop bodies.</p>
+<h3 id="whileloop">WhileLoop</h3>
+<p><code>WhileLoopNode.execute()</code> reads a <code>break_condition</code> input at the start of each iteration. The <code>break_condition</code> port is excluded from cycle detection in <code>GraphManager.get_topological_sort()</code> (via <code>ignore_ports=["break_condition"]</code>), which is what allows the feedback wire without triggering a <code>CircularDependencyError</code>.</p>
+<p>On each iteration, <code>WhileLoopNode</code>:</p>
+<ol>
+<li>Checks <code>inputs.get("break_condition")</code>. If truthy, fires <code>exec_out</code> and returns.</li>
+<li>Fires <code>exec_loop_body</code> to execute the loop body chain.</li>
+<li>After the loop body completes, pulls the <code>break_condition</code> again (it was discarded from <code>_executed_nodes</code> by reactive propagation).</li>
+<li>Repeats.</li>
+</ol>
+<p>The <code>is_stopped()</code> check should be called inside long-running while loops to respect cancellation:</p>
+<pre><code class="language-python">while not self.is_stopped():
+    if inputs.get(&quot;break_condition&quot;):
+        break
+    await self.set_output(&quot;exec_loop_body&quot;, True)
+    inputs = self.parameters.copy()  # re-read inputs after body
+</code></pre>
+<hr />
+<h2 id="8-groupnode-sub-executor">8. GroupNode Sub-Executor</h2>
+<p><code>GroupNode</code> (<code>src/nodes/builtins/group_node.py</code>) encapsulates a complete <code>WorkflowModel</code> and runs it with a nested <code>NetworkExecutor</code>.</p>
+<h3 id="memory-preservation">Memory preservation</h3>
+<p>The outer executor sets <code>BaseNode.memory</code> to the current shared variable state before the sub-executor runs. The sub-executor's <code>run()</code> clears <code>BaseNode.memory</code> at the start (as it does for every run). To prevent this from erasing the outer execution's variables, <code>GroupNode.execute()</code> saves and restores memory around the sub-execution:</p>
+<pre><code class="language-python">saved_memory = dict(_BaseNode.memory)
+sub_executor = NetworkExecutor(gm)
+# ... connect signals ...
+try:
+    await sub_executor.run()
+finally:
+    _BaseNode.memory.clear()
+    _BaseNode.memory.update(saved_memory)
+</code></pre>
+<h3 id="input-injection">Input injection</h3>
+<p>External input values are injected into <code>GroupInNode</code> instances via <code>parameters["_injected_value"]</code> rather than <code>parameters["value"]</code>. The <code>value</code> key is an output port; the engine's <code>clear_outputs()</code> resets it to <code>None</code> during node preparation, before <code>execute()</code> is called. Using a distinct internal key (<code>_injected_value</code>) avoids the wipe.</p>
+<h3 id="output-collection">Output collection</h3>
+<p>After the sub-executor finishes, <code>GroupNode</code> collects outputs by reading from <code>sub_executor.node_results</code> of the <em>source</em> nodes connected to each <code>GroupOutNode</code>'s <code>value</code> input, rather than from <code>GroupOutNode</code> itself. This avoids a timing issue where <code>GroupOutNode</code> (a data-entry node) might have executed before the exec chain populated its input.</p>
+<h3 id="error-propagation">Error propagation</h3>
+<p><code>GroupNode</code> has two exec output ports:</p>
+<ul>
+<li><code>exec_out</code> — fires when the inner graph completes with no unhandled exceptions.</li>
+<li><code>exec_fail</code> — fires when the inner graph has at least one unhandled node exception (a <code>node_error</code> signal was emitted inside).</li>
+</ul>
+<p>Semantic failures (e.g. a Houdini node returning <code>success=False</code>) are not considered unhandled exceptions; they are the inner graph's responsibility to route via its own exec pins.</p>
+<hr />
+<h2 id="9-bypass-handling">9. Bypass Handling</h2>
+<p>A node can be bypassed by right-clicking it and selecting <strong>Bypass</strong> (or pressing <strong>Ctrl+B</strong>). The <code>bypassed</code> flag is stored on <code>NodeInstanceModel.bypassed</code>.</p>
+<p>When the engine encounters a bypassed node during exec-chain traversal:</p>
+<ol>
+<li><code>node_started</code> is emitted immediately.</li>
+<li>The node's <code>execute()</code> is not called.</li>
+<li><code>node_finished("success")</code> is emitted.</li>
+<li>Every exec connection from this node is followed (all exec outputs fire), so the downstream chain continues uninterrupted.</li>
+</ol>
+<p>Data inputs are <strong>not</strong> propagated through bypassed nodes. If a downstream node depended on this node's data output, it receives whatever default value the port was initialized with. This is intentional — bypass is a flow control shortcut, not a data pass-through.</p>
+<hr />
+<h2 id="10-init_priority-system">10. init_priority System</h2>
+<p><code>NodeInstanceModel.init_priority</code> is an integer field (default <code>0</code>). Any value greater than <code>0</code> marks the node as an initialisation node.</p>
+<h3 id="execution-order">Execution order</h3>
+<p>At the start of every run, before entry-node detection, the engine collects all nodes with <code>init_priority &gt; 0</code>, sorts them in descending order (higher number runs first), and executes each one's full exec chain to completion before starting the next:</p>
+<pre><code class="language-python">init_node_ids = sorted(
+    [nid for nid, m in self.graph_manager.nodes.items() if m.init_priority &gt; 0],
+    key=lambda nid: self.graph_manager.nodes[nid].init_priority,
+    reverse=True,
+)
+for node_id in init_node_ids:
+    self._track_task(self._execute_flow(node_id))
+    # wait for all active tasks to finish before next init node
+</code></pre>
+<h3 id="use-cases">Use cases</h3>
+<ul>
+<li><code>prism_core_init</code> — must run before any <code>prism_*</code> node so <code>PrismCore</code> is available in shared memory.</li>
+<li>Authentication nodes — log in to an API before the main pipeline starts.</li>
+<li>Data-initialisation nodes — pre-load a large dataset so it is ready when fast processing nodes need it.</li>
+</ul>
+<h3 id="init_only-mode">init_only mode</h3>
+<p><code>NetworkExecutor.run(init_only=True)</code> runs only the init phase and then emits <code>execution_finished(True)</code> without proceeding to the main graph. This mode is used immediately after a workflow is loaded, giving init nodes a chance to set up environment state without requiring the user to click Run.</p>
+<hr />
+<h2 id="11-error-propagation">11. Error Propagation</h2>
+<p>When <code>SafeRuntime.run_node_safe()</code> catches an exception from <code>execute()</code>:</p>
+<ol>
+<li><code>node_error(node_id, error_message)</code> is emitted with the full traceback string.</li>
+<li><code>node_finished(node_id, "failed")</code> is emitted.</li>
+<li>The function returns <code>False</code>. The caller (<code>_run_single_node_impl</code>) discards control — it does <strong>not</strong> follow any exec connections from the failed node.</li>
+<li>The exec chain stops at the failed node. All downstream nodes in that chain are never executed.</li>
+</ol>
+<p>The <code>node_error</code> signal is connected in <code>MainWindow</code> to the log panel, which displays the error in red with the node name.</p>
+<h3 id="groupnode-error-propagation">GroupNode error propagation</h3>
+<p>When a node inside a <code>GroupNode</code> fails, the sub-executor emits <code>node_error</code>. <code>GroupNode.execute()</code> catches this via a connected slot that appends to <code>inner_errors</code>. After the sub-executor finishes, if <code>inner_errors</code> is non-empty, <code>GroupNode</code> fires <code>exec_fail</code> instead of <code>exec_out</code> and calls <code>self.log_error()</code> to forward the messages to the parent executor's log.</p>
+<h3 id="manual-error-handling-in-nodes">Manual error handling in nodes</h3>
+<p>Nodes can signal errors without raising exceptions by calling <code>self.log_error(msg)</code>. This writes to the log panel at "error" level but does not stop the exec chain. The node should still return a valid dict (with <code>exec_out: True</code> if it wants execution to continue) or <code>exec_out: False</code> to halt the chain deliberately.</p>
+<hr />
+<h2 id="12-cancellation">12. Cancellation</h2>
+<p>The user can stop a running pipeline by clicking the <strong>Stop</strong> button, which calls <code>_EventLoopRunner.stop()</code>, which calls <code>executor.stop()</code>.</p>
+<p><code>NetworkExecutor.stop()</code>:</p>
+<ol>
+<li>Sets <code>self._is_stopped = True</code>.</li>
+<li>Calls <code>task.cancel()</code> on every task in <code>self._active_tasks</code>. This injects <code>CancelledError</code> into any awaiting coroutine.</li>
+<li>Sets <code>self._finished_event</code> so the wait loop in <code>run()</code> exits.</li>
+</ol>
+<h3 id="cooperative-cancellation-inside-long-nodes">Cooperative cancellation inside long nodes</h3>
+<p>A node whose <code>execute()</code> runs a long synchronous loop should periodically check <code>self.is_stopped()</code>:</p>
+<pre><code class="language-python">async def execute(self, inputs):
+    for frame in range(start, end):
+        if self.is_stopped():
+            self.log_info(&quot;Stopped by user.&quot;)
+            return {&quot;exec_out&quot;: False}
+        await self.set_output(&quot;current_frame&quot;, frame)
+        await self.set_output(&quot;exec_step&quot;, True)
+    return {&quot;exec_out&quot;: True}
+</code></pre>
+<p>For CPU-bound work offloaded with <code>asyncio.to_thread()</code>, cancellation of the outer task will cancel the <code>to_thread</code> call but the thread itself will continue running until Python's GIL allows it to be interrupted. Design threads to check a shared stop event if immediate termination is required.</p>
+<hr />
+<h2 id="13-node_results-dictionary">13. node_results Dictionary</h2>
+<p><code>NetworkExecutor.node_results</code> is a <code>Dict[UUID, Dict[str, Any]]</code> that stores the most recent output values of every node in the current run.</p>
+<pre><code class="language-python"># Structure
+node_results = {
+    node_instance_id_1: {&quot;output_port_a&quot;: value, &quot;output_port_b&quot;: value, ...},
+    node_instance_id_2: {&quot;result&quot;: value, &quot;exec_out&quot;: True},
+    ...
+}
+</code></pre>
+<h3 id="population">Population</h3>
+<p>Values enter <code>node_results</code> in two ways:</p>
+<ol>
+<li><strong>From <code>execute()</code> return value</strong> — after <code>SafeRuntime.run_node_safe()</code> returns successfully, the engine calls <code>self.node_results[node_id].update(result)</code>.</li>
+<li><strong>From <code>set_output()</code> streaming</strong> — when a node calls <code>await self.set_output(name, value)</code>, the engine's output handler stores <code>self.node_results[node_id][name] = value</code> immediately, before the exec chain fires.</li>
+</ol>
+<h3 id="use-by-the-wire-value-inspector">Use by the wire value inspector</h3>
+<p><code>MainWindow._on_node_output</code> is connected to <code>node_output</code>. When it fires, the handler calls <code>scene.update_edge_value(node_widget, port_name, value)</code> for every key in the result dict. <code>NodeScene.update_edge_value()</code> finds all <code>Edge</code> items whose <code>from_port</code> matches and calls <code>edge.set_live_value(value)</code>. This makes the value visible as a tooltip when hovering over the wire.</p>
+<p><code>node_results</code> persists after execution completes, so users can inspect final wire values without re-running.</p>
+<hr />
+<h2 id="14-signal-catalogue">14. Signal Catalogue</h2>
+<p>All signals are defined on <code>NetworkExecutor(QObject)</code>. They are all thread-safe because they originate from the Qt main thread (via <code>_EventLoopRunner</code>).</p>
+<table>
+<thead>
+<tr>
+<th>Signal</th>
+<th>Parameters</th>
+<th>When it fires</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>node_started</code></td>
+<td><code>UUID</code> node_id</td>
+<td>Immediately before <code>execute()</code> is called (or immediately for bypassed nodes)</td>
+</tr>
+<tr>
+<td><code>node_finished</code></td>
+<td><code>UUID</code> node_id, <code>str</code> status</td>
+<td>After <code>execute()</code> returns; status is <code>"success"</code> or <code>"failed"</code></td>
+</tr>
+<tr>
+<td><code>node_error</code></td>
+<td><code>UUID</code> node_id, <code>str</code> error_message</td>
+<td>When <code>execute()</code> raises an unhandled exception; message includes full traceback</td>
+</tr>
+<tr>
+<td><code>node_output</code></td>
+<td><code>UUID</code> node_id, <code>dict</code> output_data</td>
+<td>After <code>execute()</code> returns (with the full result dict), and also after each <code>set_output()</code> call (with a single-key dict)</td>
+</tr>
+<tr>
+<td><code>node_log</code></td>
+<td><code>UUID</code> node_id, <code>str</code> message, <code>str</code> level</td>
+<td>When a node calls <code>log_info()</code>, <code>log_success()</code>, or <code>log_error()</code></td>
+</tr>
+<tr>
+<td><code>execution_finished</code></td>
+<td><code>bool</code> success</td>
+<td>After all tasks complete or after <code>stop()</code> is called; <code>success=False</code> if stopped</td>
+</tr>
+</tbody>
+</table>
+<h3 id="connecting-to-signals-from-outside-the-executor">Connecting to signals from outside the executor</h3>
+<pre><code class="language-python">executor = NetworkExecutor(graph_manager)
+executor.node_started.connect(lambda nid: print(f&quot;Starting {nid}&quot;))
+executor.node_log.connect(lambda nid, msg, lvl: print(f&quot;[{lvl}] {msg}&quot;))
+executor.execution_finished.connect(lambda ok: print(f&quot;Done: {ok}&quot;))
+</code></pre>
+<hr />
+<h2 id="15-state-management">15. State Management</h2>
+<h3 id="what-is-reset-on-each-run">What is reset on each run</h3>
+<ul>
+<li><code>BaseNode.memory</code> — cleared at the start of <code>run()</code>. This is a class-level dict shared by all nodes.</li>
+<li><code>node_results</code> — reset to <code>{}</code> at the start of <code>run()</code>.</li>
+<li><code>node_instances</code> — re-instantiated from scratch each run.</li>
+<li><code>_executed_nodes</code>, <code>_currently_executing</code> — cleared.</li>
+<li><code>_is_stopped</code> — set to <code>False</code>.</li>
+<li>All node output parameters — reset to their port defaults by <code>clear_outputs()</code>.</li>
+</ul>
+<h3 id="what-persists-between-runs">What persists between runs</h3>
+<ul>
+<li><code>NodeInstanceModel.parameters</code> — widget values entered by the user persist across runs. Only ports with an incoming data connection are reset to the port's default at run start (to prevent stale widget values from overriding live data).</li>
+<li><code>NodeRegistry._classes</code> / <code>_definitions</code> — the node library is not re-scanned between runs.</li>
+<li>File handles, external connections, and any Python-level state held by node instances are discarded because <code>node_instances</code> is rebuilt each run.</li>
+</ul>
+<h3 id="basenodememory">BaseNode.memory</h3>
+<p><code>BaseNode.memory</code> is a class-level <code>Dict[str, Any]</code> that acts as a simple shared scratchpad. Nodes access it directly:</p>
+<pre><code class="language-python"># SetVariable node
+BaseNode.memory[&quot;my_var&quot;] = value
+
+# GetVariable node
+value = BaseNode.memory.get(&quot;my_var&quot;)
+</code></pre>
+<p>Memory is shared across all nodes in the current run, including nodes inside <code>GroupNode</code> sub-executors (with the save/restore mechanism described in section 8). It is <strong>not</strong> thread-safe for concurrent access from multiple parallel exec chains.</p>
+<hr />
+<h2 id="16-graphmanager">16. GraphManager</h2>
+<p><code>GraphManager</code> (<code>src/core/graph.py</code>) is a lightweight container for the graph's node and connection data. It does not execute anything; it is purely a data structure.</p>
+<h3 id="key-attributes">Key attributes</h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>nodes</code></td>
+<td><code>Dict[UUID, NodeInstanceModel]</code></td>
+<td>All nodes, keyed by instance UUID</td>
+</tr>
+<tr>
+<td><code>connections</code></td>
+<td><code>List[ConnectionModel]</code></td>
+<td>All wires between ports</td>
+</tr>
+</tbody>
+</table>
+<h3 id="cycle-detection">Cycle detection</h3>
+<p><code>add_connection()</code> calls <code>is_dag()</code> after tentatively appending the new connection. <code>is_dag()</code> runs <code>get_topological_sort()</code> which uses the <code>toposort</code> library. If a <code>CircularDependencyError</code> is raised, the connection is removed and <code>add_connection()</code> returns <code>False</code>.</p>
+<p>The <code>break_condition</code> port is excluded from dependency calculation by default, allowing while-loop feedback wires without being flagged as cycles:</p>
+<pre><code class="language-python">def get_topological_sort(self, ignore_ports=None):
+    if ignore_ports is None:
+        ignore_ports = [&quot;break_condition&quot;]
+    # ...
+    for conn in self.connections:
+        if conn.to_port in ignore_ports:
+            continue
+        data[conn.to_node].add(conn.from_node)
+</code></pre>
+<h3 id="serialization">Serialization</h3>
+<p><code>to_model()</code> returns a <code>WorkflowModel</code> (a Pydantic model). <code>from_model(model)</code> reconstructs the graph from a <code>WorkflowModel</code>. Both operations are <code>O(n)</code> in the number of nodes and connections.</p>
+<hr />
+<h2 id="17-noderegistry">17. NodeRegistry</h2>
+<p><code>NodeRegistry</code> (<code>src/core/registry.py</code>) is a class-level singleton that stores all node definitions and their compiled Python classes.</p>
+<h3 id="three-storage-maps">Three storage maps</h3>
+<table>
+<thead>
+<tr>
+<th>Map</th>
+<th>Key</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>_classes</code></td>
+<td><code>node_id</code> (str)</td>
+<td><code>Type[BaseNode]</code> subclass</td>
+</tr>
+<tr>
+<td><code>_definitions</code></td>
+<td><code>node_id</code> (str)</td>
+<td><code>NodeDefinitionJSON</code> Pydantic model</td>
+</tr>
+<tr>
+<td><code>_source_paths</code></td>
+<td><code>node_id</code> (str)</td>
+<td>Absolute path to the <code>.json</code> file on disk</td>
+</tr>
+</tbody>
+</table>
+<h3 id="loading-order-on-startup">Loading order on startup</h3>
+<pre><code>NodeRegistry.load_all_with_extras(bundled_nodes)
+      │
+      ├─ register_builtins()
+      │       Registers Python-class nodes (ForEach, WhileLoop, etc.)
+      │       GroupInNode, GroupOutNode, GroupNode go into _classes only
+      │       (hidden from search popup, still executable)
+      │
+      ├─ _load_directory(bundled_nodes)
+      │       walks nodes/ recursively, calls load_node() for each .json
+      │
+      └─ extra_dirs from v_nodes_dir env var (OS path separator)
+              _load_directory(extra_dir) for each
+</code></pre>
+<h3 id="json-node-registration">JSON node registration</h3>
+<p><code>register_definition(definition)</code> does two things:</p>
+<ol>
+<li>Normalises the definition: inserts <code>exec_in</code> / <code>exec_out</code> ports if <code>use_exec=True</code> and they are missing; applies the Prism auto-rewrite if <code>node_id</code> starts with <code>prism_</code>.</li>
+<li>Compiles the <code>python_code</code> with <code>exec()</code> and extracts the node class via <code>register_node()</code> (preferred) or a bare <code>execute()</code> function (simplified format).</li>
+</ol>
+<h3 id="hot-reload">Hot-reload</h3>
+<p><code>reload_node_definition(node_id)</code> re-reads the JSON from <code>_source_paths[node_id]</code> and re-registers. After calling this, any live <code>NodeWidget</code> instances bound to this <code>node_id</code> must be refreshed to pick up new ports or code. The Node Builder dialog calls this automatically after saving a node edit.</p>
+<h3 id="prism-auto-rewrite">Prism auto-rewrite</h3>
+<p>When <code>node_id.startswith("prism_")</code> and the code does not already import <code>resolve_prism_core</code>, the registry automatically prepends the import and rewrites:</p>
+<pre><code class="language-python">core = inputs.get('core')
+# becomes:
+core = resolve_prism_core(inputs)
+</code></pre>
+<p>This means every prism node automatically resolves <code>PrismCore</code> from shared memory without the author needing to wire a <code>core</code> output between nodes.</p>
+<hr />
+<h2 id="18-basenode-contract">18. BaseNode Contract</h2>
+<p>Every node class must inherit from <code>BaseNode</code> and implement <code>execute()</code>. The full contract:</p>
+<h3 id="required">Required</h3>
+<pre><code class="language-python">class MyNode(BaseNode):
+    name = &quot;my_node&quot;         # must match node_id; used as class identifier
+
+    def __init__(self):
+        super().__init__()   # adds exec_in, exec_out automatically
+        self.add_input(&quot;some_input&quot;, &quot;string&quot;, widget_type=&quot;text&quot;)
+        self.add_output(&quot;some_output&quot;, &quot;string&quot;)
+
+    async def execute(self, inputs: Dict[str, Any]) -&gt; Dict[str, Any]:
+        value = inputs.get(&quot;some_input&quot;, &quot;&quot;)
+        return {&quot;some_output&quot;: result, &quot;exec_out&quot;: True}
+
+def register_node():
+    return MyNode
+</code></pre>
+<h3 id="optional-hooks">Optional hooks</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>When called</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>restore_from_parameters(params)</code></td>
+<td>By engine before each run</td>
+<td>Restore dynamic ports from saved workflow</td>
+</tr>
+<tr>
+<td><code>on_plug_sync(port, is_input, other, other_port)</code></td>
+<td>Synchronously when a wire is connected</td>
+<td>Called on the Qt main thread</td>
+</tr>
+<tr>
+<td><code>on_unplug_sync(port, is_input)</code></td>
+<td>Synchronously when a wire is removed</td>
+<td>Called on the Qt main thread</td>
+</tr>
+<tr>
+<td><code>async on_plug(port, is_input, other, other_port)</code></td>
+<td>Asynchronously when a wire is connected</td>
+<td>Use for async initialization</td>
+</tr>
+<tr>
+<td><code>async on_unplug(port, is_input)</code></td>
+<td>Asynchronously when a wire is removed</td>
+<td></td>
+</tr>
+<tr>
+<td><code>async on_parameter_changed(name, value)</code></td>
+<td>When reactive data propagation updates an input</td>
+<td>Re-run reactive nodes (TwoWaySwitch, GetVariable)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="streaming-outputs">Streaming outputs</h3>
+<p><code>set_output(name, value)</code> is an async method that pushes a single output value during execution without waiting for <code>execute()</code> to return:</p>
+<pre><code class="language-python">async def execute(self, inputs):
+    for i in range(10):
+        await self.set_output(&quot;progress&quot;, i / 10.0)
+        await asyncio.sleep(0.1)   # simulate work
+    return {&quot;result&quot;: &quot;done&quot;, &quot;exec_out&quot;: True}
+</code></pre>
+<p>Every call to <code>set_output()</code> triggers reactive data propagation and, if the port is an exec port with a truthy value, triggers downstream execution.</p>
+<hr />
+<h2 id="19-saferuntime-and-error-isolation">19. SafeRuntime and Error Isolation</h2>
+<p><code>SafeRuntime.run_node_safe()</code> wraps every <code>execute()</code> call in a <code>try/except</code>:</p>
+<pre><code class="language-python">@staticmethod
+async def run_node_safe(fn, inputs):
+    try:
+        result = await fn(inputs)
+        return True, result, None
+    except Exception as e:
+        error_msg = f&quot;Node execution failed: {str(e)}\n{traceback.format_exc()}&quot;
+        return False, None, error_msg
+</code></pre>
+<p>This means a bug in one node's <code>execute()</code> never crashes the engine process. The error is captured as a string, emitted via <code>node_error</code>, and execution of that branch halts cleanly.</p>
+<p><code>SafeRuntime</code> does not suppress <code>asyncio.CancelledError</code> — cancellation from <code>runner.stop()</code> propagates normally through <code>await</code> chains.</p>
+<hr />
+<h2 id="20-performance-considerations">20. Performance Considerations</h2>
+<h3 id="blocking-calls-are-dangerous">Blocking calls are dangerous</h3>
+<p>The asyncio event loop and the Qt event loop share the same OS thread. Any blocking call inside <code>execute()</code> — a synchronous <code>time.sleep()</code>, a blocking socket receive without timeout, a <code>subprocess.run()</code> call without async — will freeze the Qt UI for the duration of the block. No mouse events, no repaints, no signal deliveries.</p>
+<p>Rules:<br />
+- Use <code>await asyncio.sleep(n)</code> instead of <code>time.sleep(n)</code>.<br />
+- Use <code>asyncio.open_connection()</code> instead of blocking sockets.<br />
+- Use <code>asyncio.create_subprocess_exec()</code> for subprocesses.<br />
+- For blocking Python code that cannot be made async, use <code>asyncio.to_thread()</code>.</p>
+<h3 id="offloading-cpu-work">Offloading CPU work</h3>
+<pre><code class="language-python">import asyncio
+
+async def execute(self, inputs):
+    heavy_data = inputs.get(&quot;data&quot;)
+    result = await asyncio.to_thread(self._cpu_intensive, heavy_data)
+    return {&quot;output&quot;: result, &quot;exec_out&quot;: True}
+
+def _cpu_intensive(self, data):
+    # This runs in a thread pool — does not block the event loop
+    return expensive_computation(data)
+</code></pre>
+<p><code>asyncio.to_thread()</code> is available in Python 3.9+. For older versions use <code>loop.run_in_executor(None, fn, *args)</code>.</p>
+<h3 id="houdini-bridge-latency">Houdini bridge latency</h3>
+<p>Each <code>HouBridge</code> RPC call involves: serialising JSON, a TCP round-trip to the local Houdini server, <code>hdefereval.executeDeferred()</code> scheduling on Houdini's main thread, execution, serialisation, and a TCP reply. On a local machine this is typically 1–5 ms per call (with <code>TCP_NODELAY</code> set). A node that makes 100 bridge calls will take ~100–500 ms. Batch multiple parameter sets with <code>bridge.set_parms()</code> and batch child queries with a single <code>bridge.run_code()</code> call where possible.</p>
+<h3 id="graph-size">Graph size</h3>
+<p>For graphs with 100+ nodes, the topological sort (<code>toposort</code> library) and connection lookup become measurable. The engine pre-calculates <code>_incoming_data_conns</code> and <code>_driven_by_flow</code> once per run to avoid per-node O(n) scans. The main loop is O(n + e) where n = node count and e = connection count. Execution time is dominated by <code>execute()</code> coroutine time, not engine overhead.</p>
+<h3 id="memory">Memory</h3>
+<p><code>node_results</code> stores every output value of every node. For nodes that output large data structures (big lists, numpy arrays, large strings), this can accumulate significant memory during a run. Values are discarded when <code>node_results</code> is reset at the next run's start. If memory is a concern, avoid storing large objects in <code>node_results</code> across the run — produce them, consume them, and release references.</p>
+    <nav class="page-nav">
+      <a class="page-nav-link prev" href="05_node_development.html"><span class="page-nav-label">Previous</span><span class="page-nav-title">Node Development Guide</span></a>
+      <a class="page-nav-link next" href="07_frontend_architecture.html"><span class="page-nav-label">Next</span><span class="page-nav-title">Frontend Architecture</span></a>
+    </nav>
+  </div>
+</main>
+
+<!-- ── TOC ────────────────────────────────────────────────────────────── -->
+<aside class="toc">
+  <div class="toc-title">On this page</div>
+<a class="toc-link toc-h2" href="#table-of-contents">Table of Contents</a>
+<a class="toc-link toc-h2" href="#1-execution-engine-overview">1. Execution Engine Overview</a>
+<a class="toc-link toc-h3" href="#what-networkexecutor-does">What NetworkExecutor does</a>
+<a class="toc-link toc-h3" href="#why-async">Why async</a>
+<a class="toc-link toc-h2" href="#2-event-loop-integration">2. Event Loop Integration</a>
+<a class="toc-link toc-h3" href="#how-_eventlooprunner-works">How _EventLoopRunner works</a>
+<a class="toc-link toc-h3" href="#lifecycle">Lifecycle</a>
+<a class="toc-link toc-h2" href="#3-execution-flow-diagram">3. Execution Flow Diagram</a>
+<a class="toc-link toc-h2" href="#4-entry-node-detection">4. Entry Node Detection</a>
+<a class="toc-link toc-h3" href="#flow-mode-exec-connections-present">Flow Mode (exec connections present)</a>
+<a class="toc-link toc-h3" href="#data-flow-mode-no-exec-connections">Data-Flow Mode (no exec connections)</a>
+<a class="toc-link toc-h2" href="#5-data-pull-recursion">5. Data-Pull Recursion</a>
+<a class="toc-link toc-h3" href="#the-data-pull-algorithm">The data-pull algorithm</a>
+<a class="toc-link toc-h3" href="#guards-against-double-execution">Guards against double-execution</a>
+<a class="toc-link toc-h3" href="#cache-invalidation-in-loops">Cache invalidation in loops</a>
+<a class="toc-link toc-h2" href="#6-execution-order-guarantees">6. Execution Order Guarantees</a>
+<a class="toc-link toc-h3" href="#exec-chain-order">Exec-chain order</a>
+<a class="toc-link toc-h3" href="#parallel-chains">Parallel chains</a>
+<a class="toc-link toc-h3" href="#data-node-order">Data node order</a>
+<a class="toc-link toc-h2" href="#7-loop-execution">7. Loop Execution</a>
+<a class="toc-link toc-h3" href="#foreach">ForEach</a>
+<a class="toc-link toc-h3" href="#whileloop">WhileLoop</a>
+<a class="toc-link toc-h2" href="#8-groupnode-sub-executor">8. GroupNode Sub-Executor</a>
+<a class="toc-link toc-h3" href="#memory-preservation">Memory preservation</a>
+<a class="toc-link toc-h3" href="#input-injection">Input injection</a>
+<a class="toc-link toc-h3" href="#output-collection">Output collection</a>
+<a class="toc-link toc-h3" href="#error-propagation">Error propagation</a>
+<a class="toc-link toc-h2" href="#9-bypass-handling">9. Bypass Handling</a>
+<a class="toc-link toc-h2" href="#10-init_priority-system">10. init_priority System</a>
+<a class="toc-link toc-h3" href="#execution-order">Execution order</a>
+<a class="toc-link toc-h3" href="#use-cases">Use cases</a>
+<a class="toc-link toc-h3" href="#init_only-mode">init_only mode</a>
+<a class="toc-link toc-h2" href="#11-error-propagation">11. Error Propagation</a>
+<a class="toc-link toc-h3" href="#groupnode-error-propagation">GroupNode error propagation</a>
+<a class="toc-link toc-h3" href="#manual-error-handling-in-nodes">Manual error handling in nodes</a>
+<a class="toc-link toc-h2" href="#12-cancellation">12. Cancellation</a>
+<a class="toc-link toc-h3" href="#cooperative-cancellation-inside-long-nodes">Cooperative cancellation inside long nodes</a>
+<a class="toc-link toc-h2" href="#13-node_results-dictionary">13. node_results Dictionary</a>
+<a class="toc-link toc-h3" href="#population">Population</a>
+<a class="toc-link toc-h3" href="#use-by-the-wire-value-inspector">Use by the wire value inspector</a>
+<a class="toc-link toc-h2" href="#14-signal-catalogue">14. Signal Catalogue</a>
+<a class="toc-link toc-h3" href="#connecting-to-signals-from-outside-the-executor">Connecting to signals from outside the executor</a>
+<a class="toc-link toc-h2" href="#15-state-management">15. State Management</a>
+<a class="toc-link toc-h3" href="#what-is-reset-on-each-run">What is reset on each run</a>
+<a class="toc-link toc-h3" href="#what-persists-between-runs">What persists between runs</a>
+<a class="toc-link toc-h3" href="#basenodememory">BaseNode.memory</a>
+<a class="toc-link toc-h2" href="#16-graphmanager">16. GraphManager</a>
+<a class="toc-link toc-h3" href="#key-attributes">Key attributes</a>
+<a class="toc-link toc-h3" href="#cycle-detection">Cycle detection</a>
+<a class="toc-link toc-h3" href="#serialization">Serialization</a>
+<a class="toc-link toc-h2" href="#17-noderegistry">17. NodeRegistry</a>
+<a class="toc-link toc-h3" href="#three-storage-maps">Three storage maps</a>
+<a class="toc-link toc-h3" href="#loading-order-on-startup">Loading order on startup</a>
+<a class="toc-link toc-h3" href="#json-node-registration">JSON node registration</a>
+<a class="toc-link toc-h3" href="#hot-reload">Hot-reload</a>
+<a class="toc-link toc-h3" href="#prism-auto-rewrite">Prism auto-rewrite</a>
+<a class="toc-link toc-h2" href="#18-basenode-contract">18. BaseNode Contract</a>
+<a class="toc-link toc-h3" href="#required">Required</a>
+<a class="toc-link toc-h3" href="#optional-hooks">Optional hooks</a>
+<a class="toc-link toc-h3" href="#streaming-outputs">Streaming outputs</a>
+<a class="toc-link toc-h2" href="#19-saferuntime-and-error-isolation">19. SafeRuntime and Error Isolation</a>
+<a class="toc-link toc-h2" href="#20-performance-considerations">20. Performance Considerations</a>
+<a class="toc-link toc-h3" href="#blocking-calls-are-dangerous">Blocking calls are dangerous</a>
+<a class="toc-link toc-h3" href="#offloading-cpu-work">Offloading CPU work</a>
+<a class="toc-link toc-h3" href="#houdini-bridge-latency">Houdini bridge latency</a>
+<a class="toc-link toc-h3" href="#graph-size">Graph size</a>
+<a class="toc-link toc-h3" href="#memory">Memory</a>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/highlight.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lunr@2.3.9/lunr.min.js"></script>
+<script>
+// ── Search ──────────────────────────────────────────────────────────────
+let _idx = null, _docs = [];
+
+async function initSearch() {
+  try {
+    const base = document.getElementById('portal-base').dataset.base;
+    const resp = await fetch(base + 'search.json');
+    _docs = await resp.json();
+    _idx = lunr(function() {
+      this.ref('id');
+      this.field('title', { boost: 10 });
+      this.field('body');
+      _docs.forEach((d, i) => {
+        this.add({ id: i, title: d.title, body: d.body });
+      });
+    });
+  } catch(e) { console.warn('Search index not available', e); }
+}
+
+function doSearch(q) {
+  const box = document.getElementById('search-results');
+  if (!q || q.length < 2) { box.classList.remove('visible'); return; }
+  if (!_idx) { box.innerHTML = '<div class="search-no-results">Search index loading…</div>'; box.classList.add('visible'); return; }
+  const results = _idx.search(q + '~1');
+  if (!results.length) {
+    box.innerHTML = '<div class="search-no-results">No results for "' + q + '"</div>';
+    box.classList.add('visible'); return;
+  }
+  box.innerHTML = results.slice(0, 8).map(r => {
+    const d = _docs[r.ref];
+    const excerpt = d.body.substring(0, 140).replace(/[#*`]/g, '').trim() + '…';
+    return `<a class="search-result-item" href="${d.url}">
+      <div class="search-result-title">${d.title}</div>
+      <div class="search-result-excerpt">${excerpt}</div>
+    </a>`;
+  }).join('');
+  box.classList.add('visible');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initSearch();
+  const inp = document.getElementById('search-input');
+  if (inp) {
+    inp.addEventListener('input', e => doSearch(e.target.value));
+    inp.addEventListener('keydown', e => { if (e.key === 'Escape') { e.target.value=''; document.getElementById('search-results').classList.remove('visible'); }});
+  }
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.search-wrap')) document.getElementById('search-results')?.classList.remove('visible');
+  });
+  // Keyboard shortcut: / to focus search
+  document.addEventListener('keydown', e => {
+    if (e.key === '/' && !['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) {
+      e.preventDefault(); document.getElementById('search-input')?.focus();
+    }
+  });
+
+  // ── TOC active section ──────────────────────────────────────────────
+  const tocLinks = document.querySelectorAll('.toc-link');
+  const headings = document.querySelectorAll('h2[id],h3[id],h4[id]');
+  if (tocLinks.length && headings.length) {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          tocLinks.forEach(l => l.classList.remove('active'));
+          const link = document.querySelector(`.toc-link[href="#${entry.target.id}"]`);
+          if (link) link.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    headings.forEach(h => obs.observe(h));
+  }
+
+  // ── Copy buttons ────────────────────────────────────────────────────
+  document.querySelectorAll('pre').forEach(pre => {
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn'; btn.textContent = 'Copy';
+    btn.addEventListener('click', () => {
+      const code = pre.querySelector('code');
+      navigator.clipboard.writeText(code ? code.innerText : pre.innerText).then(() => {
+        btn.textContent = 'Copied!'; btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+      });
+    });
+    pre.style.position = 'relative';
+    pre.appendChild(btn);
+  });
+
+  // ── Sidebar active ──────────────────────────────────────────────────
+  const cur = window.location.pathname.split('/').pop();
+  document.querySelectorAll('.sidebar-link').forEach(l => {
+    if (l.getAttribute('href') === cur || l.getAttribute('href').endsWith(cur)) l.classList.add('active');
+  });
+
+  // ── highlight.js ────────────────────────────────────────────────────
+  if (window.hljs) {
+    hljs.configure({ ignoreUnescapedHTML: true });
+    hljs.highlightAll();
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Vibrante-Node v2.0.0 — Workflow Tutorials">
+<title>Workflow Tutorials — Vibrante-Node Docs</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/atom-one-dark.min.css">
+<style>
+/* ── Reset & Variables ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:       #1e1e2e;
+  --surface:  #181825;
+  --surface2: #11111b;
+  --border:   #313244;
+  --text:     #cdd6f4;
+  --subtext:  #a6adc8;
+  --muted:    #6c7086;
+  --lavender: #b4befe;
+  --blue:     #89b4fa;
+  --teal:     #94e2d5;
+  --green:    #a6e3a1;
+  --yellow:   #f9e2af;
+  --peach:    #fab387;
+  --red:      #f38ba8;
+  --pink:     #f5c2e7;
+  --mauve:    #cba6f7;
+  --sidebar-w: 260px;
+  --toc-w:    220px;
+  --header-h: 56px;
+  --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --mono: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+}
+
+/* ── Layout ─────────────────────────────────────────────────────────────── */
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: var(--header-h) 1fr;
+  grid-template-columns: var(--sidebar-w) 1fr var(--toc-w);
+  grid-template-areas:
+    "header header header"
+    "sidebar content toc";
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+.header {
+  grid-area: header;
+  position: sticky; top: 0; z-index: 200;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 16px;
+  padding: 0 24px;
+}
+.header-logo {
+  font-weight: 700; font-size: 1.05em;
+  color: var(--mauve);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.header-version {
+  font-size: .78em;
+  background: var(--border);
+  color: var(--subtext);
+  padding: 2px 8px; border-radius: 12px;
+}
+.header-spacer { flex: 1; }
+.search-wrap { position: relative; }
+#search-input {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: .9em;
+  padding: 6px 14px 6px 36px;
+  width: 260px;
+  outline: none;
+  transition: border-color .15s;
+}
+#search-input:focus { border-color: var(--mauve); }
+.search-icon {
+  position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+  color: var(--muted); pointer-events: none; font-size: .9em;
+}
+#search-results {
+  position: absolute; top: calc(100% + 8px); right: 0;
+  width: 380px; max-height: 420px; overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.5);
+  display: none; z-index: 300;
+}
+#search-results.visible { display: block; }
+.search-result-item {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background .1s;
+}
+.search-result-item:last-child { border-bottom: none; }
+.search-result-item:hover { background: var(--bg); }
+.search-result-title { color: var(--blue); font-weight: 600; font-size: .9em; }
+.search-result-excerpt { color: var(--subtext); font-size: .82em; margin-top: 2px; line-height: 1.4; }
+.search-no-results { padding: 16px; color: var(--muted); text-align: center; font-size: .9em; }
+
+/* ── Sidebar ─────────────────────────────────────────────────────────────── */
+.sidebar {
+  grid-area: sidebar;
+  position: sticky; top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 20px 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.sidebar-group { margin-bottom: 4px; }
+.sidebar-group-title {
+  font-size: .7em;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--muted);
+  padding: 10px 20px 4px;
+  font-weight: 600;
+}
+.sidebar-link {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 20px;
+  color: var(--subtext);
+  text-decoration: none;
+  font-size: .88em;
+  border-left: 3px solid transparent;
+  transition: all .12s;
+  line-height: 1.3;
+}
+.sidebar-link:hover { color: var(--text); background: var(--bg); }
+.sidebar-link.active {
+  color: var(--mauve);
+  border-left-color: var(--mauve);
+  background: rgba(180,190,254,.06);
+  font-weight: 600;
+}
+.sidebar-num {
+  font-size: .7em;
+  color: var(--muted);
+  background: var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  flex-shrink: 0;
+}
+.sidebar-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 12px 16px;
+}
+
+/* ── Content ─────────────────────────────────────────────────────────────── */
+.content {
+  grid-area: content;
+  min-width: 0;
+  padding: 40px 48px 80px;
+  max-width: 860px;
+}
+.content-inner { max-width: 820px; }
+
+/* Breadcrumb */
+.breadcrumb {
+  font-size: .8em;
+  color: var(--muted);
+  margin-bottom: 28px;
+  display: flex; align-items: center; gap: 6px;
+}
+.breadcrumb a { color: var(--blue); text-decoration: none; }
+.breadcrumb a:hover { text-decoration: underline; }
+.breadcrumb-sep { color: var(--border); }
+
+/* Typography */
+h1 { font-size: 2em; color: var(--mauve); border-bottom: 2px solid var(--border); padding-bottom: 12px; margin: 20px 0 20px; }
+h2 { font-size: 1.45em; color: var(--blue); margin: 40px 0 14px; padding-top: 8px; }
+h3 { font-size: 1.15em; color: var(--teal); margin: 28px 0 10px; }
+h4 { font-size: 1em; color: var(--pink); margin: 20px 0 8px; }
+h5 { font-size: .95em; color: var(--yellow); margin: 16px 0 6px; }
+p  { margin-bottom: 16px; color: var(--text); }
+a  { color: var(--blue); }
+a:hover { text-decoration: underline; }
+strong { color: var(--peach); }
+em { color: var(--yellow); font-style: italic; }
+
+ul, ol { margin: 10px 0 16px 24px; }
+li { margin-bottom: 6px; }
+li > ul, li > ol { margin-top: 4px; margin-bottom: 4px; }
+
+blockquote {
+  border-left: 4px solid var(--mauve);
+  padding: 10px 20px;
+  margin: 16px 0;
+  background: rgba(180,190,254,.05);
+  border-radius: 0 8px 8px 0;
+  color: var(--subtext);
+}
+blockquote strong { color: var(--mauve); }
+
+hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+/* Code */
+code {
+  background: var(--surface2);
+  color: var(--red);
+  padding: 2px 7px; border-radius: 5px;
+  font-family: var(--mono); font-size: .87em;
+}
+pre {
+  background: var(--surface2) !important;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px 22px;
+  overflow-x: auto;
+  margin: 16px 0 22px;
+  position: relative;
+}
+pre code {
+  background: none !important;
+  color: inherit !important;
+  padding: 0; font-size: .9em;
+  border-radius: 0;
+}
+/* Copy button */
+.copy-btn {
+  position: absolute; top: 10px; right: 12px;
+  background: var(--border);
+  color: var(--subtext);
+  border: none; border-radius: 5px;
+  padding: 3px 10px; font-size: .75em;
+  cursor: pointer; transition: all .12s;
+  font-family: var(--font);
+}
+.copy-btn:hover { background: var(--mauve); color: var(--surface2); }
+.copy-btn.copied { background: var(--green); color: var(--surface2); }
+
+/* Tables */
+table { border-collapse: collapse; width: 100%; margin: 16px 0 22px; font-size: .9em; }
+th { background: var(--border); color: var(--mauve); padding: 10px 14px; text-align: left; font-weight: 600; }
+td { border-top: 1px solid var(--border); padding: 9px 14px; color: var(--text); }
+tr:nth-child(even) td { background: rgba(17,17,27,.4); }
+td code { font-size: .85em; }
+
+/* Callout boxes */
+.callout {
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin: 16px 0 22px;
+  border-left: 4px solid;
+}
+.callout-note    { background: rgba(137,180,250,.08); border-color: var(--blue);   }
+.callout-tip     { background: rgba(166,227,161,.08); border-color: var(--green);  }
+.callout-warning { background: rgba(249,226,175,.08); border-color: var(--yellow); }
+.callout-danger  { background: rgba(243,139,168,.08); border-color: var(--red);    }
+.callout-title   { font-weight: 700; font-size: .85em; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
+.callout-note    .callout-title { color: var(--blue);   }
+.callout-tip     .callout-title { color: var(--green);  }
+.callout-warning .callout-title { color: var(--yellow); }
+.callout-danger  .callout-title { color: var(--red);    }
+
+/* Prev/Next navigation */
+.page-nav {
+  display: flex; justify-content: space-between;
+  margin-top: 60px; padding-top: 24px;
+  border-top: 1px solid var(--border);
+  gap: 16px;
+}
+.page-nav-link {
+  display: flex; flex-direction: column;
+  text-decoration: none;
+  padding: 14px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  min-width: 200px;
+  transition: border-color .15s;
+  max-width: 48%;
+}
+.page-nav-link:hover { border-color: var(--mauve); }
+.page-nav-label { font-size: .75em; color: var(--muted); margin-bottom: 4px; }
+.page-nav-title { color: var(--blue); font-weight: 600; font-size: .95em; }
+.page-nav-link.prev .page-nav-label::before { content: '← '; }
+.page-nav-link.next { margin-left: auto; text-align: right; }
+.page-nav-link.next .page-nav-label::after { content: ' →'; }
+
+/* ── TOC (right panel) ───────────────────────────────────────────────────── */
+.toc {
+  grid-area: toc;
+  position: sticky; top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  padding: 28px 16px 28px 8px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.toc-title {
+  font-size: .72em;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--muted);
+  font-weight: 600;
+  margin-bottom: 12px;
+  padding-left: 8px;
+}
+.toc-link {
+  display: block;
+  padding: 4px 8px;
+  color: var(--subtext);
+  text-decoration: none;
+  font-size: .82em;
+  border-left: 2px solid transparent;
+  border-radius: 0 4px 4px 0;
+  transition: all .12s;
+  line-height: 1.35;
+  margin-bottom: 1px;
+}
+.toc-link:hover { color: var(--text); border-left-color: var(--border); }
+.toc-link.active { color: var(--mauve); border-left-color: var(--mauve); background: rgba(180,190,254,.05); }
+.toc-link.toc-h3 { padding-left: 20px; font-size: .79em; }
+.toc-link.toc-h4 { padding-left: 32px; font-size: .76em; color: var(--muted); }
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  body { grid-template-columns: var(--sidebar-w) 1fr 0; }
+  .toc { display: none; }
+}
+@media (max-width: 760px) {
+  body { grid-template-columns: 0 1fr 0; grid-template-rows: var(--header-h) 1fr; }
+  .sidebar { display: none; }
+  .content { padding: 24px 20px 60px; }
+  #search-input { width: 180px; }
+}
+
+/* ── Index / landing page ────────────────────────────────────────────────── */
+.hero { text-align: center; padding: 60px 0 48px; }
+.hero h1 { border: none; font-size: 2.8em; }
+.hero .tagline { color: var(--subtext); font-size: 1.15em; margin-top: 10px; }
+.hero .version-badge {
+  display: inline-block;
+  background: var(--border); color: var(--mauve);
+  padding: 4px 14px; border-radius: 20px; font-size: .85em;
+  margin-top: 14px;
+}
+.group-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin: 16px 0 36px; }
+.doc-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  text-decoration: none;
+  color: var(--text);
+  transition: border-color .15s, background .15s;
+  display: block;
+}
+.doc-card:hover { border-color: var(--mauve); background: rgba(180,190,254,.04); }
+.doc-card-num { font-size: .72em; color: var(--muted); margin-bottom: 4px; }
+.doc-card-title { color: var(--blue); font-weight: 700; font-size: 1em; margin-bottom: 6px; }
+.doc-card-desc { color: var(--subtext); font-size: .85em; line-height: 1.5; }
+.group-title { color: var(--teal); font-size: 1.1em; font-weight: 600; margin: 32px 0 10px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+</style>
+<span id="portal-base" data-base="" style="display:none"></span>
+</head>
+<body>
+
+<!-- ── Header ─────────────────────────────────────────────────────────── -->
+<header class="header">
+  <a class="header-logo" href="index.html">Vibrante-Node</a>
+  <span class="header-version">v2.0.0</span>
+  <div class="header-spacer"></div>
+  <div class="search-wrap">
+    <span class="search-icon">&#128269;</span>
+    <input id="search-input" type="text" placeholder="Search docs… (/)" autocomplete="off" spellcheck="false">
+    <div id="search-results"></div>
+  </div>
+</header>
+
+<!-- ── Sidebar ────────────────────────────────────────────────────────── -->
+<nav class="sidebar">
+<div class="sidebar-group">
+<div class="sidebar-group-title">Overview</div>
+<a class="sidebar-link" href="01_introduction.html"><span class="sidebar-num">01</span>Introduction</a>
+<a class="sidebar-link" href="02_getting_started.html"><span class="sidebar-num">02</span>Getting Started</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Using the App</div>
+<a class="sidebar-link" href="03_user_guide.html"><span class="sidebar-num">03</span>User Guide</a>
+<a class="sidebar-link active" href="04_workflow_tutorials.html"><span class="sidebar-num">04</span>Workflow Tutorials</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Developing Nodes</div>
+<a class="sidebar-link" href="05_node_development.html"><span class="sidebar-num">05</span>Node Development Guide</a>
+<a class="sidebar-link" href="14_custom_nodes_api.html"><span class="sidebar-num">14</span>Custom Nodes API</a>
+<a class="sidebar-link" href="08_api_reference.html"><span class="sidebar-num">08</span>API Reference</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Architecture</div>
+<a class="sidebar-link" href="06_backend_architecture.html"><span class="sidebar-num">06</span>Backend Architecture</a>
+<a class="sidebar-link" href="07_frontend_architecture.html"><span class="sidebar-num">07</span>Frontend Architecture</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Advanced</div>
+<a class="sidebar-link" href="09_advanced_topics.html"><span class="sidebar-num">09</span>Advanced Topics</a>
+<a class="sidebar-link" href="10_contribution_guide.html"><span class="sidebar-num">10</span>Contribution Guide</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Reference</div>
+<a class="sidebar-link" href="11_troubleshooting.html"><span class="sidebar-num">11</span>Troubleshooting</a>
+<a class="sidebar-link" href="12_examples_library.html"><span class="sidebar-num">12</span>Examples Library</a>
+<a class="sidebar-link" href="13_general_purpose_automation.html"><span class="sidebar-num">13</span>General Purpose Automation</a>
+</div>
+
+</nav>
+
+<!-- ── Main content ───────────────────────────────────────────────────── -->
+<main class="content">
+  <div class="content-inner">
+    <nav class="breadcrumb"><a href="index.html">Docs</a><span class="breadcrumb-sep">›</span><span>Workflow Tutorials</span></nav>
+    <h1 id="workflow-tutorials">Workflow Tutorials</h1>
+<p>This chapter walks you through ten complete, self-contained tutorials. Each tutorial builds a real workflow from scratch and shows exactly which nodes to use, how to wire them, and what to expect in the log panel. All examples use the built-in node set unless explicitly noted.</p>
+<hr />
+<h2 id="tutorial-1-basic-file-renaming-workflow">Tutorial 1: Basic File Renaming Workflow</h2>
+<p><strong>Goal:</strong> Load a list of filenames from a folder, apply a naming convention (lowercase with underscores), and rename every file on disk. Print a summary when done.</p>
+<h3 id="nodes-used">Nodes Used</h3>
+<table>
+<thead>
+<tr>
+<th>Node</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Python Script</td>
+<td>List all files in a folder</td>
+</tr>
+<tr>
+<td>ForEach</td>
+<td>Iterate over each filename</td>
+</tr>
+<tr>
+<td>String Lower</td>
+<td>Convert each name to lowercase</td>
+</tr>
+<tr>
+<td>Python Script (inner)</td>
+<td>Replace spaces with underscores, rename file</td>
+</tr>
+<tr>
+<td>Console Print</td>
+<td>Report result</td>
+</tr>
+</tbody>
+</table>
+<h3 id="step-by-step-build">Step-by-Step Build</h3>
+<p><strong>1. Create the entry Python Script node</strong></p>
+<p>Open the Node Library (left panel) and drag a <strong>Python Script</strong> node onto the canvas. This will be the entry point — it fires first when you click Run.</p>
+<p>In the node's code editor paste:</p>
+<pre><code class="language-python">import os
+
+folder = inputs.get(&quot;folder_path&quot;, &quot;&quot;)
+if not folder or not os.path.isdir(folder):
+    outputs[&quot;file_list&quot;] = []
+else:
+    outputs[&quot;file_list&quot;] = [
+        os.path.join(folder, f)
+        for f in os.listdir(folder)
+        if os.path.isfile(os.path.join(folder, f))
+    ]
+</code></pre>
+<p>Add a <code>folder_path</code> text input port and a <code>file_list</code> list output port using the node's port configuration panel. Connect <code>exec_out</code> to the ForEach node.</p>
+<p><strong>2. ForEach node</strong></p>
+<p>Drag a <strong>ForEach</strong> node onto the canvas. Connect:<br />
+- <code>file_list</code> output → ForEach <code>items</code> input<br />
+- Python Script <code>exec_out</code> → ForEach <code>exec_in</code></p>
+<p>ForEach fires its <code>loop_exec_out</code> once per item, passing the current item on the <code>current_item</code> port.</p>
+<p><strong>3. String Lower node</strong></p>
+<p>Drag <strong>String Lower</strong>. Connect:<br />
+- ForEach <code>current_item</code> → String Lower <code>string</code> input</p>
+<p>This converts the full path to lowercase. However, we only want to lowercase the filename, not the whole path. Use a Python Script node instead:</p>
+<pre><code class="language-python">import os
+
+full_path = inputs.get(&quot;current_item&quot;, &quot;&quot;)
+folder = os.path.dirname(full_path)
+old_name = os.path.basename(full_path)
+
+new_name = old_name.lower().replace(&quot; &quot;, &quot;_&quot;)
+new_path = os.path.join(folder, new_name)
+
+outputs[&quot;old_path&quot;] = full_path
+outputs[&quot;new_path&quot;] = new_path
+outputs[&quot;new_name&quot;] = new_name
+</code></pre>
+<p><strong>4. Rename Python Script node</strong></p>
+<p>Add another Python Script node with a <code>result</code> string output:</p>
+<pre><code class="language-python">import os
+
+old_path = inputs.get(&quot;old_path&quot;, &quot;&quot;)
+new_path = inputs.get(&quot;new_path&quot;, &quot;&quot;)
+
+if old_path and new_path and old_path != new_path:
+    try:
+        os.rename(old_path, new_path)
+        outputs[&quot;result&quot;] = f&quot;Renamed: {old_path} -&gt; {new_path}&quot;
+    except OSError as e:
+        outputs[&quot;result&quot;] = f&quot;ERROR: {e}&quot;
+else:
+    outputs[&quot;result&quot;] = f&quot;Skipped (no change): {old_path}&quot;
+</code></pre>
+<p><strong>5. Console Print</strong></p>
+<p>Connect the <code>result</code> output to a <strong>Console Print</strong> node. Wire the rename node's <code>exec_out</code> back to the ForEach <code>loop_exec_in</code> to continue the loop.</p>
+<p><strong>6. Final summary</strong></p>
+<p>Connect ForEach <code>exec_out</code> (fires after the loop completes) to a Console Print with the message <code>"Renaming complete."</code>.</p>
+<h3 id="running-the-workflow">Running the Workflow</h3>
+<p>Set the <code>folder_path</code> default value on the entry node (or wire it from a text input widget). Click <strong>Run</strong>. Watch the log panel — each rename or skip appears in sequence.</p>
+<hr />
+<h2 id="tutorial-2-data-transformation-pipeline">Tutorial 2: Data Transformation Pipeline</h2>
+<p><strong>Goal:</strong> Read a JSON file containing records (e.g., a list of people with names and birthdates), transform the data (uppercase names, reformat dates), and write the result to a new JSON file. Log a summary.</p>
+<h3 id="nodes-used_1">Nodes Used</h3>
+<table>
+<thead>
+<tr>
+<th>Node</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>File Load</td>
+<td>Read source JSON</td>
+</tr>
+<tr>
+<td>JSON Parse</td>
+<td>Decode file content</td>
+</tr>
+<tr>
+<td>Python Script</td>
+<td>Transform records</td>
+</tr>
+<tr>
+<td>File Save</td>
+<td>Write output JSON</td>
+</tr>
+<tr>
+<td>Console Print</td>
+<td>Log summary</td>
+</tr>
+</tbody>
+</table>
+<h3 id="step-by-step-build_1">Step-by-Step Build</h3>
+<p><strong>1. File Load</strong></p>
+<p>Drag <strong>File Load</strong> onto the canvas. Set <code>file_path</code> to your source JSON file (e.g., <code>people.json</code>). The <code>content</code> output carries the raw text.</p>
+<p><strong>2. JSON Parse</strong></p>
+<p>Connect <code>File Load.content</code> → <code>JSON Parse.json_string</code>. The <code>data</code> output is the decoded Python object (list or dict).</p>
+<p><strong>3. Transform Python Script</strong></p>
+<pre><code class="language-python">import json
+from datetime import datetime
+
+records = inputs.get(&quot;data&quot;, [])
+transformed = []
+
+for record in records:
+    new_record = dict(record)
+
+    # Uppercase the name field
+    if &quot;name&quot; in new_record:
+        new_record[&quot;name&quot;] = str(new_record[&quot;name&quot;]).upper()
+
+    # Reformat birthdate from YYYY-MM-DD to DD/MM/YYYY
+    if &quot;birthdate&quot; in new_record:
+        try:
+            dt = datetime.strptime(new_record[&quot;birthdate&quot;], &quot;%Y-%m-%d&quot;)
+            new_record[&quot;birthdate&quot;] = dt.strftime(&quot;%d/%m/%Y&quot;)
+        except ValueError:
+            pass  # leave malformed dates untouched
+
+    transformed.append(new_record)
+
+outputs[&quot;transformed&quot;] = transformed
+outputs[&quot;count&quot;] = len(transformed)
+outputs[&quot;json_out&quot;] = json.dumps(transformed, indent=2)
+</code></pre>
+<p><strong>4. File Save</strong></p>
+<p>Connect <code>json_out</code> → <code>File Save.content</code>. Set <code>file_path</code> to <code>people_transformed.json</code>. Wire <code>exec_out</code> chain through.</p>
+<p><strong>5. Console Print</strong></p>
+<p>Connect <code>count</code> to a <strong>Python Script</strong> that builds a summary string:</p>
+<pre><code class="language-python">count = inputs.get(&quot;count&quot;, 0)
+outputs[&quot;message&quot;] = f&quot;Transformation complete. {count} records processed.&quot;
+</code></pre>
+<p>Then connect <code>message</code> → Console Print.</p>
+<h3 id="key-points">Key Points</h3>
+<ul>
+<li>JSON Parse handles both list-of-dicts and plain dicts.</li>
+<li>All transform logic lives in one Python Script node, making it easy to add or remove transformation steps.</li>
+<li>File Save overwrites the target file. To write alongside the original, compute the output path dynamically.</li>
+</ul>
+<hr />
+<h2 id="tutorial-3-conditional-execution-ifelse-logic">Tutorial 3: Conditional Execution (If/Else Logic)</h2>
+<p><strong>Goal:</strong> Check whether a numeric value exceeds a threshold. Route execution to an "above threshold" branch or a "below threshold" branch. Both branches converge at a final log node.</p>
+<h3 id="nodes-used_2">Nodes Used</h3>
+<table>
+<thead>
+<tr>
+<th>Node</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Python Script</td>
+<td>Compute or receive the value</td>
+</tr>
+<tr>
+<td>Python Script</td>
+<td>Evaluate condition → bool</td>
+</tr>
+<tr>
+<td>TwoWaySwitch</td>
+<td>Route exec based on bool</td>
+</tr>
+<tr>
+<td>Console Print (×2)</td>
+<td>Branch-specific messages</td>
+</tr>
+<tr>
+<td>Console Print</td>
+<td>Final convergence message</td>
+</tr>
+</tbody>
+</table>
+<h3 id="step-by-step-build_2">Step-by-Step Build</h3>
+<p><strong>1. Source value</strong></p>
+<pre><code class="language-python"># Simulated: in practice this could come from a file, API, etc.
+outputs[&quot;value&quot;] = 87.3
+outputs[&quot;threshold&quot;] = 75.0
+</code></pre>
+<p><strong>2. Condition evaluator</strong></p>
+<pre><code class="language-python">value = inputs.get(&quot;value&quot;, 0.0)
+threshold = inputs.get(&quot;threshold&quot;, 0.0)
+outputs[&quot;condition&quot;] = value &gt; threshold
+outputs[&quot;summary&quot;] = f&quot;{value} vs threshold {threshold}&quot;
+</code></pre>
+<p><strong>3. TwoWaySwitch</strong></p>
+<p>Connect:<br />
+- <code>condition</code> (bool) → TwoWaySwitch <code>condition</code> input<br />
+- Condition evaluator <code>exec_out</code> → TwoWaySwitch <code>exec_in</code></p>
+<p>TwoWaySwitch has two exec outputs:<br />
+- <code>exec_true</code> — fires when condition is <code>True</code><br />
+- <code>exec_false</code> — fires when condition is <code>False</code></p>
+<p><strong>4. True branch</strong></p>
+<p>Connect <code>exec_true</code> → Console Print A. Set A's message port to a static string <code>"Value exceeds threshold — triggering alert."</code> or pipe a dynamic string through.</p>
+<p><strong>5. False branch</strong></p>
+<p>Connect <code>exec_false</code> → Console Print B with <code>"Value is within threshold — no action needed."</code>.</p>
+<p><strong>6. Convergence</strong></p>
+<p>Both Console Print nodes' <code>exec_out</code> pins connect to a shared final Console Print node with the message <code>"Check complete."</code>.</p>
+<blockquote>
+<p><strong>Note:</strong> In Vibrante-Node, multiple <code>exec_out</code> connections into a single <code>exec_in</code> are valid. The engine executes the target node once for whichever upstream exec fires. Since TwoWaySwitch fires exactly one branch, the final node runs exactly once.</p>
+</blockquote>
+<h3 id="extending-to-multi-branch-logic">Extending to Multi-Branch Logic</h3>
+<p>For more than two conditions, chain TwoWaySwitches:</p>
+<pre><code>Condition A → TwoWaySwitch 1
+  exec_true  → branch A
+  exec_false → Condition B → TwoWaySwitch 2
+                 exec_true  → branch B
+                 exec_false → branch C (default)
+</code></pre>
+<hr />
+<h2 id="tutorial-4-loop-over-a-list">Tutorial 4: Loop Over a List</h2>
+<p><strong>Goal:</strong> Take a list of names, process each one (title-case), collect the results, and print the final processed list.</p>
+<h3 id="nodes-used_3">Nodes Used</h3>
+<table>
+<thead>
+<tr>
+<th>Node</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Create List</td>
+<td>Build or receive the input list</td>
+</tr>
+<tr>
+<td>SetVariable</td>
+<td>Initialize the accumulator</td>
+</tr>
+<tr>
+<td>ForEach</td>
+<td>Iterate over items</td>
+</tr>
+<tr>
+<td>Python Script</td>
+<td>Title-case each item</td>
+</tr>
+<tr>
+<td>GetVariable</td>
+<td>Read current accumulator</td>
+</tr>
+<tr>
+<td>List Append</td>
+<td>Add processed item</td>
+</tr>
+<tr>
+<td>SetVariable</td>
+<td>Update accumulator</td>
+</tr>
+<tr>
+<td>GetVariable</td>
+<td>Final read</td>
+</tr>
+<tr>
+<td>Console Print</td>
+<td>Output result</td>
+</tr>
+</tbody>
+</table>
+<h3 id="step-by-step-build_3">Step-by-Step Build</h3>
+<p><strong>1. Create List</strong></p>
+<p>Use <strong>Create List</strong> (or a Python Script) to produce your list:</p>
+<pre><code class="language-python">outputs[&quot;names&quot;] = [&quot;alice smith&quot;, &quot;BOB JONES&quot;, &quot;carol WHITE&quot;, &quot;david brown&quot;]
+</code></pre>
+<p><strong>2. Initialize accumulator</strong></p>
+<p>Drag <strong>SetVariable</strong>. Set <code>var_name</code> = <code>"processed_names"</code>, <code>value</code> = <code>[]</code> (empty list). Connect <code>exec_out</code> → ForEach <code>exec_in</code>.</p>
+<p><strong>3. ForEach</strong></p>
+<p>Connect <code>names</code> → ForEach <code>items</code>.</p>
+<p>ForEach exposes:<br />
+- <code>current_item</code> — the value at the current index<br />
+- <code>current_index</code> — the 0-based index<br />
+- <code>loop_exec_out</code> — exec pin that fires for each iteration (connect your loop body here)<br />
+- <code>exec_out</code> — fires once after the loop finishes</p>
+<p><strong>4. Process item</strong></p>
+<pre><code class="language-python">item = inputs.get(&quot;current_item&quot;, &quot;&quot;)
+outputs[&quot;processed&quot;] = item.title()
+</code></pre>
+<p><strong>5. GetVariable → List Append → SetVariable</strong></p>
+<p>Chain:<br />
+1. GetVariable: <code>var_name</code> = <code>"processed_names"</code> → <code>current_list</code><br />
+2. List Append: <code>list</code> = <code>current_list</code>, <code>item</code> = <code>processed</code> → <code>appended_list</code><br />
+3. SetVariable: <code>var_name</code> = <code>"processed_names"</code>, <code>value</code> = <code>appended_list</code></p>
+<p>Wire the loop exec chain: ForEach <code>loop_exec_out</code> → Process Script → GetVariable → List Append → SetVariable → ForEach <code>loop_exec_in</code> (to continue the loop).</p>
+<p><strong>6. Post-loop</strong></p>
+<p>After ForEach <code>exec_out</code>:<br />
+1. GetVariable: <code>"processed_names"</code> → <code>final_list</code><br />
+2. Python Script: <code>outputs["message"] = str(inputs.get("final_list", []))</code> <br />
+3. Console Print</p>
+<h3 id="expected-output">Expected Output</h3>
+<pre><code>['Alice Smith', 'Bob Jones', 'Carol White', 'David Brown']
+</code></pre>
+<hr />
+<h2 id="tutorial-5-maya-automation-workflow">Tutorial 5: Maya Automation Workflow</h2>
+<p><strong>Goal:</strong> Open a Maya scene headlessly, configure render settings, and export an Alembic cache. Check success or failure.</p>
+<h3 id="nodes-used_4">Nodes Used</h3>
+<table>
+<thead>
+<tr>
+<th>Node</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Maya Action: Open Scene</td>
+<td>Open .ma/.mb file</td>
+</tr>
+<tr>
+<td>Maya Action: Set Render Settings</td>
+<td>Frame range, renderer</td>
+</tr>
+<tr>
+<td>Maya Action: Export Alembic</td>
+<td>Export specified objects</td>
+</tr>
+<tr>
+<td>Maya Headless Executor</td>
+<td>Run the action list</td>
+</tr>
+<tr>
+<td>TwoWaySwitch</td>
+<td>Branch on success</td>
+</tr>
+<tr>
+<td>Console Print (×2)</td>
+<td>Success / failure messages</td>
+</tr>
+</tbody>
+</table>
+<h3 id="understanding-the-action-list-pattern">Understanding the Action-List Pattern</h3>
+<p>Maya automation in Vibrante-Node uses an <strong>action list</strong> — a Python list of dicts that describes operations to perform. Each action node appends a dict to the list. The <strong>Maya Headless Executor</strong> node consumes the complete list, launches a Maya batch subprocess, and executes each action in order.</p>
+<p>This design means:<br />
+- No Maya process is opened until the entire list is assembled.<br />
+- The action list can be branched, filtered, or modified before execution.<br />
+- Execution happens in a single subprocess — fast startup, no repeated Maya launch overhead.</p>
+<h3 id="step-by-step-build_4">Step-by-Step Build</h3>
+<p><strong>1. Maya Action: Open Scene</strong></p>
+<p>This is a Houdini-style headless action node. If a custom <code>maya_action_open_scene</code> node is registered:</p>
+<pre><code class="language-python"># Node python_code equivalent
+actions = list(inputs.get(&quot;actions_in&quot;) or [])
+actions.append({
+    &quot;type&quot;: &quot;open_scene&quot;,
+    &quot;scene_path&quot;: inputs.get(&quot;scene_path&quot;, &quot;&quot;)
+})
+outputs[&quot;actions_out&quot;] = actions
+</code></pre>
+<p>Set <code>scene_path</code> to your <code>.mb</code> file path.</p>
+<p><strong>2. Maya Action: Set Render Settings</strong></p>
+<pre><code class="language-python">actions = list(inputs.get(&quot;actions_in&quot;) or [])
+actions.append({
+    &quot;type&quot;: &quot;set_render_settings&quot;,
+    &quot;renderer&quot;: inputs.get(&quot;renderer&quot;, &quot;arnold&quot;),
+    &quot;start_frame&quot;: int(inputs.get(&quot;start_frame&quot;, 1)),
+    &quot;end_frame&quot;: int(inputs.get(&quot;end_frame&quot;, 100)),
+    &quot;image_output&quot;: inputs.get(&quot;image_output&quot;, &quot;/tmp/render/&quot;),
+    &quot;image_prefix&quot;: inputs.get(&quot;image_prefix&quot;, &quot;render&quot;)
+})
+outputs[&quot;actions_out&quot;] = actions
+</code></pre>
+<p><strong>3. Maya Action: Export Alembic</strong></p>
+<pre><code class="language-python">actions = list(inputs.get(&quot;actions_in&quot;) or [])
+actions.append({
+    &quot;type&quot;: &quot;export_alembic&quot;,
+    &quot;objects&quot;: inputs.get(&quot;objects&quot;, &quot;&quot;),       # e.g. &quot;|geo_GRP&quot;
+    &quot;output_path&quot;: inputs.get(&quot;output_path&quot;, &quot;/tmp/export.abc&quot;),
+    &quot;frame_range&quot;: [
+        int(inputs.get(&quot;start_frame&quot;, 1)),
+        int(inputs.get(&quot;end_frame&quot;, 100))
+    ]
+})
+outputs[&quot;actions_out&quot;] = actions
+</code></pre>
+<p><strong>4. Maya Headless Executor</strong></p>
+<p>This node launches Maya, runs the actions, and outputs:<br />
+- <code>success</code> (bool)<br />
+- <code>log_output</code> (string)<br />
+- <code>error_message</code> (string, empty on success)</p>
+<p><strong>5. Conditional routing</strong></p>
+<p>Connect <code>success</code> → TwoWaySwitch <code>condition</code>. Route:<br />
+- <code>exec_true</code> → Console Print: <code>"Maya export completed successfully."</code><br />
+- <code>exec_false</code> → Python Script that reads <code>error_message</code> and prints it.</p>
+<h3 id="notes">Notes</h3>
+<ul>
+<li>Ensure <code>MAYA_LOCATION</code> and <code>VIBRANTE_MAYA_EXE</code> are set in your environment.</li>
+<li>The Maya runner script in <code>plugins/maya/</code> must have a handler for every action <code>type</code> key.</li>
+<li><code>objects</code> can be a single DAG path or a semicolon-separated list.</li>
+</ul>
+<hr />
+<h2 id="tutorial-6-houdini-procedural-workflow">Tutorial 6: Houdini Procedural Workflow</h2>
+<p><strong>Goal:</strong> Create a Houdini geometry container, add a Box SOP, transform it, cook the network, and store the resulting node path.</p>
+<h3 id="nodes-used_5">Nodes Used</h3>
+<table>
+<thead>
+<tr>
+<th>Node</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Houdini: Ping</td>
+<td>Verify connection</td>
+</tr>
+<tr>
+<td>Houdini: Create Node</td>
+<td>Create /obj-level geo</td>
+</tr>
+<tr>
+<td>Houdini: Clear Children</td>
+<td>Remove default nodes</td>
+</tr>
+<tr>
+<td>Houdini: Create Node</td>
+<td>Create Box SOP</td>
+</tr>
+<tr>
+<td>Houdini: Create Node</td>
+<td>Create Transform SOP</td>
+</tr>
+<tr>
+<td>Houdini: Connect Nodes</td>
+<td>Wire SOPs</td>
+</tr>
+<tr>
+<td>Houdini: Set Parm</td>
+<td>Position transform</td>
+</tr>
+<tr>
+<td>Houdini: Set Display/Render</td>
+<td>Flag the output SOP</td>
+</tr>
+<tr>
+<td>Houdini: Cook Node</td>
+<td>Force evaluation</td>
+</tr>
+<tr>
+<td>Houdini: Layout Children</td>
+<td>Auto-layout</td>
+</tr>
+<tr>
+<td>Console Print</td>
+<td>Log result path</td>
+</tr>
+</tbody>
+</table>
+<h3 id="step-by-step-build_5">Step-by-Step Build</h3>
+<p>All Houdini nodes call the JSON-RPC bridge internally. The following Python Script node demonstrates the full flow in a single node (which you can then break into individual nodes as needed):</p>
+<pre><code class="language-python">from src.utils.hou_bridge import get_bridge
+
+async def execute(self, inputs):
+    bridge = get_bridge()
+
+    # 1. Ping to verify connection
+    ping = bridge.ping()
+    if ping.get(&quot;status&quot;) != &quot;ok&quot;:
+        self.log_error(&quot;Houdini not responding.&quot;)
+        return {&quot;result_path&quot;: &quot;&quot;, &quot;exec_out&quot;: True}
+
+    # 2. Create /obj-level geo container
+    geo_result = bridge.create_node(&quot;/obj&quot;, &quot;geo&quot;, &quot;tutorial_geo&quot;)
+    geo_path = geo_result[&quot;path&quot;]   # e.g. &quot;/obj/tutorial_geo&quot;
+
+    # 3. Clear Houdini's default child nodes
+    for child in bridge.children(geo_path):
+        bridge.delete_node(child[&quot;path&quot;])
+
+    # 4. Create Box SOP
+    box_result = bridge.create_node(geo_path, &quot;box&quot;, &quot;my_box&quot;)
+    box_path = box_result[&quot;path&quot;]
+
+    # 5. Set box size
+    bridge.set_parms(box_path, {&quot;sizex&quot;: 2.0, &quot;sizey&quot;: 1.0, &quot;sizez&quot;: 1.5})
+
+    # 6. Create Transform SOP
+    xform_result = bridge.create_node(geo_path, &quot;xform&quot;, &quot;my_xform&quot;)
+    xform_path = xform_result[&quot;path&quot;]
+
+    # 7. Wire box → xform
+    bridge.connect_nodes(box_path, xform_path, output=0, input_idx=0)
+
+    # 8. Translate the transform
+    bridge.set_parms(xform_path, {&quot;tx&quot;: 3.0, &quot;ty&quot;: 1.0, &quot;tz&quot;: 0.0})
+
+    # 9. Set display and render flags on xform
+    bridge.set_display_flag(xform_path, True)
+    bridge.set_render_flag(xform_path, True)
+
+    # 10. Cook
+    bridge.cook_node(xform_path, force=True)
+
+    # 11. Auto-layout
+    bridge.layout_children(geo_path)
+
+    self.log_info(f&quot;Geo network created at: {geo_path}&quot;)
+    return {&quot;result_path&quot;: geo_path, &quot;exec_out&quot;: True}
+</code></pre>
+<h3 id="expected-result">Expected Result</h3>
+<p>In Houdini's Network Editor, <code>/obj/tutorial_geo</code> appears with two SOPs (<code>my_box</code> → <code>my_xform</code>) wired in series, <code>my_xform</code> flagged for display and render, and the box visible in the viewport.</p>
+<h3 id="extending-to-export">Extending to Export</h3>
+<p>After cooking, add:</p>
+<pre><code class="language-python"># Save the hip file with the new network
+save_result = bridge.save_hip(&quot;/path/to/output.hip&quot;)
+self.log_info(f&quot;Saved: {save_result['saved']}&quot;)
+</code></pre>
+<hr />
+<h2 id="tutorial-7-prism-pipeline-asset-workflow">Tutorial 7: Prism Pipeline Asset Workflow</h2>
+<p><strong>Goal:</strong> Initialize PrismCore, retrieve all assets for a project, get the latest export path for each asset, and log the results.</p>
+<h3 id="nodes-used_6">Nodes Used</h3>
+<table>
+<thead>
+<tr>
+<th>Node</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>prism_core_init</td>
+<td>Bootstrap PrismCore</td>
+</tr>
+<tr>
+<td>prism_get_assets</td>
+<td>List project assets</td>
+</tr>
+<tr>
+<td>ForEach</td>
+<td>Iterate over assets</td>
+</tr>
+<tr>
+<td>prism_get_export_path</td>
+<td>Resolve the export path</td>
+</tr>
+<tr>
+<td>Console Print</td>
+<td>Log each path</td>
+</tr>
+</tbody>
+</table>
+<h3 id="step-by-step-build_6">Step-by-Step Build</h3>
+<p><strong>Important:</strong> Place <code>prism_core_init</code> anywhere in the graph. The engine detects it before execution begins and bootstraps <code>PrismCore</code> automatically. You do not need to wire <code>core</code> between nodes.</p>
+<p><strong>1. prism_core_init</strong></p>
+<p>Drag onto canvas. Configure <code>project_path</code> if your Prism installation requires it. This node has no meaningful output — it exists solely for the bootstrap side effect.</p>
+<p><strong>2. prism_get_assets</strong></p>
+<pre><code class="language-python">from src.nodes.base import BaseNode
+from src.utils.prism_core import resolve_prism_core
+
+class Prism_Get_Assets(BaseNode):
+    name = &quot;prism_get_assets&quot;
+
+    async def execute(self, inputs):
+        core = resolve_prism_core(inputs)
+        if core is None:
+            self.log_error(&quot;PrismCore not available.&quot;)
+            return {&quot;assets&quot;: [], &quot;exec_out&quot;: True}
+        try:
+            assets = core.getAssets()
+            return {&quot;assets&quot;: assets, &quot;exec_out&quot;: True}
+        except Exception as e:
+            self.log_error(f&quot;Prism error: {e}&quot;)
+            return {&quot;assets&quot;: [], &quot;exec_out&quot;: True}
+</code></pre>
+<p><strong>3. ForEach → prism_get_export_path</strong></p>
+<p>For each asset dict, call:</p>
+<pre><code class="language-python">core = resolve_prism_core(inputs)
+asset = inputs.get(&quot;current_item&quot;, {})
+asset_name = asset.get(&quot;asset&quot;, &quot;&quot;)
+
+try:
+    paths = core.getExportPaths(asset=asset_name)
+    latest = paths[-1] if paths else None
+    outputs[&quot;export_path&quot;] = latest
+    outputs[&quot;asset_name&quot;] = asset_name
+except Exception as e:
+    self.log_error(f&quot;Could not get export path for {asset_name}: {e}&quot;)
+    outputs[&quot;export_path&quot;] = None
+    outputs[&quot;asset_name&quot;] = asset_name
+</code></pre>
+<p><strong>4. Console Print</strong></p>
+<p>Build message:</p>
+<pre><code class="language-python">name = inputs.get(&quot;asset_name&quot;, &quot;&quot;)
+path = inputs.get(&quot;export_path&quot;, &quot;N/A&quot;)
+outputs[&quot;message&quot;] = f&quot;  {name}: {path or 'No export found'}&quot;
+</code></pre>
+<h3 id="expected-output_1">Expected Output</h3>
+<pre><code>character_hero: /project/exports/assets/character_hero/model/v003/character_hero.abc
+prop_sword:     /project/exports/assets/prop_sword/model/v001/prop_sword.abc
+environment_castle: No export found
+</code></pre>
+<hr />
+<h2 id="tutorial-8-multi-shot-rendering-workflow">Tutorial 8: Multi-Shot Rendering Workflow</h2>
+<p><strong>Goal:</strong> Iterate over a list of shots. For each shot, open the corresponding Houdini scene, set the frame range, trigger a render, and collect the output paths.</p>
+<h3 id="nodes-used_7">Nodes Used</h3>
+<table>
+<thead>
+<tr>
+<th>Node</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Python Script</td>
+<td>Build shot list</td>
+</tr>
+<tr>
+<td>SetVariable</td>
+<td>Initialize results list</td>
+</tr>
+<tr>
+<td>ForEach</td>
+<td>Loop over shots</td>
+</tr>
+<tr>
+<td>Python Script</td>
+<td>Build hip path from shot name</td>
+</tr>
+<tr>
+<td>Houdini: Set Playback Range</td>
+<td>Set frame range</td>
+</tr>
+<tr>
+<td>Houdini: Cook Node (render)</td>
+<td>Trigger output driver</td>
+</tr>
+<tr>
+<td>GetVariable + List Append + SetVariable</td>
+<td>Collect results</td>
+</tr>
+<tr>
+<td>GetVariable</td>
+<td>Final read</td>
+</tr>
+<tr>
+<td>Console Print</td>
+<td>Summary</td>
+</tr>
+</tbody>
+</table>
+<h3 id="shot-list-builder">Shot List Builder</h3>
+<pre><code class="language-python">outputs[&quot;shots&quot;] = [
+    {&quot;name&quot;: &quot;sh010&quot;, &quot;start&quot;: 1001, &quot;end&quot;: 1120, &quot;hip&quot;: &quot;/project/scenes/sh010.hip&quot;},
+    {&quot;name&quot;: &quot;sh020&quot;, &quot;start&quot;: 1001, &quot;end&quot;: 1085, &quot;hip&quot;: &quot;/project/scenes/sh020.hip&quot;},
+    {&quot;name&quot;: &quot;sh030&quot;, &quot;start&quot;: 1001, &quot;end&quot;: 1240, &quot;hip&quot;: &quot;/project/scenes/sh030.hip&quot;},
+]
+</code></pre>
+<h3 id="per-shot-processing-script">Per-Shot Processing Script</h3>
+<pre><code class="language-python">from src.utils.hou_bridge import get_bridge
+
+async def execute(self, inputs):
+    shot = inputs.get(&quot;current_item&quot;, {})
+    bridge = get_bridge()
+
+    hip_path = shot.get(&quot;hip&quot;, &quot;&quot;)
+    start = shot.get(&quot;start&quot;, 1)
+    end = shot.get(&quot;end&quot;, 240)
+    name = shot.get(&quot;name&quot;, &quot;unknown&quot;)
+
+    try:
+        # Load the hip file
+        bridge.run_code(f&quot;hou.hipFile.load('{hip_path}', suppress_save_prompt=True)&quot;)
+
+        # Set frame range
+        bridge.set_playback_range(start, end)
+
+        # Cook the mantra/karma output driver
+        out_path = f&quot;/out/mantra_beauty&quot;
+        bridge.cook_node(out_path, force=True)
+
+        self.log_info(f&quot;Rendered {name}: frames {start}-{end}&quot;)
+        outputs[&quot;render_result&quot;] = {&quot;shot&quot;: name, &quot;status&quot;: &quot;ok&quot;, &quot;frames&quot;: end - start + 1}
+
+    except Exception as e:
+        self.log_error(f&quot;Failed to render {name}: {e}&quot;)
+        outputs[&quot;render_result&quot;] = {&quot;shot&quot;: name, &quot;status&quot;: &quot;error&quot;, &quot;error&quot;: str(e)}
+
+    outputs[&quot;exec_out&quot;] = True
+</code></pre>
+<h3 id="post-loop-summary">Post-Loop Summary</h3>
+<pre><code class="language-python">results = inputs.get(&quot;final_results&quot;, [])
+ok = [r for r in results if r.get(&quot;status&quot;) == &quot;ok&quot;]
+err = [r for r in results if r.get(&quot;status&quot;) == &quot;error&quot;]
+
+lines = [f&quot;Render complete: {len(ok)} succeeded, {len(err)} failed.&quot;]
+for r in err:
+    lines.append(f&quot;  FAILED: {r['shot']} — {r.get('error', '')}&quot;)
+
+outputs[&quot;message&quot;] = &quot;\n&quot;.join(lines)
+</code></pre>
+<hr />
+<h2 id="tutorial-9-groupnode-subgraph-workflow">Tutorial 9: GroupNode (Subgraph) Workflow</h2>
+<p><strong>Goal:</strong> Build a reusable "normalize filename" subgraph, collapse it into a GroupNode, and use it in two different workflows without duplicating nodes.</p>
+<h3 id="step-1-build-the-reusable-logic">Step 1: Build the Reusable Logic</h3>
+<p>Create three nodes on the canvas:</p>
+<p><strong>Trim &amp; Lower:</strong></p>
+<pre><code class="language-python">s = inputs.get(&quot;raw_name&quot;, &quot;&quot;)
+outputs[&quot;cleaned&quot;] = s.strip().lower()
+</code></pre>
+<p><strong>Replace Spaces:</strong></p>
+<pre><code class="language-python">s = inputs.get(&quot;cleaned&quot;, &quot;&quot;)
+outputs[&quot;underscored&quot;] = s.replace(&quot; &quot;, &quot;_&quot;).replace(&quot;-&quot;, &quot;_&quot;)
+</code></pre>
+<p><strong>Remove Special Chars:</strong></p>
+<pre><code class="language-python">import re
+s = inputs.get(&quot;underscored&quot;, &quot;&quot;)
+outputs[&quot;final_name&quot;] = re.sub(r&quot;[^a-z0-9_.]&quot;, &quot;&quot;, s)
+</code></pre>
+<p>Wire them in sequence: exec_out → exec_in, and data outputs → inputs.</p>
+<h3 id="step-2-add-groupin-and-groupout-nodes">Step 2: Add GroupIn and GroupOut Nodes</h3>
+<p>Drag a <strong>GroupIn</strong> node. Set its <code>port_name</code> parameter to <code>"raw_name"</code>. This exposes an input port on the eventual GroupNode.</p>
+<p>Drag a <strong>GroupOut</strong> node. Set its <code>port_name</code> to <code>"final_name"</code>. Wire the Remove Special Chars <code>final_name</code> output → GroupOut <code>value</code> input.</p>
+<p>Wire exec: GroupIn → Trim &amp; Lower → Replace Spaces → Remove Special Chars → GroupOut.</p>
+<h3 id="step-3-collapse-into-a-groupnode">Step 3: Collapse into a GroupNode</h3>
+<p>Select all five nodes (Ctrl+A or drag-select). Press <strong>Ctrl+Shift+G</strong> (or Edit → Group Selection).</p>
+<p>A dialog prompts for a group name. Enter <code>"normalize_filename"</code>.</p>
+<p>The five nodes collapse into a single <strong>GroupNode</strong> with:<br />
+- Input port: <code>raw_name</code><br />
+- Output port: <code>final_name</code><br />
+- Exec pins: <code>exec_in</code>, <code>exec_out</code></p>
+<h3 id="step-4-use-the-groupnode">Step 4: Use the GroupNode</h3>
+<p>The GroupNode behaves identically to any other node:</p>
+<pre><code>[Python Script: generate raw name]
+      |  (raw_name)
+      v
+[GroupNode: normalize_filename]
+      |  (final_name)
+      v
+[Console Print]
+</code></pre>
+<h3 id="step-5-inspect-the-subgraph">Step 5: Inspect the Subgraph</h3>
+<p>Double-click the GroupNode to open its subgraph in a new tab. The tab is labeled <code>[normalize_filename]</code> and is fully editable — changes sync back to the parent workflow automatically.</p>
+<h3 id="step-6-reuse-in-another-workflow">Step 6: Reuse in Another Workflow</h3>
+<p>Save the workflow containing the GroupNode. In a new workflow, use <strong>File → Import Nodes</strong> (or copy-paste the GroupNode widget). The entire subgraph is embedded — no external dependencies.</p>
+<hr />
+<h2 id="tutorial-10-debugging-a-failing-workflow">Tutorial 10: Debugging a Failing Workflow</h2>
+<p><strong>Goal:</strong> A workflow is producing incorrect output. Use Vibrante-Node's debugging tools to find and fix the problem.</p>
+<h3 id="tool-1-the-log-panel">Tool 1: The Log Panel</h3>
+<p>The log panel (bottom of the window) shows:</p>
+<ul>
+<li><strong>Node started / finished</strong> with timing: <code>Node 'Get Asset' finished in 0.34s</code></li>
+<li><strong>Info messages</strong> from <code>self.log_info()</code></li>
+<li><strong>Error messages</strong> from <code>self.log_error()</code> in red</li>
+<li><strong>Execution order</strong> — nodes appear in the order they ran</li>
+</ul>
+<p>Start here. Look for red error lines. Click a log entry to highlight the corresponding node on the canvas.</p>
+<h3 id="tool-2-console-print-nodes">Tool 2: Console Print Nodes</h3>
+<p>Insert a <strong>Console Print</strong> node between any two nodes to inspect the intermediate value:</p>
+<pre><code>[Source Node] → (data output) → [Console Print] → (passthrough) → [Downstream Node]
+</code></pre>
+<p>Console Print has a passthrough so it does not break the exec chain. This is the fastest way to verify that a value is what you expect at each stage.</p>
+<h3 id="tool-3-wire-hover-tooltips-live-value-inspector">Tool 3: Wire Hover Tooltips (Live Value Inspector)</h3>
+<p>After running the workflow, hover your mouse over any wire (edge) connecting two nodes. A tooltip appears showing:</p>
+<pre><code>port_name: &lt;repr of last value, capped at 300 chars&gt;
+</code></pre>
+<p>This works for both data wires and exec wires. No extra nodes needed — just hover.</p>
+<p>Values persist after execution finishes, so you can inspect the entire graph's state at leisure.</p>
+<h3 id="tool-4-bypass-a-node">Tool 4: Bypass a Node</h3>
+<p>Right-click any node → <strong>Bypass</strong>. A bypassed node is skipped during execution; its input data is forwarded directly to its output. This lets you disable a section without deleting it.</p>
+<p>Use bypass to isolate which node is causing a problem:</p>
+<ol>
+<li>Bypass the suspected node → run → does the error disappear?</li>
+<li>If yes: the problem is in that node's logic.</li>
+<li>If no: bypass the next node in the chain and repeat.</li>
+</ol>
+<h3 id="common-failure-patterns">Common Failure Patterns</h3>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No output, no error</td>
+<td>Entry node not connected to exec chain</td>
+<td>Ensure entry node has exec_out wired</td>
+</tr>
+<tr>
+<td><code>None</code> appearing mid-chain</td>
+<td>Missing output key in <code>return</code> dict</td>
+<td>Check all node return statements</td>
+</tr>
+<tr>
+<td>Loop runs 0 times</td>
+<td>Empty list input to ForEach</td>
+<td>Print the list before ForEach</td>
+</tr>
+<tr>
+<td>Houdini nodes hang</td>
+<td>Houdini bridge not connected</td>
+<td>Check Houdini console for server startup</td>
+</tr>
+<tr>
+<td>Values not updating</td>
+<td>Shared <code>parameters</code> from a previous run</td>
+<td>Use <code>memory</code> dict for per-run state</td>
+</tr>
+<tr>
+<td>GroupNode shows wrong result</td>
+<td>Subgraph exec chain broken</td>
+<td>Double-click to inspect the subgraph</td>
+</tr>
+</tbody>
+</table>
+<h3 id="step-by-step-debug-session">Step-by-Step Debug Session</h3>
+<ol>
+<li>Run the workflow. Note which nodes appear in the log.</li>
+<li>If execution stops early, the last node in the log is the culprit or its immediate successor.</li>
+<li>Insert Console Print nodes before and after the suspect node.</li>
+<li>Re-run. Compare actual vs. expected values in the log.</li>
+<li>Hover wires around the suspect node to see raw values.</li>
+<li>Bypass the suspect node to confirm it is the source.</li>
+<li>Open the node's code editor and add <code>print()</code> statements for more detail.</li>
+<li>Fix the logic, remove debug Console Print nodes, re-run to confirm.</li>
+</ol>
+    <nav class="page-nav">
+      <a class="page-nav-link prev" href="03_user_guide.html"><span class="page-nav-label">Previous</span><span class="page-nav-title">User Guide</span></a>
+      <a class="page-nav-link next" href="05_node_development.html"><span class="page-nav-label">Next</span><span class="page-nav-title">Node Development Guide</span></a>
+    </nav>
+  </div>
+</main>
+
+<!-- ── TOC ────────────────────────────────────────────────────────────── -->
+<aside class="toc">
+  <div class="toc-title">On this page</div>
+<a class="toc-link toc-h2" href="#tutorial-1-basic-file-renaming-workflow">Tutorial 1: Basic File Renaming Workflow</a>
+<a class="toc-link toc-h3" href="#nodes-used">Nodes Used</a>
+<a class="toc-link toc-h3" href="#step-by-step-build">Step-by-Step Build</a>
+<a class="toc-link toc-h3" href="#running-the-workflow">Running the Workflow</a>
+<a class="toc-link toc-h2" href="#tutorial-2-data-transformation-pipeline">Tutorial 2: Data Transformation Pipeline</a>
+<a class="toc-link toc-h3" href="#nodes-used_1">Nodes Used</a>
+<a class="toc-link toc-h3" href="#step-by-step-build_1">Step-by-Step Build</a>
+<a class="toc-link toc-h3" href="#key-points">Key Points</a>
+<a class="toc-link toc-h2" href="#tutorial-3-conditional-execution-ifelse-logic">Tutorial 3: Conditional Execution (If/Else Logic)</a>
+<a class="toc-link toc-h3" href="#nodes-used_2">Nodes Used</a>
+<a class="toc-link toc-h3" href="#step-by-step-build_2">Step-by-Step Build</a>
+<a class="toc-link toc-h3" href="#extending-to-multi-branch-logic">Extending to Multi-Branch Logic</a>
+<a class="toc-link toc-h2" href="#tutorial-4-loop-over-a-list">Tutorial 4: Loop Over a List</a>
+<a class="toc-link toc-h3" href="#nodes-used_3">Nodes Used</a>
+<a class="toc-link toc-h3" href="#step-by-step-build_3">Step-by-Step Build</a>
+<a class="toc-link toc-h3" href="#expected-output">Expected Output</a>
+<a class="toc-link toc-h2" href="#tutorial-5-maya-automation-workflow">Tutorial 5: Maya Automation Workflow</a>
+<a class="toc-link toc-h3" href="#nodes-used_4">Nodes Used</a>
+<a class="toc-link toc-h3" href="#understanding-the-action-list-pattern">Understanding the Action-List Pattern</a>
+<a class="toc-link toc-h3" href="#step-by-step-build_4">Step-by-Step Build</a>
+<a class="toc-link toc-h3" href="#notes">Notes</a>
+<a class="toc-link toc-h2" href="#tutorial-6-houdini-procedural-workflow">Tutorial 6: Houdini Procedural Workflow</a>
+<a class="toc-link toc-h3" href="#nodes-used_5">Nodes Used</a>
+<a class="toc-link toc-h3" href="#step-by-step-build_5">Step-by-Step Build</a>
+<a class="toc-link toc-h3" href="#expected-result">Expected Result</a>
+<a class="toc-link toc-h3" href="#extending-to-export">Extending to Export</a>
+<a class="toc-link toc-h2" href="#tutorial-7-prism-pipeline-asset-workflow">Tutorial 7: Prism Pipeline Asset Workflow</a>
+<a class="toc-link toc-h3" href="#nodes-used_6">Nodes Used</a>
+<a class="toc-link toc-h3" href="#step-by-step-build_6">Step-by-Step Build</a>
+<a class="toc-link toc-h3" href="#expected-output_1">Expected Output</a>
+<a class="toc-link toc-h2" href="#tutorial-8-multi-shot-rendering-workflow">Tutorial 8: Multi-Shot Rendering Workflow</a>
+<a class="toc-link toc-h3" href="#nodes-used_7">Nodes Used</a>
+<a class="toc-link toc-h3" href="#shot-list-builder">Shot List Builder</a>
+<a class="toc-link toc-h3" href="#per-shot-processing-script">Per-Shot Processing Script</a>
+<a class="toc-link toc-h3" href="#post-loop-summary">Post-Loop Summary</a>
+<a class="toc-link toc-h2" href="#tutorial-9-groupnode-subgraph-workflow">Tutorial 9: GroupNode (Subgraph) Workflow</a>
+<a class="toc-link toc-h3" href="#step-1-build-the-reusable-logic">Step 1: Build the Reusable Logic</a>
+<a class="toc-link toc-h3" href="#step-2-add-groupin-and-groupout-nodes">Step 2: Add GroupIn and GroupOut Nodes</a>
+<a class="toc-link toc-h3" href="#step-3-collapse-into-a-groupnode">Step 3: Collapse into a GroupNode</a>
+<a class="toc-link toc-h3" href="#step-4-use-the-groupnode">Step 4: Use the GroupNode</a>
+<a class="toc-link toc-h3" href="#step-5-inspect-the-subgraph">Step 5: Inspect the Subgraph</a>
+<a class="toc-link toc-h3" href="#step-6-reuse-in-another-workflow">Step 6: Reuse in Another Workflow</a>
+<a class="toc-link toc-h2" href="#tutorial-10-debugging-a-failing-workflow">Tutorial 10: Debugging a Failing Workflow</a>
+<a class="toc-link toc-h3" href="#tool-1-the-log-panel">Tool 1: The Log Panel</a>
+<a class="toc-link toc-h3" href="#tool-2-console-print-nodes">Tool 2: Console Print Nodes</a>
+<a class="toc-link toc-h3" href="#tool-3-wire-hover-tooltips-live-value-inspector">Tool 3: Wire Hover Tooltips (Live Value Inspector)</a>
+<a class="toc-link toc-h3" href="#tool-4-bypass-a-node">Tool 4: Bypass a Node</a>
+<a class="toc-link toc-h3" href="#common-failure-patterns">Common Failure Patterns</a>
+<a class="toc-link toc-h3" href="#step-by-step-debug-session">Step-by-Step Debug Session</a>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/highlight.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lunr@2.3.9/lunr.min.js"></script>
+<script>
+// ── Search ──────────────────────────────────────────────────────────────
+let _idx = null, _docs = [];
+
+async function initSearch() {
+  try {
+    const base = document.getElementById('portal-base').dataset.base;
+    const resp = await fetch(base + 'search.json');
+    _docs = await resp.json();
+    _idx = lunr(function() {
+      this.ref('id');
+      this.field('title', { boost: 10 });
+      this.field('body');
+      _docs.forEach((d, i) => {
+        this.add({ id: i, title: d.title, body: d.body });
+      });
+    });
+  } catch(e) { console.warn('Search index not available', e); }
+}
+
+function doSearch(q) {
+  const box = document.getElementById('search-results');
+  if (!q || q.length < 2) { box.classList.remove('visible'); return; }
+  if (!_idx) { box.innerHTML = '<div class="search-no-results">Search index loading…</div>'; box.classList.add('visible'); return; }
+  const results = _idx.search(q + '~1');
+  if (!results.length) {
+    box.innerHTML = '<div class="search-no-results">No results for "' + q + '"</div>';
+    box.classList.add('visible'); return;
+  }
+  box.innerHTML = results.slice(0, 8).map(r => {
+    const d = _docs[r.ref];
+    const excerpt = d.body.substring(0, 140).replace(/[#*`]/g, '').trim() + '…';
+    return `<a class="search-result-item" href="${d.url}">
+      <div class="search-result-title">${d.title}</div>
+      <div class="search-result-excerpt">${excerpt}</div>
+    </a>`;
+  }).join('');
+  box.classList.add('visible');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initSearch();
+  const inp = document.getElementById('search-input');
+  if (inp) {
+    inp.addEventListener('input', e => doSearch(e.target.value));
+    inp.addEventListener('keydown', e => { if (e.key === 'Escape') { e.target.value=''; document.getElementById('search-results').classList.remove('visible'); }});
+  }
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.search-wrap')) document.getElementById('search-results')?.classList.remove('visible');
+  });
+  // Keyboard shortcut: / to focus search
+  document.addEventListener('keydown', e => {
+    if (e.key === '/' && !['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) {
+      e.preventDefault(); document.getElementById('search-input')?.focus();
+    }
+  });
+
+  // ── TOC active section ──────────────────────────────────────────────
+  const tocLinks = document.querySelectorAll('.toc-link');
+  const headings = document.querySelectorAll('h2[id],h3[id],h4[id]');
+  if (tocLinks.length && headings.length) {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          tocLinks.forEach(l => l.classList.remove('active'));
+          const link = document.querySelector(`.toc-link[href="#${entry.target.id}"]`);
+          if (link) link.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    headings.forEach(h => obs.observe(h));
+  }
+
+  // ── Copy buttons ────────────────────────────────────────────────────
+  document.querySelectorAll('pre').forEach(pre => {
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn'; btn.textContent = 'Copy';
+    btn.addEventListener('click', () => {
+      const code = pre.querySelector('code');
+      navigator.clipboard.writeText(code ? code.innerText : pre.innerText).then(() => {
+        btn.textContent = 'Copied!'; btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+      });
+    });
+    pre.style.position = 'relative';
+    pre.appendChild(btn);
+  });
+
+  // ── Sidebar active ──────────────────────────────────────────────────
+  const cur = window.location.pathname.split('/').pop();
+  document.querySelectorAll('.sidebar-link').forEach(l => {
+    if (l.getAttribute('href') === cur || l.getAttribute('href').endsWith(cur)) l.classList.add('active');
+  });
+
+  // ── highlight.js ────────────────────────────────────────────────────
+  if (window.hljs) {
+    hljs.configure({ ignoreUnescapedHTML: true });
+    hljs.highlightAll();
+  }
+});
+</script>
+</body>
+</html>

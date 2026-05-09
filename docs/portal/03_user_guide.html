@@ -1,0 +1,1714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Vibrante-Node v2.0.0 — User Guide">
+<title>User Guide — Vibrante-Node Docs</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/atom-one-dark.min.css">
+<style>
+/* ── Reset & Variables ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:       #1e1e2e;
+  --surface:  #181825;
+  --surface2: #11111b;
+  --border:   #313244;
+  --text:     #cdd6f4;
+  --subtext:  #a6adc8;
+  --muted:    #6c7086;
+  --lavender: #b4befe;
+  --blue:     #89b4fa;
+  --teal:     #94e2d5;
+  --green:    #a6e3a1;
+  --yellow:   #f9e2af;
+  --peach:    #fab387;
+  --red:      #f38ba8;
+  --pink:     #f5c2e7;
+  --mauve:    #cba6f7;
+  --sidebar-w: 260px;
+  --toc-w:    220px;
+  --header-h: 56px;
+  --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --mono: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+}
+
+/* ── Layout ─────────────────────────────────────────────────────────────── */
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: var(--header-h) 1fr;
+  grid-template-columns: var(--sidebar-w) 1fr var(--toc-w);
+  grid-template-areas:
+    "header header header"
+    "sidebar content toc";
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+.header {
+  grid-area: header;
+  position: sticky; top: 0; z-index: 200;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 16px;
+  padding: 0 24px;
+}
+.header-logo {
+  font-weight: 700; font-size: 1.05em;
+  color: var(--mauve);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.header-version {
+  font-size: .78em;
+  background: var(--border);
+  color: var(--subtext);
+  padding: 2px 8px; border-radius: 12px;
+}
+.header-spacer { flex: 1; }
+.search-wrap { position: relative; }
+#search-input {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: .9em;
+  padding: 6px 14px 6px 36px;
+  width: 260px;
+  outline: none;
+  transition: border-color .15s;
+}
+#search-input:focus { border-color: var(--mauve); }
+.search-icon {
+  position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+  color: var(--muted); pointer-events: none; font-size: .9em;
+}
+#search-results {
+  position: absolute; top: calc(100% + 8px); right: 0;
+  width: 380px; max-height: 420px; overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.5);
+  display: none; z-index: 300;
+}
+#search-results.visible { display: block; }
+.search-result-item {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background .1s;
+}
+.search-result-item:last-child { border-bottom: none; }
+.search-result-item:hover { background: var(--bg); }
+.search-result-title { color: var(--blue); font-weight: 600; font-size: .9em; }
+.search-result-excerpt { color: var(--subtext); font-size: .82em; margin-top: 2px; line-height: 1.4; }
+.search-no-results { padding: 16px; color: var(--muted); text-align: center; font-size: .9em; }
+
+/* ── Sidebar ─────────────────────────────────────────────────────────────── */
+.sidebar {
+  grid-area: sidebar;
+  position: sticky; top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 20px 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.sidebar-group { margin-bottom: 4px; }
+.sidebar-group-title {
+  font-size: .7em;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--muted);
+  padding: 10px 20px 4px;
+  font-weight: 600;
+}
+.sidebar-link {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 20px;
+  color: var(--subtext);
+  text-decoration: none;
+  font-size: .88em;
+  border-left: 3px solid transparent;
+  transition: all .12s;
+  line-height: 1.3;
+}
+.sidebar-link:hover { color: var(--text); background: var(--bg); }
+.sidebar-link.active {
+  color: var(--mauve);
+  border-left-color: var(--mauve);
+  background: rgba(180,190,254,.06);
+  font-weight: 600;
+}
+.sidebar-num {
+  font-size: .7em;
+  color: var(--muted);
+  background: var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  flex-shrink: 0;
+}
+.sidebar-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 12px 16px;
+}
+
+/* ── Content ─────────────────────────────────────────────────────────────── */
+.content {
+  grid-area: content;
+  min-width: 0;
+  padding: 40px 48px 80px;
+  max-width: 860px;
+}
+.content-inner { max-width: 820px; }
+
+/* Breadcrumb */
+.breadcrumb {
+  font-size: .8em;
+  color: var(--muted);
+  margin-bottom: 28px;
+  display: flex; align-items: center; gap: 6px;
+}
+.breadcrumb a { color: var(--blue); text-decoration: none; }
+.breadcrumb a:hover { text-decoration: underline; }
+.breadcrumb-sep { color: var(--border); }
+
+/* Typography */
+h1 { font-size: 2em; color: var(--mauve); border-bottom: 2px solid var(--border); padding-bottom: 12px; margin: 20px 0 20px; }
+h2 { font-size: 1.45em; color: var(--blue); margin: 40px 0 14px; padding-top: 8px; }
+h3 { font-size: 1.15em; color: var(--teal); margin: 28px 0 10px; }
+h4 { font-size: 1em; color: var(--pink); margin: 20px 0 8px; }
+h5 { font-size: .95em; color: var(--yellow); margin: 16px 0 6px; }
+p  { margin-bottom: 16px; color: var(--text); }
+a  { color: var(--blue); }
+a:hover { text-decoration: underline; }
+strong { color: var(--peach); }
+em { color: var(--yellow); font-style: italic; }
+
+ul, ol { margin: 10px 0 16px 24px; }
+li { margin-bottom: 6px; }
+li > ul, li > ol { margin-top: 4px; margin-bottom: 4px; }
+
+blockquote {
+  border-left: 4px solid var(--mauve);
+  padding: 10px 20px;
+  margin: 16px 0;
+  background: rgba(180,190,254,.05);
+  border-radius: 0 8px 8px 0;
+  color: var(--subtext);
+}
+blockquote strong { color: var(--mauve); }
+
+hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+/* Code */
+code {
+  background: var(--surface2);
+  color: var(--red);
+  padding: 2px 7px; border-radius: 5px;
+  font-family: var(--mono); font-size: .87em;
+}
+pre {
+  background: var(--surface2) !important;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px 22px;
+  overflow-x: auto;
+  margin: 16px 0 22px;
+  position: relative;
+}
+pre code {
+  background: none !important;
+  color: inherit !important;
+  padding: 0; font-size: .9em;
+  border-radius: 0;
+}
+/* Copy button */
+.copy-btn {
+  position: absolute; top: 10px; right: 12px;
+  background: var(--border);
+  color: var(--subtext);
+  border: none; border-radius: 5px;
+  padding: 3px 10px; font-size: .75em;
+  cursor: pointer; transition: all .12s;
+  font-family: var(--font);
+}
+.copy-btn:hover { background: var(--mauve); color: var(--surface2); }
+.copy-btn.copied { background: var(--green); color: var(--surface2); }
+
+/* Tables */
+table { border-collapse: collapse; width: 100%; margin: 16px 0 22px; font-size: .9em; }
+th { background: var(--border); color: var(--mauve); padding: 10px 14px; text-align: left; font-weight: 600; }
+td { border-top: 1px solid var(--border); padding: 9px 14px; color: var(--text); }
+tr:nth-child(even) td { background: rgba(17,17,27,.4); }
+td code { font-size: .85em; }
+
+/* Callout boxes */
+.callout {
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin: 16px 0 22px;
+  border-left: 4px solid;
+}
+.callout-note    { background: rgba(137,180,250,.08); border-color: var(--blue);   }
+.callout-tip     { background: rgba(166,227,161,.08); border-color: var(--green);  }
+.callout-warning { background: rgba(249,226,175,.08); border-color: var(--yellow); }
+.callout-danger  { background: rgba(243,139,168,.08); border-color: var(--red);    }
+.callout-title   { font-weight: 700; font-size: .85em; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
+.callout-note    .callout-title { color: var(--blue);   }
+.callout-tip     .callout-title { color: var(--green);  }
+.callout-warning .callout-title { color: var(--yellow); }
+.callout-danger  .callout-title { color: var(--red);    }
+
+/* Prev/Next navigation */
+.page-nav {
+  display: flex; justify-content: space-between;
+  margin-top: 60px; padding-top: 24px;
+  border-top: 1px solid var(--border);
+  gap: 16px;
+}
+.page-nav-link {
+  display: flex; flex-direction: column;
+  text-decoration: none;
+  padding: 14px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  min-width: 200px;
+  transition: border-color .15s;
+  max-width: 48%;
+}
+.page-nav-link:hover { border-color: var(--mauve); }
+.page-nav-label { font-size: .75em; color: var(--muted); margin-bottom: 4px; }
+.page-nav-title { color: var(--blue); font-weight: 600; font-size: .95em; }
+.page-nav-link.prev .page-nav-label::before { content: '← '; }
+.page-nav-link.next { margin-left: auto; text-align: right; }
+.page-nav-link.next .page-nav-label::after { content: ' →'; }
+
+/* ── TOC (right panel) ───────────────────────────────────────────────────── */
+.toc {
+  grid-area: toc;
+  position: sticky; top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  padding: 28px 16px 28px 8px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.toc-title {
+  font-size: .72em;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--muted);
+  font-weight: 600;
+  margin-bottom: 12px;
+  padding-left: 8px;
+}
+.toc-link {
+  display: block;
+  padding: 4px 8px;
+  color: var(--subtext);
+  text-decoration: none;
+  font-size: .82em;
+  border-left: 2px solid transparent;
+  border-radius: 0 4px 4px 0;
+  transition: all .12s;
+  line-height: 1.35;
+  margin-bottom: 1px;
+}
+.toc-link:hover { color: var(--text); border-left-color: var(--border); }
+.toc-link.active { color: var(--mauve); border-left-color: var(--mauve); background: rgba(180,190,254,.05); }
+.toc-link.toc-h3 { padding-left: 20px; font-size: .79em; }
+.toc-link.toc-h4 { padding-left: 32px; font-size: .76em; color: var(--muted); }
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  body { grid-template-columns: var(--sidebar-w) 1fr 0; }
+  .toc { display: none; }
+}
+@media (max-width: 760px) {
+  body { grid-template-columns: 0 1fr 0; grid-template-rows: var(--header-h) 1fr; }
+  .sidebar { display: none; }
+  .content { padding: 24px 20px 60px; }
+  #search-input { width: 180px; }
+}
+
+/* ── Index / landing page ────────────────────────────────────────────────── */
+.hero { text-align: center; padding: 60px 0 48px; }
+.hero h1 { border: none; font-size: 2.8em; }
+.hero .tagline { color: var(--subtext); font-size: 1.15em; margin-top: 10px; }
+.hero .version-badge {
+  display: inline-block;
+  background: var(--border); color: var(--mauve);
+  padding: 4px 14px; border-radius: 20px; font-size: .85em;
+  margin-top: 14px;
+}
+.group-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin: 16px 0 36px; }
+.doc-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  text-decoration: none;
+  color: var(--text);
+  transition: border-color .15s, background .15s;
+  display: block;
+}
+.doc-card:hover { border-color: var(--mauve); background: rgba(180,190,254,.04); }
+.doc-card-num { font-size: .72em; color: var(--muted); margin-bottom: 4px; }
+.doc-card-title { color: var(--blue); font-weight: 700; font-size: 1em; margin-bottom: 6px; }
+.doc-card-desc { color: var(--subtext); font-size: .85em; line-height: 1.5; }
+.group-title { color: var(--teal); font-size: 1.1em; font-weight: 600; margin: 32px 0 10px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+</style>
+<span id="portal-base" data-base="" style="display:none"></span>
+</head>
+<body>
+
+<!-- ── Header ─────────────────────────────────────────────────────────── -->
+<header class="header">
+  <a class="header-logo" href="index.html">Vibrante-Node</a>
+  <span class="header-version">v2.0.0</span>
+  <div class="header-spacer"></div>
+  <div class="search-wrap">
+    <span class="search-icon">&#128269;</span>
+    <input id="search-input" type="text" placeholder="Search docs… (/)" autocomplete="off" spellcheck="false">
+    <div id="search-results"></div>
+  </div>
+</header>
+
+<!-- ── Sidebar ────────────────────────────────────────────────────────── -->
+<nav class="sidebar">
+<div class="sidebar-group">
+<div class="sidebar-group-title">Overview</div>
+<a class="sidebar-link" href="01_introduction.html"><span class="sidebar-num">01</span>Introduction</a>
+<a class="sidebar-link" href="02_getting_started.html"><span class="sidebar-num">02</span>Getting Started</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Using the App</div>
+<a class="sidebar-link active" href="03_user_guide.html"><span class="sidebar-num">03</span>User Guide</a>
+<a class="sidebar-link" href="04_workflow_tutorials.html"><span class="sidebar-num">04</span>Workflow Tutorials</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Developing Nodes</div>
+<a class="sidebar-link" href="05_node_development.html"><span class="sidebar-num">05</span>Node Development Guide</a>
+<a class="sidebar-link" href="14_custom_nodes_api.html"><span class="sidebar-num">14</span>Custom Nodes API</a>
+<a class="sidebar-link" href="08_api_reference.html"><span class="sidebar-num">08</span>API Reference</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Architecture</div>
+<a class="sidebar-link" href="06_backend_architecture.html"><span class="sidebar-num">06</span>Backend Architecture</a>
+<a class="sidebar-link" href="07_frontend_architecture.html"><span class="sidebar-num">07</span>Frontend Architecture</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Advanced</div>
+<a class="sidebar-link" href="09_advanced_topics.html"><span class="sidebar-num">09</span>Advanced Topics</a>
+<a class="sidebar-link" href="10_contribution_guide.html"><span class="sidebar-num">10</span>Contribution Guide</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Reference</div>
+<a class="sidebar-link" href="11_troubleshooting.html"><span class="sidebar-num">11</span>Troubleshooting</a>
+<a class="sidebar-link" href="12_examples_library.html"><span class="sidebar-num">12</span>Examples Library</a>
+<a class="sidebar-link" href="13_general_purpose_automation.html"><span class="sidebar-num">13</span>General Purpose Automation</a>
+</div>
+
+</nav>
+
+<!-- ── Main content ───────────────────────────────────────────────────── -->
+<main class="content">
+  <div class="content-inner">
+    <nav class="breadcrumb"><a href="index.html">Docs</a><span class="breadcrumb-sep">›</span><span>User Guide</span></nav>
+    <h1 id="vibrante-node-v200-user-guide">Vibrante-Node v2.0.0 — User Guide</h1>
+<p>This guide is the comprehensive reference for working with Vibrante-Node. It covers every UI element, interaction, and workflow concept in depth — from beginner navigation to advanced features like subgraphs, bypass mode, and live inspection.</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#canvas-navigation">Canvas Navigation</a></li>
+<li><a href="#node-widget-anatomy">Node Widget Anatomy</a></li>
+<li><a href="#port-types-and-colors">Port Types and Colors</a></li>
+<li><a href="#connecting-nodes">Connecting Nodes</a></li>
+<li><a href="#exec-flow-pins">Exec Flow Pins</a></li>
+<li><a href="#data-only-nodes">Data-Only Nodes</a></li>
+<li><a href="#node-search-popup">Node Search Popup</a></li>
+<li><a href="#right-click-context-menu">Right-Click Context Menu</a></li>
+<li><a href="#bypass-mode">Bypass Mode</a></li>
+<li><a href="#group-node--subgraph">Group Node / Subgraph</a></li>
+<li><a href="#sticky-notes">Sticky Notes</a></li>
+<li><a href="#backdrops--network-boxes">Backdrops / Network Boxes</a></li>
+<li><a href="#canvas-search-bar">Canvas Search Bar</a></li>
+<li><a href="#mini-map">Mini-map</a></li>
+<li><a href="#live-wire-value-inspector">Live Wire Value Inspector</a></li>
+<li><a href="#log-panel">Log Panel</a></li>
+<li><a href="#toolbar-reference">Toolbar Reference</a></li>
+<li><a href="#keyboard-shortcuts-reference">Keyboard Shortcuts Reference</a></li>
+<li><a href="#workflow-execution">Workflow Execution</a></li>
+<li><a href="#autosave-and-crash-recovery">Autosave and Crash Recovery</a></li>
+<li><a href="#recent-files">Recent Files</a></li>
+</ol>
+<hr />
+<h2 id="canvas-navigation">Canvas Navigation</h2>
+<p>The canvas is a <code>NodeView</code> (QGraphicsView) that renders a <code>NodeScene</code> (QGraphicsScene). You can navigate a canvas of any size smoothly with the following controls.</p>
+<h3 id="panning">Panning</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Middle Mouse Button drag</strong></td>
+<td>Pan in any direction</td>
+</tr>
+<tr>
+<td><strong>Alt + Left Mouse Button drag</strong></td>
+<td>Alternative pan (Houdini-style)</td>
+</tr>
+<tr>
+<td><strong>Scroll wheel</strong></td>
+<td>Pan vertically</td>
+</tr>
+<tr>
+<td><strong>Shift + Scroll wheel</strong></td>
+<td>Pan horizontally</td>
+</tr>
+</tbody>
+</table>
+<h3 id="zooming">Zooming</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl + Scroll wheel</strong></td>
+<td>Zoom in / out centred on cursor</td>
+</tr>
+<tr>
+<td><strong>+</strong> / <strong>-</strong> keys</td>
+<td>Zoom in / out</td>
+</tr>
+</tbody>
+</table>
+<p>There is no fixed minimum or maximum zoom. You can zoom out far enough to see the entire workflow, or zoom in to individual port labels.</p>
+<h3 id="focus-and-fitting">Focus and Fitting</h3>
+<table>
+<thead>
+<tr>
+<th>Shortcut</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>F</strong></td>
+<td>Fit selected nodes to the viewport. If nothing is selected, fit all nodes.</td>
+</tr>
+<tr>
+<td><strong>Home</strong></td>
+<td>Reset the view to the origin (0, 0) at 100% zoom</td>
+</tr>
+</tbody>
+</table>
+<h3 id="rubber-band-selection">Rubber-Band Selection</h3>
+<p>Click and drag on an empty area of the canvas to draw a selection rectangle. All node widgets (and other items) whose bounding boxes intersect the rectangle are selected when you release the mouse button. Hold <strong>Shift</strong> while rubber-banding to add to the current selection without deselecting previously selected items.</p>
+<h3 id="scroll-bars">Scroll Bars</h3>
+<p>Standard scroll bars appear at the edges of the view when content extends beyond the visible area. They can be used alongside mouse-based navigation.</p>
+<hr />
+<h2 id="node-widget-anatomy">Node Widget Anatomy</h2>
+<p>Every node on the canvas is a <code>NodeWidget</code> — a <code>QGraphicsItem</code> with a card-like appearance. Understanding its structure is essential for using the platform effectively.</p>
+<pre><code>+------------------------------------------------------+
+|  [icon]  display_name                    [=] bypass  |  &lt;- Header
++----------+------------------------------------------+
+|  exec_in |                              | exec_out   |  &lt;- Exec ports
+|  string  |  [text widget____________]  | exec_out   |  &lt;- Data port + widget
+|  int     |  [0___________________]     |            |  &lt;- Int widget
+|  float   |  [0.0_________________]     | result     |  &lt;- Output port
+|  bool    |  [ ] checkbox label         |            |  &lt;- Bool widget
+|  list    |  (no widget, input only)    | list_out   |  &lt;- List port
++----------+------------------------------------------+
+</code></pre>
+<h3 id="header">Header</h3>
+<p>The <strong>header</strong> is the top band of the node card. It shows:</p>
+<ul>
+<li>An optional icon (16x16 px) loaded from the <code>icon_path</code> field in the node definition.</li>
+<li>The node's <strong>display name</strong> — by default the <code>name</code> from the definition, but can be renamed by double-clicking the header text.</li>
+<li>A small <strong>bypass toggle</strong> button on the right (labelled <code>=</code>). Clicking it toggles bypass mode for this node.</li>
+</ul>
+<p>The header background colour reflects the node's current execution state:</p>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>Header Colour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Idle</td>
+<td>Category-dependent (dark blue, purple, teal, etc.)</td>
+</tr>
+<tr>
+<td>Running</td>
+<td>Bright orange / amber</td>
+</tr>
+<tr>
+<td>Finished (success)</td>
+<td>Fades back to idle colour</td>
+</tr>
+<tr>
+<td>Finished (error)</td>
+<td>Red</td>
+</tr>
+<tr>
+<td>Bypassed</td>
+<td>Grey / dimmed</td>
+</tr>
+</tbody>
+</table>
+<h3 id="input-ports-left-side">Input Ports (Left Side)</h3>
+<p>Input ports appear on the left edge of the node. Each port has:</p>
+<ul>
+<li>A <strong>connector</strong> — a circle (data) or square (exec). Click and drag from another node's output onto this to create a connection.</li>
+<li>A <strong>label</strong> — the port name.</li>
+<li>An optional <strong>parameter widget</strong> — rendered inside the node body to the right of the connector. Widgets appear only on input ports with a <code>widget_type</code> defined.</li>
+</ul>
+<h4 id="parameter-widgets">Parameter Widgets</h4>
+<table>
+<thead>
+<tr>
+<th>widget_type</th>
+<th>Appearance</th>
+<th>When to Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>text</code></td>
+<td>Single-line text field</td>
+<td>Short string values, paths, names</td>
+</tr>
+<tr>
+<td><code>text_area</code></td>
+<td>Multi-line text area</td>
+<td>Code blocks, long descriptions</td>
+</tr>
+<tr>
+<td><code>int</code></td>
+<td>Integer spin box</td>
+<td>Whole number values</td>
+</tr>
+<tr>
+<td><code>float</code></td>
+<td>Float spin box</td>
+<td>Decimal number values</td>
+</tr>
+<tr>
+<td><code>checkbox</code></td>
+<td>Toggle checkbox</td>
+<td>True / false values</td>
+</tr>
+<tr>
+<td><code>dropdown</code></td>
+<td>Dropdown combobox</td>
+<td>Enumerated choices</td>
+</tr>
+<tr>
+<td><code>slider</code></td>
+<td>Slider with numeric readout</td>
+<td>Clamped numeric ranges</td>
+</tr>
+<tr>
+<td><code>file</code></td>
+<td>Text field + browse button</td>
+<td>File open paths</td>
+</tr>
+<tr>
+<td><code>file_save</code></td>
+<td>Text field + browse button</td>
+<td>File save paths</td>
+</tr>
+</tbody>
+</table>
+<p>When an input port has an incoming data connection, <strong>the widget is disabled</strong> — the value comes from the wire, not from manual input.</p>
+<h3 id="output-ports-right-side">Output Ports (Right Side)</h3>
+<p>Output ports appear on the right edge of the node. They have a connector and a label but no editable widget — they display values set by <code>execute()</code>. After execution, hovering over a wire from an output port shows the last value via the live wire inspector.</p>
+<h3 id="resize-handle">Resize Handle</h3>
+<p>Some node types that contain large text areas or multi-line code blocks have a resize handle at the bottom-right corner of the card. Drag it to make the node taller.</p>
+<hr />
+<h2 id="port-types-and-colors">Port Types and Colors</h2>
+<p>Port type determines what kind of data flows through a connection. The connector colour identifies the type at a glance.</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Connector Shape</th>
+<th>Colour</th>
+<th>Widget Types Available</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>exec</code></td>
+<td>Square</td>
+<td>White</td>
+<td>None</td>
+<td>Execution flow signal. True fires the downstream node.</td>
+</tr>
+<tr>
+<td><code>string</code></td>
+<td>Circle</td>
+<td>Purple</td>
+<td>text, text_area, dropdown, file, file_save</td>
+<td>Text values of any length</td>
+</tr>
+<tr>
+<td><code>int</code></td>
+<td>Circle</td>
+<td>Cyan</td>
+<td>int, slider</td>
+<td>Integer numbers</td>
+</tr>
+<tr>
+<td><code>float</code></td>
+<td>Circle</td>
+<td>Orange</td>
+<td>float, slider</td>
+<td>Floating-point numbers</td>
+</tr>
+<tr>
+<td><code>bool</code></td>
+<td>Circle</td>
+<td>Green</td>
+<td>checkbox</td>
+<td>Boolean True / False</td>
+</tr>
+<tr>
+<td><code>list</code></td>
+<td>Circle</td>
+<td>Yellow</td>
+<td>None</td>
+<td>Python list of any content</td>
+</tr>
+<tr>
+<td><code>dict</code></td>
+<td>Circle</td>
+<td>Tan/Brown</td>
+<td>None</td>
+<td>Python dict of any content</td>
+</tr>
+<tr>
+<td><code>any</code></td>
+<td>Circle</td>
+<td>Light Grey</td>
+<td>None</td>
+<td>Untyped — accepts any value</td>
+</tr>
+</tbody>
+</table>
+<h3 id="type-compatibility">Type Compatibility</h3>
+<p>The connection system enforces basic type compatibility when dragging wires:</p>
+<ul>
+<li>An output of type <code>string</code> can connect to an input of type <code>string</code> or <code>any</code>.</li>
+<li>An output of type <code>any</code> can connect to any input type.</li>
+<li>An output of type <code>exec</code> can only connect to an input of type <code>exec</code>.</li>
+<li>Mismatched typed connections (e.g. <code>float</code> output to <code>bool</code> input) show a warning cursor but are permitted — the value is passed as-is and the receiving node is responsible for handling the type.</li>
+</ul>
+<p>If you need to convert between types, use a conversion node (e.g. pass an <code>int</code> output through a <code>string_concat</code> node to get a string representation) or handle the conversion in the receiving node's <code>execute()</code> code.</p>
+<hr />
+<h2 id="connecting-nodes">Connecting Nodes</h2>
+<h3 id="creating-a-connection">Creating a Connection</h3>
+<ol>
+<li><strong>Hover</strong> over an output port (right side of a node). The cursor changes to a crosshair.</li>
+<li><strong>Click and drag</strong> from the output port. A temporary preview wire follows the cursor.</li>
+<li><strong>Release</strong> over a compatible input port on another node. The connection is established and the wire snaps into place.</li>
+</ol>
+<p>A curved Bezier wire appears between the two ports. The wire colour matches the data type of the source port.</p>
+<h3 id="single-input-enforcement">Single-Input Enforcement</h3>
+<p>Each data input port accepts <strong>at most one incoming connection</strong>. If you drag a new wire onto an input port that already has a connection, the old connection is removed and replaced by the new one. This prevents ambiguous data values.</p>
+<p>Exec input ports follow the same rule — only one node can trigger a given <code>exec_in</code>.</p>
+<h3 id="disconnecting-a-wire">Disconnecting a Wire</h3>
+<ul>
+<li><strong>Click and drag an existing wire</strong> near its input end. The wire detaches and follows the cursor as a preview. Release on a new port to reconnect, or release on empty canvas to delete.</li>
+<li><strong>Right-click a port</strong> and select "Disconnect" to remove all wires from that port.</li>
+<li><strong>Select a wire</strong> by clicking near it (the 12 px wide hit area makes this easy) and press <strong>Delete</strong>.</li>
+</ul>
+<h3 id="fan-out-multiple-outputs-from-one-port">Fan-Out (Multiple Outputs from One Port)</h3>
+<p>A single <strong>output</strong> port can connect to <strong>multiple</strong> input ports. This is called a fan-out. Drag additional wires from the same output port to different destinations. All connected inputs receive the same value when the node executes.</p>
+<hr />
+<h2 id="exec-flow-pins">Exec Flow Pins</h2>
+<p>Exec pins are the white square connectors that appear on nodes with <code>use_exec: true</code> in their definition. They are the mechanism by which Vibrante-Node enforces execution order.</p>
+<h3 id="what-exec-pins-do">What Exec Pins Do</h3>
+<ul>
+<li><code>exec_in</code> — a trigger input. When a connected upstream node fires its <code>exec_out</code>, this node's <code>execute()</code> method is called.</li>
+<li><code>exec_out</code> — a trigger output. When a node's <code>execute()</code> returns <code>{"exec_out": True}</code> (or calls <code>await self.set_output("exec_out", True)</code>), every node connected to this <code>exec_out</code> is scheduled for execution.</li>
+</ul>
+<h3 id="how-execution-chains-work">How Execution Chains Work</h3>
+<pre><code>[Node A] --exec_out--&gt; [exec_in Node B] --exec_out--&gt; [exec_in Node C]
+</code></pre>
+<ol>
+<li>Node A runs. Its <code>execute()</code> returns <code>{"exec_out": True}</code>.</li>
+<li>The engine follows the exec wire to Node B and runs it.</li>
+<li>Node B runs. Its <code>execute()</code> returns <code>{"exec_out": True}</code>.</li>
+<li>The engine follows the exec wire to Node C and runs it.</li>
+</ol>
+<p>If Node A returns <code>{"exec_out": False}</code> (or does not include <code>exec_out</code> in its return dict), the chain stops. No downstream exec nodes run.</p>
+<h3 id="multiple-exec-outputs">Multiple Exec Outputs</h3>
+<p>Some nodes have more than one exec output pin to implement branching:</p>
+<pre><code>[if_condition]
+    |-- true_out  --&gt; [run if true]
+    |-- false_out --&gt; [run if false]
+</code></pre>
+<p>Only the output whose value is <code>True</code> fires. The other chain does not run.</p>
+<p>The <code>GroupNode</code> has two exec outputs:</p>
+<ul>
+<li><code>exec_out</code> — fires when the inner subgraph completes without an unhandled exception.</li>
+<li><code>exec_fail</code> — fires only when an unhandled Python exception propagates out of the inner graph.</li>
+</ul>
+<h3 id="sequence-node">Sequence Node</h3>
+<p>The <code>sequence</code> builtin node fires <code>out_1</code>, <code>out_2</code>, and so on sequentially — it waits for each downstream chain to complete before firing the next. Use it to enforce order among otherwise-independent branches.</p>
+<h3 id="what-fires-first-entry-nodes">What Fires First — Entry Nodes</h3>
+<p>If a node has an <code>exec_in</code> port but nothing is connected to it, the engine treats it as an <strong>entry node</strong> and fires it automatically at the start of execution. This lets you run a workflow without needing a dedicated "Start" trigger node.</p>
+<hr />
+<h2 id="data-only-nodes">Data-Only Nodes</h2>
+<p>Some nodes have no exec pins at all (their JSON definition has <code>use_exec: false</code>). Examples: <code>variable_node</code>, <code>add</code>, <code>string_length</code>, <code>random_float</code>, <code>get_dict_value</code>.</p>
+<p>These nodes are <strong>evaluated lazily</strong>: they do not appear in the initial execution schedule. Instead, when an exec-driven node needs a value from a data-only node, the engine automatically runs the upstream data node first (the "pull" mechanism).</p>
+<p>This means:</p>
+<ul>
+<li>Data-only nodes never need to be wired into an exec chain.</li>
+<li>They can be reused — if multiple exec nodes read the same data-only node's output, the data node runs once per exec node that needs it (subject to caching rules).</li>
+<li>They can be wired together in chains: the engine follows data connections backward until it reaches a node with no unfulfilled data inputs.</li>
+</ul>
+<h3 id="loop-invalidation">Loop Invalidation</h3>
+<p>Inside a <code>for_each</code> or <code>while_loop</code>, the engine <strong>invalidates</strong> cached data node results each iteration. This ensures that nodes like <code>get_list_item</code> (whose output depends on the current loop index) produce fresh results each time, not a stale cached value from the first iteration.</p>
+<hr />
+<h2 id="node-search-popup">Node Search Popup</h2>
+<p>Press <strong>Tab</strong> anywhere on the canvas to open the node search popup. The popup is a floating panel that appears at the current cursor position.</p>
+<h3 id="searching">Searching</h3>
+<p>Type any part of the node's name or <code>node_id</code>. The list updates in real time, filtering to matches. The search is case-insensitive and matches substrings, so typing <code>geo</code> shows <code>create_geo</code>, <code>delete_geo</code>, <code>node_geo_info</code>, etc.</p>
+<h3 id="adding-a-node">Adding a Node</h3>
+<ul>
+<li><strong>Click</strong> a result to add it at the cursor position.</li>
+<li><strong>Press Enter</strong> to add the first result.</li>
+<li><strong>Arrow keys</strong> navigate the list.</li>
+</ul>
+<p>The node is placed on the canvas at the position where you pressed Tab, then the popup closes.</p>
+<h3 id="closing-without-adding">Closing Without Adding</h3>
+<p>Press <strong>Escape</strong> or click anywhere outside the popup to close it without adding a node.</p>
+<hr />
+<h2 id="right-click-context-menu">Right-Click Context Menu</h2>
+<p>Right-clicking a <strong>node widget</strong> opens its context menu. Right-clicking <strong>empty canvas</strong> opens a different menu.</p>
+<h3 id="node-context-menu">Node Context Menu</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Action</th>
+<th>Shortcut</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Edit Node</strong></td>
+<td>Open this node in the Node Builder dialog</td>
+<td>Ctrl+E</td>
+</tr>
+<tr>
+<td><strong>Reload Node</strong></td>
+<td>Re-read this node's JSON from disk and apply changes</td>
+<td>Ctrl+R</td>
+</tr>
+<tr>
+<td><strong>Bypass Node</strong></td>
+<td>Toggle bypass on this node</td>
+<td>Ctrl+B</td>
+</tr>
+<tr>
+<td><strong>Duplicate</strong></td>
+<td>Copy this node and paste it at an offset position</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Group Selection</strong></td>
+<td>Collapse selected nodes into a GroupNode</td>
+<td>Ctrl+Shift+G</td>
+</tr>
+<tr>
+<td><strong>Wrap in Backdrop</strong></td>
+<td>Wrap selected nodes in a labelled backdrop</td>
+<td>Ctrl+G</td>
+</tr>
+<tr>
+<td><strong>Set as Init Node</strong></td>
+<td>Mark this node as an init-priority node (runs before the main graph)</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Delete</strong></td>
+<td>Remove this node and all its connections</td>
+<td>Delete</td>
+</tr>
+</tbody>
+</table>
+<h3 id="canvas-context-menu-empty-area">Canvas Context Menu (Empty Area)</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Add Node</strong></td>
+<td>Open the node search popup</td>
+</tr>
+<tr>
+<td><strong>Add Sticky Note</strong></td>
+<td>Place a new sticky note at this position</td>
+</tr>
+<tr>
+<td><strong>Add Backdrop</strong></td>
+<td>Place a new backdrop at this position</td>
+</tr>
+<tr>
+<td><strong>Paste</strong></td>
+<td>Paste the clipboard contents at this position</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="bypass-mode">Bypass Mode</h2>
+<p>Bypass mode makes the engine skip a node entirely, as if it were not there, while still passing execution along. This is useful for temporarily disabling a step without deleting it.</p>
+<h3 id="activating-bypass">Activating Bypass</h3>
+<ul>
+<li>Select one or more nodes and press <strong>Ctrl+B</strong>.</li>
+<li>Click the <strong>bypass toggle button</strong> (<code>=</code>) in the node's header.</li>
+<li>Right-click a node and choose <strong>Bypass Node</strong>.</li>
+</ul>
+<p>A bypassed node is visually dimmed (grey header). The <code>bypassed</code> flag is saved with the workflow.</p>
+<h3 id="what-bypass-does-during-execution">What Bypass Does During Execution</h3>
+<p>When the engine encounters a bypassed node:</p>
+<ol>
+<li>It emits <code>node_started</code> and immediately <code>node_finished(success)</code> without calling <code>execute()</code>.</li>
+<li>It fires all exec output connections, so the exec chain continues to downstream nodes.</li>
+<li>Data output ports remain at their default values (empty string, 0, empty list, etc.). Downstream nodes that read data from a bypassed node receive the default value.</li>
+</ol>
+<p>This means bypass is safe for exec chain nodes — the flow continues — but may produce incorrect data values if downstream nodes depend on a bypassed node's data output. For data-only nodes, bypassing them causes their consumers to receive default values.</p>
+<hr />
+<h2 id="group-node-subgraph">Group Node / Subgraph</h2>
+<p>The Group Node feature lets you collapse any selection of connected nodes into a single reusable <strong>GroupNode</strong> widget. The inner graph is fully preserved and editable.</p>
+<h3 id="creating-a-groupnode">Creating a GroupNode</h3>
+<ol>
+<li>Select two or more nodes on the canvas (rubber-band or Shift+click).</li>
+<li>Press <strong>Ctrl+Shift+G</strong> (or right-click &gt; Group Selection, or Edit &gt; Group Selection).</li>
+</ol>
+<p>The engine analyses the connections crossing the boundary of the selection:</p>
+<ul>
+<li>Each <strong>incoming data connection</strong> (from an unselected node into the selection) becomes an <strong>input port</strong> on the GroupNode.</li>
+<li>Each <strong>outgoing data connection</strong> (from the selection to an unselected node) becomes an <strong>output port</strong> on the GroupNode.</li>
+<li>Exec connections are similarly mapped.</li>
+</ul>
+<p>The selected nodes are removed from the canvas and a single <strong>GroupNode</strong> card appears at their centroid. External connections are rewired to the GroupNode's new ports.</p>
+<pre><code>Before grouping:
+  [Node A] --str--&gt; [Node B] --str--&gt; [Node C] --&gt; (external)
+
+After grouping (B is inside the group):
+  [Node A] --str--&gt; [GroupNode] --str--&gt; [Node C] --&gt; (external)
+                        ^
+                    contains Node B
+</code></pre>
+<h3 id="naming-the-group">Naming the Group</h3>
+<p>After creating a GroupNode, you can rename it by double-clicking its header text and typing a new name. This name appears as the tab label when you open the subgraph.</p>
+<h3 id="opening-the-subgraph">Opening the Subgraph</h3>
+<p><strong>Double-click</strong> the GroupNode to open its inner workflow in a new tab. The tab is labelled <code>[GroupName]</code>. The subgraph contains:</p>
+<ul>
+<li>The original inner nodes you selected.</li>
+<li>One <code>group_in</code> node per input port — this node injects the incoming value into the inner graph.</li>
+<li>One <code>group_out</code> node per output port — this node collects the inner result and routes it out.</li>
+</ul>
+<h3 id="editing-the-subgraph">Editing the Subgraph</h3>
+<p>The subgraph tab is fully editable. You can:</p>
+<ul>
+<li>Add, delete, or move nodes.</li>
+<li>Create new connections.</li>
+<li>Change parameter values.</li>
+<li>Undo / redo changes.</li>
+</ul>
+<p>Every edit is <strong>automatically synchronised back</strong> to the parent GroupNode. The parent workflow's history is also updated so that Ctrl+Z in the parent tab undoes subgraph edits.</p>
+<h3 id="groupnode-ports">GroupNode Ports</h3>
+<p>A GroupNode always has these fixed exec ports:</p>
+<table>
+<thead>
+<tr>
+<th>Port</th>
+<th>Side</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>exec_in</code></td>
+<td>Input</td>
+<td>Triggers the inner graph</td>
+</tr>
+<tr>
+<td><code>exec_out</code></td>
+<td>Output</td>
+<td>Fires when the inner graph completes without error</td>
+</tr>
+<tr>
+<td><code>exec_fail</code></td>
+<td>Output</td>
+<td>Fires only when an unhandled Python exception occurs inside</td>
+</tr>
+</tbody>
+</table>
+<p>Additional data ports are created dynamically from the boundary edges at grouping time.</p>
+<h3 id="execution-semantics">Execution Semantics</h3>
+<p>When a GroupNode executes:</p>
+<ol>
+<li>The engine creates a sub-executor for the inner <code>WorkflowModel</code>.</li>
+<li>It injects the GroupNode's input port values into the corresponding <code>group_in</code> nodes inside the subgraph.</li>
+<li>The sub-executor runs the inner graph exactly like a top-level workflow.</li>
+<li>When the inner graph finishes cleanly, <code>exec_out</code> fires.</li>
+<li>If a node inside the inner graph raises an unhandled exception, <code>exec_fail</code> fires.</li>
+<li>Data values from <code>group_out</code> nodes are mapped to the GroupNode's output ports and made available to external connections.</li>
+</ol>
+<p>Note: <code>exec_fail</code> is for catastrophic failures only. If an inner node returns a "soft failure" (e.g. <code>success: False</code> without raising an exception), that is handled by the inner graph's own exec routing — <code>exec_fail</code> does not fire.</p>
+<h3 id="saving-and-loading">Saving and Loading</h3>
+<p>GroupNodes are serialised transparently with the parent workflow. The inner <code>WorkflowModel</code> dict is stored in the <code>__workflow__</code> parameter of the GroupNode's <code>NodeInstanceModel</code>. Dynamic port definitions are stored in <code>__port_defs__</code>. The node name is stored in <code>__name__</code>. Everything is round-tripped correctly through JSON save/load.</p>
+<hr />
+<h2 id="sticky-notes">Sticky Notes</h2>
+<p>Sticky notes are free-floating text annotations on the canvas. They do not participate in execution.</p>
+<h3 id="adding-a-sticky-note">Adding a Sticky Note</h3>
+<ul>
+<li>Right-click empty canvas and select <strong>Add Sticky Note</strong>.</li>
+<li>The note appears at the right-click position with default text "New Note".</li>
+</ul>
+<h3 id="editing">Editing</h3>
+<p>Double-click a sticky note to enter edit mode. Type your text. Click outside the note to confirm.</p>
+<h3 id="resizing">Resizing</h3>
+<p>Drag the bottom-right resize handle to change the note dimensions.</p>
+<h3 id="moving">Moving</h3>
+<p>Drag the note by its header / body to reposition it.</p>
+<h3 id="deleting">Deleting</h3>
+<p>Select the sticky note and press <strong>Delete</strong>, or right-click and choose <strong>Delete</strong>.</p>
+<h3 id="colour">Colour</h3>
+<p>Right-click a sticky note and choose a colour from the palette. Colours help visually distinguish note categories (e.g. yellow for warnings, green for completed sections, blue for links).</p>
+<hr />
+<h2 id="backdrops-network-boxes">Backdrops / Network Boxes</h2>
+<p>Backdrops are labelled rectangular regions that group and visually annotate areas of the canvas. Like sticky notes, they are annotations only — they do not affect execution.</p>
+<h3 id="adding-a-backdrop">Adding a Backdrop</h3>
+<ul>
+<li>Select nodes you want to wrap, then press <strong>Ctrl+G</strong> (or right-click &gt; Wrap in Backdrop).</li>
+<li>Right-click empty canvas and select <strong>Add Backdrop</strong> to place an empty one.</li>
+</ul>
+<h3 id="labeling">Labeling</h3>
+<p>The backdrop has a title bar at the top. Double-click the title to rename it.</p>
+<h3 id="resizing_1">Resizing</h3>
+<p>Drag the bottom-right resize handle. Nodes inside the backdrop do not move automatically when the backdrop is resized — they are independent items that happen to be visually enclosed.</p>
+<h3 id="moving_1">Moving</h3>
+<p>Drag the backdrop title bar to move it. When you drag a backdrop, nodes that are fully contained within its bounds move with it.</p>
+<h3 id="colour_1">Colour</h3>
+<p>Right-click the backdrop and choose a background colour. Semi-transparent fill lets you see the nodes inside.</p>
+<h3 id="deleting_1">Deleting</h3>
+<p>Select the backdrop and press <strong>Delete</strong>. The nodes inside are not deleted — only the backdrop frame is removed.</p>
+<hr />
+<h2 id="canvas-search-bar">Canvas Search Bar</h2>
+<p>The canvas search bar lets you locate any node on the canvas by name without having to scroll.</p>
+<h3 id="opening">Opening</h3>
+<p>Press <strong>Ctrl+F</strong> or go to <strong>Edit &gt; Find in Canvas</strong>.</p>
+<p>A floating panel appears at the top centre of the canvas:</p>
+<pre><code>+--------------------------------------------------+
+|  [search text__________________]  3 / 12  [x]   |
++--------------------------------------------------+
+</code></pre>
+<h3 id="searching_1">Searching</h3>
+<p>Type any part of a node's display name or <code>node_id</code>. The search updates as you type. The match counter shows "current / total" matches.</p>
+<p>The first matching node is selected and the canvas pans to centre it in the viewport.</p>
+<h3 id="navigating-matches">Navigating Matches</h3>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Enter</strong> or <strong>Down Arrow</strong></td>
+<td>Move to the next match</td>
+</tr>
+<tr>
+<td><strong>Shift+Enter</strong> or <strong>Up Arrow</strong></td>
+<td>Move to the previous match</td>
+</tr>
+</tbody>
+</table>
+<p>Each navigation step selects the matched node and pans the view.</p>
+<h3 id="closing">Closing</h3>
+<p>Press <strong>Escape</strong> or click the X button to close the search bar.</p>
+<hr />
+<h2 id="mini-map">Mini-map</h2>
+<p>The mini-map is a 200x150 pixel thumbnail of the entire canvas, always visible in the bottom-right corner of the <code>NodeView</code>.</p>
+<pre><code>+----------------------------+
+|                            |
+|   canvas (large)           |
+|                            |
+|               +----------+ |
+|               | mini-map | |
+|               | [  view  ]| |
+|               | [  rect  ]| |
+|               +----------+ |
++----------------------------+
+</code></pre>
+<h3 id="viewport-indicator">Viewport Indicator</h3>
+<p>A blue semi-transparent rectangle inside the mini-map shows the current viewport area. As you pan or zoom the main view, the rectangle updates.</p>
+<h3 id="navigating-via-mini-map">Navigating via Mini-map</h3>
+<p>Click or drag on the mini-map to pan the main view. The main view centres on the point you clicked in scene coordinates. This is useful for quickly jumping between distant parts of a large workflow.</p>
+<h3 id="toggling">Toggling</h3>
+<p>Press <strong>Ctrl+M</strong> or go to <strong>Window &gt; Toggle Mini-map</strong> to show or hide the mini-map. The toggle state is per-tab — different workflow tabs can have the mini-map in different states.</p>
+<h3 id="theme">Theme</h3>
+<p>The mini-map respects the current dark / light theme. Its background colour and viewport indicator match the active theme.</p>
+<hr />
+<h2 id="live-wire-value-inspector">Live Wire Value Inspector</h2>
+<p>After execution, the last value that flowed through every connected wire is stored and available for inspection.</p>
+<h3 id="how-to-use">How to Use</h3>
+<p><strong>Hover your mouse over any connected wire.</strong> A tooltip appears showing:</p>
+<pre><code>port_name: repr(value)
+</code></pre>
+<p>For example:</p>
+<pre><code>message: 'Hello, Vibrante-Node!'
+</code></pre>
+<pre><code>result_path: '/obj/my_geo'
+</code></pre>
+<pre><code>items: ['asset_A', 'asset_B', 'asset_C']
+</code></pre>
+<p>Long values are truncated at 300 characters to keep the tooltip readable.</p>
+<h3 id="when-values-are-available">When Values Are Available</h3>
+<p>Values are stored immediately when a node calls <code>set_output()</code> or returns from <code>execute()</code>. They persist after execution completes. You can inspect any wire at any time after a run without needing to re-run.</p>
+<h3 id="when-values-are-cleared">When Values Are Cleared</h3>
+<p>Values are cleared at the <strong>start of each new execution run</strong>. This ensures that stale values from a previous run do not appear alongside fresh values from the current run.</p>
+<h3 id="hit-area">Hit Area</h3>
+<p>The wire has a 12 px wide invisible hit zone (expanded from the visual 2 px line) so that hovering is easy even on closely-spaced wires.</p>
+<hr />
+<h2 id="log-panel">Log Panel</h2>
+<p>The log panel at the bottom of the window displays execution output in chronological order.</p>
+<h3 id="message-types">Message Types</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Colour</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>info</code></td>
+<td>Light grey</td>
+<td><code>self.log_info("msg")</code> in node code, or engine status messages</td>
+</tr>
+<tr>
+<td><code>success</code></td>
+<td>Green</td>
+<td><code>self.log_success("msg")</code> in node code</td>
+</tr>
+<tr>
+<td><code>error</code></td>
+<td>Red</td>
+<td><code>self.log_error("msg")</code> in node code, or unhandled exceptions</td>
+</tr>
+</tbody>
+</table>
+<h3 id="execution-timing">Execution Timing</h3>
+<p>After each node finishes, the engine automatically logs:</p>
+<pre><code>Node 'my_node_name' finished in 0.34s
+</code></pre>
+<p>This appears at <code>info</code> level. The time is measured with <code>time.perf_counter()</code> from when the engine calls <code>execute()</code> to when it returns.</p>
+<h3 id="inner-node-logs-groupnode">Inner Node Logs (GroupNode)</h3>
+<p>When a node runs inside a GroupNode, its log messages are forwarded to the main log panel with a prefix showing the GroupNode's display name:</p>
+<pre><code>[my_group] inner_node: operation complete
+</code></pre>
+<h3 id="clearing-the-log">Clearing the Log</h3>
+<p>Click the <strong>Clear</strong> button in the log panel toolbar (if present) or right-click the log area and select <strong>Clear</strong>.</p>
+<h3 id="error-details">Error Details</h3>
+<p>When a node raises an unhandled exception, the engine logs the full traceback at <code>error</code> level. The node widget's header turns red. The exec chain stops at that node — downstream nodes do not run.</p>
+<hr />
+<h2 id="toolbar-reference">Toolbar Reference</h2>
+<p>The toolbar below the menu bar provides quick access to the most common actions.</p>
+<table>
+<thead>
+<tr>
+<th>Button</th>
+<th>Action</th>
+<th>Shortcut</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>New</strong></td>
+<td>Create a new empty workflow in a new tab</td>
+<td>Ctrl+N</td>
+</tr>
+<tr>
+<td><strong>Open</strong></td>
+<td>Open a file picker to load a workflow</td>
+<td>Ctrl+O</td>
+</tr>
+<tr>
+<td><strong>Save</strong></td>
+<td>Save the current workflow</td>
+<td>Ctrl+S</td>
+</tr>
+<tr>
+<td><strong>Run</strong></td>
+<td>Execute the current workflow</td>
+<td>F5</td>
+</tr>
+<tr>
+<td><strong>Stop</strong></td>
+<td>Cancel a running execution</td>
+<td>(toolbar only)</td>
+</tr>
+<tr>
+<td><strong>Add Node</strong></td>
+<td>Open the node search popup at the centre of the canvas</td>
+<td>Tab</td>
+</tr>
+<tr>
+<td><strong>Edit Node</strong></td>
+<td>Open the selected node in the Node Builder</td>
+<td>Ctrl+E</td>
+</tr>
+<tr>
+<td><strong>Theme Toggle</strong></td>
+<td>Switch between dark and light themes</td>
+<td>(toolbar)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="keyboard-shortcuts-reference">Keyboard Shortcuts Reference</h2>
+<h3 id="global-shortcuts">Global Shortcuts</h3>
+<table>
+<thead>
+<tr>
+<th>Shortcut</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Ctrl+N</code></td>
+<td>New workflow tab</td>
+</tr>
+<tr>
+<td><code>Ctrl+O</code></td>
+<td>Open workflow</td>
+</tr>
+<tr>
+<td><code>Ctrl+S</code></td>
+<td>Save workflow</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+S</code></td>
+<td>Save workflow as</td>
+</tr>
+<tr>
+<td><code>Ctrl+W</code></td>
+<td>Close current tab</td>
+</tr>
+<tr>
+<td><code>Ctrl+Z</code></td>
+<td>Undo</td>
+</tr>
+<tr>
+<td><code>Ctrl+Y</code></td>
+<td>Redo</td>
+</tr>
+<tr>
+<td><code>Ctrl+C</code></td>
+<td>Copy selected nodes</td>
+</tr>
+<tr>
+<td><code>Ctrl+V</code></td>
+<td>Paste nodes</td>
+</tr>
+<tr>
+<td><code>F5</code></td>
+<td>Run workflow</td>
+</tr>
+</tbody>
+</table>
+<h3 id="canvas-shortcuts">Canvas Shortcuts</h3>
+<table>
+<thead>
+<tr>
+<th>Shortcut</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Tab</code></td>
+<td>Open node search popup at cursor</td>
+</tr>
+<tr>
+<td><code>F</code></td>
+<td>Focus / fit selected nodes (or all if none selected)</td>
+</tr>
+<tr>
+<td><code>Delete</code></td>
+<td>Delete selected nodes and connections</td>
+</tr>
+<tr>
+<td><code>Ctrl+A</code></td>
+<td>Select all nodes</td>
+</tr>
+<tr>
+<td><code>Ctrl+D</code></td>
+<td>Deselect all</td>
+</tr>
+<tr>
+<td><code>Ctrl+B</code></td>
+<td>Toggle bypass on selected nodes</td>
+</tr>
+<tr>
+<td><code>Ctrl+E</code></td>
+<td>Edit selected node in Node Builder</td>
+</tr>
+<tr>
+<td><code>Ctrl+R</code></td>
+<td>Reload selected node from disk</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+R</code></td>
+<td>Reload all nodes from disk</td>
+</tr>
+<tr>
+<td><code>Ctrl+G</code></td>
+<td>Wrap selection in backdrop</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+G</code></td>
+<td>Group / collapse selection into GroupNode</td>
+</tr>
+<tr>
+<td><code>Ctrl+F</code></td>
+<td>Open canvas search bar</td>
+</tr>
+<tr>
+<td><code>Ctrl+M</code></td>
+<td>Toggle mini-map</td>
+</tr>
+<tr>
+<td><code>Ctrl+Wheel</code></td>
+<td>Zoom canvas</td>
+</tr>
+<tr>
+<td><code>Middle Mouse drag</code></td>
+<td>Pan canvas</td>
+</tr>
+<tr>
+<td><code>Alt+Left Mouse drag</code></td>
+<td>Pan canvas (Houdini-style)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="node-builder-shortcuts">Node Builder Shortcuts</h3>
+<table>
+<thead>
+<tr>
+<th>Shortcut</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Ctrl+S</code></td>
+<td>Save node definition</td>
+</tr>
+<tr>
+<td><code>Ctrl+Z</code></td>
+<td>Undo in code editor</td>
+</tr>
+<tr>
+<td><code>Ctrl+Y</code></td>
+<td>Redo in code editor</td>
+</tr>
+<tr>
+<td><code>Ctrl+Space</code></td>
+<td>Trigger autocomplete (QScintilla)</td>
+</tr>
+<tr>
+<td><code>Ctrl+Wheel</code></td>
+<td>Zoom code editor font</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="workflow-execution">Workflow Execution</h2>
+<h3 id="starting-execution">Starting Execution</h3>
+<p>Press <strong>F5</strong> or click the <strong>Run</strong> button in the toolbar. The engine serialises the scene, builds the graph, instantiates all nodes, and begins executing.</p>
+<h3 id="async-behaviour">Async Behaviour</h3>
+<p>Execution is fully asynchronous. The Qt event loop remains active throughout, so:</p>
+<ul>
+<li>The UI remains interactive (you can scroll, inspect wires, read log messages).</li>
+<li>The Stop button works immediately.</li>
+<li>Long-running nodes (DCC calls, file I/O, network requests) do not freeze the application.</li>
+</ul>
+<h3 id="what-running-means">What "Running" Means</h3>
+<p>While the engine is running:</p>
+<ul>
+<li>The <strong>Run</strong> button is disabled.</li>
+<li>The <strong>Stop</strong> button is enabled.</li>
+<li>Node widgets that are currently executing show an animated highlight.</li>
+<li>The log panel receives messages in real time.</li>
+<li>Live wire values update as each node completes.</li>
+</ul>
+<h3 id="parallel-execution">Parallel Execution</h3>
+<p>Multiple independent exec branches (entry nodes with no connections between them) run concurrently as separate <code>asyncio.Task</code> objects. Branches that depend on each other (through data connections or exec chains) are sequenced correctly by the engine.</p>
+<h3 id="stopping-mid-execution">Stopping Mid-Execution</h3>
+<p>Click the <strong>Stop</strong> button or press the Stop shortcut. The engine sets an internal <code>_is_stopped</code> flag. All active <code>asyncio.Task</code> objects are cancelled. Nodes that check <code>self.is_stopped()</code> return <code>True</code>, allowing them to clean up gracefully. Nodes that are in the middle of awaiting a DCC operation may take a moment to notice the cancellation — <code>asyncio.CancelledError</code> is raised in their coroutine.</p>
+<p>After stopping, <code>execution_finished(success=False)</code> is emitted and the UI is re-enabled.</p>
+<h3 id="init-priority-nodes">Init-Priority Nodes</h3>
+<p>Nodes can be marked as "init nodes" by setting a non-zero <code>init_priority</code> in their model (right-click node &gt; Set as Init Node). Init nodes run <strong>before</strong> the main graph, in descending priority order. Higher numbers run first. The <code>prism_core_init</code> node uses this mechanism to initialise PrismCore before any <code>prism_*</code> nodes run.</p>
+<p>Use init nodes for authentication, login, environment setup, or any one-time setup that all subsequent nodes depend on.</p>
+<h3 id="re-running">Re-running</h3>
+<p>After a successful or failed execution, press <strong>F5</strong> again to re-run. The engine re-instantiates all nodes fresh — no state carries over between runs. The <code>BaseNode.memory</code> dict (shared between all nodes during a run) is cleared at the start of each run.</p>
+<hr />
+<h2 id="autosave-and-crash-recovery">Autosave and Crash Recovery</h2>
+<h3 id="autosave">Autosave</h3>
+<p>A background <code>QTimer</code> fires every <strong>2 minutes</strong> while the application is open. It writes all non-empty open workflow tabs to:</p>
+<pre><code>~/.vibrante_node_autosave.json
+</code></pre>
+<p>On Windows, <code>~</code> resolves to <code>C:\Users\&lt;username&gt;\.vibrante_node_autosave.json</code>.</p>
+<p>The autosave file has this structure:</p>
+<pre><code class="language-json">{
+    &quot;version&quot;: 1,
+    &quot;tabs&quot;: [
+        {
+            &quot;name&quot;: &quot;tab_label&quot;,
+            &quot;file_path&quot;: &quot;/path/to/saved/file.json&quot;,
+            &quot;workflow&quot;: { ... WorkflowModel dict ... }
+        }
+    ]
+}
+</code></pre>
+<p>Autosave is skipped during active execution (<code>_is_executing</code> flag prevents saving a mid-run state). Failures during autosave are printed to the Python console only — the application never crashes due to a failed autosave.</p>
+<h3 id="clean-exit">Clean Exit</h3>
+<p>When you close the application normally (<code>Alt+F4</code>, File &gt; Exit, or the window X button), <code>closeEvent</code> deletes the autosave file before exiting. This ensures the crash recovery dialog does not appear on the next normal launch.</p>
+<h3 id="crash-recovery">Crash Recovery</h3>
+<p>If the application crashes or is killed without calling <code>closeEvent</code> (e.g. a Python exception outside the event loop, OS-level kill, power loss), the autosave file is left on disk.</p>
+<p>On the <strong>next launch</strong>, if the autosave file exists, a dialog box appears:</p>
+<pre><code>Unsaved session detected
+
+The previous session ended unexpectedly.
+Would you like to restore your open workflows?
+
+  [ Restore ]  [ Discard ]
+</code></pre>
+<ul>
+<li><strong>Restore</strong> — opens all tabs from the autosave, using the saved <code>workflow</code> dict. Tabs that had been saved to disk are also correctly labelled with their file path.</li>
+<li><strong>Discard</strong> — deletes the autosave file and opens fresh.</li>
+</ul>
+<p>The autosave file is always deleted after the dialog, regardless of the user's choice.</p>
+<hr />
+<h2 id="recent-files">Recent Files</h2>
+<h3 id="accessing-recent-files">Accessing Recent Files</h3>
+<p><strong>File &gt; Open Recent</strong> shows a submenu listing the last 10 workflow files you saved or loaded, newest first.</p>
+<p>Each entry shows the full file path. Clicking an entry loads that workflow in a new tab — no file picker dialog appears.</p>
+<h3 id="greyed-out-entries">Greyed-Out Entries</h3>
+<p>If a file in the recent list no longer exists on disk (moved, renamed, deleted), its menu entry appears greyed out (disabled). You cannot click it. The entry remains in the list until you use <strong>Clear Recent Files</strong> or until it ages out as newer files push it off the bottom of the 10-item list.</p>
+<h3 id="clearing-the-list">Clearing the List</h3>
+<p><strong>File &gt; Open Recent &gt; Clear Recent Files</strong> empties the list immediately.</p>
+<h3 id="when-the-list-updates">When the List Updates</h3>
+<p>The recent files list is rebuilt every time the <strong>File</strong> menu opens. This ensures the list always reflects the current state of the filesystem and recent file history without requiring an app restart.</p>
+<h3 id="storage">Storage</h3>
+<p>Recent file paths are stored in the application config managed by <code>src/utils/config_manager.py</code> under the key <code>"recent_files"</code> as a JSON list of absolute path strings, capped at 10 entries, newest first.</p>
+<hr />
+<h2 id="advanced-topics">Advanced Topics</h2>
+<h3 id="node-init-priority">Node Init Priority</h3>
+<p>When you right-click a node and choose <strong>Set as Init Node</strong>, the node is given an <code>init_priority</code> greater than zero. This causes the engine to run it before the main graph, as a setup step. You can set a specific priority value (higher values run earlier) to control the order of multiple init nodes.</p>
+<p>Example use: a <code>prism_core_init</code> node with <code>init_priority: 10</code> runs before a <code>prism_login_token</code> node with <code>init_priority: 5</code>, which runs before all <code>prism_*</code> data nodes with <code>init_priority: 0</code>.</p>
+<h3 id="shared-memory-between-nodes">Shared Memory Between Nodes</h3>
+<p>All nodes within a single execution run share a class-level <code>BaseNode.memory</code> dictionary:</p>
+<pre><code class="language-python"># Node A:
+BaseNode.memory[&quot;my_key&quot;] = &quot;some_value&quot;
+
+# Node B (same run):
+value = BaseNode.memory.get(&quot;my_key&quot;)  # &quot;some_value&quot;
+</code></pre>
+<p>This memory is cleared at the start of each run. It is intended for lightweight inter-node communication that does not warrant explicit data wires — for example, a login node storing an auth token that many downstream nodes read without each needing an explicit <code>token</code> input wire.</p>
+<p>The <code>SetVariableNode</code> and <code>GetVariableNode</code> builtins use this mechanism to implement named variables accessible anywhere in the graph.</p>
+<h3 id="the-python-script-node">The Python Script Node</h3>
+<p>The <code>python_script</code> node contains a text area where you write arbitrary Python code. It has:</p>
+<ul>
+<li><code>exec_in</code> / <code>exec_out</code></li>
+<li><code>code</code> — a text area for your Python code</li>
+<li><code>result</code> — an <code>any</code> output port</li>
+</ul>
+<p>Your code runs via <code>exec()</code>. Assign to a local variable called <code>result</code> to pass a value to the output:</p>
+<pre><code class="language-python">import os
+files = os.listdir(&quot;C:/assets&quot;)
+result = [f for f in files if f.endswith(&quot;.abc&quot;)]
+</code></pre>
+<p>The <code>result</code> value is available on the <code>result</code> output port after execution.</p>
+<h3 id="exporting-a-workflow-as-python">Exporting a Workflow as Python</h3>
+<p><strong>File &gt; Export &gt; Export as Python Script</strong> converts the entire workflow into a standalone Python script that can run without the Vibrante-Node UI. This is useful for deploying a tested workflow on a render farm or server without installing the full application.</p>
+<p>The exported script instantiates each node class, wires inputs manually, and calls <code>execute()</code> in topological order.</p>
+<h3 id="reloading-nodes-from-disk">Reloading Nodes from Disk</h3>
+<p>During development, you often modify a node's JSON file externally and want to see the changes without restarting the app.</p>
+<ul>
+<li><strong>Ctrl+R</strong> — reload the selected node's definition from disk. Existing instances in the scene are updated.</li>
+<li><strong>Ctrl+Shift+R</strong> — reload all node definitions. Useful after adding a new <code>.json</code> file to the <code>nodes/</code> directory.</li>
+</ul>
+<p>The node registry re-reads the file, regenerates the Python class, and signals all matching <code>NodeWidget</code> instances to rebuild their ports.</p>
+<hr />
+<p><em>Vibrante-Node v2.0.0 — Released 2026-05-10</em></p>
+    <nav class="page-nav">
+      <a class="page-nav-link prev" href="02_getting_started.html"><span class="page-nav-label">Previous</span><span class="page-nav-title">Getting Started</span></a>
+      <a class="page-nav-link next" href="04_workflow_tutorials.html"><span class="page-nav-label">Next</span><span class="page-nav-title">Workflow Tutorials</span></a>
+    </nav>
+  </div>
+</main>
+
+<!-- ── TOC ────────────────────────────────────────────────────────────── -->
+<aside class="toc">
+  <div class="toc-title">On this page</div>
+<a class="toc-link toc-h2" href="#table-of-contents">Table of Contents</a>
+<a class="toc-link toc-h2" href="#canvas-navigation">Canvas Navigation</a>
+<a class="toc-link toc-h3" href="#panning">Panning</a>
+<a class="toc-link toc-h3" href="#zooming">Zooming</a>
+<a class="toc-link toc-h3" href="#focus-and-fitting">Focus and Fitting</a>
+<a class="toc-link toc-h3" href="#rubber-band-selection">Rubber-Band Selection</a>
+<a class="toc-link toc-h3" href="#scroll-bars">Scroll Bars</a>
+<a class="toc-link toc-h2" href="#node-widget-anatomy">Node Widget Anatomy</a>
+<a class="toc-link toc-h3" href="#header">Header</a>
+<a class="toc-link toc-h3" href="#input-ports-left-side">Input Ports (Left Side)</a>
+<a class="toc-link toc-h4" href="#parameter-widgets">Parameter Widgets</a>
+<a class="toc-link toc-h3" href="#output-ports-right-side">Output Ports (Right Side)</a>
+<a class="toc-link toc-h3" href="#resize-handle">Resize Handle</a>
+<a class="toc-link toc-h2" href="#port-types-and-colors">Port Types and Colors</a>
+<a class="toc-link toc-h3" href="#type-compatibility">Type Compatibility</a>
+<a class="toc-link toc-h2" href="#connecting-nodes">Connecting Nodes</a>
+<a class="toc-link toc-h3" href="#creating-a-connection">Creating a Connection</a>
+<a class="toc-link toc-h3" href="#single-input-enforcement">Single-Input Enforcement</a>
+<a class="toc-link toc-h3" href="#disconnecting-a-wire">Disconnecting a Wire</a>
+<a class="toc-link toc-h3" href="#fan-out-multiple-outputs-from-one-port">Fan-Out (Multiple Outputs from One Port)</a>
+<a class="toc-link toc-h2" href="#exec-flow-pins">Exec Flow Pins</a>
+<a class="toc-link toc-h3" href="#what-exec-pins-do">What Exec Pins Do</a>
+<a class="toc-link toc-h3" href="#how-execution-chains-work">How Execution Chains Work</a>
+<a class="toc-link toc-h3" href="#multiple-exec-outputs">Multiple Exec Outputs</a>
+<a class="toc-link toc-h3" href="#sequence-node">Sequence Node</a>
+<a class="toc-link toc-h3" href="#what-fires-first-entry-nodes">What Fires First — Entry Nodes</a>
+<a class="toc-link toc-h2" href="#data-only-nodes">Data-Only Nodes</a>
+<a class="toc-link toc-h3" href="#loop-invalidation">Loop Invalidation</a>
+<a class="toc-link toc-h2" href="#node-search-popup">Node Search Popup</a>
+<a class="toc-link toc-h3" href="#searching">Searching</a>
+<a class="toc-link toc-h3" href="#adding-a-node">Adding a Node</a>
+<a class="toc-link toc-h3" href="#closing-without-adding">Closing Without Adding</a>
+<a class="toc-link toc-h2" href="#right-click-context-menu">Right-Click Context Menu</a>
+<a class="toc-link toc-h3" href="#node-context-menu">Node Context Menu</a>
+<a class="toc-link toc-h3" href="#canvas-context-menu-empty-area">Canvas Context Menu (Empty Area)</a>
+<a class="toc-link toc-h2" href="#bypass-mode">Bypass Mode</a>
+<a class="toc-link toc-h3" href="#activating-bypass">Activating Bypass</a>
+<a class="toc-link toc-h3" href="#what-bypass-does-during-execution">What Bypass Does During Execution</a>
+<a class="toc-link toc-h2" href="#group-node-subgraph">Group Node / Subgraph</a>
+<a class="toc-link toc-h3" href="#creating-a-groupnode">Creating a GroupNode</a>
+<a class="toc-link toc-h3" href="#naming-the-group">Naming the Group</a>
+<a class="toc-link toc-h3" href="#opening-the-subgraph">Opening the Subgraph</a>
+<a class="toc-link toc-h3" href="#editing-the-subgraph">Editing the Subgraph</a>
+<a class="toc-link toc-h3" href="#groupnode-ports">GroupNode Ports</a>
+<a class="toc-link toc-h3" href="#execution-semantics">Execution Semantics</a>
+<a class="toc-link toc-h3" href="#saving-and-loading">Saving and Loading</a>
+<a class="toc-link toc-h2" href="#sticky-notes">Sticky Notes</a>
+<a class="toc-link toc-h3" href="#adding-a-sticky-note">Adding a Sticky Note</a>
+<a class="toc-link toc-h3" href="#editing">Editing</a>
+<a class="toc-link toc-h3" href="#resizing">Resizing</a>
+<a class="toc-link toc-h3" href="#moving">Moving</a>
+<a class="toc-link toc-h3" href="#deleting">Deleting</a>
+<a class="toc-link toc-h3" href="#colour">Colour</a>
+<a class="toc-link toc-h2" href="#backdrops-network-boxes">Backdrops / Network Boxes</a>
+<a class="toc-link toc-h3" href="#adding-a-backdrop">Adding a Backdrop</a>
+<a class="toc-link toc-h3" href="#labeling">Labeling</a>
+<a class="toc-link toc-h3" href="#resizing_1">Resizing</a>
+<a class="toc-link toc-h3" href="#moving_1">Moving</a>
+<a class="toc-link toc-h3" href="#colour_1">Colour</a>
+<a class="toc-link toc-h3" href="#deleting_1">Deleting</a>
+<a class="toc-link toc-h2" href="#canvas-search-bar">Canvas Search Bar</a>
+<a class="toc-link toc-h3" href="#opening">Opening</a>
+<a class="toc-link toc-h3" href="#searching_1">Searching</a>
+<a class="toc-link toc-h3" href="#navigating-matches">Navigating Matches</a>
+<a class="toc-link toc-h3" href="#closing">Closing</a>
+<a class="toc-link toc-h2" href="#mini-map">Mini-map</a>
+<a class="toc-link toc-h3" href="#viewport-indicator">Viewport Indicator</a>
+<a class="toc-link toc-h3" href="#navigating-via-mini-map">Navigating via Mini-map</a>
+<a class="toc-link toc-h3" href="#toggling">Toggling</a>
+<a class="toc-link toc-h3" href="#theme">Theme</a>
+<a class="toc-link toc-h2" href="#live-wire-value-inspector">Live Wire Value Inspector</a>
+<a class="toc-link toc-h3" href="#how-to-use">How to Use</a>
+<a class="toc-link toc-h3" href="#when-values-are-available">When Values Are Available</a>
+<a class="toc-link toc-h3" href="#when-values-are-cleared">When Values Are Cleared</a>
+<a class="toc-link toc-h3" href="#hit-area">Hit Area</a>
+<a class="toc-link toc-h2" href="#log-panel">Log Panel</a>
+<a class="toc-link toc-h3" href="#message-types">Message Types</a>
+<a class="toc-link toc-h3" href="#execution-timing">Execution Timing</a>
+<a class="toc-link toc-h3" href="#inner-node-logs-groupnode">Inner Node Logs (GroupNode)</a>
+<a class="toc-link toc-h3" href="#clearing-the-log">Clearing the Log</a>
+<a class="toc-link toc-h3" href="#error-details">Error Details</a>
+<a class="toc-link toc-h2" href="#toolbar-reference">Toolbar Reference</a>
+<a class="toc-link toc-h2" href="#keyboard-shortcuts-reference">Keyboard Shortcuts Reference</a>
+<a class="toc-link toc-h3" href="#global-shortcuts">Global Shortcuts</a>
+<a class="toc-link toc-h3" href="#canvas-shortcuts">Canvas Shortcuts</a>
+<a class="toc-link toc-h3" href="#node-builder-shortcuts">Node Builder Shortcuts</a>
+<a class="toc-link toc-h2" href="#workflow-execution">Workflow Execution</a>
+<a class="toc-link toc-h3" href="#starting-execution">Starting Execution</a>
+<a class="toc-link toc-h3" href="#async-behaviour">Async Behaviour</a>
+<a class="toc-link toc-h3" href="#what-running-means">What "Running" Means</a>
+<a class="toc-link toc-h3" href="#parallel-execution">Parallel Execution</a>
+<a class="toc-link toc-h3" href="#stopping-mid-execution">Stopping Mid-Execution</a>
+<a class="toc-link toc-h3" href="#init-priority-nodes">Init-Priority Nodes</a>
+<a class="toc-link toc-h3" href="#re-running">Re-running</a>
+<a class="toc-link toc-h2" href="#autosave-and-crash-recovery">Autosave and Crash Recovery</a>
+<a class="toc-link toc-h3" href="#autosave">Autosave</a>
+<a class="toc-link toc-h3" href="#clean-exit">Clean Exit</a>
+<a class="toc-link toc-h3" href="#crash-recovery">Crash Recovery</a>
+<a class="toc-link toc-h2" href="#recent-files">Recent Files</a>
+<a class="toc-link toc-h3" href="#accessing-recent-files">Accessing Recent Files</a>
+<a class="toc-link toc-h3" href="#greyed-out-entries">Greyed-Out Entries</a>
+<a class="toc-link toc-h3" href="#clearing-the-list">Clearing the List</a>
+<a class="toc-link toc-h3" href="#when-the-list-updates">When the List Updates</a>
+<a class="toc-link toc-h3" href="#storage">Storage</a>
+<a class="toc-link toc-h2" href="#advanced-topics">Advanced Topics</a>
+<a class="toc-link toc-h3" href="#node-init-priority">Node Init Priority</a>
+<a class="toc-link toc-h3" href="#shared-memory-between-nodes">Shared Memory Between Nodes</a>
+<a class="toc-link toc-h3" href="#the-python-script-node">The Python Script Node</a>
+<a class="toc-link toc-h3" href="#exporting-a-workflow-as-python">Exporting a Workflow as Python</a>
+<a class="toc-link toc-h3" href="#reloading-nodes-from-disk">Reloading Nodes from Disk</a>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/highlight.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lunr@2.3.9/lunr.min.js"></script>
+<script>
+// ── Search ──────────────────────────────────────────────────────────────
+let _idx = null, _docs = [];
+
+async function initSearch() {
+  try {
+    const base = document.getElementById('portal-base').dataset.base;
+    const resp = await fetch(base + 'search.json');
+    _docs = await resp.json();
+    _idx = lunr(function() {
+      this.ref('id');
+      this.field('title', { boost: 10 });
+      this.field('body');
+      _docs.forEach((d, i) => {
+        this.add({ id: i, title: d.title, body: d.body });
+      });
+    });
+  } catch(e) { console.warn('Search index not available', e); }
+}
+
+function doSearch(q) {
+  const box = document.getElementById('search-results');
+  if (!q || q.length < 2) { box.classList.remove('visible'); return; }
+  if (!_idx) { box.innerHTML = '<div class="search-no-results">Search index loading…</div>'; box.classList.add('visible'); return; }
+  const results = _idx.search(q + '~1');
+  if (!results.length) {
+    box.innerHTML = '<div class="search-no-results">No results for "' + q + '"</div>';
+    box.classList.add('visible'); return;
+  }
+  box.innerHTML = results.slice(0, 8).map(r => {
+    const d = _docs[r.ref];
+    const excerpt = d.body.substring(0, 140).replace(/[#*`]/g, '').trim() + '…';
+    return `<a class="search-result-item" href="${d.url}">
+      <div class="search-result-title">${d.title}</div>
+      <div class="search-result-excerpt">${excerpt}</div>
+    </a>`;
+  }).join('');
+  box.classList.add('visible');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initSearch();
+  const inp = document.getElementById('search-input');
+  if (inp) {
+    inp.addEventListener('input', e => doSearch(e.target.value));
+    inp.addEventListener('keydown', e => { if (e.key === 'Escape') { e.target.value=''; document.getElementById('search-results').classList.remove('visible'); }});
+  }
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.search-wrap')) document.getElementById('search-results')?.classList.remove('visible');
+  });
+  // Keyboard shortcut: / to focus search
+  document.addEventListener('keydown', e => {
+    if (e.key === '/' && !['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) {
+      e.preventDefault(); document.getElementById('search-input')?.focus();
+    }
+  });
+
+  // ── TOC active section ──────────────────────────────────────────────
+  const tocLinks = document.querySelectorAll('.toc-link');
+  const headings = document.querySelectorAll('h2[id],h3[id],h4[id]');
+  if (tocLinks.length && headings.length) {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          tocLinks.forEach(l => l.classList.remove('active'));
+          const link = document.querySelector(`.toc-link[href="#${entry.target.id}"]`);
+          if (link) link.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    headings.forEach(h => obs.observe(h));
+  }
+
+  // ── Copy buttons ────────────────────────────────────────────────────
+  document.querySelectorAll('pre').forEach(pre => {
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn'; btn.textContent = 'Copy';
+    btn.addEventListener('click', () => {
+      const code = pre.querySelector('code');
+      navigator.clipboard.writeText(code ? code.innerText : pre.innerText).then(() => {
+        btn.textContent = 'Copied!'; btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+      });
+    });
+    pre.style.position = 'relative';
+    pre.appendChild(btn);
+  });
+
+  // ── Sidebar active ──────────────────────────────────────────────────
+  const cur = window.location.pathname.split('/').pop();
+  document.querySelectorAll('.sidebar-link').forEach(l => {
+    if (l.getAttribute('href') === cur || l.getAttribute('href').endsWith(cur)) l.classList.add('active');
+  });
+
+  // ── highlight.js ────────────────────────────────────────────────────
+  if (window.hljs) {
+    hljs.configure({ ignoreUnescapedHTML: true });
+    hljs.highlightAll();
+  }
+});
+</script>
+</body>
+</html>

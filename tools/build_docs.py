@@ -206,3 +206,14 @@ with open(os.path.join(DOCS_OUT, "index.html"), "w", encoding="utf-8") as f:
     f.write(index_html)
 print("  OK: index.html")
 print(f"\nDocs written to: {DOCS_OUT}")
+
+# Build the full documentation portal (docs_src/ → docs/portal/)
+import subprocess, sys
+portal_script = os.path.join(os.path.dirname(__file__), "build_docs_portal.py")
+docs_src = os.path.join(ROOT, "docs_src")
+portal_out = os.path.join(ROOT, "docs", "portal")
+if os.path.isdir(docs_src):
+    print("\nBuilding documentation portal...")
+    subprocess.run([sys.executable, portal_script, "--src", docs_src, "--out", portal_out], check=False)
+else:
+    print(f"\n  SKIP portal (docs_src/ not found — run once docs_src/ is populated)")

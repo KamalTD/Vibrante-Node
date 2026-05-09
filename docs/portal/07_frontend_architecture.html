@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Vibrante-Node v2.0.0 — Frontend Architecture">
+<title>Frontend Architecture — Vibrante-Node Docs</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/atom-one-dark.min.css">
+<style>
+/* ── Reset & Variables ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:       #1e1e2e;
+  --surface:  #181825;
+  --surface2: #11111b;
+  --border:   #313244;
+  --text:     #cdd6f4;
+  --subtext:  #a6adc8;
+  --muted:    #6c7086;
+  --lavender: #b4befe;
+  --blue:     #89b4fa;
+  --teal:     #94e2d5;
+  --green:    #a6e3a1;
+  --yellow:   #f9e2af;
+  --peach:    #fab387;
+  --red:      #f38ba8;
+  --pink:     #f5c2e7;
+  --mauve:    #cba6f7;
+  --sidebar-w: 260px;
+  --toc-w:    220px;
+  --header-h: 56px;
+  --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --mono: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+}
+
+/* ── Layout ─────────────────────────────────────────────────────────────── */
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: var(--header-h) 1fr;
+  grid-template-columns: var(--sidebar-w) 1fr var(--toc-w);
+  grid-template-areas:
+    "header header header"
+    "sidebar content toc";
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+.header {
+  grid-area: header;
+  position: sticky; top: 0; z-index: 200;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 16px;
+  padding: 0 24px;
+}
+.header-logo {
+  font-weight: 700; font-size: 1.05em;
+  color: var(--mauve);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.header-version {
+  font-size: .78em;
+  background: var(--border);
+  color: var(--subtext);
+  padding: 2px 8px; border-radius: 12px;
+}
+.header-spacer { flex: 1; }
+.search-wrap { position: relative; }
+#search-input {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: .9em;
+  padding: 6px 14px 6px 36px;
+  width: 260px;
+  outline: none;
+  transition: border-color .15s;
+}
+#search-input:focus { border-color: var(--mauve); }
+.search-icon {
+  position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+  color: var(--muted); pointer-events: none; font-size: .9em;
+}
+#search-results {
+  position: absolute; top: calc(100% + 8px); right: 0;
+  width: 380px; max-height: 420px; overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.5);
+  display: none; z-index: 300;
+}
+#search-results.visible { display: block; }
+.search-result-item {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background .1s;
+}
+.search-result-item:last-child { border-bottom: none; }
+.search-result-item:hover { background: var(--bg); }
+.search-result-title { color: var(--blue); font-weight: 600; font-size: .9em; }
+.search-result-excerpt { color: var(--subtext); font-size: .82em; margin-top: 2px; line-height: 1.4; }
+.search-no-results { padding: 16px; color: var(--muted); text-align: center; font-size: .9em; }
+
+/* ── Sidebar ─────────────────────────────────────────────────────────────── */
+.sidebar {
+  grid-area: sidebar;
+  position: sticky; top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 20px 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.sidebar-group { margin-bottom: 4px; }
+.sidebar-group-title {
+  font-size: .7em;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--muted);
+  padding: 10px 20px 4px;
+  font-weight: 600;
+}
+.sidebar-link {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 20px;
+  color: var(--subtext);
+  text-decoration: none;
+  font-size: .88em;
+  border-left: 3px solid transparent;
+  transition: all .12s;
+  line-height: 1.3;
+}
+.sidebar-link:hover { color: var(--text); background: var(--bg); }
+.sidebar-link.active {
+  color: var(--mauve);
+  border-left-color: var(--mauve);
+  background: rgba(180,190,254,.06);
+  font-weight: 600;
+}
+.sidebar-num {
+  font-size: .7em;
+  color: var(--muted);
+  background: var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  flex-shrink: 0;
+}
+.sidebar-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 12px 16px;
+}
+
+/* ── Content ─────────────────────────────────────────────────────────────── */
+.content {
+  grid-area: content;
+  min-width: 0;
+  padding: 40px 48px 80px;
+  max-width: 860px;
+}
+.content-inner { max-width: 820px; }
+
+/* Breadcrumb */
+.breadcrumb {
+  font-size: .8em;
+  color: var(--muted);
+  margin-bottom: 28px;
+  display: flex; align-items: center; gap: 6px;
+}
+.breadcrumb a { color: var(--blue); text-decoration: none; }
+.breadcrumb a:hover { text-decoration: underline; }
+.breadcrumb-sep { color: var(--border); }
+
+/* Typography */
+h1 { font-size: 2em; color: var(--mauve); border-bottom: 2px solid var(--border); padding-bottom: 12px; margin: 20px 0 20px; }
+h2 { font-size: 1.45em; color: var(--blue); margin: 40px 0 14px; padding-top: 8px; }
+h3 { font-size: 1.15em; color: var(--teal); margin: 28px 0 10px; }
+h4 { font-size: 1em; color: var(--pink); margin: 20px 0 8px; }
+h5 { font-size: .95em; color: var(--yellow); margin: 16px 0 6px; }
+p  { margin-bottom: 16px; color: var(--text); }
+a  { color: var(--blue); }
+a:hover { text-decoration: underline; }
+strong { color: var(--peach); }
+em { color: var(--yellow); font-style: italic; }
+
+ul, ol { margin: 10px 0 16px 24px; }
+li { margin-bottom: 6px; }
+li > ul, li > ol { margin-top: 4px; margin-bottom: 4px; }
+
+blockquote {
+  border-left: 4px solid var(--mauve);
+  padding: 10px 20px;
+  margin: 16px 0;
+  background: rgba(180,190,254,.05);
+  border-radius: 0 8px 8px 0;
+  color: var(--subtext);
+}
+blockquote strong { color: var(--mauve); }
+
+hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+/* Code */
+code {
+  background: var(--surface2);
+  color: var(--red);
+  padding: 2px 7px; border-radius: 5px;
+  font-family: var(--mono); font-size: .87em;
+}
+pre {
+  background: var(--surface2) !important;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px 22px;
+  overflow-x: auto;
+  margin: 16px 0 22px;
+  position: relative;
+}
+pre code {
+  background: none !important;
+  color: inherit !important;
+  padding: 0; font-size: .9em;
+  border-radius: 0;
+}
+/* Copy button */
+.copy-btn {
+  position: absolute; top: 10px; right: 12px;
+  background: var(--border);
+  color: var(--subtext);
+  border: none; border-radius: 5px;
+  padding: 3px 10px; font-size: .75em;
+  cursor: pointer; transition: all .12s;
+  font-family: var(--font);
+}
+.copy-btn:hover { background: var(--mauve); color: var(--surface2); }
+.copy-btn.copied { background: var(--green); color: var(--surface2); }
+
+/* Tables */
+table { border-collapse: collapse; width: 100%; margin: 16px 0 22px; font-size: .9em; }
+th { background: var(--border); color: var(--mauve); padding: 10px 14px; text-align: left; font-weight: 600; }
+td { border-top: 1px solid var(--border); padding: 9px 14px; color: var(--text); }
+tr:nth-child(even) td { background: rgba(17,17,27,.4); }
+td code { font-size: .85em; }
+
+/* Callout boxes */
+.callout {
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin: 16px 0 22px;
+  border-left: 4px solid;
+}
+.callout-note    { background: rgba(137,180,250,.08); border-color: var(--blue);   }
+.callout-tip     { background: rgba(166,227,161,.08); border-color: var(--green);  }
+.callout-warning { background: rgba(249,226,175,.08); border-color: var(--yellow); }
+.callout-danger  { background: rgba(243,139,168,.08); border-color: var(--red);    }
+.callout-title   { font-weight: 700; font-size: .85em; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
+.callout-note    .callout-title { color: var(--blue);   }
+.callout-tip     .callout-title { color: var(--green);  }
+.callout-warning .callout-title { color: var(--yellow); }
+.callout-danger  .callout-title { color: var(--red);    }
+
+/* Prev/Next navigation */
+.page-nav {
+  display: flex; justify-content: space-between;
+  margin-top: 60px; padding-top: 24px;
+  border-top: 1px solid var(--border);
+  gap: 16px;
+}
+.page-nav-link {
+  display: flex; flex-direction: column;
+  text-decoration: none;
+  padding: 14px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  min-width: 200px;
+  transition: border-color .15s;
+  max-width: 48%;
+}
+.page-nav-link:hover { border-color: var(--mauve); }
+.page-nav-label { font-size: .75em; color: var(--muted); margin-bottom: 4px; }
+.page-nav-title { color: var(--blue); font-weight: 600; font-size: .95em; }
+.page-nav-link.prev .page-nav-label::before { content: '← '; }
+.page-nav-link.next { margin-left: auto; text-align: right; }
+.page-nav-link.next .page-nav-label::after { content: ' →'; }
+
+/* ── TOC (right panel) ───────────────────────────────────────────────────── */
+.toc {
+  grid-area: toc;
+  position: sticky; top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  padding: 28px 16px 28px 8px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.toc-title {
+  font-size: .72em;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--muted);
+  font-weight: 600;
+  margin-bottom: 12px;
+  padding-left: 8px;
+}
+.toc-link {
+  display: block;
+  padding: 4px 8px;
+  color: var(--subtext);
+  text-decoration: none;
+  font-size: .82em;
+  border-left: 2px solid transparent;
+  border-radius: 0 4px 4px 0;
+  transition: all .12s;
+  line-height: 1.35;
+  margin-bottom: 1px;
+}
+.toc-link:hover { color: var(--text); border-left-color: var(--border); }
+.toc-link.active { color: var(--mauve); border-left-color: var(--mauve); background: rgba(180,190,254,.05); }
+.toc-link.toc-h3 { padding-left: 20px; font-size: .79em; }
+.toc-link.toc-h4 { padding-left: 32px; font-size: .76em; color: var(--muted); }
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  body { grid-template-columns: var(--sidebar-w) 1fr 0; }
+  .toc { display: none; }
+}
+@media (max-width: 760px) {
+  body { grid-template-columns: 0 1fr 0; grid-template-rows: var(--header-h) 1fr; }
+  .sidebar { display: none; }
+  .content { padding: 24px 20px 60px; }
+  #search-input { width: 180px; }
+}
+
+/* ── Index / landing page ────────────────────────────────────────────────── */
+.hero { text-align: center; padding: 60px 0 48px; }
+.hero h1 { border: none; font-size: 2.8em; }
+.hero .tagline { color: var(--subtext); font-size: 1.15em; margin-top: 10px; }
+.hero .version-badge {
+  display: inline-block;
+  background: var(--border); color: var(--mauve);
+  padding: 4px 14px; border-radius: 20px; font-size: .85em;
+  margin-top: 14px;
+}
+.group-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin: 16px 0 36px; }
+.doc-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  text-decoration: none;
+  color: var(--text);
+  transition: border-color .15s, background .15s;
+  display: block;
+}
+.doc-card:hover { border-color: var(--mauve); background: rgba(180,190,254,.04); }
+.doc-card-num { font-size: .72em; color: var(--muted); margin-bottom: 4px; }
+.doc-card-title { color: var(--blue); font-weight: 700; font-size: 1em; margin-bottom: 6px; }
+.doc-card-desc { color: var(--subtext); font-size: .85em; line-height: 1.5; }
+.group-title { color: var(--teal); font-size: 1.1em; font-weight: 600; margin: 32px 0 10px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+</style>
+<span id="portal-base" data-base="" style="display:none"></span>
+</head>
+<body>
+
+<!-- ── Header ─────────────────────────────────────────────────────────── -->
+<header class="header">
+  <a class="header-logo" href="index.html">Vibrante-Node</a>
+  <span class="header-version">v2.0.0</span>
+  <div class="header-spacer"></div>
+  <div class="search-wrap">
+    <span class="search-icon">&#128269;</span>
+    <input id="search-input" type="text" placeholder="Search docs… (/)" autocomplete="off" spellcheck="false">
+    <div id="search-results"></div>
+  </div>
+</header>
+
+<!-- ── Sidebar ────────────────────────────────────────────────────────── -->
+<nav class="sidebar">
+<div class="sidebar-group">
+<div class="sidebar-group-title">Overview</div>
+<a class="sidebar-link" href="01_introduction.html"><span class="sidebar-num">01</span>Introduction</a>
+<a class="sidebar-link" href="02_getting_started.html"><span class="sidebar-num">02</span>Getting Started</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Using the App</div>
+<a class="sidebar-link" href="03_user_guide.html"><span class="sidebar-num">03</span>User Guide</a>
+<a class="sidebar-link" href="04_workflow_tutorials.html"><span class="sidebar-num">04</span>Workflow Tutorials</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Developing Nodes</div>
+<a class="sidebar-link" href="05_node_development.html"><span class="sidebar-num">05</span>Node Development Guide</a>
+<a class="sidebar-link" href="14_custom_nodes_api.html"><span class="sidebar-num">14</span>Custom Nodes API</a>
+<a class="sidebar-link" href="08_api_reference.html"><span class="sidebar-num">08</span>API Reference</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Architecture</div>
+<a class="sidebar-link" href="06_backend_architecture.html"><span class="sidebar-num">06</span>Backend Architecture</a>
+<a class="sidebar-link active" href="07_frontend_architecture.html"><span class="sidebar-num">07</span>Frontend Architecture</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Advanced</div>
+<a class="sidebar-link" href="09_advanced_topics.html"><span class="sidebar-num">09</span>Advanced Topics</a>
+<a class="sidebar-link" href="10_contribution_guide.html"><span class="sidebar-num">10</span>Contribution Guide</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Reference</div>
+<a class="sidebar-link" href="11_troubleshooting.html"><span class="sidebar-num">11</span>Troubleshooting</a>
+<a class="sidebar-link" href="12_examples_library.html"><span class="sidebar-num">12</span>Examples Library</a>
+<a class="sidebar-link" href="13_general_purpose_automation.html"><span class="sidebar-num">13</span>General Purpose Automation</a>
+</div>
+
+</nav>
+
+<!-- ── Main content ───────────────────────────────────────────────────── -->
+<main class="content">
+  <div class="content-inner">
+    <nav class="breadcrumb"><a href="index.html">Docs</a><span class="breadcrumb-sep">›</span><span>Frontend Architecture</span></nav>
+    <h1 id="07-frontend-architecture">07 — Frontend Architecture</h1>
+<p><strong>Vibrante-Node v2.0.0 — Technical Reference</strong></p>
+<p>This document describes the Qt5 widget hierarchy, rendering pipeline, event model, history system, and all supporting UI subsystems. It targets contributors who need to understand the canvas, add new UI panels, create custom graphics items, or modify how nodes and edges are drawn.</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#1-widget-hierarchy">Widget Hierarchy</a></li>
+<li><a href="#2-mainwindow">MainWindow</a></li>
+<li><a href="#3-nodescene-qgraphicsscene">NodeScene (QGraphicsScene)</a></li>
+<li><a href="#4-nodeview-qgraphicsview">NodeView (QGraphicsView)</a></li>
+<li><a href="#5-nodewidget-rendering">NodeWidget Rendering</a></li>
+<li><a href="#6-portwidget">PortWidget</a></li>
+<li><a href="#7-edge-wire-rendering">Edge (Wire) Rendering</a></li>
+<li><a href="#8-minimap">MiniMap</a></li>
+<li><a href="#9-canvassearchbar">CanvasSearchBar</a></li>
+<li><a href="#10-nodesearchpopup">NodeSearchPopup</a></li>
+<li><a href="#11-event-flow-creating-a-connection">Event Flow: Creating a Connection</a></li>
+<li><a href="#12-history-undoredo">History (Undo/Redo)</a></li>
+<li><a href="#13-serialization-scene-tofrom-workflowmodel">Serialization (Scene to/from WorkflowModel)</a></li>
+<li><a href="#14-theme-system">Theme System</a></li>
+<li><a href="#15-librarypanel">LibraryPanel</a></li>
+<li><a href="#16-logpanel">LogPanel</a></li>
+<li><a href="#17-scriptingconsole">ScriptingConsole</a></li>
+<li><a href="#18-nodebuilderdialog">NodeBuilderDialog</a></li>
+<li><a href="#19-codeeditor">CodeEditor</a></li>
+<li><a href="#20-how-to-add-a-new-ui-panel">How to Add a New UI Panel</a></li>
+<li><a href="#21-custom-graphics-items">Custom Graphics Items</a></li>
+<li><a href="#22-stylesheet-architecture">Stylesheet Architecture</a></li>
+<li><a href="#23-stickynote-and-backdrop">StickyNote and Backdrop</a></li>
+</ol>
+<hr />
+<h2 id="1-widget-hierarchy">1. Widget Hierarchy</h2>
+<p>The complete Qt widget tree for one open tab:</p>
+<pre><code>QMainWindow (MainWindow)
+│
+├── QTabWidget (self.tabs)                   [central widget]
+│   │
+│   └── [per tab] QWidget → QVBoxLayout
+│         └── NodeView (QGraphicsView)
+│               │
+│               ├── [child widget] CanvasSearchBar (QFrame)
+│               │     └── QHBoxLayout
+│               │           ├── QLineEdit  (search input)
+│               │           ├── QLabel     (match counter)
+│               │           ├── QToolButton ▲ prev
+│               │           ├── QToolButton ▼ next
+│               │           └── QToolButton ✕ close
+│               │
+│               └── [child widget] MiniMap (QGraphicsView)
+│                     shares the same QGraphicsScene as NodeView
+│
+│   QGraphicsScene (NodeScene)              [not a widget; managed by NodeView]
+│         │
+│         ├── NodeWidget items              [QGraphicsItem]
+│         │     ├── header rect (QPainter)
+│         │     ├── PortWidget items (QGraphicsEllipseItem)
+│         │     └── QGraphicsProxyWidget   [per input parameter]
+│         │           └── QLineEdit / QSpinBox / QCheckBox / QComboBox / ...
+│         │
+│         ├── Edge items                   [QGraphicsPathItem]
+│         │
+│         ├── StickyNote items             [QGraphicsItem]
+│         │
+│         └── Backdrop items               [QGraphicsRectItem]
+│
+├── QDockWidget &quot;Node Library&quot; (LibraryPanel)   [left dock]
+│     └── QVBoxLayout
+│           ├── QLineEdit (search filter)
+│           └── DraggableTreeWidget (QTreeWidget)
+│
+├── QDockWidget &quot;Log&quot; (LogPanel)                [bottom dock]
+│     └── QTextEdit
+│
+├── QDockWidget &quot;Scripting Console&quot;             [bottom dock, tabbed with Log]
+│     └── QVBoxLayout
+│           ├── QPlainTextEdit (output)
+│           └── QLineEdit (input)
+│
+└── QStatusBar
+</code></pre>
+<hr />
+<h2 id="2-mainwindow">2. MainWindow</h2>
+<p><code>MainWindow</code> (<code>src/ui/window.py</code>) is the application's top-level window. It owns:</p>
+<ul>
+<li>The <code>QTabWidget</code> with one tab per open workflow.</li>
+<li>The <code>LibraryPanel</code>, <code>LogPanel</code>, and <code>ScriptingConsole</code> dockable panels.</li>
+<li>The main menu bar and toolbar.</li>
+<li>The <code>_EventLoopRunner</code> that drives execution.</li>
+<li>The autosave timer (<code>QTimer</code>, 2-minute interval).</li>
+<li><code>_node_start_times</code> — a <code>Dict[UUID, float]</code> that records <code>time.perf_counter()</code> when each node starts, enabling elapsed-time logging.</li>
+</ul>
+<h3 id="tab-management">Tab management</h3>
+<p>Each tab wraps a <code>NodeView → NodeScene</code> pair. The tab label is the workflow filename (or "Untitled N" for new workflows). Tabs are closable; <code>_close_tab()</code> prompts for unsaved changes.</p>
+<p><code>add_new_workflow(name)</code> creates a new <code>NodeScene</code>, wraps it in a <code>NodeView</code>, adds the pair to the <code>QTabWidget</code>, and connects the necessary signals. It is also called by <code>_open_subgraph_tab()</code> when the user double-clicks a <code>GroupNode</code>.</p>
+<h3 id="signal-connections-engine-ui">Signal connections (engine → UI)</h3>
+<pre><code class="language-python">executor.node_started.connect(self._on_node_started)
+executor.node_finished.connect(self._on_node_finished)
+executor.node_error.connect(self._on_node_error)
+executor.node_output.connect(self._on_node_output)
+executor.node_log.connect(self._on_node_log)
+executor.execution_finished.connect(self._on_execution_finished)
+</code></pre>
+<p><code>_on_node_started</code> records start time and calls <code>widget.set_executing(True)</code> to highlight the node on canvas.<br />
+<code>_on_node_finished</code> computes elapsed time, logs it, calls <code>widget.set_executing(False)</code>.<br />
+<code>_on_node_output</code> calls <code>widget.set_parameter(port_name, value)</code> for each output key, and calls <code>scene.update_edge_value(widget, port_name, value)</code> for wire inspector tooltips.</p>
+<h3 id="autosave">Autosave</h3>
+<p><code>_autosave()</code> is called every 2 minutes. It serialises all non-empty tabs to <code>~/.vibrante_node_autosave.json</code>:</p>
+<pre><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;tabs&quot;: [
+    {&quot;name&quot;: &quot;tab label&quot;, &quot;file_path&quot;: &quot;/path/or/empty&quot;, &quot;workflow&quot;: { ...WorkflowModel... }}
+  ]
+}
+</code></pre>
+<p>Empty tabs and the <code>_is_executing</code> guard prevent spurious writes. On next startup, <code>_try_restore_autosave()</code> checks for this file and shows a restore dialog. On clean exit (<code>closeEvent</code>), the file is deleted so the dialog never appears unnecessarily.</p>
+<h3 id="recent-files">Recent files</h3>
+<p><code>MainWindow._add_recent_file(path)</code> is called after every successful save or load. It delegates to <code>config.add_recent_file(path)</code> in <code>src/utils/config_manager.py</code>, which keeps a JSON list of up to 10 absolute paths (newest first). The <strong>Open Recent</strong> submenu is rebuilt dynamically by <code>_rebuild_recent_menu()</code> on <code>file_menu.aboutToShow</code>. Files that no longer exist on disk are shown grayed-out (disabled actions).</p>
+<hr />
+<h2 id="3-nodescene-qgraphicsscene">3. NodeScene (QGraphicsScene)</h2>
+<p><code>NodeScene</code> (<code>src/ui/canvas/scene.py</code>) is the model for a single workflow tab. It manages all graphics items and owns the history stack.</p>
+<h3 id="key-attributes">Key attributes</h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>nodes</code></td>
+<td><code>List[NodeWidget]</code></td>
+<td>All node items in scene order</td>
+</tr>
+<tr>
+<td><code>edges</code></td>
+<td><code>List[Edge]</code></td>
+<td>All wire items</td>
+</tr>
+<tr>
+<td><code>sticky_notes</code></td>
+<td><code>List[StickyNote]</code></td>
+<td>All sticky note items</td>
+</tr>
+<tr>
+<td><code>backdrops</code></td>
+<td><code>List[Backdrop]</code></td>
+<td>All backdrop items</td>
+</tr>
+<tr>
+<td><code>history</code></td>
+<td><code>List[dict]</code></td>
+<td>Undo stack (snapshots, max 50)</td>
+</tr>
+<tr>
+<td><code>redo_stack</code></td>
+<td><code>List[dict]</code></td>
+<td>Redo stack</td>
+</tr>
+<tr>
+<td><code>_undoing</code></td>
+<td><code>bool</code></td>
+<td>Guard to prevent history writes during undo/redo</td>
+</tr>
+<tr>
+<td><code>_sync_callback</code></td>
+<td><code>Callable</code> or <code>None</code></td>
+<td>Set by MainWindow for subgraph tab two-way sync</td>
+</tr>
+<tr>
+<td><code>file_path</code></td>
+<td><code>str</code> or <code>None</code></td>
+<td>Last saved path for this tab</td>
+</tr>
+</tbody>
+</table>
+<h3 id="background-grid">Background grid</h3>
+<p><code>NodeScene.drawBackground()</code> paints a dot-grid using <code>grid_pen</code> (color <code>#555555</code>, width 0.5). The grid spacing is <code>grid_size = 20</code> scene units. The grid is drawn in scene coordinates, so it scales with zoom automatically.</p>
+<h3 id="history-undoredo">History (undo/redo)</h3>
+<p><code>push_history()</code> snapshots the entire scene to a <code>WorkflowModel.model_dump()</code> dict and appends it to <code>history</code>. It also clears <code>redo_stack</code> and, if <code>_sync_callback</code> is set, calls it with the new snapshot.</p>
+<p><code>undo()</code> pops the last snapshot, pushes the current state to <code>redo_stack</code>, and calls <code>from_workflow_model(model)</code> to restore.</p>
+<p><code>redo()</code> does the reverse.</p>
+<p>The maximum history depth is 50 snapshots. Older entries are discarded from the front of the list.</p>
+<h3 id="scene-communication-_sync_callback">Scene communication: _sync_callback</h3>
+<p>When <code>MainWindow._open_subgraph_tab()</code> opens a <code>GroupNode</code>'s inner graph in a new tab, it sets <code>scene._sync_callback</code> to a closure that writes every change back to the parent <code>GroupNode</code>'s <code>parameters["__workflow__"]</code> and pushes the parent scene's history. This makes subgraph tabs fully editable with two-way sync to the parent workflow.</p>
+<h3 id="node-search-from-scene">Node search from scene</h3>
+<p><code>NodeScene.add_node_by_name(node_id, scene_pos)</code> looks up the definition in <code>NodeRegistry</code>, creates a <code>NodeWidget</code>, positions it at <code>scene_pos</code>, and adds it to the scene. Returns the created widget or <code>None</code> on failure.</p>
+<h3 id="grouping">Grouping</h3>
+<p><code>NodeScene.group_selection()</code> (triggered by Ctrl+Shift+G) collapses selected nodes into a <code>GroupNode</code>. The algorithm:</p>
+<ol>
+<li>Classify edges incident on selected nodes as internal, boundary_in, boundary_out, boundary_exec_in, or boundary_exec_out.</li>
+<li>Build a <code>WorkflowModel</code> containing the selected nodes plus synthetic <code>GroupInNode</code> and <code>GroupOutNode</code> instances for each boundary port.</li>
+<li>Remove selected nodes and their edges.</li>
+<li>Create a <code>GroupNode</code> widget at the centroid; populate <code>__workflow__</code>, <code>__port_defs__</code>, <code>__name__</code> parameters; call <code>rebuild_ports()</code>.</li>
+<li>Reconnect external edges to the new <code>GroupNode</code>'s ports.</li>
+</ol>
+<hr />
+<h2 id="4-nodeview-qgraphicsview">4. NodeView (QGraphicsView)</h2>
+<p><code>NodeView</code> (<code>src/ui/canvas/view.py</code>) is the viewport for one workflow tab. It handles all user interaction at the canvas level.</p>
+<h3 id="rendering-hints">Rendering hints</h3>
+<pre><code class="language-python">self.setRenderHint(QPainter.Antialiasing)
+self.setRenderHint(QPainter.SmoothPixmapTransform)
+self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
+self.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
+</code></pre>
+<p><code>AnchorUnderMouse</code> means zoom (Ctrl+Wheel) keeps the point under the cursor fixed in scene space.</p>
+<h3 id="pan">Pan</h3>
+<p>Middle-mouse button or Alt+Left drag initiates panning. Pan is implemented by directly adjusting horizontal and vertical scrollbar values rather than using <code>QGraphicsView.ScrollHandDrag</code>, to avoid interfering with rubber-band selection.</p>
+<p>Spacebar shows an <code>OpenHandCursor</code> as a visual hint; actual panning starts on the next mouse press while space is held.</p>
+<h3 id="zoom">Zoom</h3>
+<p>Ctrl+Wheel scales the view by <code>1.25</code> (in) or <code>0.8</code> (out). After each zoom, <code>mini_map.refresh()</code> is called to redraw the viewport indicator.</p>
+<h3 id="keyboard-shortcuts-handled-in-nodeviewkeypressevent">Keyboard shortcuts (handled in NodeView.keyPressEvent)</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tab</td>
+<td>Open <code>NodeSearchPopup</code></td>
+</tr>
+<tr>
+<td>F</td>
+<td><code>focus_on_selection()</code> — fit selected items (or all items) in view</td>
+</tr>
+<tr>
+<td>Ctrl+B</td>
+<td>Toggle bypass on selected nodes</td>
+</tr>
+<tr>
+<td>Ctrl+G</td>
+<td>Wrap selected nodes in a Backdrop</td>
+</tr>
+<tr>
+<td>Ctrl+Shift+G</td>
+<td>Group selected nodes into a <code>GroupNode</code> (scene.group_selection)</td>
+</tr>
+<tr>
+<td>Ctrl+F</td>
+<td>Show <code>CanvasSearchBar</code> (via <code>MainWindow._find_in_canvas</code>)</td>
+</tr>
+<tr>
+<td>Delete / Backspace</td>
+<td>Delete selected items (handled in NodeScene)</td>
+</tr>
+<tr>
+<td>Ctrl+Z</td>
+<td>Undo</td>
+</tr>
+<tr>
+<td>Ctrl+Shift+Z / Ctrl+Y</td>
+<td>Redo</td>
+</tr>
+<tr>
+<td>Ctrl+C / Ctrl+V</td>
+<td>Copy / Paste selected nodes</td>
+</tr>
+<tr>
+<td>Escape</td>
+<td>Clear selection</td>
+</tr>
+</tbody>
+</table>
+<h3 id="drag-and-drop-from-librarypanel">Drag-and-drop from LibraryPanel</h3>
+<p><code>NodeView.dropEvent()</code> reads <code>application/x-node-id</code> from the MIME data (set by <code>DraggableTreeWidget</code>), maps the drop position to scene coordinates via <code>mapToScene()</code>, and calls <code>scene.add_node_by_name(node_id, pos)</code>.</p>
+<h3 id="mini-map-hosting">Mini-map hosting</h3>
+<p><code>NodeView.__init__</code> creates one <code>MiniMap</code> child widget and attaches it to the scene. The mini-map is repositioned in <code>resizeEvent</code> via <code>_mini_map.reposition()</code>. Scrollbar <code>valueChanged</code> signals connect to <code>_mini_map.refresh()</code> so the viewport indicator redraws whenever the user pans.</p>
+<hr />
+<h2 id="5-nodewidget-rendering">5. NodeWidget Rendering</h2>
+<p><code>NodeWidget</code> (<code>src/ui/node_widget.py</code>) is a <code>QGraphicsItem</code> subclass. It renders the node box using <code>QPainter</code> calls in <code>paint()</code> rather than Qt's built-in rectangle items, giving full control over the visual style.</p>
+<h3 id="structure">Structure</h3>
+<pre><code>NodeWidget (QGraphicsItem)
+│
+├── Header rect  (painted via QPainter.fillRect + QPainter.drawText)
+│     background: category color (configurable per node category)
+│     text: node.name + optional icon (SVG loaded via QSvgRenderer)
+│
+├── Body rect    (painted via QPainter.fillRect)
+│     background: dark gray (#2a2a2a dark, lighter in light theme)
+│
+├── PortWidget items (QGraphicsEllipseItem, added as child items)
+│     left side: input ports
+│     right side: output ports
+│
+└── QGraphicsProxyWidget items (one per input port with a widget_type)
+      embedded QWidget (QLineEdit, QSpinBox, QDoubleSpinBox,
+                        QCheckBox, QComboBox, QSlider, QTextEdit, QPushButton)
+</code></pre>
+<h3 id="proxy-widgets-and-z-ordering">Proxy widgets and z-ordering</h3>
+<p><code>QGraphicsProxyWidget</code> items embed regular Qt widgets into the scene. A custom <code>QComboBox</code> subclass (<code>node_widget.py</code>) overrides <code>showPopup()</code> to display the dropdown as a <code>QMenu</code> (a native OS window) instead of a popup inside the proxy, because composite layers from other proxy widgets would otherwise paint on top of the dropdown.</p>
+<h3 id="bypassed-rendering">Bypassed rendering</h3>
+<p>When <code>node.bypassed</code> is <code>True</code>, <code>NodeWidget.paint()</code> draws the header with reduced opacity and a diagonal strikethrough line, and the body background uses a distinct "bypassed" color. <code>set_bypassed(value)</code> toggles this flag and calls <code>update()</code> to trigger a repaint.</p>
+<h3 id="execution-state-highlighting">Execution state highlighting</h3>
+<p><code>set_executing(True)</code> draws a colored border around the node (typically orange/amber). <code>set_executing(False)</code> removes it. This is driven by <code>MainWindow._on_node_started</code> and <code>_on_node_finished</code>.</p>
+<h3 id="parameter-synchronization">Parameter synchronization</h3>
+<p><code>set_parameter(port_name, value)</code> updates the in-scene widget to reflect a new value. For dropdowns, if <code>value</code> is a list, it updates the dropdown options. This is called by <code>MainWindow._on_node_output</code> to show live output values in the node's own UI as execution proceeds.</p>
+<hr />
+<h2 id="6-portwidget">6. PortWidget</h2>
+<p><code>PortWidget</code> (<code>src/ui/port_widget.py</code>) is a <code>QGraphicsEllipseItem</code> that represents one input or output port. It stores a reference to the <code>Port</code> definition and knows its parent <code>NodeWidget</code>.</p>
+<h3 id="colors">Colors</h3>
+<p>Port color is determined by <code>data_type</code>:</p>
+<table>
+<thead>
+<tr>
+<th>data_type</th>
+<th>Color</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>exec</code></td>
+<td>White (light mode: black)</td>
+</tr>
+<tr>
+<td><code>string</code></td>
+<td>Green</td>
+</tr>
+<tr>
+<td><code>int</code></td>
+<td>Cyan</td>
+</tr>
+<tr>
+<td><code>float</code></td>
+<td>Yellow</td>
+</tr>
+<tr>
+<td><code>bool</code></td>
+<td>Orange</td>
+</tr>
+<tr>
+<td><code>list</code></td>
+<td>Purple</td>
+</tr>
+<tr>
+<td><code>any</code></td>
+<td>Gray</td>
+</tr>
+</tbody>
+</table>
+<p>The color is applied as the ellipse fill brush. Edge (<code>Edge._refresh_color()</code>) reads the color from <code>from_port.brush().color()</code> to match the wire to its source port.</p>
+<h3 id="hit-area">Hit area</h3>
+<p>The port ellipse is typically 10×10 scene units. Port detection during wire dragging uses <code>scene.itemAt()</code> with a small tolerance rectangle.</p>
+<h3 id="get_scene_pos">get_scene_pos()</h3>
+<p><code>PortWidget.get_scene_pos()</code> returns the center of the port ellipse in scene coordinates. <code>Edge.update_path()</code> calls this on both endpoints to compute the bezier control points.</p>
+<hr />
+<h2 id="7-edge-wire-rendering">7. Edge (Wire) Rendering</h2>
+<p><code>Edge</code> (<code>src/ui/canvas/edge.py</code>) is a <code>QGraphicsPathItem</code> that renders as a cubic bezier curve from one <code>PortWidget</code> to another.</p>
+<h3 id="bezier-geometry">Bezier geometry</h3>
+<pre><code class="language-python">pos_start = self.from_port.get_scene_pos()
+pos_end   = self.to_port.get_scene_pos() if self.to_port else self.pos_end
+
+dx   = pos_end.x() - pos_start.x()
+dist = max(abs(dx) * 0.5, 20)   # ensures minimum curvature even for vertical wires
+
+ctrl1 = QPointF(pos_start.x() + dist, pos_start.y())
+ctrl2 = QPointF(pos_end.x()   - dist, pos_end.y())
+
+path = QPainterPath()
+path.moveTo(pos_start)
+path.cubicTo(ctrl1, ctrl2, pos_end)
+self.setPath(path)
+</code></pre>
+<p>The horizontal offset of the control points scales with the horizontal distance between ports. Ports directly above/below each other produce a gentle S-curve (dist = 20); ports far apart produce a wide arc.</p>
+<h3 id="color">Color</h3>
+<p>The wire inherits the color of <code>from_port.brush().color()</code>. In light theme, if the color is near-white (lightness &gt; 200), it is overridden to black for visibility.</p>
+<h3 id="12-pixel-hit-area">12-pixel hit area</h3>
+<p><code>Edge.shape()</code> overrides the default shape (which is the path itself, only 2 px wide) to return a 12-pixel stroked version:</p>
+<pre><code class="language-python">def shape(self):
+    stroker = QPainterPathStroker()
+    stroker.setWidth(12)
+    return stroker.createStroke(self.path())
+</code></pre>
+<p>This widens the hover and selection zone to 12 screen pixels, making it easy to click or hover over thin wires in a dense graph.</p>
+<h3 id="live-value-tooltip">Live value tooltip</h3>
+<p><code>set_live_value(value)</code> stores the value and sets a Qt tooltip:</p>
+<pre><code class="language-python">s = repr(value)
+if len(s) &gt; 300:
+    s = s[:297] + &quot;...&quot;
+self.setToolTip(f&quot;{port_name}: {s}&quot; if port_name else s)
+</code></pre>
+<p>Qt automatically shows the tooltip when the user hovers over the edge's hit area. Values persist after execution ends and are cleared only when the next run starts (by <code>NodeScene.clear_edge_values()</code>).</p>
+<h3 id="temporary-edge-during-drag">Temporary edge during drag</h3>
+<p>While the user drags a new wire from a port, <code>NodeScene.active_edge</code> holds an <code>Edge</code> instance with <code>to_port=None</code>. <code>NodeScene.mouseMoveEvent</code> calls <code>active_edge.set_end_pos(scene_pos)</code> on every move. On release over a compatible port, <code>to_port</code> is set and the connection is registered. On release over empty space, the temporary edge is removed.</p>
+<hr />
+<h2 id="8-minimap">8. MiniMap</h2>
+<p><code>MiniMap</code> (<code>src/ui/canvas/mini_map.py</code>) is a secondary <code>QGraphicsView</code> that shares the same <code>QGraphicsScene</code> as the parent <code>NodeView</code>. Qt renders the full scene into both views automatically.</p>
+<h3 id="fixed-size-and-position">Fixed size and position</h3>
+<p>The mini-map is always 200×150 pixels (constants <code>_W</code>, <code>_H</code>). It is positioned 8 pixels from the bottom-right corner of its parent <code>NodeView</code> via <code>reposition()</code>:</p>
+<pre><code class="language-python">def reposition(self):
+    pv = self._main_view
+    self.move(pv.width() - self.width() - 8,
+              pv.height() - self.height() - 8)
+</code></pre>
+<p><code>reposition()</code> is called in <code>NodeView.resizeEvent</code>.</p>
+<h3 id="scene-fit-with-debouncing">Scene fit with debouncing</h3>
+<p>When scene items change (nodes added, moved, deleted), <code>scene.changed</code> fires. <code>_schedule_fit</code> starts an 80 ms single-shot <code>QTimer</code>. When the timer fires, <code>_do_fit()</code> calls <code>fitInView(scene.itemsBoundingRect() + _PAD, Qt.KeepAspectRatio)</code>. The debounce prevents the mini-map from re-fitting on every tiny move during a drag, which would cause visible flickering.</p>
+<h3 id="viewport-indicator">Viewport indicator</h3>
+<p><code>drawForeground()</code> is called by Qt after the scene thumbnail is painted. It converts the main view's viewport rectangle into scene coordinates and draws a semi-transparent blue rectangle:</p>
+<pre><code class="language-python">def drawForeground(self, painter, rect):
+    mv = self._main_view
+    vp = mv.viewport().rect()
+    scene_rect = QRectF(mv.mapToScene(vp.topLeft()),
+                        mv.mapToScene(vp.bottomRight()))
+    painter.setBrush(QBrush(QColor(100, 180, 255, 35)))   # very light fill
+    painter.setPen(QPen(QColor(100, 180, 255, 200), 1.5)) # visible outline
+    painter.drawRect(scene_rect)
+</code></pre>
+<h3 id="click-to-pan">Click-to-pan</h3>
+<p><code>setInteractive(False)</code> prevents any mouse event from reaching the scene items through the mini-map. Instead, <code>mousePressEvent</code> and <code>mouseMoveEvent</code> are overridden to call <code>_pan_to(mini_pos)</code>:</p>
+<pre><code class="language-python">def _pan_to(self, mini_pos):
+    scene_pos = self.mapToScene(mini_pos)
+    self._main_view.centerOn(scene_pos)
+    self.update()
+</code></pre>
+<p>This pans the main view so that <code>scene_pos</code> is centred in the main viewport. The viewport indicator redraws immediately via <code>update()</code>.</p>
+<p><strong>Do not</strong> set <code>setInteractive(True)</code> on the mini-map — it would allow users to accidentally move nodes by clicking the thumbnail.</p>
+<hr />
+<h2 id="9-canvassearchbar">9. CanvasSearchBar</h2>
+<p><code>CanvasSearchBar</code> (<code>src/ui/canvas/canvas_search_bar.py</code>) is a floating <code>QFrame</code> that is a child widget of <code>NodeView</code>, positioned at the top-centre via <code>move(x, 8)</code>.</p>
+<h3 id="show-hide">Show / hide</h3>
+<p><code>show_bar()</code> repositions the bar, shows it, gives focus to the <code>QLineEdit</code>, and immediately runs a search with the current text (in case the bar was hidden with text still in it). <code>hide_bar()</code> hides the bar, clears all state, and returns focus to <code>NodeView</code>.</p>
+<h3 id="search-logic">Search logic</h3>
+<p><code>_on_text_changed()</code> is connected to <code>QLineEdit.textChanged</code>. It filters <code>scene.nodes</code> by matching the query against <code>node_definition.name.lower()</code> and <code>node_definition.node_id.lower()</code>:</p>
+<pre><code class="language-python">self._matches = [
+    w for w in scene.nodes
+    if t in w.node_definition.name.lower()
+    or t in getattr(w.node_definition, 'node_id', '').lower()
+]
+</code></pre>
+<h3 id="navigation">Navigation</h3>
+<p><code>_go_next()</code> and <code>_go_prev()</code> increment/decrement <code>_current_idx</code> (modulo <code>len(_matches)</code>). Each call updates the match counter label and pans the main view to the matched node via <code>self._view.centerOn(node)</code>. The matched node is also selected so it is visually highlighted.</p>
+<h3 id="keyboard-handling">Keyboard handling</h3>
+<p><code>keyPressEvent</code> intercepts:<br />
+- <code>Escape</code> → <code>hide_bar()</code><br />
+- <code>Enter</code> / <code>Return</code> → <code>_go_next()</code> (or <code>_go_prev()</code> with Shift)</p>
+<p>Other keys propagate to the <code>QLineEdit</code> normally.</p>
+<hr />
+<h2 id="10-nodesearchpopup">10. NodeSearchPopup</h2>
+<p><code>NodeSearchPopup</code> (<code>src/ui/canvas/node_search_popup.py</code>) is a <code>QDialog</code> that appears when the user presses Tab on the canvas. It displays a filterable list of all registered nodes (from <code>NodeRegistry._definitions</code>, which excludes group_in / group_out / group_node). Selecting an entry creates that node at the last tracked mouse position in the scene.</p>
+<p>The popup position is calculated from <code>NodeView._last_mouse_scene_pos</code>, which <code>NodeView.mouseMoveEvent</code> updates on every mouse movement. This means the node spawns near where the user was pointing.</p>
+<p>Theme detection uses:</p>
+<pre><code class="language-python">is_dark = scene.backgroundBrush().color().lightness() &lt; 128
+</code></pre>
+<hr />
+<h2 id="11-event-flow-creating-a-connection">11. Event Flow: Creating a Connection</h2>
+<p>This is the sequence of events from the moment a user starts dragging from a port to when the wire is committed:</p>
+<pre><code>1. User presses left button on PortWidget
+         │
+         ▼
+   NodeScene.mousePressEvent
+         ├─ itemAt() → finds PortWidget under cursor
+         └─ creates Edge(from_port=port, to_port=None)
+            adds to scene as active_edge
+
+2. User moves mouse
+         │
+         ▼
+   NodeScene.mouseMoveEvent
+         └─ active_edge.set_end_pos(scene_mouse_pos)
+            → Edge.update_path() recomputes bezier
+            → scene repaints
+
+   [optional] hover snapping:
+         ├─ itemAt() → finds PortWidget under cursor
+         └─ if compatible port found: highlight it, set _snapped_port
+
+3. User releases mouse
+         │
+         ▼
+   NodeScene.mouseReleaseEvent
+         ├─ if _snapped_port is a compatible port:
+         │     to_port = _snapped_port
+         │     active_edge.to_port = to_port
+         │     scene.active_edge = None
+         │
+         │     validate: no duplicate connection, compatible types
+         │     graph_manager.add_connection(ConnectionModel(...))
+         │       └─ is_dag() check — reverts if cycle created
+         │
+         │     trigger on_plug_sync / on_plug callbacks on both nodes
+         │     push_history()
+         │     update LibraryPanel / parameter widgets
+         │
+         └─ else:
+               remove active_edge from scene
+               active_edge = None
+</code></pre>
+<h3 id="port-compatibility">Port compatibility</h3>
+<p>Any connection between two ports is allowed unless one of them is already connected to the other (no duplicate edges). There is no strict data-type enforcement in the engine — <code>any</code> ports accept all types, and the node's <code>execute()</code> is responsible for handling type mismatches gracefully. The UI does color-code ports by type as a visual hint.</p>
+<h3 id="exec-port-connections">Exec-port connections</h3>
+<p>If <code>from_port.port_definition.data_type == 'exec'</code>, the created <code>ConnectionModel</code> has <code>is_exec=True</code>. The engine uses this flag to distinguish exec-chain wires from data wires.</p>
+<hr />
+<h2 id="12-history-undoredo">12. History (Undo/Redo)</h2>
+<p>The history system uses full-scene snapshots rather than incremental diffs. This is simple to implement and correct, but it has a memory cost proportional to graph size.</p>
+<h3 id="snapshot-format">Snapshot format</h3>
+<p>Each snapshot is a <code>dict</code> returned by <code>WorkflowModel.model_dump(mode='json')</code>. This includes all nodes, connections, sticky notes, and backdrops. GroupNode subgraphs are stored inside <code>parameters["__workflow__"]</code> recursively.</p>
+<h3 id="push">Push</h3>
+<p><code>push_history()</code> is called after every user action that mutates the scene:<br />
+- Adding / removing a node<br />
+- Adding / removing a connection<br />
+- Moving nodes (on mouse release)<br />
+- Editing a parameter widget value (on change)<br />
+- Grouping / ungrouping<br />
+- Adding / removing sticky notes and backdrops</p>
+<p>The <code>_undoing</code> guard prevents recursive push during undo/redo restoration.</p>
+<h3 id="undo">Undo</h3>
+<pre><code class="language-python">def undo(self):
+    if not self.history: return
+    self._undoing = True
+    current = self.to_workflow_model().model_dump()
+    self.redo_stack.append(current)
+    last_state = self.history.pop()
+    model = WorkflowModel.model_validate(last_state)
+    self.from_workflow_model(model)
+    self._undoing = False
+    if self._sync_callback:
+        self._sync_callback(last_state)
+</code></pre>
+<p><code>from_workflow_model()</code> completely rebuilds the scene from the snapshot. All existing items are removed and new ones are created. This is an O(n) operation but visually instant for typical graph sizes.</p>
+<h3 id="max-depth">Max depth</h3>
+<p>The history list is capped at 50 entries:</p>
+<pre><code class="language-python">if len(self.history) &gt; 50:
+    self.history.pop(0)
+</code></pre>
+<hr />
+<h2 id="13-serialization-scene-tofrom-workflowmodel">13. Serialization (Scene to/from WorkflowModel)</h2>
+<h3 id="scene-workflowmodel">Scene → WorkflowModel</h3>
+<p><code>NodeScene.to_workflow_model()</code> collects:</p>
+<ul>
+<li><code>nodes</code>: one <code>NodeInstanceModel</code> per <code>NodeWidget</code>, preserving <code>instance_id</code>, <code>node_id</code>, position, parameters, <code>bypassed</code>, and <code>init_priority</code>.</li>
+<li><code>connections</code>: one <code>ConnectionModel</code> per <code>Edge</code> with a committed <code>to_port</code>.</li>
+<li><code>sticky_notes</code>: one <code>StickyNoteModel</code> per <code>StickyNote</code>.</li>
+<li><code>backdrops</code>: one <code>BackdropModel</code> per <code>Backdrop</code>.</li>
+</ul>
+<p>Parameters are serialized by calling <code>NodeWidget.get_serializable_parameters()</code>, which merges the node's <code>instance.parameters</code> dict with the current widget values.</p>
+<h3 id="workflowmodel-scene">WorkflowModel → Scene</h3>
+<p><code>NodeScene.from_workflow_model(model)</code> clears all items from the scene, then:</p>
+<ol>
+<li>For each <code>NodeInstanceModel</code>: looks up <code>NodeRegistry.get_definition()</code> and <code>NodeRegistry.get_class()</code>, creates a <code>NodeWidget</code>, sets its position and parameters.</li>
+<li>For each <code>ConnectionModel</code>: finds the matching <code>PortWidget</code> items by <code>instance_id</code> and <code>port_name</code>, creates an <code>Edge</code>, and adds it.</li>
+<li>For each <code>StickyNoteModel</code> / <code>BackdropModel</code>: creates the corresponding item and positions it.</li>
+</ol>
+<h3 id="file-io">File I/O</h3>
+<p><code>MainWindow.save_workflow_as()</code>:</p>
+<pre><code class="language-python">model = scene.to_workflow_model()
+json_str = model.model_dump_json(indent=2)
+with open(path, &quot;w&quot;) as f:
+    f.write(json_str)
+</code></pre>
+<p><code>MainWindow.load_workflow()</code>:</p>
+<pre><code class="language-python">with open(path, &quot;r&quot;) as f:
+    data = json.load(f)
+model = WorkflowModel.model_validate(data)
+scene.from_workflow_model(model)
+</code></pre>
+<hr />
+<h2 id="14-theme-system">14. Theme System</h2>
+<p>Vibrante-Node supports dark and light themes. Theme state is tracked by <code>MainWindow._is_dark_theme</code>.</p>
+<h3 id="application-stylesheet">Application stylesheet</h3>
+<p><code>MainWindow._apply_dark_theme()</code> and <code>_apply_light_theme()</code> call <code>QApplication.instance().setStyleSheet(css)</code> with a comprehensive CSS string that styles all standard Qt widgets (<code>QMainWindow</code>, <code>QDockWidget</code>, <code>QTabWidget</code>, <code>QMenuBar</code>, <code>QPushButton</code>, etc.).</p>
+<p>The Fusion style (<code>QApplication.setStyle("Fusion")</code>) is applied globally at startup to ensure consistent QSS rendering across platforms. Without Fusion, QSS rendering differs between Windows, macOS, and Linux.</p>
+<h3 id="cascade-to-canvas-items">Cascade to canvas items</h3>
+<p>After applying the application stylesheet, the theme methods call <code>apply_theme()</code> on items that manage their own appearance independently of QSS:</p>
+<pre><code class="language-python">scene.setBackgroundBrush(QColor(40, 40, 40))   # dark
+# or
+scene.setBackgroundBrush(QColor(220, 220, 220)) # light
+
+for node in scene.nodes:
+    node.apply_theme(is_dark)
+
+for edge in scene.edges:
+    edge.apply_theme(is_dark)
+
+view._mini_map.apply_theme(is_dark)
+</code></pre>
+<h3 id="adding-a-themeable-component">Adding a themeable component</h3>
+<p>When creating a new graphics item or custom widget that cannot be styled purely via QSS:</p>
+<ol>
+<li>Add <code>apply_theme(is_dark: bool)</code> method.</li>
+<li>Set initial theme in <code>__init__</code> with <code>self.apply_theme(True)</code>.</li>
+<li>Connect to the theme cascade in <code>_apply_dark_theme()</code> / <code>_apply_light_theme()</code> in <code>MainWindow</code>.</li>
+</ol>
+<hr />
+<h2 id="15-librarypanel">15. LibraryPanel</h2>
+<p><code>LibraryPanel</code> (<code>src/ui/library_panel.py</code>) is a <code>QDockWidget</code> that displays all registered nodes grouped by category. It provides drag-to-canvas, double-click-to-add, and right-click context menus for edit and delete.</p>
+<h3 id="tree-structure">Tree structure</h3>
+<p>The <code>DraggableTreeWidget</code> (a <code>QTreeWidget</code> subclass) has top-level items for each category and child items for each node. Each child item stores <code>node_id</code> in <code>Qt.UserRole</code>.</p>
+<h3 id="drag-to-canvas">Drag-to-canvas</h3>
+<p><code>DraggableTreeWidget.mouseMoveEvent</code> starts a <code>QDrag</code> when the user moves more than <code>startDragDistance()</code> pixels from the press point. The <code>QMimeData</code> carries:</p>
+<ul>
+<li><code>application/x-node-id</code> — the <code>node_id</code> bytes (used by <code>NodeView.dropEvent</code>)</li>
+<li>plain text — the <code>node_id</code> string (fallback for external drops)</li>
+</ul>
+<h3 id="signals">Signals</h3>
+<table>
+<thead>
+<tr>
+<th>Signal</th>
+<th>When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>node_selected(str)</code></td>
+<td>Double-click on a node item</td>
+</tr>
+<tr>
+<td><code>edit_requested(str)</code></td>
+<td>Right-click → Edit</td>
+</tr>
+<tr>
+<td><code>delete_requested(str)</code></td>
+<td>Right-click → Delete</td>
+</tr>
+</tbody>
+</table>
+<p><code>MainWindow</code> connects <code>node_selected</code> to <code>_on_node_selected()</code> which calls <code>scene.add_node_by_name()</code> at the current scene centre.</p>
+<hr />
+<h2 id="16-logpanel">16. LogPanel</h2>
+<p><code>LogPanel</code> (<code>src/ui/log_panel.py</code>) is a <code>QDockWidget</code> wrapping a <code>QTextEdit</code>. It displays messages with color-coded HTML:</p>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Color</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>info</code></td>
+<td>Default text color (white/black per theme)</td>
+</tr>
+<tr>
+<td><code>success</code></td>
+<td>Green (<code>#4CAF50</code>)</td>
+</tr>
+<tr>
+<td><code>error</code></td>
+<td>Red (<code>#F44336</code>)</td>
+</tr>
+<tr>
+<td><code>warning</code></td>
+<td>Orange (<code>#FF9800</code>)</td>
+</tr>
+</tbody>
+</table>
+<p>Each message is prefixed with a timestamp (<code>HH:MM:SS</code>) and, when a <code>node_id</code> is known, the node name.</p>
+<p>Execution timing messages (logged by <code>MainWindow._on_node_finished</code>) appear as <code>info</code> level: <code>Node 'X' finished in 0.34s</code>.</p>
+<p>The <code>QTextEdit</code> is read-only. A <strong>Clear</strong> button calls <code>clear()</code>. Log entries are appended with <code>append(html)</code> which scrolls to the bottom automatically via <code>scrollContentsBy</code>.</p>
+<hr />
+<h2 id="17-scriptingconsole">17. ScriptingConsole</h2>
+<p><code>ScriptingConsole</code> (<code>src/ui/scripting_console.py</code>) is a <code>QDockWidget</code> with:<br />
+- A <code>QPlainTextEdit</code> (output area, read-only).<br />
+- A <code>QLineEdit</code> (input area).</p>
+<p>When the user presses Enter in the input area, the text is executed via <code>exec(code, context)</code> where <code>context = {'window': self._main_window, 'scene': current_scene}</code>. Standard output is captured and appended to the output area. Exceptions are displayed in red.</p>
+<p>Scripts have full access to <code>window</code> (<code>MainWindow</code>) and <code>scene</code> (<code>NodeScene</code>), so they can add nodes, read parameters, trigger execution, and modify the workflow programmatically.</p>
+<hr />
+<h2 id="18-nodebuilderdialog">18. NodeBuilderDialog</h2>
+<p><code>NodeBuilderDialog</code> (<code>src/ui/node_builder.py</code>) is a <code>QDialog</code> for creating and editing node definitions. It provides:</p>
+<ul>
+<li><strong>Metadata fields</strong>: name, category, description, icon path, <code>use_exec</code> checkbox.</li>
+<li><strong>Input ports table</strong> (<code>QTableWidget</code>): port name, data type, widget type columns; add/remove rows.</li>
+<li><strong>Output ports table</strong>: same structure.</li>
+<li><strong>Code editor</strong> (<code>CodeEditor</code>): Python source with syntax highlighting and autocomplete.</li>
+<li><strong>AI assistant</strong> (<code>GeminiChatWidget</code>): chat interface for generating node code with Gemini.</li>
+<li><strong>Test bridge button</strong>: calls <code>bridge.ping()</code> to verify Houdini connectivity.</li>
+</ul>
+<h3 id="code-to-ports-sync">Code-to-ports sync</h3>
+<p>A <code>QTimer</code> (debounced 300 ms) triggers <code>_sync_code_to_ui()</code> after each keystroke. This parses the code with <code>ast</code> and extracts <code>add_input()</code>/<code>add_output()</code> calls to populate the port tables. This is one-directional (code → tables); editing the tables does not modify the code.</p>
+<h3 id="save">Save</h3>
+<p>On <strong>Save</strong>, <code>NodeBuilderDialog</code> assembles a <code>NodeDefinitionJSON</code>, calls <code>NodeRegistry.register_definition()</code>, and writes the JSON file to <code>nodes/{node_id}.json</code>. It then calls <code>NodeRegistry.reload_node_definition()</code> and refreshes the <code>LibraryPanel</code>.</p>
+<hr />
+<h2 id="19-codeeditor">19. CodeEditor</h2>
+<p><code>CodeEditor</code> (<code>src/ui/code_editor.py</code>) provides Python-aware editing. It has two implementations selected at import time:</p>
+<pre><code class="language-python">try:
+    from PyQt5.Qsci import QsciScintilla, QsciLexerPython, QsciAPIs
+    _QSCINTILLA_AVAILABLE = True
+except ImportError:
+    _QSCINTILLA_AVAILABLE = False
+    # fallback class uses QPlainTextEdit + QSyntaxHighlighter
+</code></pre>
+<p>Both implementations expose an identical public API:</p>
+<table>
+<thead>
+<tr>
+<th>Method / attribute</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>setPlainText(text)</code></td>
+<td>Set editor content</td>
+</tr>
+<tr>
+<td><code>toPlainText()</code></td>
+<td>Get editor content</td>
+</tr>
+<tr>
+<td><code>textChanged</code> signal</td>
+<td>Emitted on every keystroke</td>
+</tr>
+<tr>
+<td><code>apply_theme(is_dark)</code></td>
+<td>Switch Dracula-dark / One-Light color scheme</td>
+</tr>
+<tr>
+<td><code>set_completer_list(words)</code></td>
+<td>Replace autocomplete word list</td>
+</tr>
+<tr>
+<td><code>append_completer_list(words)</code></td>
+<td>Add words to autocomplete list</td>
+</tr>
+<tr>
+<td><code>error_line</code></td>
+<td>Line number of last syntax error (-1 if none)</td>
+</tr>
+<tr>
+<td>Ctrl+Wheel</td>
+<td>Zoom in/out</td>
+</tr>
+</tbody>
+</table>
+<p>Do not re-raise <code>ImportError</code> if QScintilla is missing. The fallback implementation keeps the application functional on systems without the optional dependency.</p>
+<p>To install the full editor:</p>
+<pre><code>pip install QScintilla
+</code></pre>
+<hr />
+<h2 id="20-how-to-add-a-new-ui-panel">20. How to Add a New UI Panel</h2>
+<p>This is the step-by-step pattern for adding a new dockable panel to the application.</p>
+<h3 id="step-1-create-the-panel-class">Step 1: Create the panel class</h3>
+<pre><code class="language-python"># src/ui/my_panel.py
+from PyQt5.QtWidgets import QDockWidget, QWidget, QVBoxLayout, QLabel
+
+class MyPanel(QDockWidget):
+    def __init__(self, parent=None):
+        super().__init__(&quot;My Panel&quot;, parent)
+        self.setObjectName(&quot;MyPanelDock&quot;)   # must be unique for geometry save/restore
+        self.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
+
+        container = QWidget()
+        layout = QVBoxLayout(container)
+        self._label = QLabel(&quot;Hello from MyPanel&quot;)
+        layout.addWidget(self._label)
+        self.setWidget(container)
+
+    def update_content(self, data):
+        self._label.setText(str(data))
+</code></pre>
+<h3 id="step-2-instantiate-in-mainwindow">Step 2: Instantiate in MainWindow</h3>
+<pre><code class="language-python"># In MainWindow.__init__, after the existing dock panels:
+from src.ui.my_panel import MyPanel
+
+self.my_panel = MyPanel(self)
+self.addDockWidget(Qt.RightDockWidgetArea, self.my_panel)
+</code></pre>
+<h3 id="step-3-connect-to-engine-signals-if-needed">Step 3: Connect to engine signals (if needed)</h3>
+<pre><code class="language-python">executor.node_output.connect(self._on_node_output_for_my_panel)
+
+def _on_node_output_for_my_panel(self, node_id, output_data):
+    if &quot;my_output&quot; in output_data:
+        self.my_panel.update_content(output_data[&quot;my_output&quot;])
+</code></pre>
+<h3 id="step-4-add-to-the-view-menu">Step 4: Add to the View menu</h3>
+<pre><code class="language-python"># In MainWindow._init_menu():
+view_menu.addAction(self.my_panel.toggleViewAction())
+</code></pre>
+<p>The <code>toggleViewAction()</code> is provided by <code>QDockWidget</code> and shows/hides the panel.</p>
+<h3 id="step-5-geometry-persistence">Step 5: Geometry persistence</h3>
+<p>Dock panel positions and sizes are saved/restored by <code>_save_user_settings()</code> / <code>_load_user_settings()</code> via <code>self.saveState()</code> / <code>self.restoreState()</code>. Any panel whose <code>objectName</code> was set before <code>restoreState()</code> is called will have its position restored automatically.</p>
+<hr />
+<h2 id="21-custom-graphics-items">21. Custom Graphics Items</h2>
+<h3 id="inheriting-qgraphicsitem">Inheriting QGraphicsItem</h3>
+<pre><code class="language-python">from PyQt5.QtWidgets import QGraphicsItem
+from PyQt5.QtCore import QRectF
+from PyQt5.QtGui import QPainter, QPen, QColor
+
+class MyItem(QGraphicsItem):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setFlag(QGraphicsItem.ItemIsSelectable)
+        self.setFlag(QGraphicsItem.ItemIsMovable)
+        self.setFlag(QGraphicsItem.ItemSendsGeometryChanges)
+        self._width = 100
+        self._height = 60
+
+    def boundingRect(self) -&gt; QRectF:
+        # Must be exact or Qt will artifact during painting
+        return QRectF(0, 0, self._width, self._height)
+
+    def paint(self, painter: QPainter, option, widget=None):
+        painter.setPen(QPen(QColor(&quot;#888888&quot;), 1))
+        painter.drawRect(self.boundingRect())
+</code></pre>
+<h3 id="required-methods">Required methods</h3>
+<ul>
+<li><code>boundingRect()</code> — must return the exact bounding box in item-local coordinates. Qt uses this for culling (not painting items outside the viewport) and hit testing.</li>
+<li><code>paint(painter, option, widget)</code> — all drawing happens here. Use the provided <code>painter</code>; do not create a new <code>QPainter</code>.</li>
+</ul>
+<h3 id="z-order">Z-order</h3>
+<p>Z-value controls paint order. Higher Z-values paint on top:</p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Z-value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Backdrop</td>
+<td>-3</td>
+</tr>
+<tr>
+<td>Edge (wire)</td>
+<td>-1</td>
+</tr>
+<tr>
+<td>NodeWidget</td>
+<td>0</td>
+</tr>
+<tr>
+<td>StickyNote</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Active edge (during drag)</td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+<p>Set z-value in <code>__init__</code>:</p>
+<pre><code class="language-python">self.setZValue(-1)  # paint behind nodes
+</code></pre>
+<h3 id="adding-to-the-scene">Adding to the scene</h3>
+<pre><code class="language-python">item = MyItem()
+item.setPos(scene_x, scene_y)
+scene.addItem(item)
+</code></pre>
+<h3 id="custom-hit-area-shape">Custom hit area (shape())</h3>
+<p>To make a thin or irregular item easier to click, override <code>shape()</code>:</p>
+<pre><code class="language-python">def shape(self):
+    stroker = QPainterPathStroker()
+    stroker.setWidth(12)
+    path = QPainterPath()
+    path.addRect(self.boundingRect())
+    return stroker.createStroke(path)
+</code></pre>
+<p>This is the same technique <code>Edge</code> uses to widen wire hit areas.</p>
+<hr />
+<h2 id="22-stylesheet-architecture">22. Stylesheet Architecture</h2>
+<p>The application uses Qt Style Sheets (QSS) applied to <code>QApplication</code>. There is one large CSS string for dark theme and one for light theme.</p>
+<h3 id="where-stylesheets-live">Where stylesheets live</h3>
+<p>The CSS strings are defined inline in <code>MainWindow._apply_dark_theme()</code> and <code>MainWindow._apply_light_theme()</code>. They are not loaded from files; embedding them avoids file-not-found issues in bundled deployments.</p>
+<h3 id="css-variable-pattern">CSS variable pattern</h3>
+<p>Qt 5's QSS does not support CSS variables. The pattern used here is Python string templating at the call site:</p>
+<pre><code class="language-python">PRIMARY = &quot;#4a90d9&quot;
+BACKGROUND = &quot;#2b2b2b&quot;
+
+css = f&quot;&quot;&quot;
+QMainWindow {{
+    background-color: {BACKGROUND};
+}}
+QPushButton {{
+    background-color: {PRIMARY};
+    color: white;
+}}
+&quot;&quot;&quot;
+QApplication.instance().setStyleSheet(css)
+</code></pre>
+<h3 id="per-widget-overrides">Per-widget overrides</h3>
+<p>To override the global stylesheet for a specific widget, call <code>widget.setStyleSheet(local_css)</code>. Local styles take precedence over the global stylesheet for that widget and its children. Example:</p>
+<pre><code class="language-python">self.my_button.setStyleSheet(&quot;&quot;&quot;
+    QPushButton {
+        background-color: #c0392b;   /* red override */
+        color: white;
+    }
+&quot;&quot;&quot;)
+</code></pre>
+<h3 id="selectors-for-custom-items">Selectors for custom items</h3>
+<p>Custom <code>QWidget</code> subclasses can be styled by their Python class name only if they are also registered with Qt's meta-object system. To use <code>objectName</code> as a CSS ID:</p>
+<pre><code class="language-python">self.setObjectName(&quot;MiniMapView&quot;)
+# CSS:
+# QGraphicsView#MiniMapView { border: 1px solid #555; }
+</code></pre>
+<h3 id="what-qss-cannot-style">What QSS cannot style</h3>
+<ul>
+<li><code>QGraphicsItem</code> subclasses (e.g. <code>NodeWidget</code>, <code>Edge</code>). These must be styled via <code>QPainter</code> in <code>paint()</code> or via <code>apply_theme()</code> methods.</li>
+<li><code>QGraphicsScene</code> background — use <code>scene.setBackgroundBrush()</code>.</li>
+</ul>
+<hr />
+<h2 id="23-stickynote-and-backdrop">23. StickyNote and Backdrop</h2>
+<p><code>StickyNote</code> (<code>src/ui/canvas/sticky_note.py</code>) and <code>Backdrop</code> (<code>src/ui/canvas/backdrop.py</code>) are annotation items that do not participate in execution.</p>
+<h3 id="stickynote">StickyNote</h3>
+<p>A <code>QGraphicsItem</code> with:<br />
+- A colored rectangle background (user-configurable color via right-click).<br />
+- A <code>QGraphicsProxyWidget</code> embedding a <code>QTextEdit</code> for multi-line text.<br />
+- Resize handles at the corners and edges.<br />
+- Z-value <code>1</code> (above nodes and edges so notes are always readable).</p>
+<p><code>StickyNoteModel</code> is serialized as part of <code>WorkflowModel.sticky_notes</code>.</p>
+<h3 id="backdrop-network-box">Backdrop (Network Box)</h3>
+<p>A <code>QGraphicsRectItem</code> with:<br />
+- A semi-transparent colored fill.<br />
+- A title text rendered in the header area.<br />
+- Resize handles.<br />
+- Z-value <code>-3</code> (behind all other items so it acts as a visual grouping frame).<br />
+- Moving a Backdrop does <strong>not</strong> move contained nodes — the backdrop is purely cosmetic.</p>
+<p><code>BackdropModel</code> is serialized as part of <code>WorkflowModel.backdrops</code>.</p>
+<h3 id="creating-programmatically">Creating programmatically</h3>
+<pre><code class="language-python">scene.add_sticky_note(pos=(100, 200), text=&quot;Initial text&quot;, color=&quot;#ffffcc&quot;)
+scene.add_backdrop(title=&quot;My Group&quot;, pos=(50, 150), size=(400, 300), color=&quot;#444444&quot;)
+</code></pre>
+<p>Both methods push history after creation so they can be undone.</p>
+    <nav class="page-nav">
+      <a class="page-nav-link prev" href="06_backend_architecture.html"><span class="page-nav-label">Previous</span><span class="page-nav-title">Backend Architecture</span></a>
+      <a class="page-nav-link next" href="08_api_reference.html"><span class="page-nav-label">Next</span><span class="page-nav-title">API Reference</span></a>
+    </nav>
+  </div>
+</main>
+
+<!-- ── TOC ────────────────────────────────────────────────────────────── -->
+<aside class="toc">
+  <div class="toc-title">On this page</div>
+<a class="toc-link toc-h2" href="#table-of-contents">Table of Contents</a>
+<a class="toc-link toc-h2" href="#1-widget-hierarchy">1. Widget Hierarchy</a>
+<a class="toc-link toc-h2" href="#2-mainwindow">2. MainWindow</a>
+<a class="toc-link toc-h3" href="#tab-management">Tab management</a>
+<a class="toc-link toc-h3" href="#signal-connections-engine-ui">Signal connections (engine → UI)</a>
+<a class="toc-link toc-h3" href="#autosave">Autosave</a>
+<a class="toc-link toc-h3" href="#recent-files">Recent files</a>
+<a class="toc-link toc-h2" href="#3-nodescene-qgraphicsscene">3. NodeScene (QGraphicsScene)</a>
+<a class="toc-link toc-h3" href="#key-attributes">Key attributes</a>
+<a class="toc-link toc-h3" href="#background-grid">Background grid</a>
+<a class="toc-link toc-h3" href="#history-undoredo">History (undo/redo)</a>
+<a class="toc-link toc-h3" href="#scene-communication-_sync_callback">Scene communication: _sync_callback</a>
+<a class="toc-link toc-h3" href="#node-search-from-scene">Node search from scene</a>
+<a class="toc-link toc-h3" href="#grouping">Grouping</a>
+<a class="toc-link toc-h2" href="#4-nodeview-qgraphicsview">4. NodeView (QGraphicsView)</a>
+<a class="toc-link toc-h3" href="#rendering-hints">Rendering hints</a>
+<a class="toc-link toc-h3" href="#pan">Pan</a>
+<a class="toc-link toc-h3" href="#zoom">Zoom</a>
+<a class="toc-link toc-h3" href="#keyboard-shortcuts-handled-in-nodeviewkeypressevent">Keyboard shortcuts (handled in NodeView.keyPressEvent)</a>
+<a class="toc-link toc-h3" href="#drag-and-drop-from-librarypanel">Drag-and-drop from LibraryPanel</a>
+<a class="toc-link toc-h3" href="#mini-map-hosting">Mini-map hosting</a>
+<a class="toc-link toc-h2" href="#5-nodewidget-rendering">5. NodeWidget Rendering</a>
+<a class="toc-link toc-h3" href="#structure">Structure</a>
+<a class="toc-link toc-h3" href="#proxy-widgets-and-z-ordering">Proxy widgets and z-ordering</a>
+<a class="toc-link toc-h3" href="#bypassed-rendering">Bypassed rendering</a>
+<a class="toc-link toc-h3" href="#execution-state-highlighting">Execution state highlighting</a>
+<a class="toc-link toc-h3" href="#parameter-synchronization">Parameter synchronization</a>
+<a class="toc-link toc-h2" href="#6-portwidget">6. PortWidget</a>
+<a class="toc-link toc-h3" href="#colors">Colors</a>
+<a class="toc-link toc-h3" href="#hit-area">Hit area</a>
+<a class="toc-link toc-h3" href="#get_scene_pos">get_scene_pos()</a>
+<a class="toc-link toc-h2" href="#7-edge-wire-rendering">7. Edge (Wire) Rendering</a>
+<a class="toc-link toc-h3" href="#bezier-geometry">Bezier geometry</a>
+<a class="toc-link toc-h3" href="#color">Color</a>
+<a class="toc-link toc-h3" href="#12-pixel-hit-area">12-pixel hit area</a>
+<a class="toc-link toc-h3" href="#live-value-tooltip">Live value tooltip</a>
+<a class="toc-link toc-h3" href="#temporary-edge-during-drag">Temporary edge during drag</a>
+<a class="toc-link toc-h2" href="#8-minimap">8. MiniMap</a>
+<a class="toc-link toc-h3" href="#fixed-size-and-position">Fixed size and position</a>
+<a class="toc-link toc-h3" href="#scene-fit-with-debouncing">Scene fit with debouncing</a>
+<a class="toc-link toc-h3" href="#viewport-indicator">Viewport indicator</a>
+<a class="toc-link toc-h3" href="#click-to-pan">Click-to-pan</a>
+<a class="toc-link toc-h2" href="#9-canvassearchbar">9. CanvasSearchBar</a>
+<a class="toc-link toc-h3" href="#show-hide">Show / hide</a>
+<a class="toc-link toc-h3" href="#search-logic">Search logic</a>
+<a class="toc-link toc-h3" href="#navigation">Navigation</a>
+<a class="toc-link toc-h3" href="#keyboard-handling">Keyboard handling</a>
+<a class="toc-link toc-h2" href="#10-nodesearchpopup">10. NodeSearchPopup</a>
+<a class="toc-link toc-h2" href="#11-event-flow-creating-a-connection">11. Event Flow: Creating a Connection</a>
+<a class="toc-link toc-h3" href="#port-compatibility">Port compatibility</a>
+<a class="toc-link toc-h3" href="#exec-port-connections">Exec-port connections</a>
+<a class="toc-link toc-h2" href="#12-history-undoredo">12. History (Undo/Redo)</a>
+<a class="toc-link toc-h3" href="#snapshot-format">Snapshot format</a>
+<a class="toc-link toc-h3" href="#push">Push</a>
+<a class="toc-link toc-h3" href="#undo">Undo</a>
+<a class="toc-link toc-h3" href="#max-depth">Max depth</a>
+<a class="toc-link toc-h2" href="#13-serialization-scene-tofrom-workflowmodel">13. Serialization (Scene to/from WorkflowModel)</a>
+<a class="toc-link toc-h3" href="#scene-workflowmodel">Scene → WorkflowModel</a>
+<a class="toc-link toc-h3" href="#workflowmodel-scene">WorkflowModel → Scene</a>
+<a class="toc-link toc-h3" href="#file-io">File I/O</a>
+<a class="toc-link toc-h2" href="#14-theme-system">14. Theme System</a>
+<a class="toc-link toc-h3" href="#application-stylesheet">Application stylesheet</a>
+<a class="toc-link toc-h3" href="#cascade-to-canvas-items">Cascade to canvas items</a>
+<a class="toc-link toc-h3" href="#adding-a-themeable-component">Adding a themeable component</a>
+<a class="toc-link toc-h2" href="#15-librarypanel">15. LibraryPanel</a>
+<a class="toc-link toc-h3" href="#tree-structure">Tree structure</a>
+<a class="toc-link toc-h3" href="#drag-to-canvas">Drag-to-canvas</a>
+<a class="toc-link toc-h3" href="#signals">Signals</a>
+<a class="toc-link toc-h2" href="#16-logpanel">16. LogPanel</a>
+<a class="toc-link toc-h2" href="#17-scriptingconsole">17. ScriptingConsole</a>
+<a class="toc-link toc-h2" href="#18-nodebuilderdialog">18. NodeBuilderDialog</a>
+<a class="toc-link toc-h3" href="#code-to-ports-sync">Code-to-ports sync</a>
+<a class="toc-link toc-h3" href="#save">Save</a>
+<a class="toc-link toc-h2" href="#19-codeeditor">19. CodeEditor</a>
+<a class="toc-link toc-h2" href="#20-how-to-add-a-new-ui-panel">20. How to Add a New UI Panel</a>
+<a class="toc-link toc-h3" href="#step-1-create-the-panel-class">Step 1: Create the panel class</a>
+<a class="toc-link toc-h3" href="#step-2-instantiate-in-mainwindow">Step 2: Instantiate in MainWindow</a>
+<a class="toc-link toc-h3" href="#step-3-connect-to-engine-signals-if-needed">Step 3: Connect to engine signals (if needed)</a>
+<a class="toc-link toc-h3" href="#step-4-add-to-the-view-menu">Step 4: Add to the View menu</a>
+<a class="toc-link toc-h3" href="#step-5-geometry-persistence">Step 5: Geometry persistence</a>
+<a class="toc-link toc-h2" href="#21-custom-graphics-items">21. Custom Graphics Items</a>
+<a class="toc-link toc-h3" href="#inheriting-qgraphicsitem">Inheriting QGraphicsItem</a>
+<a class="toc-link toc-h3" href="#required-methods">Required methods</a>
+<a class="toc-link toc-h3" href="#z-order">Z-order</a>
+<a class="toc-link toc-h3" href="#adding-to-the-scene">Adding to the scene</a>
+<a class="toc-link toc-h3" href="#custom-hit-area-shape">Custom hit area (shape())</a>
+<a class="toc-link toc-h2" href="#22-stylesheet-architecture">22. Stylesheet Architecture</a>
+<a class="toc-link toc-h3" href="#where-stylesheets-live">Where stylesheets live</a>
+<a class="toc-link toc-h3" href="#css-variable-pattern">CSS variable pattern</a>
+<a class="toc-link toc-h3" href="#per-widget-overrides">Per-widget overrides</a>
+<a class="toc-link toc-h3" href="#selectors-for-custom-items">Selectors for custom items</a>
+<a class="toc-link toc-h3" href="#what-qss-cannot-style">What QSS cannot style</a>
+<a class="toc-link toc-h2" href="#23-stickynote-and-backdrop">23. StickyNote and Backdrop</a>
+<a class="toc-link toc-h3" href="#stickynote">StickyNote</a>
+<a class="toc-link toc-h3" href="#backdrop-network-box">Backdrop (Network Box)</a>
+<a class="toc-link toc-h3" href="#creating-programmatically">Creating programmatically</a>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/highlight.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lunr@2.3.9/lunr.min.js"></script>
+<script>
+// ── Search ──────────────────────────────────────────────────────────────
+let _idx = null, _docs = [];
+
+async function initSearch() {
+  try {
+    const base = document.getElementById('portal-base').dataset.base;
+    const resp = await fetch(base + 'search.json');
+    _docs = await resp.json();
+    _idx = lunr(function() {
+      this.ref('id');
+      this.field('title', { boost: 10 });
+      this.field('body');
+      _docs.forEach((d, i) => {
+        this.add({ id: i, title: d.title, body: d.body });
+      });
+    });
+  } catch(e) { console.warn('Search index not available', e); }
+}
+
+function doSearch(q) {
+  const box = document.getElementById('search-results');
+  if (!q || q.length < 2) { box.classList.remove('visible'); return; }
+  if (!_idx) { box.innerHTML = '<div class="search-no-results">Search index loading…</div>'; box.classList.add('visible'); return; }
+  const results = _idx.search(q + '~1');
+  if (!results.length) {
+    box.innerHTML = '<div class="search-no-results">No results for "' + q + '"</div>';
+    box.classList.add('visible'); return;
+  }
+  box.innerHTML = results.slice(0, 8).map(r => {
+    const d = _docs[r.ref];
+    const excerpt = d.body.substring(0, 140).replace(/[#*`]/g, '').trim() + '…';
+    return `<a class="search-result-item" href="${d.url}">
+      <div class="search-result-title">${d.title}</div>
+      <div class="search-result-excerpt">${excerpt}</div>
+    </a>`;
+  }).join('');
+  box.classList.add('visible');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initSearch();
+  const inp = document.getElementById('search-input');
+  if (inp) {
+    inp.addEventListener('input', e => doSearch(e.target.value));
+    inp.addEventListener('keydown', e => { if (e.key === 'Escape') { e.target.value=''; document.getElementById('search-results').classList.remove('visible'); }});
+  }
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.search-wrap')) document.getElementById('search-results')?.classList.remove('visible');
+  });
+  // Keyboard shortcut: / to focus search
+  document.addEventListener('keydown', e => {
+    if (e.key === '/' && !['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) {
+      e.preventDefault(); document.getElementById('search-input')?.focus();
+    }
+  });
+
+  // ── TOC active section ──────────────────────────────────────────────
+  const tocLinks = document.querySelectorAll('.toc-link');
+  const headings = document.querySelectorAll('h2[id],h3[id],h4[id]');
+  if (tocLinks.length && headings.length) {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          tocLinks.forEach(l => l.classList.remove('active'));
+          const link = document.querySelector(`.toc-link[href="#${entry.target.id}"]`);
+          if (link) link.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    headings.forEach(h => obs.observe(h));
+  }
+
+  // ── Copy buttons ────────────────────────────────────────────────────
+  document.querySelectorAll('pre').forEach(pre => {
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn'; btn.textContent = 'Copy';
+    btn.addEventListener('click', () => {
+      const code = pre.querySelector('code');
+      navigator.clipboard.writeText(code ? code.innerText : pre.innerText).then(() => {
+        btn.textContent = 'Copied!'; btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+      });
+    });
+    pre.style.position = 'relative';
+    pre.appendChild(btn);
+  });
+
+  // ── Sidebar active ──────────────────────────────────────────────────
+  const cur = window.location.pathname.split('/').pop();
+  document.querySelectorAll('.sidebar-link').forEach(l => {
+    if (l.getAttribute('href') === cur || l.getAttribute('href').endsWith(cur)) l.classList.add('active');
+  });
+
+  // ── highlight.js ────────────────────────────────────────────────────
+  if (window.hljs) {
+    hljs.configure({ ignoreUnescapedHTML: true });
+    hljs.highlightAll();
+  }
+});
+</script>
+</body>
+</html>

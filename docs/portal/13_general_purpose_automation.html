@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Vibrante-Node v2.0.0 — General Purpose Automation">
+<title>General Purpose Automation — Vibrante-Node Docs</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/atom-one-dark.min.css">
+<style>
+/* ── Reset & Variables ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:       #1e1e2e;
+  --surface:  #181825;
+  --surface2: #11111b;
+  --border:   #313244;
+  --text:     #cdd6f4;
+  --subtext:  #a6adc8;
+  --muted:    #6c7086;
+  --lavender: #b4befe;
+  --blue:     #89b4fa;
+  --teal:     #94e2d5;
+  --green:    #a6e3a1;
+  --yellow:   #f9e2af;
+  --peach:    #fab387;
+  --red:      #f38ba8;
+  --pink:     #f5c2e7;
+  --mauve:    #cba6f7;
+  --sidebar-w: 260px;
+  --toc-w:    220px;
+  --header-h: 56px;
+  --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --mono: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+}
+
+/* ── Layout ─────────────────────────────────────────────────────────────── */
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: var(--header-h) 1fr;
+  grid-template-columns: var(--sidebar-w) 1fr var(--toc-w);
+  grid-template-areas:
+    "header header header"
+    "sidebar content toc";
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+.header {
+  grid-area: header;
+  position: sticky; top: 0; z-index: 200;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 16px;
+  padding: 0 24px;
+}
+.header-logo {
+  font-weight: 700; font-size: 1.05em;
+  color: var(--mauve);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.header-version {
+  font-size: .78em;
+  background: var(--border);
+  color: var(--subtext);
+  padding: 2px 8px; border-radius: 12px;
+}
+.header-spacer { flex: 1; }
+.search-wrap { position: relative; }
+#search-input {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: .9em;
+  padding: 6px 14px 6px 36px;
+  width: 260px;
+  outline: none;
+  transition: border-color .15s;
+}
+#search-input:focus { border-color: var(--mauve); }
+.search-icon {
+  position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+  color: var(--muted); pointer-events: none; font-size: .9em;
+}
+#search-results {
+  position: absolute; top: calc(100% + 8px); right: 0;
+  width: 380px; max-height: 420px; overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.5);
+  display: none; z-index: 300;
+}
+#search-results.visible { display: block; }
+.search-result-item {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background .1s;
+}
+.search-result-item:last-child { border-bottom: none; }
+.search-result-item:hover { background: var(--bg); }
+.search-result-title { color: var(--blue); font-weight: 600; font-size: .9em; }
+.search-result-excerpt { color: var(--subtext); font-size: .82em; margin-top: 2px; line-height: 1.4; }
+.search-no-results { padding: 16px; color: var(--muted); text-align: center; font-size: .9em; }
+
+/* ── Sidebar ─────────────────────────────────────────────────────────────── */
+.sidebar {
+  grid-area: sidebar;
+  position: sticky; top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 20px 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.sidebar-group { margin-bottom: 4px; }
+.sidebar-group-title {
+  font-size: .7em;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--muted);
+  padding: 10px 20px 4px;
+  font-weight: 600;
+}
+.sidebar-link {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 20px;
+  color: var(--subtext);
+  text-decoration: none;
+  font-size: .88em;
+  border-left: 3px solid transparent;
+  transition: all .12s;
+  line-height: 1.3;
+}
+.sidebar-link:hover { color: var(--text); background: var(--bg); }
+.sidebar-link.active {
+  color: var(--mauve);
+  border-left-color: var(--mauve);
+  background: rgba(180,190,254,.06);
+  font-weight: 600;
+}
+.sidebar-num {
+  font-size: .7em;
+  color: var(--muted);
+  background: var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  flex-shrink: 0;
+}
+.sidebar-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 12px 16px;
+}
+
+/* ── Content ─────────────────────────────────────────────────────────────── */
+.content {
+  grid-area: content;
+  min-width: 0;
+  padding: 40px 48px 80px;
+  max-width: 860px;
+}
+.content-inner { max-width: 820px; }
+
+/* Breadcrumb */
+.breadcrumb {
+  font-size: .8em;
+  color: var(--muted);
+  margin-bottom: 28px;
+  display: flex; align-items: center; gap: 6px;
+}
+.breadcrumb a { color: var(--blue); text-decoration: none; }
+.breadcrumb a:hover { text-decoration: underline; }
+.breadcrumb-sep { color: var(--border); }
+
+/* Typography */
+h1 { font-size: 2em; color: var(--mauve); border-bottom: 2px solid var(--border); padding-bottom: 12px; margin: 20px 0 20px; }
+h2 { font-size: 1.45em; color: var(--blue); margin: 40px 0 14px; padding-top: 8px; }
+h3 { font-size: 1.15em; color: var(--teal); margin: 28px 0 10px; }
+h4 { font-size: 1em; color: var(--pink); margin: 20px 0 8px; }
+h5 { font-size: .95em; color: var(--yellow); margin: 16px 0 6px; }
+p  { margin-bottom: 16px; color: var(--text); }
+a  { color: var(--blue); }
+a:hover { text-decoration: underline; }
+strong { color: var(--peach); }
+em { color: var(--yellow); font-style: italic; }
+
+ul, ol { margin: 10px 0 16px 24px; }
+li { margin-bottom: 6px; }
+li > ul, li > ol { margin-top: 4px; margin-bottom: 4px; }
+
+blockquote {
+  border-left: 4px solid var(--mauve);
+  padding: 10px 20px;
+  margin: 16px 0;
+  background: rgba(180,190,254,.05);
+  border-radius: 0 8px 8px 0;
+  color: var(--subtext);
+}
+blockquote strong { color: var(--mauve); }
+
+hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+/* Code */
+code {
+  background: var(--surface2);
+  color: var(--red);
+  padding: 2px 7px; border-radius: 5px;
+  font-family: var(--mono); font-size: .87em;
+}
+pre {
+  background: var(--surface2) !important;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px 22px;
+  overflow-x: auto;
+  margin: 16px 0 22px;
+  position: relative;
+}
+pre code {
+  background: none !important;
+  color: inherit !important;
+  padding: 0; font-size: .9em;
+  border-radius: 0;
+}
+/* Copy button */
+.copy-btn {
+  position: absolute; top: 10px; right: 12px;
+  background: var(--border);
+  color: var(--subtext);
+  border: none; border-radius: 5px;
+  padding: 3px 10px; font-size: .75em;
+  cursor: pointer; transition: all .12s;
+  font-family: var(--font);
+}
+.copy-btn:hover { background: var(--mauve); color: var(--surface2); }
+.copy-btn.copied { background: var(--green); color: var(--surface2); }
+
+/* Tables */
+table { border-collapse: collapse; width: 100%; margin: 16px 0 22px; font-size: .9em; }
+th { background: var(--border); color: var(--mauve); padding: 10px 14px; text-align: left; font-weight: 600; }
+td { border-top: 1px solid var(--border); padding: 9px 14px; color: var(--text); }
+tr:nth-child(even) td { background: rgba(17,17,27,.4); }
+td code { font-size: .85em; }
+
+/* Callout boxes */
+.callout {
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin: 16px 0 22px;
+  border-left: 4px solid;
+}
+.callout-note    { background: rgba(137,180,250,.08); border-color: var(--blue);   }
+.callout-tip     { background: rgba(166,227,161,.08); border-color: var(--green);  }
+.callout-warning { background: rgba(249,226,175,.08); border-color: var(--yellow); }
+.callout-danger  { background: rgba(243,139,168,.08); border-color: var(--red);    }
+.callout-title   { font-weight: 700; font-size: .85em; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
+.callout-note    .callout-title { color: var(--blue);   }
+.callout-tip     .callout-title { color: var(--green);  }
+.callout-warning .callout-title { color: var(--yellow); }
+.callout-danger  .callout-title { color: var(--red);    }
+
+/* Prev/Next navigation */
+.page-nav {
+  display: flex; justify-content: space-between;
+  margin-top: 60px; padding-top: 24px;
+  border-top: 1px solid var(--border);
+  gap: 16px;
+}
+.page-nav-link {
+  display: flex; flex-direction: column;
+  text-decoration: none;
+  padding: 14px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  min-width: 200px;
+  transition: border-color .15s;
+  max-width: 48%;
+}
+.page-nav-link:hover { border-color: var(--mauve); }
+.page-nav-label { font-size: .75em; color: var(--muted); margin-bottom: 4px; }
+.page-nav-title { color: var(--blue); font-weight: 600; font-size: .95em; }
+.page-nav-link.prev .page-nav-label::before { content: '← '; }
+.page-nav-link.next { margin-left: auto; text-align: right; }
+.page-nav-link.next .page-nav-label::after { content: ' →'; }
+
+/* ── TOC (right panel) ───────────────────────────────────────────────────── */
+.toc {
+  grid-area: toc;
+  position: sticky; top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  padding: 28px 16px 28px 8px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.toc-title {
+  font-size: .72em;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--muted);
+  font-weight: 600;
+  margin-bottom: 12px;
+  padding-left: 8px;
+}
+.toc-link {
+  display: block;
+  padding: 4px 8px;
+  color: var(--subtext);
+  text-decoration: none;
+  font-size: .82em;
+  border-left: 2px solid transparent;
+  border-radius: 0 4px 4px 0;
+  transition: all .12s;
+  line-height: 1.35;
+  margin-bottom: 1px;
+}
+.toc-link:hover { color: var(--text); border-left-color: var(--border); }
+.toc-link.active { color: var(--mauve); border-left-color: var(--mauve); background: rgba(180,190,254,.05); }
+.toc-link.toc-h3 { padding-left: 20px; font-size: .79em; }
+.toc-link.toc-h4 { padding-left: 32px; font-size: .76em; color: var(--muted); }
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  body { grid-template-columns: var(--sidebar-w) 1fr 0; }
+  .toc { display: none; }
+}
+@media (max-width: 760px) {
+  body { grid-template-columns: 0 1fr 0; grid-template-rows: var(--header-h) 1fr; }
+  .sidebar { display: none; }
+  .content { padding: 24px 20px 60px; }
+  #search-input { width: 180px; }
+}
+
+/* ── Index / landing page ────────────────────────────────────────────────── */
+.hero { text-align: center; padding: 60px 0 48px; }
+.hero h1 { border: none; font-size: 2.8em; }
+.hero .tagline { color: var(--subtext); font-size: 1.15em; margin-top: 10px; }
+.hero .version-badge {
+  display: inline-block;
+  background: var(--border); color: var(--mauve);
+  padding: 4px 14px; border-radius: 20px; font-size: .85em;
+  margin-top: 14px;
+}
+.group-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin: 16px 0 36px; }
+.doc-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  text-decoration: none;
+  color: var(--text);
+  transition: border-color .15s, background .15s;
+  display: block;
+}
+.doc-card:hover { border-color: var(--mauve); background: rgba(180,190,254,.04); }
+.doc-card-num { font-size: .72em; color: var(--muted); margin-bottom: 4px; }
+.doc-card-title { color: var(--blue); font-weight: 700; font-size: 1em; margin-bottom: 6px; }
+.doc-card-desc { color: var(--subtext); font-size: .85em; line-height: 1.5; }
+.group-title { color: var(--teal); font-size: 1.1em; font-weight: 600; margin: 32px 0 10px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+</style>
+<span id="portal-base" data-base="" style="display:none"></span>
+</head>
+<body>
+
+<!-- ── Header ─────────────────────────────────────────────────────────── -->
+<header class="header">
+  <a class="header-logo" href="index.html">Vibrante-Node</a>
+  <span class="header-version">v2.0.0</span>
+  <div class="header-spacer"></div>
+  <div class="search-wrap">
+    <span class="search-icon">&#128269;</span>
+    <input id="search-input" type="text" placeholder="Search docs… (/)" autocomplete="off" spellcheck="false">
+    <div id="search-results"></div>
+  </div>
+</header>
+
+<!-- ── Sidebar ────────────────────────────────────────────────────────── -->
+<nav class="sidebar">
+<div class="sidebar-group">
+<div class="sidebar-group-title">Overview</div>
+<a class="sidebar-link" href="01_introduction.html"><span class="sidebar-num">01</span>Introduction</a>
+<a class="sidebar-link" href="02_getting_started.html"><span class="sidebar-num">02</span>Getting Started</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Using the App</div>
+<a class="sidebar-link" href="03_user_guide.html"><span class="sidebar-num">03</span>User Guide</a>
+<a class="sidebar-link" href="04_workflow_tutorials.html"><span class="sidebar-num">04</span>Workflow Tutorials</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Developing Nodes</div>
+<a class="sidebar-link" href="05_node_development.html"><span class="sidebar-num">05</span>Node Development Guide</a>
+<a class="sidebar-link" href="14_custom_nodes_api.html"><span class="sidebar-num">14</span>Custom Nodes API</a>
+<a class="sidebar-link" href="08_api_reference.html"><span class="sidebar-num">08</span>API Reference</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Architecture</div>
+<a class="sidebar-link" href="06_backend_architecture.html"><span class="sidebar-num">06</span>Backend Architecture</a>
+<a class="sidebar-link" href="07_frontend_architecture.html"><span class="sidebar-num">07</span>Frontend Architecture</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Advanced</div>
+<a class="sidebar-link" href="09_advanced_topics.html"><span class="sidebar-num">09</span>Advanced Topics</a>
+<a class="sidebar-link" href="10_contribution_guide.html"><span class="sidebar-num">10</span>Contribution Guide</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Reference</div>
+<a class="sidebar-link" href="11_troubleshooting.html"><span class="sidebar-num">11</span>Troubleshooting</a>
+<a class="sidebar-link" href="12_examples_library.html"><span class="sidebar-num">12</span>Examples Library</a>
+<a class="sidebar-link active" href="13_general_purpose_automation.html"><span class="sidebar-num">13</span>General Purpose Automation</a>
+</div>
+
+</nav>
+
+<!-- ── Main content ───────────────────────────────────────────────────── -->
+<main class="content">
+  <div class="content-inner">
+    <nav class="breadcrumb"><a href="index.html">Docs</a><span class="breadcrumb-sep">›</span><span>General Purpose Automation</span></nav>
+    <h1 id="general-purpose-automation-with-vibrante-node">General-Purpose Automation with Vibrante-Node</h1>
+<p>Vibrante-Node is often introduced through its VFX integrations — Houdini, Maya, Prism. But those integrations are optional plugins that extend a general-purpose automation engine. At its core, Vibrante-Node is a visual, async, node-based Python execution framework that can orchestrate any automation task: file processing, API orchestration, data transformation, AI pipelines, database operations, DevOps workflows, and more.</p>
+<p>This chapter covers twelve practical automation domains, explains why a node-based approach outperforms linear scripts, and teaches you to decompose any problem into nodes.</p>
+<hr />
+<h2 id="why-node-based-logic-beats-linear-scripts">Why Node-Based Logic Beats Linear Scripts</h2>
+<p>A linear Python script does one thing at a time, top to bottom. It is easy to write for simple problems and increasingly painful to maintain as complexity grows.</p>
+<p>Consider a script that: reads a folder, renames files, resizes images, calls an API to log the results, and sends an email on completion. When the resize step fails halfway through, the script has already renamed some files and called the API for none. Recovery requires careful manual state tracking. Adding a new step — say, compressing the output — means editing the script, re-testing the whole thing, and hoping you didn't break the rename step.</p>
+<p>Node-based automation addresses these pain points structurally:</p>
+<p><strong>Visibility.</strong> Each step is a named box on the canvas. You can see the entire pipeline at once, understand what it does before running it, and identify which step failed from the log panel without reading code.</p>
+<p><strong>Modularity.</strong> Nodes are self-contained. Changing the resize node doesn't risk breaking the rename node. You can swap out the email node for a Slack notification node without touching anything else.</p>
+<p><strong>Reusability.</strong> A "normalize filename" subgraph can be collapsed into a GroupNode and dropped into any other workflow. No copy-paste, no diverging implementations.</p>
+<p><strong>Conditional routing.</strong> TwoWaySwitch lets you visually route execution to different branches based on a condition — success vs. failure, above threshold vs. below, file exists vs. missing. In a linear script this is if/else buried in indentation.</p>
+<p><strong>Live debugging.</strong> Hover any wire after a run to see the last value that flowed through it. Insert Console Print nodes between steps without restructuring code. The log panel timestamps every node execution.</p>
+<hr />
+<h2 id="the-async-advantage">The Async Advantage</h2>
+<p>Vibrante-Node's <code>execute()</code> methods are Python coroutines (async functions). This has three practical benefits:</p>
+<p><strong>Non-blocking I/O.</strong> When your HTTP request node awaits a network response, the event loop stays active. Other UI events (like canceling a run) still work. The UI never freezes.</p>
+<p><strong>Concurrent execution.</strong> Nodes that have no data dependency on each other can run concurrently in future engine versions. The dependency graph structure makes parallelism explicit — if two nodes both read from the same source but don't feed into each other, they can run simultaneously.</p>
+<p><strong>Subprocess orchestration.</strong> <code>asyncio.create_subprocess_exec()</code> lets nodes run CLI tools (ffmpeg, git, mayapy) and await their completion without blocking the UI thread.</p>
+<p>The one rule: never call blocking code directly inside <code>execute()</code>. Use <code>asyncio.to_thread()</code> for file I/O, database queries, CPU-bound operations, and any synchronous library call that takes more than a few milliseconds.</p>
+<hr />
+<h2 id="use-case-1-file-processing-and-batch-operations">Use Case 1: File Processing and Batch Operations</h2>
+<h3 id="the-problem">The Problem</h3>
+<p>You have 500 files in a folder that need to be renamed according to a naming convention, copied to a destination, and logged in a CSV file. The naming rule: <code>{project}_{date}_{original_name_lowercase}.ext</code>.</p>
+<h3 id="why-node-based">Why Node-Based</h3>
+<p>A linear script becomes fragile when the naming rule changes (you edit the core loop), when a file fails to copy (exception handling obscures the flow), and when you want to add a new step like compression (rewrite the whole middle section).</p>
+<p>With nodes, you change the rename node's logic independently, the error branch is a separate visual path, and adding compression is a new node dropped between "copy" and "log."</p>
+<h3 id="nodes-to-use">Nodes to Use</h3>
+<pre><code>[File Batch Processor]   ← folder_path, pattern=&quot;*&quot;
+        ↓ file_list
+[ForEach]
+        ↓ current_item (one file path per iteration)
+[Python Script: Build new name]
+        ↓ new_name, old_path
+[Python Script: Copy file]
+        ↓ copied_path, success
+[TwoWaySwitch on success]
+  exec_true  → [List Append: results]
+  exec_false → [Console Print: &quot;Copy failed: {old_path}&quot;]
+        ↓ (both branches)
+[back to ForEach loop_exec_in]
+        ↓ (after loop)
+[Python Script: Write CSV log]
+[Console Print: &quot;Batch complete.&quot;]
+</code></pre>
+<h3 id="custom-node-build-new-name">Custom Node: Build New Name</h3>
+<pre><code class="language-python">import os
+from datetime import date
+
+async def execute(self, inputs):
+    full_path = inputs.get(&quot;current_item&quot;, &quot;&quot;)
+    project   = inputs.get(&quot;project&quot;, &quot;proj&quot;)
+    today     = date.today().strftime(&quot;%Y%m%d&quot;)
+    original  = os.path.basename(full_path)
+    name, ext = os.path.splitext(original)
+    new_name  = f&quot;{project}_{today}_{name.lower()}{ext}&quot;
+
+    return {&quot;new_name&quot;: new_name, &quot;old_path&quot;: full_path, &quot;exec_out&quot;: True}
+</code></pre>
+<h3 id="custom-node-copy-file">Custom Node: Copy File</h3>
+<pre><code class="language-python">import asyncio
+import os
+import shutil
+
+async def execute(self, inputs):
+    old_path  = inputs.get(&quot;old_path&quot;, &quot;&quot;)
+    new_name  = inputs.get(&quot;new_name&quot;, &quot;&quot;)
+    dest_dir  = inputs.get(&quot;dest_dir&quot;, &quot;&quot;)
+
+    dest_path = os.path.join(dest_dir, new_name)
+
+    try:
+        await asyncio.to_thread(shutil.copy2, old_path, dest_path)
+        return {&quot;copied_path&quot;: dest_path, &quot;success&quot;: True, &quot;exec_out&quot;: True}
+    except Exception as e:
+        self.log_error(f&quot;Copy failed: {e}&quot;)
+        return {&quot;copied_path&quot;: &quot;&quot;, &quot;success&quot;: False, &quot;exec_out&quot;: True}
+</code></pre>
+<hr />
+<h2 id="use-case-2-folder-monitoring-system">Use Case 2: Folder Monitoring System</h2>
+<h3 id="the-problem_1">The Problem</h3>
+<p>A render farm drops finished frames into a watch folder. You want to automatically detect new <code>.exr</code> files, validate them (non-zero size), generate a JPEG proxy, and move the frame to a delivery folder.</p>
+<h3 id="pattern-poll-process">Pattern: Poll + Process</h3>
+<p>Since Vibrante-Node runs execution in response to a Run click (not as a daemon by default), the folder monitor pattern uses a polling loop with a configurable dwell time. For continuous monitoring, run the workflow headlessly on a cron schedule.</p>
+<h3 id="using-watchdog-inside-a-node">Using Watchdog Inside a Node</h3>
+<pre><code class="language-python">import asyncio
+import fnmatch
+import os
+import time
+from src.nodes.base import BaseNode
+
+try:
+    from watchdog.observers import Observer
+    from watchdog.events import FileSystemEventHandler
+    _WATCHDOG = True
+except ImportError:
+    _WATCHDOG = False
+
+
+class Watch_Folder(BaseNode):
+    name = &quot;watch_folder&quot;
+
+    def __init__(self):
+        super().__init__()
+        self.add_input(&quot;folder_path&quot;,  &quot;string&quot;, widget_type=&quot;text&quot;, default=&quot;&quot;)
+        self.add_input(&quot;pattern&quot;,      &quot;string&quot;, widget_type=&quot;text&quot;, default=&quot;*.exr&quot;)
+        self.add_input(&quot;dwell_secs&quot;,   &quot;int&quot;,    widget_type=&quot;int&quot;,  default=60)
+        self.add_output(&quot;new_files&quot;,   &quot;list&quot;)
+
+    async def execute(self, inputs):
+        folder = inputs.get(&quot;folder_path&quot;, &quot;&quot;)
+        pattern = inputs.get(&quot;pattern&quot;, &quot;*.exr&quot;)
+        dwell   = int(inputs.get(&quot;dwell_secs&quot;) or 60)
+
+        new_files = []
+
+        if _WATCHDOG:
+            class Handler(FileSystemEventHandler):
+                def on_created(self, event):
+                    if not event.is_directory and fnmatch.fnmatch(
+                        os.path.basename(event.src_path), pattern
+                    ):
+                        new_files.append(event.src_path)
+
+            def _watch():
+                obs = Observer()
+                obs.schedule(Handler(), folder, recursive=False)
+                obs.start()
+                time.sleep(dwell)
+                obs.stop()
+                obs.join()
+
+            await asyncio.to_thread(_watch)
+        else:
+            # Simple polling fallback
+            before = set(os.listdir(folder))
+            await asyncio.sleep(dwell)
+            after = set(os.listdir(folder))
+            new_files = [
+                os.path.join(folder, f)
+                for f in (after - before)
+                if fnmatch.fnmatch(f, pattern)
+            ]
+
+        return {&quot;new_files&quot;: new_files, &quot;exec_out&quot;: True}
+</code></pre>
+<h3 id="looping-pattern-for-continuous-monitoring">Looping Pattern for Continuous Monitoring</h3>
+<p>Use a <strong>WhileLoop</strong> node wrapping the Watch Folder node. Set the WhileLoop's <code>condition</code> to <code>True</code> (infinite) or wire a <code>should_continue</code> variable that is set to <code>False</code> by a "stop" condition.</p>
+<hr />
+<h2 id="use-case-3-image-processing-pipeline">Use Case 3: Image Processing Pipeline</h2>
+<h3 id="the-problem_2">The Problem</h3>
+<p>A photography client delivers 200 high-resolution images that need to be: resized to web dimensions (1920×1080 max), watermarked with a studio logo, converted from TIFF to JPEG at 85% quality, and organized into subfolders by date.</p>
+<h3 id="nodes-to-use_1">Nodes to Use</h3>
+<pre><code>[File Batch Processor: *.tiff]
+        ↓ file_list
+[ForEach]
+        ↓ current_item
+[Image Resizer: 1920x1080, keep_aspect=True]
+        ↓ out_path (temp resized file)
+[Python Script: Add Watermark (PIL)]
+        ↓ watermarked_path
+[Python Script: Convert to JPEG]
+        ↓ final_path
+[Python Script: Move to dated subfolder]
+        ↓ exec_out (loop back)
+        ↓ (after loop)
+[Console Print: &quot;Processed N images.&quot;]
+</code></pre>
+<h3 id="watermark-node-code">Watermark Node Code</h3>
+<pre><code class="language-python">import asyncio
+import os
+from src.nodes.base import BaseNode
+
+try:
+    from PIL import Image
+    _PIL = True
+except ImportError:
+    _PIL = False
+
+
+class Add_Watermark(BaseNode):
+    name = &quot;add_watermark&quot;
+
+    def __init__(self):
+        super().__init__()
+        self.add_input(&quot;image_path&quot;,     &quot;string&quot;, widget_type=&quot;text&quot;, default=&quot;&quot;)
+        self.add_input(&quot;watermark_path&quot;, &quot;string&quot;, widget_type=&quot;text&quot;, default=&quot;&quot;)
+        self.add_input(&quot;opacity&quot;,        &quot;float&quot;,  widget_type=&quot;float&quot;, default=0.3)
+        self.add_input(&quot;position&quot;,       &quot;string&quot;, widget_type=&quot;text&quot;, default=&quot;bottom-right&quot;)
+        self.add_output(&quot;out_path&quot;,      &quot;string&quot;)
+
+    async def execute(self, inputs):
+        if not _PIL:
+            self.log_error(&quot;Pillow required: pip install Pillow&quot;)
+            return {&quot;out_path&quot;: &quot;&quot;, &quot;exec_out&quot;: True}
+
+        img_path = inputs.get(&quot;image_path&quot;, &quot;&quot;)
+        wm_path  = inputs.get(&quot;watermark_path&quot;, &quot;&quot;)
+        opacity  = float(inputs.get(&quot;opacity&quot;) or 0.3)
+        position = inputs.get(&quot;position&quot;, &quot;bottom-right&quot;)
+
+        def _watermark():
+            base = Image.open(img_path).convert(&quot;RGBA&quot;)
+            wm   = Image.open(wm_path).convert(&quot;RGBA&quot;)
+
+            # Scale watermark to 20% of base width
+            wm_w = base.width // 5
+            ratio = wm_w / wm.width
+            wm_h  = int(wm.height * ratio)
+            wm    = wm.resize((wm_w, wm_h), Image.LANCZOS)
+
+            # Apply opacity
+            r, g, b, a = wm.split()
+            a = a.point(lambda x: int(x * opacity))
+            wm.putalpha(a)
+
+            # Position
+            margin = 20
+            if &quot;right&quot; in position:
+                x = base.width - wm_w - margin
+            else:
+                x = margin
+            if &quot;bottom&quot; in position:
+                y = base.height - wm_h - margin
+            else:
+                y = margin
+
+            composite = Image.new(&quot;RGBA&quot;, base.size)
+            composite.paste(base, (0, 0))
+            composite.paste(wm, (x, y), mask=wm)
+
+            out_path = img_path.rsplit(&quot;.&quot;, 1)[0] + &quot;_wm.&quot; + img_path.rsplit(&quot;.&quot;, 1)[-1]
+            composite.convert(&quot;RGB&quot;).save(out_path, quality=92)
+            return out_path
+
+        try:
+            out = await asyncio.to_thread(_watermark)
+            return {&quot;out_path&quot;: out, &quot;exec_out&quot;: True}
+        except Exception as e:
+            self.log_error(f&quot;Watermark failed: {e}&quot;)
+            return {&quot;out_path&quot;: img_path, &quot;exec_out&quot;: True}  # pass through original
+
+
+def register_node():
+    return Add_Watermark
+</code></pre>
+<hr />
+<h2 id="use-case-4-data-transformation-workflows">Use Case 4: Data Transformation Workflows</h2>
+<h3 id="the-problem_3">The Problem</h3>
+<p>A business analyst provides a CSV with raw sales data. You need to: filter records by region, compute a derived metric (revenue per unit), group by product category, sort by revenue, and export the summary as a formatted JSON report.</p>
+<h3 id="why-nodes-beat-pandas-scripts">Why Nodes Beat pandas Scripts</h3>
+<p>A pandas script does all of this in 20 lines but is opaque — you cannot see the data after each step without adding print() calls. A node workflow makes each transform a visible, testable step.</p>
+<h3 id="workflow-structure">Workflow Structure</h3>
+<pre><code>[File Load: sales.csv]
+        ↓ content
+[Python Script: Parse CSV → list of dicts]
+        ↓ records
+[Python Script: Filter by region]
+        ↓ filtered
+[Python Script: Compute revenue_per_unit]
+        ↓ enriched
+[Python Script: Group by category]
+        ↓ grouped
+[Python Script: Sort by total_revenue desc]
+        ↓ sorted_data
+[Python Script: Format JSON report]
+        ↓ json_string
+[File Save: report.json]
+[Console Print: summary]
+</code></pre>
+<h3 id="parse-csv-node">Parse CSV Node</h3>
+<pre><code class="language-python">import asyncio
+import csv
+import io
+
+async def execute(self, inputs):
+    content = inputs.get(&quot;content&quot;, &quot;&quot;)
+    reader  = csv.DictReader(io.StringIO(content))
+    records = [dict(row) for row in reader]
+    outputs[&quot;records&quot;]      = records
+    outputs[&quot;record_count&quot;] = len(records)
+</code></pre>
+<h3 id="compute-metric-node">Compute Metric Node</h3>
+<pre><code class="language-python">async def execute(self, inputs):
+    records = list(inputs.get(&quot;records&quot;) or [])
+    enriched = []
+    for r in records:
+        try:
+            revenue  = float(r.get(&quot;revenue&quot;, 0))
+            units    = float(r.get(&quot;units&quot;, 1)) or 1
+            r[&quot;revenue_per_unit&quot;] = round(revenue / units, 2)
+        except (ValueError, ZeroDivisionError):
+            r[&quot;revenue_per_unit&quot;] = 0.0
+        enriched.append(r)
+    outputs[&quot;enriched&quot;] = enriched
+</code></pre>
+<p>Hover the wire between any two steps to see a sample of the data at that point.</p>
+<hr />
+<h2 id="use-case-5-api-requests-and-web-automation">Use Case 5: API Requests and Web Automation</h2>
+<h3 id="the-problem_4">The Problem</h3>
+<p>Your team uses a project management API. Every Monday, you need to: authenticate (get a token), fetch all open tasks, filter tasks assigned to a specific user, update their status to "in progress," and post a summary to a Slack webhook.</p>
+<h3 id="chain-pattern-auth-fetch-transform-act-notify">Chain Pattern: Auth → Fetch → Transform → Act → Notify</h3>
+<pre><code>[Python Script: Build auth payload]
+        ↓ payload
+[HTTP Request: POST /auth → token]
+        ↓ response_data (contains &quot;access_token&quot;)
+[Python Script: Extract token]
+        ↓ auth_header (dict: {&quot;Authorization&quot;: &quot;Bearer {token}&quot;})
+[HTTP Request: GET /tasks, headers=auth_header]
+        ↓ response_data (list of task dicts)
+[Python Script: Filter by assignee]
+        ↓ my_tasks
+[ForEach: my_tasks]
+        ↓ current_item (one task)
+[HTTP Request: PATCH /tasks/{id} body={&quot;status&quot;:&quot;in_progress&quot;}]
+        ↓ exec_out
+[Console Print: &quot;Updated task {id}&quot;]
+        ↓ (after loop)
+[HTTP Request: POST slack_webhook, body={&quot;text&quot;: summary}]
+[Console Print: &quot;Done.&quot;]
+</code></pre>
+<h3 id="extract-token-node">Extract Token Node</h3>
+<pre><code class="language-python">async def execute(self, inputs):
+    data  = inputs.get(&quot;response_data&quot;, {})
+    token = data.get(&quot;access_token&quot;, &quot;&quot;) if isinstance(data, dict) else &quot;&quot;
+    if not token:
+        self.log_error(&quot;Authentication failed — no access_token in response.&quot;)
+    outputs[&quot;auth_header&quot;] = {&quot;Authorization&quot;: f&quot;Bearer {token}&quot;}
+    outputs[&quot;token&quot;]       = token
+</code></pre>
+<h3 id="filter-by-assignee-node">Filter by Assignee Node</h3>
+<pre><code class="language-python">async def execute(self, inputs):
+    tasks    = list(inputs.get(&quot;response_data&quot;) or [])
+    assignee = inputs.get(&quot;assignee_id&quot;, &quot;&quot;)
+    filtered = [t for t in tasks if str(t.get(&quot;assignee_id&quot;, &quot;&quot;)) == str(assignee)]
+    outputs[&quot;my_tasks&quot;] = filtered
+    outputs[&quot;count&quot;]    = len(filtered)
+</code></pre>
+<hr />
+<h2 id="use-case-6-aillm-workflow-orchestration">Use Case 6: AI/LLM Workflow Orchestration</h2>
+<h3 id="the-problem_5">The Problem</h3>
+<p>You receive raw customer feedback text. You want to: classify the sentiment (positive/negative/neutral), extract key topics, generate a suggested response, translate the response to French, and write everything to a database.</p>
+<h3 id="chain-of-llm-prompts">Chain of LLM Prompts</h3>
+<pre><code>[File Load or HTTP Request: raw feedback text]
+        ↓ raw_text
+[LLM Text Generation: Classify sentiment]
+    prompt = &quot;Classify the sentiment of this feedback as positive, negative, or neutral. Reply with one word only: {raw_text}&quot;
+        ↓ generated_text (e.g., &quot;negative&quot;)
+[SetVariable: &quot;sentiment&quot;]
+
+[LLM Text Generation: Extract topics]
+    prompt = &quot;List the key topics mentioned in this feedback as a comma-separated list: {raw_text}&quot;
+        ↓ generated_text
+[SetVariable: &quot;topics&quot;]
+
+[LLM Text Generation: Draft response]
+    prompt = &quot;Write a professional customer service response to this {sentiment} feedback about {topics}: {raw_text}&quot;
+        ↓ generated_text (the draft response)
+[SetVariable: &quot;draft_response&quot;]
+
+[LLM Text Generation: Translate to French]
+    prompt = &quot;Translate the following to French: {draft_response}&quot;
+        ↓ generated_text
+[SetVariable: &quot;french_response&quot;]
+
+[Database Query: INSERT INTO feedback_responses ...]
+[Console Print: &quot;Processed feedback.&quot;]
+</code></pre>
+<h3 id="passing-context-with-setvariablegetvariable">Passing Context with SetVariable/GetVariable</h3>
+<p>Each LLM node needs context from previous steps. Use SetVariable after each LLM result, then GetVariable to build the next prompt:</p>
+<pre><code class="language-python"># In the &quot;Draft response&quot; LLM's prompt-building Python Script:
+sentiment = inputs.get(&quot;sentiment_var&quot;, &quot;neutral&quot;)
+topics    = inputs.get(&quot;topics_var&quot;, &quot;&quot;)
+raw_text  = inputs.get(&quot;raw_text&quot;, &quot;&quot;)
+outputs[&quot;prompt&quot;] = (
+    f&quot;Write a professional customer service response to this {sentiment} &quot;
+    f&quot;feedback about {topics}: {raw_text}&quot;
+)
+</code></pre>
+<hr />
+<h2 id="use-case-7-local-automation-tools">Use Case 7: Local Automation Tools</h2>
+<h3 id="the-problem_6">The Problem</h3>
+<p>Your project build process involves: running a test suite, if tests pass — building a distribution package, running a linter, and committing the result to git. Each step's output determines whether the next step runs.</p>
+<h3 id="subprocess-node-pattern">Subprocess Node Pattern</h3>
+<pre><code class="language-python">import asyncio
+from src.nodes.base import BaseNode
+
+
+class Run_Command(BaseNode):
+    name = &quot;run_command&quot;
+
+    def __init__(self):
+        super().__init__()
+        self.add_input(&quot;command&quot;,    &quot;string&quot;, widget_type=&quot;text&quot;, default=&quot;&quot;)
+        self.add_input(&quot;args&quot;,       &quot;list&quot;,   default=None)
+        self.add_input(&quot;cwd&quot;,        &quot;string&quot;, widget_type=&quot;text&quot;, default=&quot;&quot;)
+        self.add_input(&quot;timeout&quot;,    &quot;int&quot;,    widget_type=&quot;int&quot;,  default=120)
+        self.add_output(&quot;stdout&quot;,    &quot;string&quot;)
+        self.add_output(&quot;stderr&quot;,    &quot;string&quot;)
+        self.add_output(&quot;exit_code&quot;, &quot;int&quot;)
+        self.add_output(&quot;success&quot;,   &quot;bool&quot;)
+
+    async def execute(self, inputs):
+        import shlex
+        command = inputs.get(&quot;command&quot;, &quot;&quot;)
+        args    = list(inputs.get(&quot;args&quot;) or [])
+        cwd     = inputs.get(&quot;cwd&quot;) or None
+        timeout = int(inputs.get(&quot;timeout&quot;) or 120)
+
+        if not command:
+            self.log_error(&quot;No command specified.&quot;)
+            return {&quot;stdout&quot;: &quot;&quot;, &quot;stderr&quot;: &quot;&quot;, &quot;exit_code&quot;: -1, &quot;success&quot;: False, &quot;exec_out&quot;: True}
+
+        cmd_parts = shlex.split(command) + args
+
+        try:
+            proc = await asyncio.wait_for(
+                asyncio.create_subprocess_exec(
+                    *cmd_parts,
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE,
+                    cwd=cwd,
+                ),
+                timeout=5,
+            )
+            stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=timeout)
+            exit_code = proc.returncode
+            self.log_info(f&quot;Command exited with code {exit_code}: {command}&quot;)
+            return {
+                &quot;stdout&quot;:    stdout.decode(&quot;utf-8&quot;, errors=&quot;replace&quot;),
+                &quot;stderr&quot;:    stderr.decode(&quot;utf-8&quot;, errors=&quot;replace&quot;),
+                &quot;exit_code&quot;: exit_code,
+                &quot;success&quot;:   exit_code == 0,
+                &quot;exec_out&quot;:  True,
+            }
+        except asyncio.TimeoutError:
+            self.log_error(f&quot;Command timed out after {timeout}s: {command}&quot;)
+            return {&quot;stdout&quot;: &quot;&quot;, &quot;stderr&quot;: &quot;TIMEOUT&quot;, &quot;exit_code&quot;: -1, &quot;success&quot;: False, &quot;exec_out&quot;: True}
+        except Exception as e:
+            self.log_error(f&quot;Command failed: {e}&quot;)
+            return {&quot;stdout&quot;: &quot;&quot;, &quot;stderr&quot;: str(e), &quot;exit_code&quot;: -1, &quot;success&quot;: False, &quot;exec_out&quot;: True}
+
+
+def register_node():
+    return Run_Command
+</code></pre>
+<h3 id="build-pipeline-workflow">Build Pipeline Workflow</h3>
+<pre><code>[Run Command: &quot;pytest tests/ -x&quot;]
+        ↓ success
+[TwoWaySwitch on success]
+  exec_false → [Console Print: &quot;Tests failed. Aborting.&quot;]
+  exec_true  →
+      [Run Command: &quot;python -m build&quot;]
+              ↓ success
+      [TwoWaySwitch on success]
+        exec_false → [Console Print: &quot;Build failed.&quot;]
+        exec_true  →
+            [Run Command: &quot;flake8 src/&quot;]
+            [Run Command: &quot;git add dist/ &amp;&amp; git commit -m 'Build artifact'&quot;]
+            [Console Print: &quot;Build pipeline complete.&quot;]
+</code></pre>
+<hr />
+<h2 id="use-case-8-database-operations">Use Case 8: Database Operations</h2>
+<h3 id="the-problem_7">The Problem</h3>
+<p>An e-commerce system logs orders to a SQLite database. Every night, you need to: query orders from the last 24 hours, compute revenue by product category, update a summary table, and export the summary to a CSV for the finance team.</p>
+<h3 id="workflow-structure_1">Workflow Structure</h3>
+<pre><code>[Python Script: Compute date range]
+        ↓ start_datetime, end_datetime
+[Database Query: SELECT orders WHERE created_at BETWEEN ? AND ?]
+    parameters = [start_datetime, end_datetime]
+        ↓ rows (list of order dicts)
+[Python Script: Aggregate by category]
+        ↓ summary (list of {category, revenue, order_count})
+[ForEach: summary]
+    [Database Query: INSERT OR REPLACE INTO daily_summary ...]
+[Python Script: Format as CSV]
+        ↓ csv_content
+[File Save: daily_summary.csv]
+[Console Print: &quot;Nightly report complete.&quot;]
+</code></pre>
+<h3 id="aggregation-node">Aggregation Node</h3>
+<pre><code class="language-python">from collections import defaultdict
+
+async def execute(self, inputs):
+    rows     = list(inputs.get(&quot;rows&quot;) or [])
+    totals   = defaultdict(lambda: {&quot;revenue&quot;: 0.0, &quot;order_count&quot;: 0})
+
+    for row in rows:
+        cat = row.get(&quot;category&quot;, &quot;Uncategorized&quot;)
+        totals[cat][&quot;revenue&quot;]     += float(row.get(&quot;revenue&quot;, 0))
+        totals[cat][&quot;order_count&quot;] += 1
+
+    summary = [
+        {&quot;category&quot;: cat, **vals}
+        for cat, vals in sorted(totals.items(), key=lambda x: -x[1][&quot;revenue&quot;])
+    ]
+    outputs[&quot;summary&quot;] = summary
+    outputs[&quot;total_revenue&quot;] = sum(v[&quot;revenue&quot;] for v in totals.values())
+</code></pre>
+<hr />
+<h2 id="use-case-9-task-scheduling">Use Case 9: Task Scheduling</h2>
+<h3 id="the-problem_8">The Problem</h3>
+<p>You want to run a workflow every 5 minutes to poll an API for status updates, process any new data, and stop once a "complete" status is received.</p>
+<h3 id="timer-delay-node">Timer / Delay Node</h3>
+<pre><code class="language-python">import asyncio
+from src.nodes.base import BaseNode
+
+
+class Timer_Delay(BaseNode):
+    name = &quot;timer_delay&quot;
+
+    def __init__(self):
+        super().__init__()
+        self.add_input(&quot;delay_seconds&quot;, &quot;float&quot;, widget_type=&quot;float&quot;, default=5.0)
+        self.add_output(&quot;elapsed&quot;, &quot;float&quot;)
+
+    async def execute(self, inputs):
+        delay = float(inputs.get(&quot;delay_seconds&quot;) or 5.0)
+        import time
+        t0 = time.perf_counter()
+        await asyncio.sleep(delay)
+        elapsed = time.perf_counter() - t0
+        return {&quot;elapsed&quot;: elapsed, &quot;exec_out&quot;: True}
+
+
+def register_node():
+    return Timer_Delay
+</code></pre>
+<h3 id="polling-loop-workflow">Polling Loop Workflow</h3>
+<pre><code>[SetVariable: &quot;should_continue&quot; = True]
+        ↓ exec_out
+[WhileLoop: condition = should_continue]
+        ↓ loop_exec_out
+
+    [Timer Delay: 300 seconds (5 min)]
+    [HTTP Request: GET /api/job/{job_id}/status]
+            ↓ response_data
+    [Python Script: Check status]
+        status = response_data.get(&quot;status&quot;, &quot;&quot;)
+        outputs[&quot;complete&quot;] = status in (&quot;complete&quot;, &quot;failed&quot;, &quot;error&quot;)
+        outputs[&quot;status&quot;]   = status
+            ↓ complete (bool)
+    [TwoWaySwitch on complete]
+      exec_true  → [SetVariable: &quot;should_continue&quot; = False]
+                   [Console Print: f&quot;Job finished: {status}&quot;]
+      exec_false → [Console Print: f&quot;Still running: {status}&quot;]
+            ↓ (both branches back to WhileLoop loop_exec_in)
+
+        ↓ exec_out (after WhileLoop exits)
+[Console Print: &quot;Polling complete.&quot;]
+</code></pre>
+<h3 id="integration-with-system-schedulers">Integration with System Schedulers</h3>
+<p>For truly periodic execution, run the workflow headlessly via a system scheduler:</p>
+<p><strong>Windows Task Scheduler:</strong></p>
+<pre><code class="language-batch">python -m src.headless --workflow my_poll_workflow.json
+</code></pre>
+<p><strong>Linux cron:</strong></p>
+<pre><code class="language-cron">*/5 * * * * /path/to/venv/bin/python -m src.headless --workflow /path/to/workflow.json
+</code></pre>
+<p><strong>macOS launchd:</strong> Create a plist in <code>~/Library/LaunchAgents/</code> with <code>StartInterval</code> set to 300.</p>
+<hr />
+<h2 id="use-case-10-multi-step-business-logic">Use Case 10: Multi-Step Business Logic</h2>
+<h3 id="the-problem_9">The Problem</h3>
+<p>An approval workflow: receive a purchase request, validate the amount and supplier, check budget availability, auto-approve if under $1,000 or queue for manual review if over, notify the requester, and write an audit log entry.</p>
+<h3 id="approval-workflow">Approval Workflow</h3>
+<pre><code>[Python Script: Receive/load purchase request]
+        ↓ request (dict: amount, supplier, department, requester_email)
+
+[Python Script: Validate request]
+    valid = amount &gt; 0 and supplier != &quot;&quot; and department != &quot;&quot;
+    outputs[&quot;valid&quot;] = valid
+    outputs[&quot;validation_error&quot;] = &quot;&quot; if valid else &quot;Missing fields.&quot;
+        ↓ valid (bool)
+
+[TwoWaySwitch on valid]
+  exec_false → [Email Notification: &quot;Request invalid: {validation_error}&quot;]
+               [Console Print: &quot;Rejected: {request_id}&quot;]
+  exec_true  →
+
+    [Python Script: Check budget]
+        budget_remaining = get_budget(department)   # DB query
+        outputs[&quot;budget_ok&quot;] = budget_remaining &gt;= amount
+            ↓ budget_ok
+
+    [TwoWaySwitch on budget_ok]
+      exec_false → [Email Notification: &quot;Insufficient budget for {department}&quot;]
+      exec_true  →
+
+        [Python Script: Threshold check]
+            outputs[&quot;auto_approve&quot;] = amount &lt; 1000
+                ↓ auto_approve
+
+        [TwoWaySwitch on auto_approve]
+          exec_true  → [Python Script: Approve and deduct budget]
+                       [Email Notification: requester — &quot;Approved automatically&quot;]
+          exec_false → [Python Script: Create review ticket]
+                       [Email Notification: approver — &quot;Review required&quot;]
+                       [Email Notification: requester — &quot;Pending review&quot;]
+
+[Python Script: Write audit log entry]
+[Database Query: INSERT INTO audit_log ...]
+[Console Print: &quot;Workflow complete.&quot;]
+</code></pre>
+<h3 id="exec_fail-branches">exec_fail Branches</h3>
+<p>For nodes that might throw exceptions (database writes, email sends), connect their <code>exec_fail</code> output to an error handling branch:</p>
+<pre><code>[Database Query] ─── exec_out  → [Continue]
+                 └── exec_fail → [Console Print: &quot;DB write failed — manual intervention required.&quot;]
+                                 [Email Notification: ops team]
+</code></pre>
+<hr />
+<h2 id="use-case-11-devops-and-build-automation">Use Case 11: DevOps and Build Automation</h2>
+<h3 id="the-problem_10">The Problem</h3>
+<p>On every merge to the main branch, run the test suite, build a Docker image, push it to a registry, deploy to a staging environment, run smoke tests, and send a status notification.</p>
+<h3 id="workflow">Workflow</h3>
+<pre><code>[Python Script: Read environment variables]
+    GIT_SHA, REGISTRY, IMAGE_NAME, STAGING_HOST = os.environ
+        ↓ image_tag = f&quot;{REGISTRY}/{IMAGE_NAME}:{GIT_SHA[:8]}&quot;
+
+[Run Command: &quot;pytest tests/ --tb=short&quot;]
+        ↓ success, stdout
+[TwoWaySwitch on success]
+  exec_false → [Email Notification / Slack: &quot;Tests FAILED&quot;]
+               [Python Script: exit with code 1]
+  exec_true  →
+    [Run Command: f&quot;docker build -t {image_tag} .&quot;]
+            ↓ success
+    [TwoWaySwitch on success]
+      exec_false → [Slack: &quot;Docker build FAILED&quot;]
+      exec_true  →
+        [Run Command: f&quot;docker push {image_tag}&quot;]
+        [Run Command: f&quot;ssh {STAGING_HOST} 'docker pull {image_tag} &amp;&amp; docker-compose up -d'&quot;]
+        [Run Command: &quot;pytest tests/smoke/ --base-url=https://staging.example.com&quot;]
+                ↓ success, stdout
+        [TwoWaySwitch on success]
+          exec_true  → [Slack: &quot;Deploy SUCCEEDED — {image_tag}&quot;]
+          exec_false → [Slack: &quot;Smoke tests FAILED — {image_tag}&quot;]
+                       [Run Command: &quot;ssh {STAGING_HOST} 'docker-compose down'&quot;]
+</code></pre>
+<h3 id="reading-environment-variables-node">Reading Environment Variables Node</h3>
+<pre><code class="language-python">import os
+
+async def execute(self, inputs):
+    keys = list(inputs.get(&quot;env_keys&quot;) or [])
+    env_values = {}
+    for key in keys:
+        val = os.environ.get(key, &quot;&quot;)
+        if not val:
+            self.log_error(f&quot;Environment variable not set: {key}&quot;)
+        env_values[key] = val
+    outputs[&quot;env_values&quot;] = env_values
+    # Also expose individual common vars
+    outputs[&quot;PATH&quot;]     = os.environ.get(&quot;PATH&quot;, &quot;&quot;)
+    outputs[&quot;HOME&quot;]     = os.environ.get(&quot;HOME&quot;, &quot;&quot;)
+    outputs[&quot;all_env&quot;]  = dict(os.environ)
+</code></pre>
+<hr />
+<h2 id="use-case-12-background-services-and-workers">Use Case 12: Background Services and Workers</h2>
+<h3 id="running-headlessly">Running Headlessly</h3>
+<p>Vibrante-Node workflows can run without the UI using the headless execution API:</p>
+<pre><code class="language-python">import asyncio
+import json
+from src.core.models import WorkflowModel
+from src.core.graph import GraphManager
+from src.core.engine import NetworkExecutor
+
+
+def run_workflow(workflow_path: str) -&gt; None:
+    with open(workflow_path) as f:
+        data = json.load(f)
+
+    workflow = WorkflowModel.model_validate(data)
+    gm       = GraphManager()
+    gm.from_model(workflow)
+
+    executor = NetworkExecutor(gm)
+
+    # Connect signals for headless logging
+    executor.node_started.connect(lambda nid: print(f&quot;[START] {nid}&quot;))
+    executor.node_finished.connect(lambda nid, r: print(f&quot;[DONE]  {nid}&quot;))
+    executor.node_error.connect(lambda nid, e: print(f&quot;[ERROR] {nid}: {e}&quot;))
+
+    asyncio.run(executor.run())
+
+
+if __name__ == &quot;__main__&quot;:
+    import sys
+    run_workflow(sys.argv[1])
+</code></pre>
+<h3 id="logging-to-file-vs-ui">Logging to File vs. UI</h3>
+<p>In headless mode, connect to engine signals and write to a log file:</p>
+<pre><code class="language-python">import logging
+
+logging.basicConfig(
+    filename=&quot;workflow.log&quot;,
+    level=logging.INFO,
+    format=&quot;%(asctime)s %(levelname)s %(message)s&quot;
+)
+
+executor.node_error.connect(
+    lambda nid, e: logging.error(f&quot;Node {nid} failed: {e}&quot;)
+)
+executor.node_finished.connect(
+    lambda nid, r: logging.info(f&quot;Node {nid} finished&quot;)
+)
+</code></pre>
+<h3 id="restart-on-failure-pattern">Restart on Failure Pattern</h3>
+<p>Wrap the headless run in a retry loop:</p>
+<pre><code class="language-python">import time
+
+MAX_RETRIES = 3
+RETRY_DELAY = 30  # seconds
+
+for attempt in range(1, MAX_RETRIES + 1):
+    try:
+        run_workflow(&quot;my_workflow.json&quot;)
+        print(&quot;Workflow completed successfully.&quot;)
+        break
+    except Exception as e:
+        print(f&quot;Attempt {attempt} failed: {e}&quot;)
+        if attempt &lt; MAX_RETRIES:
+            print(f&quot;Retrying in {RETRY_DELAY}s...&quot;)
+            time.sleep(RETRY_DELAY)
+        else:
+            print(&quot;All retries exhausted. Giving up.&quot;)
+            raise
+</code></pre>
+<hr />
+<h2 id="thinking-in-node-based-logic">Thinking in Node-Based Logic</h2>
+<p>The hardest part of adopting node-based automation is learning to decompose problems into nodes. This section teaches a repeatable method.</p>
+<h3 id="step-1-identify-inputs-transforms-outputs">Step 1: Identify Inputs, Transforms, Outputs</h3>
+<p>Every automation task is a transformation from some starting data to some end result.</p>
+<p>Ask:<br />
+- <strong>What do I start with?</strong> Files, API responses, user input, database records, environment variables.<br />
+- <strong>What do I end with?</strong> Modified files, API calls made, database rows inserted, emails sent, logs written.<br />
+- <strong>What transforms happen in between?</strong> Filtering, formatting, computing, converting, validating.</p>
+<p>Map each answer to a category of node:<br />
+- Inputs → File Load, HTTP Request, Database Query, Python Script (static data)<br />
+- Transforms → Python Script, String nodes, Math nodes, List nodes<br />
+- Outputs → File Save, HTTP Request (POST/PUT), Database Query (INSERT/UPDATE), Email Notification</p>
+<h3 id="step-2-separate-data-flow-from-control-flow">Step 2: Separate Data Flow from Control Flow</h3>
+<p>Data flow (the white/colored wires) carries values between nodes. Control flow (exec wires, gray) determines which nodes run and in what order.</p>
+<p>Keep them separate in your thinking:</p>
+<p><strong>Data questions:</strong><br />
+- What value does this node need?<br />
+- Where does that value come from?<br />
+- What type should it be?</p>
+<p><strong>Control questions:</strong><br />
+- Does this node always run, or only sometimes?<br />
+- If step A fails, should step B still run?<br />
+- Are there loops? What is the exit condition?</p>
+<p>Once you have answered these separately, wiring becomes straightforward: data connections carry the values, exec connections carry the "go" signal.</p>
+<h3 id="step-3-group-reusable-logic-into-subgraphs">Step 3: Group Reusable Logic into Subgraphs</h3>
+<p>Any sequence of nodes you find yourself building more than once is a candidate for a GroupNode. Common reusable subgraphs:</p>
+<ul>
+<li>"Authenticate and return token" (auth pattern)</li>
+<li>"Load, validate, transform a JSON file" (ETL pattern)</li>
+<li>"Run command, check exit code, branch on failure" (CLI wrapper pattern)</li>
+<li>"Build an audit log entry and write it" (logging pattern)</li>
+</ul>
+<p>Select the nodes, press Ctrl+Shift+G, name the group, and it becomes a single reusable node.</p>
+<h3 id="step-4-connect-error-handling-branches">Step 4: Connect Error Handling Branches</h3>
+<p>Every workflow needs to handle failure. For each critical step, ask: "What happens if this fails?"</p>
+<p>The three patterns:</p>
+<p><strong>Silent fail with log:</strong> Return a safe default and <code>exec_out: True</code>. The chain continues; downstream nodes receive <code>None</code> or an empty value. Use for non-critical steps.</p>
+<pre><code class="language-python">except Exception as e:
+    self.log_error(f&quot;Step failed: {e}&quot;)
+    return {&quot;result&quot;: None, &quot;exec_out&quot;: True}  # chain continues
+</code></pre>
+<p><strong>Hard stop:</strong> Return <code>exec_out: False</code>. The chain stops at this node. Use when continuing would produce nonsense results.</p>
+<p><strong>Explicit error branch:</strong> Use <code>exec_fail</code> port (available on GroupNode and some special nodes). Connect error handling nodes (notification, rollback, cleanup) to <code>exec_fail</code>. Use for recoverable errors where you want to take remediation action.</p>
+<p>Build the happy path first, then add error branches. Use TwoWaySwitch with a <code>success</code> bool to route to success or failure paths when a node doesn't have an <code>exec_fail</code> pin.</p>
+<h3 id="decision-framework-when-to-use-which-node">Decision Framework: When to Use Which Node</h3>
+<table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>Node to Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Run arbitrary Python</td>
+<td>Python Script</td>
+</tr>
+<tr>
+<td>Repeat for each item in a list</td>
+<td>ForEach</td>
+</tr>
+<tr>
+<td>Repeat until a condition</td>
+<td>WhileLoop</td>
+</tr>
+<tr>
+<td>Choose between two exec paths</td>
+<td>TwoWaySwitch</td>
+</tr>
+<tr>
+<td>Share a value across disconnected nodes</td>
+<td>SetVariable / GetVariable</td>
+</tr>
+<tr>
+<td>Group reusable logic</td>
+<td>GroupNode (Ctrl+Shift+G)</td>
+</tr>
+<tr>
+<td>Inspect intermediate values</td>
+<td>Console Print</td>
+</tr>
+<tr>
+<td>Make an HTTP call</td>
+<td>HTTP Request</td>
+</tr>
+<tr>
+<td>Read/write a file</td>
+<td>File Load / File Save</td>
+</tr>
+<tr>
+<td>Run a shell command</td>
+<td>Run Command (custom)</td>
+</tr>
+<tr>
+<td>Query a database</td>
+<td>Database Query (custom)</td>
+</tr>
+<tr>
+<td>Call an AI model</td>
+<td>LLM Text Generation (custom)</td>
+</tr>
+<tr>
+<td>Wait before continuing</td>
+<td>Timer Delay (custom)</td>
+</tr>
+<tr>
+<td>Collapse a complex section</td>
+<td>GroupNode</td>
+</tr>
+</tbody>
+</table>
+    <nav class="page-nav">
+      <a class="page-nav-link prev" href="12_examples_library.html"><span class="page-nav-label">Previous</span><span class="page-nav-title">Examples Library</span></a>
+      <a class="page-nav-link next" href="14_custom_nodes_api.html"><span class="page-nav-label">Next</span><span class="page-nav-title">Custom Nodes API</span></a>
+    </nav>
+  </div>
+</main>
+
+<!-- ── TOC ────────────────────────────────────────────────────────────── -->
+<aside class="toc">
+  <div class="toc-title">On this page</div>
+<a class="toc-link toc-h2" href="#why-node-based-logic-beats-linear-scripts">Why Node-Based Logic Beats Linear Scripts</a>
+<a class="toc-link toc-h2" href="#the-async-advantage">The Async Advantage</a>
+<a class="toc-link toc-h2" href="#use-case-1-file-processing-and-batch-operations">Use Case 1: File Processing and Batch Operations</a>
+<a class="toc-link toc-h3" href="#the-problem">The Problem</a>
+<a class="toc-link toc-h3" href="#why-node-based">Why Node-Based</a>
+<a class="toc-link toc-h3" href="#nodes-to-use">Nodes to Use</a>
+<a class="toc-link toc-h3" href="#custom-node-build-new-name">Custom Node: Build New Name</a>
+<a class="toc-link toc-h3" href="#custom-node-copy-file">Custom Node: Copy File</a>
+<a class="toc-link toc-h2" href="#use-case-2-folder-monitoring-system">Use Case 2: Folder Monitoring System</a>
+<a class="toc-link toc-h3" href="#the-problem_1">The Problem</a>
+<a class="toc-link toc-h3" href="#pattern-poll-process">Pattern: Poll + Process</a>
+<a class="toc-link toc-h3" href="#using-watchdog-inside-a-node">Using Watchdog Inside a Node</a>
+<a class="toc-link toc-h3" href="#looping-pattern-for-continuous-monitoring">Looping Pattern for Continuous Monitoring</a>
+<a class="toc-link toc-h2" href="#use-case-3-image-processing-pipeline">Use Case 3: Image Processing Pipeline</a>
+<a class="toc-link toc-h3" href="#the-problem_2">The Problem</a>
+<a class="toc-link toc-h3" href="#nodes-to-use_1">Nodes to Use</a>
+<a class="toc-link toc-h3" href="#watermark-node-code">Watermark Node Code</a>
+<a class="toc-link toc-h2" href="#use-case-4-data-transformation-workflows">Use Case 4: Data Transformation Workflows</a>
+<a class="toc-link toc-h3" href="#the-problem_3">The Problem</a>
+<a class="toc-link toc-h3" href="#why-nodes-beat-pandas-scripts">Why Nodes Beat pandas Scripts</a>
+<a class="toc-link toc-h3" href="#workflow-structure">Workflow Structure</a>
+<a class="toc-link toc-h3" href="#parse-csv-node">Parse CSV Node</a>
+<a class="toc-link toc-h3" href="#compute-metric-node">Compute Metric Node</a>
+<a class="toc-link toc-h2" href="#use-case-5-api-requests-and-web-automation">Use Case 5: API Requests and Web Automation</a>
+<a class="toc-link toc-h3" href="#the-problem_4">The Problem</a>
+<a class="toc-link toc-h3" href="#chain-pattern-auth-fetch-transform-act-notify">Chain Pattern: Auth → Fetch → Transform → Act → Notify</a>
+<a class="toc-link toc-h3" href="#extract-token-node">Extract Token Node</a>
+<a class="toc-link toc-h3" href="#filter-by-assignee-node">Filter by Assignee Node</a>
+<a class="toc-link toc-h2" href="#use-case-6-aillm-workflow-orchestration">Use Case 6: AI/LLM Workflow Orchestration</a>
+<a class="toc-link toc-h3" href="#the-problem_5">The Problem</a>
+<a class="toc-link toc-h3" href="#chain-of-llm-prompts">Chain of LLM Prompts</a>
+<a class="toc-link toc-h3" href="#passing-context-with-setvariablegetvariable">Passing Context with SetVariable/GetVariable</a>
+<a class="toc-link toc-h2" href="#use-case-7-local-automation-tools">Use Case 7: Local Automation Tools</a>
+<a class="toc-link toc-h3" href="#the-problem_6">The Problem</a>
+<a class="toc-link toc-h3" href="#subprocess-node-pattern">Subprocess Node Pattern</a>
+<a class="toc-link toc-h3" href="#build-pipeline-workflow">Build Pipeline Workflow</a>
+<a class="toc-link toc-h2" href="#use-case-8-database-operations">Use Case 8: Database Operations</a>
+<a class="toc-link toc-h3" href="#the-problem_7">The Problem</a>
+<a class="toc-link toc-h3" href="#workflow-structure_1">Workflow Structure</a>
+<a class="toc-link toc-h3" href="#aggregation-node">Aggregation Node</a>
+<a class="toc-link toc-h2" href="#use-case-9-task-scheduling">Use Case 9: Task Scheduling</a>
+<a class="toc-link toc-h3" href="#the-problem_8">The Problem</a>
+<a class="toc-link toc-h3" href="#timer-delay-node">Timer / Delay Node</a>
+<a class="toc-link toc-h3" href="#polling-loop-workflow">Polling Loop Workflow</a>
+<a class="toc-link toc-h3" href="#integration-with-system-schedulers">Integration with System Schedulers</a>
+<a class="toc-link toc-h2" href="#use-case-10-multi-step-business-logic">Use Case 10: Multi-Step Business Logic</a>
+<a class="toc-link toc-h3" href="#the-problem_9">The Problem</a>
+<a class="toc-link toc-h3" href="#approval-workflow">Approval Workflow</a>
+<a class="toc-link toc-h3" href="#exec_fail-branches">exec_fail Branches</a>
+<a class="toc-link toc-h2" href="#use-case-11-devops-and-build-automation">Use Case 11: DevOps and Build Automation</a>
+<a class="toc-link toc-h3" href="#the-problem_10">The Problem</a>
+<a class="toc-link toc-h3" href="#workflow">Workflow</a>
+<a class="toc-link toc-h3" href="#reading-environment-variables-node">Reading Environment Variables Node</a>
+<a class="toc-link toc-h2" href="#use-case-12-background-services-and-workers">Use Case 12: Background Services and Workers</a>
+<a class="toc-link toc-h3" href="#running-headlessly">Running Headlessly</a>
+<a class="toc-link toc-h3" href="#logging-to-file-vs-ui">Logging to File vs. UI</a>
+<a class="toc-link toc-h3" href="#restart-on-failure-pattern">Restart on Failure Pattern</a>
+<a class="toc-link toc-h2" href="#thinking-in-node-based-logic">Thinking in Node-Based Logic</a>
+<a class="toc-link toc-h3" href="#step-1-identify-inputs-transforms-outputs">Step 1: Identify Inputs, Transforms, Outputs</a>
+<a class="toc-link toc-h3" href="#step-2-separate-data-flow-from-control-flow">Step 2: Separate Data Flow from Control Flow</a>
+<a class="toc-link toc-h3" href="#step-3-group-reusable-logic-into-subgraphs">Step 3: Group Reusable Logic into Subgraphs</a>
+<a class="toc-link toc-h3" href="#step-4-connect-error-handling-branches">Step 4: Connect Error Handling Branches</a>
+<a class="toc-link toc-h3" href="#decision-framework-when-to-use-which-node">Decision Framework: When to Use Which Node</a>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/highlight.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lunr@2.3.9/lunr.min.js"></script>
+<script>
+// ── Search ──────────────────────────────────────────────────────────────
+let _idx = null, _docs = [];
+
+async function initSearch() {
+  try {
+    const base = document.getElementById('portal-base').dataset.base;
+    const resp = await fetch(base + 'search.json');
+    _docs = await resp.json();
+    _idx = lunr(function() {
+      this.ref('id');
+      this.field('title', { boost: 10 });
+      this.field('body');
+      _docs.forEach((d, i) => {
+        this.add({ id: i, title: d.title, body: d.body });
+      });
+    });
+  } catch(e) { console.warn('Search index not available', e); }
+}
+
+function doSearch(q) {
+  const box = document.getElementById('search-results');
+  if (!q || q.length < 2) { box.classList.remove('visible'); return; }
+  if (!_idx) { box.innerHTML = '<div class="search-no-results">Search index loading…</div>'; box.classList.add('visible'); return; }
+  const results = _idx.search(q + '~1');
+  if (!results.length) {
+    box.innerHTML = '<div class="search-no-results">No results for "' + q + '"</div>';
+    box.classList.add('visible'); return;
+  }
+  box.innerHTML = results.slice(0, 8).map(r => {
+    const d = _docs[r.ref];
+    const excerpt = d.body.substring(0, 140).replace(/[#*`]/g, '').trim() + '…';
+    return `<a class="search-result-item" href="${d.url}">
+      <div class="search-result-title">${d.title}</div>
+      <div class="search-result-excerpt">${excerpt}</div>
+    </a>`;
+  }).join('');
+  box.classList.add('visible');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initSearch();
+  const inp = document.getElementById('search-input');
+  if (inp) {
+    inp.addEventListener('input', e => doSearch(e.target.value));
+    inp.addEventListener('keydown', e => { if (e.key === 'Escape') { e.target.value=''; document.getElementById('search-results').classList.remove('visible'); }});
+  }
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.search-wrap')) document.getElementById('search-results')?.classList.remove('visible');
+  });
+  // Keyboard shortcut: / to focus search
+  document.addEventListener('keydown', e => {
+    if (e.key === '/' && !['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) {
+      e.preventDefault(); document.getElementById('search-input')?.focus();
+    }
+  });
+
+  // ── TOC active section ──────────────────────────────────────────────
+  const tocLinks = document.querySelectorAll('.toc-link');
+  const headings = document.querySelectorAll('h2[id],h3[id],h4[id]');
+  if (tocLinks.length && headings.length) {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          tocLinks.forEach(l => l.classList.remove('active'));
+          const link = document.querySelector(`.toc-link[href="#${entry.target.id}"]`);
+          if (link) link.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    headings.forEach(h => obs.observe(h));
+  }
+
+  // ── Copy buttons ────────────────────────────────────────────────────
+  document.querySelectorAll('pre').forEach(pre => {
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn'; btn.textContent = 'Copy';
+    btn.addEventListener('click', () => {
+      const code = pre.querySelector('code');
+      navigator.clipboard.writeText(code ? code.innerText : pre.innerText).then(() => {
+        btn.textContent = 'Copied!'; btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+      });
+    });
+    pre.style.position = 'relative';
+    pre.appendChild(btn);
+  });
+
+  // ── Sidebar active ──────────────────────────────────────────────────
+  const cur = window.location.pathname.split('/').pop();
+  document.querySelectorAll('.sidebar-link').forEach(l => {
+    if (l.getAttribute('href') === cur || l.getAttribute('href').endsWith(cur)) l.classList.add('active');
+  });
+
+  // ── highlight.js ────────────────────────────────────────────────────
+  if (window.hljs) {
+    hljs.configure({ ignoreUnescapedHTML: true });
+    hljs.highlightAll();
+  }
+});
+</script>
+</body>
+</html>

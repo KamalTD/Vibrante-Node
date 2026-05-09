@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Vibrante-Node v2.0.0 — Troubleshooting">
+<title>Troubleshooting — Vibrante-Node Docs</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/atom-one-dark.min.css">
+<style>
+/* ── Reset & Variables ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:       #1e1e2e;
+  --surface:  #181825;
+  --surface2: #11111b;
+  --border:   #313244;
+  --text:     #cdd6f4;
+  --subtext:  #a6adc8;
+  --muted:    #6c7086;
+  --lavender: #b4befe;
+  --blue:     #89b4fa;
+  --teal:     #94e2d5;
+  --green:    #a6e3a1;
+  --yellow:   #f9e2af;
+  --peach:    #fab387;
+  --red:      #f38ba8;
+  --pink:     #f5c2e7;
+  --mauve:    #cba6f7;
+  --sidebar-w: 260px;
+  --toc-w:    220px;
+  --header-h: 56px;
+  --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --mono: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+}
+
+/* ── Layout ─────────────────────────────────────────────────────────────── */
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: var(--header-h) 1fr;
+  grid-template-columns: var(--sidebar-w) 1fr var(--toc-w);
+  grid-template-areas:
+    "header header header"
+    "sidebar content toc";
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+.header {
+  grid-area: header;
+  position: sticky; top: 0; z-index: 200;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 16px;
+  padding: 0 24px;
+}
+.header-logo {
+  font-weight: 700; font-size: 1.05em;
+  color: var(--mauve);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.header-version {
+  font-size: .78em;
+  background: var(--border);
+  color: var(--subtext);
+  padding: 2px 8px; border-radius: 12px;
+}
+.header-spacer { flex: 1; }
+.search-wrap { position: relative; }
+#search-input {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: .9em;
+  padding: 6px 14px 6px 36px;
+  width: 260px;
+  outline: none;
+  transition: border-color .15s;
+}
+#search-input:focus { border-color: var(--mauve); }
+.search-icon {
+  position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+  color: var(--muted); pointer-events: none; font-size: .9em;
+}
+#search-results {
+  position: absolute; top: calc(100% + 8px); right: 0;
+  width: 380px; max-height: 420px; overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.5);
+  display: none; z-index: 300;
+}
+#search-results.visible { display: block; }
+.search-result-item {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background .1s;
+}
+.search-result-item:last-child { border-bottom: none; }
+.search-result-item:hover { background: var(--bg); }
+.search-result-title { color: var(--blue); font-weight: 600; font-size: .9em; }
+.search-result-excerpt { color: var(--subtext); font-size: .82em; margin-top: 2px; line-height: 1.4; }
+.search-no-results { padding: 16px; color: var(--muted); text-align: center; font-size: .9em; }
+
+/* ── Sidebar ─────────────────────────────────────────────────────────────── */
+.sidebar {
+  grid-area: sidebar;
+  position: sticky; top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 20px 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.sidebar-group { margin-bottom: 4px; }
+.sidebar-group-title {
+  font-size: .7em;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--muted);
+  padding: 10px 20px 4px;
+  font-weight: 600;
+}
+.sidebar-link {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 20px;
+  color: var(--subtext);
+  text-decoration: none;
+  font-size: .88em;
+  border-left: 3px solid transparent;
+  transition: all .12s;
+  line-height: 1.3;
+}
+.sidebar-link:hover { color: var(--text); background: var(--bg); }
+.sidebar-link.active {
+  color: var(--mauve);
+  border-left-color: var(--mauve);
+  background: rgba(180,190,254,.06);
+  font-weight: 600;
+}
+.sidebar-num {
+  font-size: .7em;
+  color: var(--muted);
+  background: var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  flex-shrink: 0;
+}
+.sidebar-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 12px 16px;
+}
+
+/* ── Content ─────────────────────────────────────────────────────────────── */
+.content {
+  grid-area: content;
+  min-width: 0;
+  padding: 40px 48px 80px;
+  max-width: 860px;
+}
+.content-inner { max-width: 820px; }
+
+/* Breadcrumb */
+.breadcrumb {
+  font-size: .8em;
+  color: var(--muted);
+  margin-bottom: 28px;
+  display: flex; align-items: center; gap: 6px;
+}
+.breadcrumb a { color: var(--blue); text-decoration: none; }
+.breadcrumb a:hover { text-decoration: underline; }
+.breadcrumb-sep { color: var(--border); }
+
+/* Typography */
+h1 { font-size: 2em; color: var(--mauve); border-bottom: 2px solid var(--border); padding-bottom: 12px; margin: 20px 0 20px; }
+h2 { font-size: 1.45em; color: var(--blue); margin: 40px 0 14px; padding-top: 8px; }
+h3 { font-size: 1.15em; color: var(--teal); margin: 28px 0 10px; }
+h4 { font-size: 1em; color: var(--pink); margin: 20px 0 8px; }
+h5 { font-size: .95em; color: var(--yellow); margin: 16px 0 6px; }
+p  { margin-bottom: 16px; color: var(--text); }
+a  { color: var(--blue); }
+a:hover { text-decoration: underline; }
+strong { color: var(--peach); }
+em { color: var(--yellow); font-style: italic; }
+
+ul, ol { margin: 10px 0 16px 24px; }
+li { margin-bottom: 6px; }
+li > ul, li > ol { margin-top: 4px; margin-bottom: 4px; }
+
+blockquote {
+  border-left: 4px solid var(--mauve);
+  padding: 10px 20px;
+  margin: 16px 0;
+  background: rgba(180,190,254,.05);
+  border-radius: 0 8px 8px 0;
+  color: var(--subtext);
+}
+blockquote strong { color: var(--mauve); }
+
+hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+/* Code */
+code {
+  background: var(--surface2);
+  color: var(--red);
+  padding: 2px 7px; border-radius: 5px;
+  font-family: var(--mono); font-size: .87em;
+}
+pre {
+  background: var(--surface2) !important;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px 22px;
+  overflow-x: auto;
+  margin: 16px 0 22px;
+  position: relative;
+}
+pre code {
+  background: none !important;
+  color: inherit !important;
+  padding: 0; font-size: .9em;
+  border-radius: 0;
+}
+/* Copy button */
+.copy-btn {
+  position: absolute; top: 10px; right: 12px;
+  background: var(--border);
+  color: var(--subtext);
+  border: none; border-radius: 5px;
+  padding: 3px 10px; font-size: .75em;
+  cursor: pointer; transition: all .12s;
+  font-family: var(--font);
+}
+.copy-btn:hover { background: var(--mauve); color: var(--surface2); }
+.copy-btn.copied { background: var(--green); color: var(--surface2); }
+
+/* Tables */
+table { border-collapse: collapse; width: 100%; margin: 16px 0 22px; font-size: .9em; }
+th { background: var(--border); color: var(--mauve); padding: 10px 14px; text-align: left; font-weight: 600; }
+td { border-top: 1px solid var(--border); padding: 9px 14px; color: var(--text); }
+tr:nth-child(even) td { background: rgba(17,17,27,.4); }
+td code { font-size: .85em; }
+
+/* Callout boxes */
+.callout {
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin: 16px 0 22px;
+  border-left: 4px solid;
+}
+.callout-note    { background: rgba(137,180,250,.08); border-color: var(--blue);   }
+.callout-tip     { background: rgba(166,227,161,.08); border-color: var(--green);  }
+.callout-warning { background: rgba(249,226,175,.08); border-color: var(--yellow); }
+.callout-danger  { background: rgba(243,139,168,.08); border-color: var(--red);    }
+.callout-title   { font-weight: 700; font-size: .85em; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
+.callout-note    .callout-title { color: var(--blue);   }
+.callout-tip     .callout-title { color: var(--green);  }
+.callout-warning .callout-title { color: var(--yellow); }
+.callout-danger  .callout-title { color: var(--red);    }
+
+/* Prev/Next navigation */
+.page-nav {
+  display: flex; justify-content: space-between;
+  margin-top: 60px; padding-top: 24px;
+  border-top: 1px solid var(--border);
+  gap: 16px;
+}
+.page-nav-link {
+  display: flex; flex-direction: column;
+  text-decoration: none;
+  padding: 14px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  min-width: 200px;
+  transition: border-color .15s;
+  max-width: 48%;
+}
+.page-nav-link:hover { border-color: var(--mauve); }
+.page-nav-label { font-size: .75em; color: var(--muted); margin-bottom: 4px; }
+.page-nav-title { color: var(--blue); font-weight: 600; font-size: .95em; }
+.page-nav-link.prev .page-nav-label::before { content: '← '; }
+.page-nav-link.next { margin-left: auto; text-align: right; }
+.page-nav-link.next .page-nav-label::after { content: ' →'; }
+
+/* ── TOC (right panel) ───────────────────────────────────────────────────── */
+.toc {
+  grid-area: toc;
+  position: sticky; top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  padding: 28px 16px 28px 8px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.toc-title {
+  font-size: .72em;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--muted);
+  font-weight: 600;
+  margin-bottom: 12px;
+  padding-left: 8px;
+}
+.toc-link {
+  display: block;
+  padding: 4px 8px;
+  color: var(--subtext);
+  text-decoration: none;
+  font-size: .82em;
+  border-left: 2px solid transparent;
+  border-radius: 0 4px 4px 0;
+  transition: all .12s;
+  line-height: 1.35;
+  margin-bottom: 1px;
+}
+.toc-link:hover { color: var(--text); border-left-color: var(--border); }
+.toc-link.active { color: var(--mauve); border-left-color: var(--mauve); background: rgba(180,190,254,.05); }
+.toc-link.toc-h3 { padding-left: 20px; font-size: .79em; }
+.toc-link.toc-h4 { padding-left: 32px; font-size: .76em; color: var(--muted); }
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  body { grid-template-columns: var(--sidebar-w) 1fr 0; }
+  .toc { display: none; }
+}
+@media (max-width: 760px) {
+  body { grid-template-columns: 0 1fr 0; grid-template-rows: var(--header-h) 1fr; }
+  .sidebar { display: none; }
+  .content { padding: 24px 20px 60px; }
+  #search-input { width: 180px; }
+}
+
+/* ── Index / landing page ────────────────────────────────────────────────── */
+.hero { text-align: center; padding: 60px 0 48px; }
+.hero h1 { border: none; font-size: 2.8em; }
+.hero .tagline { color: var(--subtext); font-size: 1.15em; margin-top: 10px; }
+.hero .version-badge {
+  display: inline-block;
+  background: var(--border); color: var(--mauve);
+  padding: 4px 14px; border-radius: 20px; font-size: .85em;
+  margin-top: 14px;
+}
+.group-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin: 16px 0 36px; }
+.doc-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  text-decoration: none;
+  color: var(--text);
+  transition: border-color .15s, background .15s;
+  display: block;
+}
+.doc-card:hover { border-color: var(--mauve); background: rgba(180,190,254,.04); }
+.doc-card-num { font-size: .72em; color: var(--muted); margin-bottom: 4px; }
+.doc-card-title { color: var(--blue); font-weight: 700; font-size: 1em; margin-bottom: 6px; }
+.doc-card-desc { color: var(--subtext); font-size: .85em; line-height: 1.5; }
+.group-title { color: var(--teal); font-size: 1.1em; font-weight: 600; margin: 32px 0 10px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+</style>
+<span id="portal-base" data-base="" style="display:none"></span>
+</head>
+<body>
+
+<!-- ── Header ─────────────────────────────────────────────────────────── -->
+<header class="header">
+  <a class="header-logo" href="index.html">Vibrante-Node</a>
+  <span class="header-version">v2.0.0</span>
+  <div class="header-spacer"></div>
+  <div class="search-wrap">
+    <span class="search-icon">&#128269;</span>
+    <input id="search-input" type="text" placeholder="Search docs… (/)" autocomplete="off" spellcheck="false">
+    <div id="search-results"></div>
+  </div>
+</header>
+
+<!-- ── Sidebar ────────────────────────────────────────────────────────── -->
+<nav class="sidebar">
+<div class="sidebar-group">
+<div class="sidebar-group-title">Overview</div>
+<a class="sidebar-link" href="01_introduction.html"><span class="sidebar-num">01</span>Introduction</a>
+<a class="sidebar-link" href="02_getting_started.html"><span class="sidebar-num">02</span>Getting Started</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Using the App</div>
+<a class="sidebar-link" href="03_user_guide.html"><span class="sidebar-num">03</span>User Guide</a>
+<a class="sidebar-link" href="04_workflow_tutorials.html"><span class="sidebar-num">04</span>Workflow Tutorials</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Developing Nodes</div>
+<a class="sidebar-link" href="05_node_development.html"><span class="sidebar-num">05</span>Node Development Guide</a>
+<a class="sidebar-link" href="14_custom_nodes_api.html"><span class="sidebar-num">14</span>Custom Nodes API</a>
+<a class="sidebar-link" href="08_api_reference.html"><span class="sidebar-num">08</span>API Reference</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Architecture</div>
+<a class="sidebar-link" href="06_backend_architecture.html"><span class="sidebar-num">06</span>Backend Architecture</a>
+<a class="sidebar-link" href="07_frontend_architecture.html"><span class="sidebar-num">07</span>Frontend Architecture</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Advanced</div>
+<a class="sidebar-link" href="09_advanced_topics.html"><span class="sidebar-num">09</span>Advanced Topics</a>
+<a class="sidebar-link" href="10_contribution_guide.html"><span class="sidebar-num">10</span>Contribution Guide</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Reference</div>
+<a class="sidebar-link active" href="11_troubleshooting.html"><span class="sidebar-num">11</span>Troubleshooting</a>
+<a class="sidebar-link" href="12_examples_library.html"><span class="sidebar-num">12</span>Examples Library</a>
+<a class="sidebar-link" href="13_general_purpose_automation.html"><span class="sidebar-num">13</span>General Purpose Automation</a>
+</div>
+
+</nav>
+
+<!-- ── Main content ───────────────────────────────────────────────────── -->
+<main class="content">
+  <div class="content-inner">
+    <nav class="breadcrumb"><a href="index.html">Docs</a><span class="breadcrumb-sep">›</span><span>Troubleshooting</span></nav>
+    <h1 id="troubleshooting-guide">Troubleshooting Guide</h1>
+<p>This guide covers the most common problems users and developers encounter with Vibrante-Node v2.0.0, organized by symptom. For each issue you will find: what causes it, how to diagnose it, and how to fix it.</p>
+<hr />
+<h2 id="1-installation-issues">1. Installation Issues</h2>
+<h3 id="pyqt5-not-found">PyQt5 not found</h3>
+<p><strong>Symptom:</strong> <code>ModuleNotFoundError: No module named 'PyQt5'</code> at startup.</p>
+<p><strong>Cause:</strong> PyQt5 is not installed in the active Python environment.</p>
+<p><strong>Fix:</strong></p>
+<pre><code class="language-bash">pip install PyQt5
+</code></pre>
+<p>If you are on Python 3.12 or newer and PyQt5 installation fails with a wheel error, use Python 3.11:</p>
+<pre><code class="language-bash">python3.11 -m venv .venv
+.venv\Scripts\activate   # Windows
+pip install -r requirements.txt
+</code></pre>
+<p>On Linux, also install the system Qt libraries:</p>
+<pre><code class="language-bash">sudo apt-get install python3-pyqt5
+# or
+pip install PyQt5 --config-settings --confirm-license=
+</code></pre>
+<hr />
+<h3 id="qscintilla-missing-code-editor-shows-plain-text">QScintilla missing — code editor shows plain text</h3>
+<p><strong>Symptom:</strong> The Python editor in the Node Builder or Script Editor shows as a plain text box without syntax highlighting or autocompletion.</p>
+<p><strong>Cause:</strong> QScintilla (<code>PyQt5.Qsci</code>) is not installed. This is not an error — the app falls back to a <code>QPlainTextEdit</code>-based editor automatically.</p>
+<p><strong>Fix (optional):</strong></p>
+<pre><code class="language-bash">pip install QScintilla
+</code></pre>
+<p>Restart the app after installing. If QScintilla is installed but the enhanced editor still doesn't appear, check that the version matches your PyQt5 version:</p>
+<pre><code class="language-bash">pip show QScintilla PyQt5
+</code></pre>
+<p><strong>Important:</strong> This fallback is intentional. Never re-raise the <code>ImportError</code> in <code>code_editor.py</code>. If you see <code>ImportError: QScintilla is required</code> as a hard crash, someone has re-added the raise — revert that change.</p>
+<hr />
+<h3 id="pydantic-version-errors">Pydantic version errors</h3>
+<p><strong>Symptom:</strong> <code>ValidationError</code>, <code>AttributeError: model_fields</code>, or <code>TypeError: __init__() got an unexpected keyword argument</code> when loading workflows.</p>
+<p><strong>Cause:</strong> Vibrante-Node requires pydantic v2. Pydantic v1 has an incompatible API.</p>
+<p><strong>Diagnosis:</strong></p>
+<pre><code class="language-bash">python -c &quot;import pydantic; print(pydantic.VERSION)&quot;
+</code></pre>
+<p><strong>Fix:</strong></p>
+<pre><code class="language-bash">pip install &quot;pydantic&gt;=2.0&quot;
+</code></pre>
+<p>If another package in your environment pins pydantic v1, use a separate virtual environment for Vibrante-Node.</p>
+<hr />
+<h3 id="no-module-named-src"><code>No module named 'src'</code></h3>
+<p><strong>Symptom:</strong> <code>ModuleNotFoundError: No module named 'src'</code> when running scripts or tests.</p>
+<p><strong>Cause:</strong> Python cannot find the <code>src</code> package because the working directory is not the project root, or the project root is not in <code>sys.path</code>.</p>
+<p><strong>Fix for running the app:</strong></p>
+<pre><code class="language-bash"># Always run from the project root (node_based_app/)
+cd /path/to/node_based_app
+python -m src.main
+</code></pre>
+<p><strong>Fix for scripts:</strong></p>
+<pre><code class="language-python">import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from src.core.engine import NetworkExecutor
+</code></pre>
+<p><strong>Fix for tests:</strong> The <code>pytest.ini</code> at the project root sets <code>pythonpath = .</code> which handles this automatically. Always run pytest from the project root.</p>
+<hr />
+<h2 id="2-app-wont-start">2. App Won't Start</h2>
+<h3 id="qt-platform-plugin-error-on-windows">Qt platform plugin error on Windows</h3>
+<p><strong>Symptom:</strong></p>
+<pre><code>qt.qpa.plugin: Could not find the Qt platform plugin &quot;windows&quot; in &quot;&quot;
+This application failed to start because no Qt platform plugin could be initialized.
+</code></pre>
+<p><strong>Cause:</strong> Qt's DLLs are not in the path, or the virtual environment is missing Qt platform files.</p>
+<p><strong>Fix:</strong></p>
+<pre><code class="language-bash">pip install --force-reinstall PyQt5 PyQt5-Qt5 PyQt5-sip
+</code></pre>
+<p>If using a PyInstaller build (the <code>.exe</code>), ensure the <code>platforms/</code> folder exists next to the executable:</p>
+<pre><code>vibrante_node.exe
+platforms/
+  qwindows.dll
+</code></pre>
+<hr />
+<h3 id="linux-no-display-cannot-connect-to-x-server">Linux: no display / cannot connect to X server</h3>
+<p><strong>Symptom:</strong> <code>qt.qpa.xcb: could not connect to display</code> or <code>DISPLAY is not set</code>.</p>
+<p><strong>Fix for headless servers:</strong> Use a virtual display:</p>
+<pre><code class="language-bash">pip install pyqtgraph  # optional
+Xvfb :99 -screen 0 1920x1080x24 &amp;
+export DISPLAY=:99
+python -m src.main
+</code></pre>
+<p>For running in CI or Docker, use <code>offscreen</code> platform:</p>
+<pre><code class="language-bash">QT_QPA_PLATFORM=offscreen python -m src.main
+</code></pre>
+<p><strong>Fix for desktop Linux:</strong> Ensure <code>$DISPLAY</code> is set and the current user has access to the X session:</p>
+<pre><code class="language-bash">export DISPLAY=:0
+xhost +local:
+</code></pre>
+<hr />
+<h3 id="crash-on-startup-with-no-error-message">Crash on startup with no error message</h3>
+<p><strong>Symptom:</strong> App closes immediately with no dialog or log output.</p>
+<p><strong>Check:</strong> Look for <code>crash.log</code> in the project root:</p>
+<pre><code class="language-bash">cat crash.log
+</code></pre>
+<p>The crash log captures Python tracebacks that occur before the UI is ready. Common causes:<br />
+- Corrupt <code>settings.json</code> in <code>~/.vibrante_node/</code><br />
+- A broken node JSON file in <code>nodes/</code> that crashes the registry loader<br />
+- A missing icon file referenced in a node JSON</p>
+<p><strong>Fix for corrupt settings:</strong></p>
+<pre><code class="language-bash"># Delete user settings to reset to defaults
+rm ~/.vibrante_node/settings.json   # Linux/macOS
+del %USERPROFILE%\.vibrante_node\settings.json   # Windows
+</code></pre>
+<p><strong>Fix for broken node JSON:</strong> Remove or fix the offending file in <code>nodes/</code>. The crash log will name the file.</p>
+<hr />
+<h2 id="3-nodes-not-appearing-in-library">3. Nodes Not Appearing in Library</h2>
+<h3 id="node-json-file-not-loaded">Node JSON file not loaded</h3>
+<p><strong>Symptom:</strong> A <code>.json</code> file in <code>nodes/</code> is not appearing in the Node Library panel.</p>
+<p><strong>Diagnosis checklist:</strong><br />
+1. Is the file valid JSON? Validate with: <code>python -m json.tool nodes/my_node.json</code><br />
+2. Does the file have <code>"node_id"</code> and <code>"name"</code> fields?<br />
+3. Is <code>"python_code"</code> present and non-empty?<br />
+4. Does the <code>python_code</code> contain a <code>register_node()</code> function that returns the class?<br />
+5. Is there a syntax error in the <code>python_code</code> string?</p>
+<p><strong>Checking for syntax errors in python_code:</strong></p>
+<pre><code class="language-python">import json, ast
+with open(&quot;nodes/my_node.json&quot;) as f:
+    data = json.load(f)
+try:
+    ast.parse(data[&quot;python_code&quot;])
+    print(&quot;Syntax OK&quot;)
+except SyntaxError as e:
+    print(f&quot;Syntax error: {e}&quot;)
+</code></pre>
+<hr />
+<h3 id="houdini-nodes-missing-from-library">Houdini nodes missing from library</h3>
+<p><strong>Symptom:</strong> Houdini-specific nodes from <code>plugins/houdini/v_nodes_houdini/</code> do not appear after launching from Houdini.</p>
+<p><strong>Cause:</strong> <code>v_nodes_dir</code> environment variable is not set, or <code>NodeRegistry.load_all()</code> was called instead of <code>load_all_with_extras()</code>.</p>
+<p><strong>Diagnosis:</strong> In the app, open the Python console (if available) and run:</p>
+<pre><code class="language-python">import os
+print(os.environ.get(&quot;v_nodes_dir&quot;, &quot;NOT SET&quot;))
+</code></pre>
+<p><strong>Fix:</strong><br />
+- Ensure you launched the app from Houdini via <strong>Vibrante-Node → Launch</strong> (not by running <code>python -m src.main</code> directly).<br />
+- In <code>src/ui/window.py</code>, confirm <code>load_all_with_extras(bundled_nodes)</code> is called, not <code>load_all(bundled_nodes)</code>.</p>
+<hr />
+<h3 id="register_node-missing"><code>register_node()</code> missing</h3>
+<p><strong>Symptom:</strong> Node file loads without error but class is not accessible.</p>
+<p><strong>Cause:</strong> The <code>python_code</code> string is missing the <code>register_node()</code> function at the module level.</p>
+<p><strong>Required:</strong></p>
+<pre><code class="language-python">def register_node():
+    return MyNodeClass
+</code></pre>
+<p>This function must be at module level (not inside the class) and must return the class itself, not an instance.</p>
+<hr />
+<h2 id="4-workflow-wont-run">4. Workflow Won't Run</h2>
+<h3 id="no-entry-node-nothing-executes">No entry node / nothing executes</h3>
+<p><strong>Symptom:</strong> Click Run — nothing happens. Log panel is empty.</p>
+<p><strong>Cause:</strong> The engine cannot find a starting node. The execution engine starts from nodes that have no <code>exec_in</code> connection (their <code>exec_in</code> port is unconnected).</p>
+<p><strong>Fix:</strong> Ensure at least one node in your workflow has no incoming <code>exec_in</code> connection. That node is the entry point.</p>
+<p>If all nodes have <code>exec_in</code> wired (a closed loop), the engine has no starting point. Break the loop by disconnecting one <code>exec_in</code>.</p>
+<hr />
+<h3 id="circular-dependency-error">Circular dependency error</h3>
+<p><strong>Symptom:</strong> <code>CyclicDependencyError</code> or <code>RecursionError</code> in the log.</p>
+<p><strong>Cause:</strong> A data connection creates a cycle (Node A output → Node B input → Node A input).</p>
+<p><strong>Fix:</strong> Inspect the data connections (non-exec wires). Cycles in exec flow are handled differently than data cycles. A cycle in data connections is always an error — restructure your workflow to use <code>SetVariable</code> / <code>GetVariable</code> to break the cycle.</p>
+<hr />
+<h3 id="all-nodes-are-bypassed">All nodes are bypassed</h3>
+<p><strong>Symptom:</strong> Run completes instantly, no output, log says nodes were skipped.</p>
+<p><strong>Fix:</strong> Right-click each node and check if <strong>Bypass</strong> is checked. Bypassed nodes appear dimmed. Un-bypass them via right-click → Bypass (toggle off).</p>
+<hr />
+<h2 id="5-node-produces-wrong-output">5. Node Produces Wrong Output</h2>
+<h3 id="none-values-flowing-through-wires"><code>None</code> values flowing through wires</h3>
+<p><strong>Symptom:</strong> A downstream node receives <code>None</code> where it expects a string or list.</p>
+<p><strong>Diagnosis:</strong><br />
+1. Hover the wire from the upstream node — the tooltip shows the last value.<br />
+2. Check the upstream node's <code>execute()</code> return dict. Is the output key present?<br />
+3. Check for an exception in the upstream node: look for red entries in the log panel.</p>
+<p><strong>Common cause:</strong> The upstream node raised an exception, its <code>except</code> block returned <code>{"exec_out": True}</code> without the expected output key, so downstream receives <code>None</code> from <code>.get()</code>.</p>
+<p><strong>Fix:</strong> Ensure every code path in <code>execute()</code> returns all expected output keys:</p>
+<pre><code class="language-python">return {
+    &quot;result&quot;: result_value,   # always present, even on error
+    &quot;exec_out&quot;: True
+}
+</code></pre>
+<hr />
+<h3 id="values-not-updating-between-runs">Values not updating between runs</h3>
+<p><strong>Symptom:</strong> A node seems to remember values from the previous run.</p>
+<p><strong>Cause:</strong> State is stored in <code>self.parameters</code> (persisted to the workflow JSON) instead of <code>self.memory</code> (cleared each run).</p>
+<p><strong>Fix:</strong> Use <code>self.memory</code> for per-run transient state:</p>
+<pre><code class="language-python"># Wrong: persists across runs
+self.parameters[&quot;count&quot;] = self.parameters.get(&quot;count&quot;, 0) + 1
+
+# Correct: fresh each run
+count = self.memory.get(&quot;count&quot;, 0) + 1
+self.memory[&quot;count&quot;] = count
+</code></pre>
+<hr />
+<h2 id="6-houdini-bridge-not-connecting">6. Houdini Bridge Not Connecting</h2>
+<h3 id="connectionrefusederror-or-connectionerror-houdini-bridge-not-connected"><code>ConnectionRefusedError</code> or <code>ConnectionError: Houdini bridge not connected</code></h3>
+<p><strong>Symptom:</strong> Any Houdini node fails with a connection error.</p>
+<p><strong>Checklist:</strong></p>
+<ol>
+<li>
+<p><strong>Is the Vibrante-Node server running inside Houdini?</strong><br />
+   In Houdini, open the Python Shell and run:<br />
+<code>python
+   import vibrante_hou_server
+   print(vibrante_hou_server._server_thread)</code><br />
+   If it prints <code>None</code>, the server is not running. Start it:<br />
+<code>python
+   vibrante_hou_server.start()</code></p>
+</li>
+<li>
+<p><strong>Is the port correct?</strong><br />
+   Default port is <code>18811</code>. Check:<br />
+<code>python
+   import os
+   print(os.environ.get("VIBRANTE_HOU_PORT", "18811 (default)"))</code><br />
+   In Houdini:<br />
+<code>python
+   print(vibrante_hou_server._port)</code><br />
+   Both must match.</p>
+</li>
+<li>
+<p><strong>Is a firewall blocking localhost?</strong><br />
+   The bridge uses <code>127.0.0.1</code> (loopback). Windows Defender or corporate firewalls may block local socket connections. Add an exception for Python on localhost port 18811.</p>
+</li>
+<li>
+<p><strong>Did Houdini launch the app, or did you launch it manually?</strong><br />
+<code>VIBRANTE_HOU_PORT</code> is only set in the subprocess environment when launched from Houdini via <strong>Vibrante-Node → Launch</strong>. Running <code>python -m src.main</code> directly will use the default port, which only works if the Houdini server is also on the default port.</p>
+</li>
+</ol>
+<hr />
+<h3 id="30-second-timeout-then-connectionerror">30-second timeout then <code>ConnectionError</code></h3>
+<p><strong>Symptom:</strong> A Houdini node hangs for 30 seconds then fails with <code>ConnectionError: Houdini did not respond within 30s</code>.</p>
+<p><strong>Cause:</strong> Houdini is busy (e.g., cooking a heavy SOP network) and cannot respond to the JSON-RPC server.</p>
+<p><strong>Fix:</strong><br />
+- Wait for the Houdini cook to finish before running Vibrante-Node.<br />
+- For long-running operations, consider using <code>bridge.run_code()</code> to start a background cook and poll for completion, rather than calling <code>bridge.cook_node()</code> synchronously.</p>
+<hr />
+<h2 id="7-maya-headless-failing">7. Maya Headless Failing</h2>
+<h3 id="filenotfounderror-for-maya-executable"><code>FileNotFoundError</code> for Maya executable</h3>
+<p><strong>Symptom:</strong> Maya headless executor fails immediately with a path error.</p>
+<p><strong>Fix:</strong> Set <code>VIBRANTE_MAYA_EXE</code> in your environment to the full path of <code>mayapy.exe</code>:</p>
+<pre><code class="language-bash"># Windows
+set VIBRANTE_MAYA_EXE=C:\Program Files\Autodesk\Maya2024\bin\mayapy.exe
+
+# macOS
+export VIBRANTE_MAYA_EXE=/Applications/Autodesk/maya2024/Maya.app/Contents/bin/mayapy
+</code></pre>
+<hr />
+<h3 id="scene-not-found-error">Scene not found error</h3>
+<p><strong>Symptom:</strong> <code>open_scene</code> action fails with "file not found" even though the path looks correct.</p>
+<p><strong>Cause:</strong> The path may contain backslashes that Maya's Python interpreter interprets incorrectly, or the file doesn't exist at the given path from the Maya subprocess's working directory.</p>
+<p><strong>Fix:</strong> Always use forward slashes in scene paths:</p>
+<pre><code class="language-python">scene_path = scene_path.replace(&quot;\\&quot;, &quot;/&quot;)
+</code></pre>
+<hr />
+<h3 id="action-handler-missing">Action handler missing</h3>
+<p><strong>Symptom:</strong> <code>KeyError: 'my_action_type'</code> or <code>Unknown action type: my_action_type</code> in the Maya runner log.</p>
+<p><strong>Cause:</strong> The action <code>type</code> string in the action dict does not have a corresponding handler in the Maya runner script.</p>
+<p><strong>Fix:</strong> Open <code>plugins/maya/maya_runner.py</code> (or equivalent) and add:</p>
+<pre><code class="language-python">def handle_my_action_type(action: dict, scene_info: dict):
+    # Implementation
+    pass
+
+HANDLERS = {
+    ...
+    &quot;my_action_type&quot;: handle_my_action_type,
+}
+</code></pre>
+<hr />
+<h2 id="8-prism-nodes-not-working">8. Prism Nodes Not Working</h2>
+<h3 id="prismcore-not-initialized"><code>PrismCore not initialized</code></h3>
+<p><strong>Symptom:</strong> All <code>prism_*</code> nodes log <code>"PrismCore not initialized. Add a prism_core_init node to the graph."</code> and produce empty output.</p>
+<p><strong>Cause:</strong> The <code>prism_core_init</code> node is missing from the workflow graph.</p>
+<p><strong>Fix:</strong> Drag a <code>prism_core_init</code> node onto the canvas. It does not need to be wired into the exec chain — the engine detects its presence before execution and bootstraps PrismCore automatically. However, it must be present (not bypassed).</p>
+<hr />
+<h3 id="prism-import-error">Prism import error</h3>
+<p><strong>Symptom:</strong> <code>ModuleNotFoundError: No module named 'PrismCore'</code> or <code>No module named 'Prism_Core'</code>.</p>
+<p><strong>Cause:</strong> Prism Pipeline is not installed, or its Python path is not set.</p>
+<p><strong>Fix:</strong> Ensure the Prism Python scripts directory is in <code>sys.path</code>. Check your Prism installation for the correct path and add:</p>
+<pre><code class="language-python"># In src/utils/prism_core.py or your launch script
+sys.path.insert(0, &quot;/path/to/Prism2/Scripts&quot;)
+</code></pre>
+<hr />
+<h2 id="9-groupnode-issues">9. GroupNode Issues</h2>
+<h3 id="no-internal-workflow-error">"No internal workflow" error</h3>
+<p><strong>Symptom:</strong> Double-clicking a GroupNode shows an error: "This group node has no internal workflow."</p>
+<p><strong>Cause:</strong> The GroupNode's <code>__workflow__</code> parameter is empty or was not saved correctly. This was a known issue in early versions caused by UUID serialization — fixed in v2.0.0.</p>
+<p><strong>Diagnosis:</strong> Right-click the GroupNode → Inspect Parameters. Check if <code>__workflow__</code> contains a valid workflow dict or is empty/null.</p>
+<p><strong>Fix:</strong> If the GroupNode is empty and you still have the original nodes in another tab or workflow:<br />
+1. Re-create the subgraph in a new tab.<br />
+2. Select those nodes.<br />
+3. Ctrl+Shift+G to create a fresh GroupNode.<br />
+4. The new GroupNode will serialize correctly.</p>
+<p>If upgrading from a pre-v2.0.0 workflow with broken GroupNodes, the only recovery path is to re-create the groups. The bug was in serialization, so the internal logic cannot be recovered from the corrupt file.</p>
+<hr />
+<h3 id="exec-flow-not-propagating-out-of-groupnode">Exec flow not propagating out of GroupNode</h3>
+<p><strong>Symptom:</strong> Nodes downstream of a GroupNode never execute.</p>
+<p><strong>Cause:</strong> The GroupNode's internal <code>GroupOut</code> node is not connected in the exec chain, or <code>GroupOut</code> is not wired to <code>exec_in</code>.</p>
+<p><strong>Fix:</strong> Double-click the GroupNode to open the subgraph. Verify that the exec chain inside runs through to a <code>GroupOut</code> node. GroupOut must have <code>exec_in</code> connected from the last node in the inner chain.</p>
+<p>Also verify <code>GroupOut</code>'s <code>port_name</code> matches the expected output port name on the outer GroupNode.</p>
+<hr />
+<h2 id="10-exec-flow-not-progressing">10. Exec Flow Not Progressing</h2>
+<h3 id="workflow-stops-mid-execution-silently">Workflow stops mid-execution silently</h3>
+<p><strong>Symptom:</strong> Some nodes run, then execution stops with no error.</p>
+<p><strong>Cause:</strong> A node returned a dict without <code>"exec_out": True</code>, or returned <code>exec_out: False</code>.</p>
+<p><strong>Diagnosis:</strong><br />
+1. Check the log panel — the last node listed is where execution stopped.<br />
+2. Open that node's <code>execute()</code> code and check every return statement.</p>
+<p><strong>Fix:</strong> Ensure every code path returns <code>"exec_out": True</code>:</p>
+<pre><code class="language-python">async def execute(self, inputs):
+    if something_failed:
+        self.log_error(&quot;Something failed&quot;)
+        return {&quot;result&quot;: None, &quot;exec_out&quot;: True}   # exec_out still True — chain continues
+    return {&quot;result&quot;: value, &quot;exec_out&quot;: True}
+</code></pre>
+<p>If you want to intentionally stop the exec chain (rare), return <code>"exec_out": False</code>.</p>
+<hr />
+<h3 id="twowayswitch-not-routing-correctly">TwoWaySwitch not routing correctly</h3>
+<p><strong>Symptom:</strong> TwoWaySwitch always routes to <code>exec_true</code> even when condition should be False.</p>
+<p><strong>Cause:</strong> The <code>condition</code> input is receiving a truthy non-boolean value (e.g., the string <code>"False"</code> is truthy in Python).</p>
+<p><strong>Fix:</strong> Ensure the condition value is a Python <code>bool</code>:</p>
+<pre><code class="language-python"># Wrong: string &quot;False&quot; is truthy
+outputs[&quot;condition&quot;] = &quot;False&quot;
+
+# Correct
+outputs[&quot;condition&quot;] = False
+outputs[&quot;condition&quot;] = some_value &gt; threshold   # bool expression
+outputs[&quot;condition&quot;] = bool(int(inputs.get(&quot;flag&quot;, 0)))  # explicit cast
+</code></pre>
+<hr />
+<h2 id="11-autosave-restore-dialog-always-showing">11. Autosave Restore Dialog Always Showing</h2>
+<p><strong>Symptom:</strong> Every time the app starts, the "Restore unsaved sessions?" dialog appears, even after accepting or declining.</p>
+<p><strong>Cause:</strong> The autosave file (<code>~/.vibrante_node_autosave.json</code>) is being written but not deleted on clean exit. This happens if the app is force-closed, crashes, or if <code>closeEvent</code> is not being called.</p>
+<p><strong>Manual fix:</strong> Delete the autosave file:</p>
+<pre><code class="language-bash"># Windows
+del %USERPROFILE%\.vibrante_node_autosave.json
+
+# Linux / macOS
+rm ~/.vibrante_node_autosave.json
+</code></pre>
+<p><strong>Permanent fix:</strong> Ensure you close the app via the window's X button or File → Exit, not via Task Manager or <code>kill</code>. The close event cleans up the autosave file on normal exit.</p>
+<p>If the dialog appears after a crash: this is by design. Accept the restore to recover unsaved work, or decline to start fresh.</p>
+<hr />
+<h2 id="12-async-deadlock-ui-freezing">12. Async Deadlock / UI Freezing</h2>
+<p><strong>Symptom:</strong> The UI becomes unresponsive during execution. The progress indicator spins but nothing moves.</p>
+<p><strong>Cause:</strong> A blocking call inside <code>execute()</code> is holding the event loop:<br />
+- <code>time.sleep()</code> — freezes the event loop thread<br />
+- <code>requests.get()</code> — synchronous HTTP blocks<br />
+- <code>subprocess.run(capture_output=True)</code> without timeout — hangs waiting for subprocess</p>
+<p><strong>Fix:</strong> Wrap blocking calls in <code>asyncio.to_thread()</code>:</p>
+<pre><code class="language-python">import asyncio
+
+async def execute(self, inputs):
+    # Wrong: blocks the event loop
+    import time
+    time.sleep(5)
+
+    # Correct: offloads to a thread, event loop stays responsive
+    await asyncio.sleep(5)   # for delays
+
+    # Wrong: synchronous HTTP
+    import requests
+    response = requests.get(url)
+
+    # Correct: async HTTP
+    import aiohttp
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
+            data = await response.json()
+
+    # Wrong: blocking subprocess
+    import subprocess
+    result = subprocess.run([&quot;cmd&quot;], capture_output=True)
+
+    # Correct: async subprocess
+    proc = await asyncio.create_subprocess_exec(
+        &quot;cmd&quot;, stdout=asyncio.subprocess.PIPE
+    )
+    stdout, _ = await proc.communicate()
+</code></pre>
+<hr />
+<h2 id="13-memory-growing-over-multiple-runs">13. Memory Growing Over Multiple Runs</h2>
+<p><strong>Symptom:</strong> The app uses more RAM each time you click Run.</p>
+<p><strong>Cause 1: Storing large data in <code>self.parameters</code></strong><br />
+<code>self.parameters</code> is persisted in the workflow JSON. If you store large binary data or giant lists there, they accumulate and are serialized to disk on save.</p>
+<p><strong>Fix:</strong> Never store large transient data in <code>self.parameters</code>. Use <code>self.memory</code> for per-run state — it is cleared before each run.</p>
+<p><strong>Cause 2: Circular references in the graph's node_results</strong><br />
+If nodes hold references to large objects and those objects reference back to the node, Python's garbage collector may not reclaim them.</p>
+<p><strong>Fix:</strong> In <code>execute()</code>, return primitive types (strings, numbers, lists of primitives) where possible. Avoid returning the entire input dict as an output.</p>
+<hr />
+<h2 id="14-pyinstaller-build-fails">14. PyInstaller Build Fails</h2>
+<p><strong>Symptom:</strong> <code>ModuleNotFoundError</code> at runtime when using the built <code>.exe</code>, even though the app works fine when running from source.</p>
+<p><strong>Cause:</strong> PyInstaller's static analysis misses dynamically-imported modules (like node classes loaded from JSON files at runtime).</p>
+<p><strong>Fix — add hidden imports to <code>vibrante_node.spec</code>:</strong></p>
+<pre><code class="language-python">hiddenimports=[
+    &quot;src.nodes.builtins.group_node&quot;,
+    &quot;src.nodes.builtins.my_new_node&quot;,
+    &quot;src.utils.hou_bridge&quot;,
+    &quot;src.utils.prism_core&quot;,
+    &quot;PyQt5.sip&quot;,
+    &quot;pydantic.v1.validators&quot;,  # if using pydantic v2 compatibility layer
+],
+</code></pre>
+<p><strong>Fix — include data files:</strong></p>
+<pre><code class="language-python">datas=[
+    (&quot;nodes/&quot;, &quot;nodes/&quot;),
+    (&quot;icons/&quot;, &quot;icons/&quot;),
+    (&quot;plugins/&quot;, &quot;plugins/&quot;),
+],
+</code></pre>
+<p>After updating the spec file:</p>
+<pre><code class="language-bash">pyinstaller vibrante_node.spec --clean
+</code></pre>
+<hr />
+<h2 id="15-reading-crashlog">15. Reading crash.log</h2>
+<p>When the app crashes before the UI is ready, a <code>crash.log</code> file is written to the project root. Its format:</p>
+<pre><code>=== Vibrante-Node Crash Log ===
+Version: 2.0.0
+Time: 2026-05-10 14:32:01
+Python: 3.11.4
+Platform: win32
+
+Traceback (most recent call last):
+  File &quot;src/main.py&quot;, line 42, in main
+    window = MainWindow()
+  File &quot;src/ui/window.py&quot;, line 88, in __init__
+    self._load_nodes()
+  ...
+SyntaxError: invalid syntax (&lt;string&gt;, line 7)
+</code></pre>
+<p><strong>Common crash causes from crash.log:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Error in log</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SyntaxError</code> in <code>&lt;string&gt;</code></td>
+<td>Broken <code>python_code</code> in a JSON node</td>
+<td>Fix the node JSON in <code>nodes/</code></td>
+</tr>
+<tr>
+<td><code>ValidationError</code> from pydantic</td>
+<td>Corrupt <code>settings.json</code></td>
+<td>Delete settings file</td>
+</tr>
+<tr>
+<td><code>ImportError: No module named 'X'</code></td>
+<td>Missing dependency</td>
+<td><code>pip install X</code></td>
+</tr>
+<tr>
+<td><code>FileNotFoundError: icons/X.svg</code></td>
+<td>Node JSON references a missing icon</td>
+<td>Add the icon or set <code>"icon_path": null</code></td>
+</tr>
+<tr>
+<td><code>AttributeError: 'NoneType'</code> in <code>_init_menu</code></td>
+<td>Settings returned None for a required value</td>
+<td>Delete settings file</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="16-performance-too-many-nodes-causing-slowness">16. Performance: Too Many Nodes Causing Slowness</h2>
+<p><strong>Symptom:</strong> The canvas becomes sluggish with 100+ nodes. Workflow execution is slower than expected.</p>
+<p><strong>Canvas performance:</strong><br />
+- Reduce the number of visible nodes by collapsing related nodes into GroupNodes (Ctrl+Shift+G).<br />
+- Disable the mini-map (Ctrl+M) if you have a large number of nodes — the mini-map re-renders the full scene.<br />
+- Use backdrop nodes to organize without adding execution overhead.</p>
+<p><strong>Execution performance:</strong><br />
+- Identify slow nodes using the timing log: <code>Node 'X' finished in 12.34s</code>.<br />
+- Move heavy I/O operations to <code>asyncio.to_thread()</code> so they run concurrently.<br />
+- For batch operations, prefer a single Python Script node that processes a list internally, rather than a ForEach loop with many individual nodes — the loop overhead adds up.<br />
+- Cache results using <code>SetVariable</code> / <code>GetVariable</code> rather than re-computing on every iteration.</p>
+<p><strong>Profiling a slow workflow:</strong></p>
+<pre><code class="language-python"># Temporary: add to a Python Script node to profile a specific operation
+import cProfile
+import pstats
+import io
+
+pr = cProfile.Profile()
+pr.enable()
+
+# ... your code here ...
+
+pr.disable()
+s = io.StringIO()
+ps = pstats.Stats(pr, stream=s).sort_stats(&quot;cumulative&quot;)
+ps.print_stats(20)
+self.log_info(s.getvalue())
+</code></pre>
+    <nav class="page-nav">
+      <a class="page-nav-link prev" href="10_contribution_guide.html"><span class="page-nav-label">Previous</span><span class="page-nav-title">Contribution Guide</span></a>
+      <a class="page-nav-link next" href="12_examples_library.html"><span class="page-nav-label">Next</span><span class="page-nav-title">Examples Library</span></a>
+    </nav>
+  </div>
+</main>
+
+<!-- ── TOC ────────────────────────────────────────────────────────────── -->
+<aside class="toc">
+  <div class="toc-title">On this page</div>
+<a class="toc-link toc-h2" href="#1-installation-issues">1. Installation Issues</a>
+<a class="toc-link toc-h3" href="#pyqt5-not-found">PyQt5 not found</a>
+<a class="toc-link toc-h3" href="#qscintilla-missing-code-editor-shows-plain-text">QScintilla missing — code editor shows plain text</a>
+<a class="toc-link toc-h3" href="#pydantic-version-errors">Pydantic version errors</a>
+<a class="toc-link toc-h3" href="#no-module-named-src">No module named 'src'</a>
+<a class="toc-link toc-h2" href="#2-app-wont-start">2. App Won't Start</a>
+<a class="toc-link toc-h3" href="#qt-platform-plugin-error-on-windows">Qt platform plugin error on Windows</a>
+<a class="toc-link toc-h3" href="#linux-no-display-cannot-connect-to-x-server">Linux: no display / cannot connect to X server</a>
+<a class="toc-link toc-h3" href="#crash-on-startup-with-no-error-message">Crash on startup with no error message</a>
+<a class="toc-link toc-h2" href="#3-nodes-not-appearing-in-library">3. Nodes Not Appearing in Library</a>
+<a class="toc-link toc-h3" href="#node-json-file-not-loaded">Node JSON file not loaded</a>
+<a class="toc-link toc-h3" href="#houdini-nodes-missing-from-library">Houdini nodes missing from library</a>
+<a class="toc-link toc-h3" href="#register_node-missing">register_node() missing</a>
+<a class="toc-link toc-h2" href="#4-workflow-wont-run">4. Workflow Won't Run</a>
+<a class="toc-link toc-h3" href="#no-entry-node-nothing-executes">No entry node / nothing executes</a>
+<a class="toc-link toc-h3" href="#circular-dependency-error">Circular dependency error</a>
+<a class="toc-link toc-h3" href="#all-nodes-are-bypassed">All nodes are bypassed</a>
+<a class="toc-link toc-h2" href="#5-node-produces-wrong-output">5. Node Produces Wrong Output</a>
+<a class="toc-link toc-h3" href="#none-values-flowing-through-wires">None values flowing through wires</a>
+<a class="toc-link toc-h3" href="#values-not-updating-between-runs">Values not updating between runs</a>
+<a class="toc-link toc-h2" href="#6-houdini-bridge-not-connecting">6. Houdini Bridge Not Connecting</a>
+<a class="toc-link toc-h3" href="#connectionrefusederror-or-connectionerror-houdini-bridge-not-connected">ConnectionRefusedError or ConnectionError: Houdini bridge not connected</a>
+<a class="toc-link toc-h3" href="#30-second-timeout-then-connectionerror">30-second timeout then ConnectionError</a>
+<a class="toc-link toc-h2" href="#7-maya-headless-failing">7. Maya Headless Failing</a>
+<a class="toc-link toc-h3" href="#filenotfounderror-for-maya-executable">FileNotFoundError for Maya executable</a>
+<a class="toc-link toc-h3" href="#scene-not-found-error">Scene not found error</a>
+<a class="toc-link toc-h3" href="#action-handler-missing">Action handler missing</a>
+<a class="toc-link toc-h2" href="#8-prism-nodes-not-working">8. Prism Nodes Not Working</a>
+<a class="toc-link toc-h3" href="#prismcore-not-initialized">PrismCore not initialized</a>
+<a class="toc-link toc-h3" href="#prism-import-error">Prism import error</a>
+<a class="toc-link toc-h2" href="#9-groupnode-issues">9. GroupNode Issues</a>
+<a class="toc-link toc-h3" href="#no-internal-workflow-error">"No internal workflow" error</a>
+<a class="toc-link toc-h3" href="#exec-flow-not-propagating-out-of-groupnode">Exec flow not propagating out of GroupNode</a>
+<a class="toc-link toc-h2" href="#10-exec-flow-not-progressing">10. Exec Flow Not Progressing</a>
+<a class="toc-link toc-h3" href="#workflow-stops-mid-execution-silently">Workflow stops mid-execution silently</a>
+<a class="toc-link toc-h3" href="#twowayswitch-not-routing-correctly">TwoWaySwitch not routing correctly</a>
+<a class="toc-link toc-h2" href="#11-autosave-restore-dialog-always-showing">11. Autosave Restore Dialog Always Showing</a>
+<a class="toc-link toc-h2" href="#12-async-deadlock-ui-freezing">12. Async Deadlock / UI Freezing</a>
+<a class="toc-link toc-h2" href="#13-memory-growing-over-multiple-runs">13. Memory Growing Over Multiple Runs</a>
+<a class="toc-link toc-h2" href="#14-pyinstaller-build-fails">14. PyInstaller Build Fails</a>
+<a class="toc-link toc-h2" href="#15-reading-crashlog">15. Reading crash.log</a>
+<a class="toc-link toc-h2" href="#16-performance-too-many-nodes-causing-slowness">16. Performance: Too Many Nodes Causing Slowness</a>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/highlight.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lunr@2.3.9/lunr.min.js"></script>
+<script>
+// ── Search ──────────────────────────────────────────────────────────────
+let _idx = null, _docs = [];
+
+async function initSearch() {
+  try {
+    const base = document.getElementById('portal-base').dataset.base;
+    const resp = await fetch(base + 'search.json');
+    _docs = await resp.json();
+    _idx = lunr(function() {
+      this.ref('id');
+      this.field('title', { boost: 10 });
+      this.field('body');
+      _docs.forEach((d, i) => {
+        this.add({ id: i, title: d.title, body: d.body });
+      });
+    });
+  } catch(e) { console.warn('Search index not available', e); }
+}
+
+function doSearch(q) {
+  const box = document.getElementById('search-results');
+  if (!q || q.length < 2) { box.classList.remove('visible'); return; }
+  if (!_idx) { box.innerHTML = '<div class="search-no-results">Search index loading…</div>'; box.classList.add('visible'); return; }
+  const results = _idx.search(q + '~1');
+  if (!results.length) {
+    box.innerHTML = '<div class="search-no-results">No results for "' + q + '"</div>';
+    box.classList.add('visible'); return;
+  }
+  box.innerHTML = results.slice(0, 8).map(r => {
+    const d = _docs[r.ref];
+    const excerpt = d.body.substring(0, 140).replace(/[#*`]/g, '').trim() + '…';
+    return `<a class="search-result-item" href="${d.url}">
+      <div class="search-result-title">${d.title}</div>
+      <div class="search-result-excerpt">${excerpt}</div>
+    </a>`;
+  }).join('');
+  box.classList.add('visible');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initSearch();
+  const inp = document.getElementById('search-input');
+  if (inp) {
+    inp.addEventListener('input', e => doSearch(e.target.value));
+    inp.addEventListener('keydown', e => { if (e.key === 'Escape') { e.target.value=''; document.getElementById('search-results').classList.remove('visible'); }});
+  }
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.search-wrap')) document.getElementById('search-results')?.classList.remove('visible');
+  });
+  // Keyboard shortcut: / to focus search
+  document.addEventListener('keydown', e => {
+    if (e.key === '/' && !['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) {
+      e.preventDefault(); document.getElementById('search-input')?.focus();
+    }
+  });
+
+  // ── TOC active section ──────────────────────────────────────────────
+  const tocLinks = document.querySelectorAll('.toc-link');
+  const headings = document.querySelectorAll('h2[id],h3[id],h4[id]');
+  if (tocLinks.length && headings.length) {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          tocLinks.forEach(l => l.classList.remove('active'));
+          const link = document.querySelector(`.toc-link[href="#${entry.target.id}"]`);
+          if (link) link.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    headings.forEach(h => obs.observe(h));
+  }
+
+  // ── Copy buttons ────────────────────────────────────────────────────
+  document.querySelectorAll('pre').forEach(pre => {
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn'; btn.textContent = 'Copy';
+    btn.addEventListener('click', () => {
+      const code = pre.querySelector('code');
+      navigator.clipboard.writeText(code ? code.innerText : pre.innerText).then(() => {
+        btn.textContent = 'Copied!'; btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+      });
+    });
+    pre.style.position = 'relative';
+    pre.appendChild(btn);
+  });
+
+  // ── Sidebar active ──────────────────────────────────────────────────
+  const cur = window.location.pathname.split('/').pop();
+  document.querySelectorAll('.sidebar-link').forEach(l => {
+    if (l.getAttribute('href') === cur || l.getAttribute('href').endsWith(cur)) l.classList.add('active');
+  });
+
+  // ── highlight.js ────────────────────────────────────────────────────
+  if (window.hljs) {
+    hljs.configure({ ignoreUnescapedHTML: true });
+    hljs.highlightAll();
+  }
+});
+</script>
+</body>
+</html>

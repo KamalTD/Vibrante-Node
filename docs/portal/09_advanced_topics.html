@@ -1,0 +1,1637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Vibrante-Node v2.0.0 — Advanced Topics">
+<title>Advanced Topics — Vibrante-Node Docs</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/atom-one-dark.min.css">
+<style>
+/* ── Reset & Variables ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:       #1e1e2e;
+  --surface:  #181825;
+  --surface2: #11111b;
+  --border:   #313244;
+  --text:     #cdd6f4;
+  --subtext:  #a6adc8;
+  --muted:    #6c7086;
+  --lavender: #b4befe;
+  --blue:     #89b4fa;
+  --teal:     #94e2d5;
+  --green:    #a6e3a1;
+  --yellow:   #f9e2af;
+  --peach:    #fab387;
+  --red:      #f38ba8;
+  --pink:     #f5c2e7;
+  --mauve:    #cba6f7;
+  --sidebar-w: 260px;
+  --toc-w:    220px;
+  --header-h: 56px;
+  --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --mono: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+}
+
+/* ── Layout ─────────────────────────────────────────────────────────────── */
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: var(--header-h) 1fr;
+  grid-template-columns: var(--sidebar-w) 1fr var(--toc-w);
+  grid-template-areas:
+    "header header header"
+    "sidebar content toc";
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+.header {
+  grid-area: header;
+  position: sticky; top: 0; z-index: 200;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 16px;
+  padding: 0 24px;
+}
+.header-logo {
+  font-weight: 700; font-size: 1.05em;
+  color: var(--mauve);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.header-version {
+  font-size: .78em;
+  background: var(--border);
+  color: var(--subtext);
+  padding: 2px 8px; border-radius: 12px;
+}
+.header-spacer { flex: 1; }
+.search-wrap { position: relative; }
+#search-input {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: .9em;
+  padding: 6px 14px 6px 36px;
+  width: 260px;
+  outline: none;
+  transition: border-color .15s;
+}
+#search-input:focus { border-color: var(--mauve); }
+.search-icon {
+  position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+  color: var(--muted); pointer-events: none; font-size: .9em;
+}
+#search-results {
+  position: absolute; top: calc(100% + 8px); right: 0;
+  width: 380px; max-height: 420px; overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.5);
+  display: none; z-index: 300;
+}
+#search-results.visible { display: block; }
+.search-result-item {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background .1s;
+}
+.search-result-item:last-child { border-bottom: none; }
+.search-result-item:hover { background: var(--bg); }
+.search-result-title { color: var(--blue); font-weight: 600; font-size: .9em; }
+.search-result-excerpt { color: var(--subtext); font-size: .82em; margin-top: 2px; line-height: 1.4; }
+.search-no-results { padding: 16px; color: var(--muted); text-align: center; font-size: .9em; }
+
+/* ── Sidebar ─────────────────────────────────────────────────────────────── */
+.sidebar {
+  grid-area: sidebar;
+  position: sticky; top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 20px 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.sidebar-group { margin-bottom: 4px; }
+.sidebar-group-title {
+  font-size: .7em;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--muted);
+  padding: 10px 20px 4px;
+  font-weight: 600;
+}
+.sidebar-link {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 20px;
+  color: var(--subtext);
+  text-decoration: none;
+  font-size: .88em;
+  border-left: 3px solid transparent;
+  transition: all .12s;
+  line-height: 1.3;
+}
+.sidebar-link:hover { color: var(--text); background: var(--bg); }
+.sidebar-link.active {
+  color: var(--mauve);
+  border-left-color: var(--mauve);
+  background: rgba(180,190,254,.06);
+  font-weight: 600;
+}
+.sidebar-num {
+  font-size: .7em;
+  color: var(--muted);
+  background: var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  flex-shrink: 0;
+}
+.sidebar-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 12px 16px;
+}
+
+/* ── Content ─────────────────────────────────────────────────────────────── */
+.content {
+  grid-area: content;
+  min-width: 0;
+  padding: 40px 48px 80px;
+  max-width: 860px;
+}
+.content-inner { max-width: 820px; }
+
+/* Breadcrumb */
+.breadcrumb {
+  font-size: .8em;
+  color: var(--muted);
+  margin-bottom: 28px;
+  display: flex; align-items: center; gap: 6px;
+}
+.breadcrumb a { color: var(--blue); text-decoration: none; }
+.breadcrumb a:hover { text-decoration: underline; }
+.breadcrumb-sep { color: var(--border); }
+
+/* Typography */
+h1 { font-size: 2em; color: var(--mauve); border-bottom: 2px solid var(--border); padding-bottom: 12px; margin: 20px 0 20px; }
+h2 { font-size: 1.45em; color: var(--blue); margin: 40px 0 14px; padding-top: 8px; }
+h3 { font-size: 1.15em; color: var(--teal); margin: 28px 0 10px; }
+h4 { font-size: 1em; color: var(--pink); margin: 20px 0 8px; }
+h5 { font-size: .95em; color: var(--yellow); margin: 16px 0 6px; }
+p  { margin-bottom: 16px; color: var(--text); }
+a  { color: var(--blue); }
+a:hover { text-decoration: underline; }
+strong { color: var(--peach); }
+em { color: var(--yellow); font-style: italic; }
+
+ul, ol { margin: 10px 0 16px 24px; }
+li { margin-bottom: 6px; }
+li > ul, li > ol { margin-top: 4px; margin-bottom: 4px; }
+
+blockquote {
+  border-left: 4px solid var(--mauve);
+  padding: 10px 20px;
+  margin: 16px 0;
+  background: rgba(180,190,254,.05);
+  border-radius: 0 8px 8px 0;
+  color: var(--subtext);
+}
+blockquote strong { color: var(--mauve); }
+
+hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+/* Code */
+code {
+  background: var(--surface2);
+  color: var(--red);
+  padding: 2px 7px; border-radius: 5px;
+  font-family: var(--mono); font-size: .87em;
+}
+pre {
+  background: var(--surface2) !important;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px 22px;
+  overflow-x: auto;
+  margin: 16px 0 22px;
+  position: relative;
+}
+pre code {
+  background: none !important;
+  color: inherit !important;
+  padding: 0; font-size: .9em;
+  border-radius: 0;
+}
+/* Copy button */
+.copy-btn {
+  position: absolute; top: 10px; right: 12px;
+  background: var(--border);
+  color: var(--subtext);
+  border: none; border-radius: 5px;
+  padding: 3px 10px; font-size: .75em;
+  cursor: pointer; transition: all .12s;
+  font-family: var(--font);
+}
+.copy-btn:hover { background: var(--mauve); color: var(--surface2); }
+.copy-btn.copied { background: var(--green); color: var(--surface2); }
+
+/* Tables */
+table { border-collapse: collapse; width: 100%; margin: 16px 0 22px; font-size: .9em; }
+th { background: var(--border); color: var(--mauve); padding: 10px 14px; text-align: left; font-weight: 600; }
+td { border-top: 1px solid var(--border); padding: 9px 14px; color: var(--text); }
+tr:nth-child(even) td { background: rgba(17,17,27,.4); }
+td code { font-size: .85em; }
+
+/* Callout boxes */
+.callout {
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin: 16px 0 22px;
+  border-left: 4px solid;
+}
+.callout-note    { background: rgba(137,180,250,.08); border-color: var(--blue);   }
+.callout-tip     { background: rgba(166,227,161,.08); border-color: var(--green);  }
+.callout-warning { background: rgba(249,226,175,.08); border-color: var(--yellow); }
+.callout-danger  { background: rgba(243,139,168,.08); border-color: var(--red);    }
+.callout-title   { font-weight: 700; font-size: .85em; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
+.callout-note    .callout-title { color: var(--blue);   }
+.callout-tip     .callout-title { color: var(--green);  }
+.callout-warning .callout-title { color: var(--yellow); }
+.callout-danger  .callout-title { color: var(--red);    }
+
+/* Prev/Next navigation */
+.page-nav {
+  display: flex; justify-content: space-between;
+  margin-top: 60px; padding-top: 24px;
+  border-top: 1px solid var(--border);
+  gap: 16px;
+}
+.page-nav-link {
+  display: flex; flex-direction: column;
+  text-decoration: none;
+  padding: 14px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  min-width: 200px;
+  transition: border-color .15s;
+  max-width: 48%;
+}
+.page-nav-link:hover { border-color: var(--mauve); }
+.page-nav-label { font-size: .75em; color: var(--muted); margin-bottom: 4px; }
+.page-nav-title { color: var(--blue); font-weight: 600; font-size: .95em; }
+.page-nav-link.prev .page-nav-label::before { content: '← '; }
+.page-nav-link.next { margin-left: auto; text-align: right; }
+.page-nav-link.next .page-nav-label::after { content: ' →'; }
+
+/* ── TOC (right panel) ───────────────────────────────────────────────────── */
+.toc {
+  grid-area: toc;
+  position: sticky; top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  padding: 28px 16px 28px 8px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.toc-title {
+  font-size: .72em;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--muted);
+  font-weight: 600;
+  margin-bottom: 12px;
+  padding-left: 8px;
+}
+.toc-link {
+  display: block;
+  padding: 4px 8px;
+  color: var(--subtext);
+  text-decoration: none;
+  font-size: .82em;
+  border-left: 2px solid transparent;
+  border-radius: 0 4px 4px 0;
+  transition: all .12s;
+  line-height: 1.35;
+  margin-bottom: 1px;
+}
+.toc-link:hover { color: var(--text); border-left-color: var(--border); }
+.toc-link.active { color: var(--mauve); border-left-color: var(--mauve); background: rgba(180,190,254,.05); }
+.toc-link.toc-h3 { padding-left: 20px; font-size: .79em; }
+.toc-link.toc-h4 { padding-left: 32px; font-size: .76em; color: var(--muted); }
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  body { grid-template-columns: var(--sidebar-w) 1fr 0; }
+  .toc { display: none; }
+}
+@media (max-width: 760px) {
+  body { grid-template-columns: 0 1fr 0; grid-template-rows: var(--header-h) 1fr; }
+  .sidebar { display: none; }
+  .content { padding: 24px 20px 60px; }
+  #search-input { width: 180px; }
+}
+
+/* ── Index / landing page ────────────────────────────────────────────────── */
+.hero { text-align: center; padding: 60px 0 48px; }
+.hero h1 { border: none; font-size: 2.8em; }
+.hero .tagline { color: var(--subtext); font-size: 1.15em; margin-top: 10px; }
+.hero .version-badge {
+  display: inline-block;
+  background: var(--border); color: var(--mauve);
+  padding: 4px 14px; border-radius: 20px; font-size: .85em;
+  margin-top: 14px;
+}
+.group-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin: 16px 0 36px; }
+.doc-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  text-decoration: none;
+  color: var(--text);
+  transition: border-color .15s, background .15s;
+  display: block;
+}
+.doc-card:hover { border-color: var(--mauve); background: rgba(180,190,254,.04); }
+.doc-card-num { font-size: .72em; color: var(--muted); margin-bottom: 4px; }
+.doc-card-title { color: var(--blue); font-weight: 700; font-size: 1em; margin-bottom: 6px; }
+.doc-card-desc { color: var(--subtext); font-size: .85em; line-height: 1.5; }
+.group-title { color: var(--teal); font-size: 1.1em; font-weight: 600; margin: 32px 0 10px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+</style>
+<span id="portal-base" data-base="" style="display:none"></span>
+</head>
+<body>
+
+<!-- ── Header ─────────────────────────────────────────────────────────── -->
+<header class="header">
+  <a class="header-logo" href="index.html">Vibrante-Node</a>
+  <span class="header-version">v2.0.0</span>
+  <div class="header-spacer"></div>
+  <div class="search-wrap">
+    <span class="search-icon">&#128269;</span>
+    <input id="search-input" type="text" placeholder="Search docs… (/)" autocomplete="off" spellcheck="false">
+    <div id="search-results"></div>
+  </div>
+</header>
+
+<!-- ── Sidebar ────────────────────────────────────────────────────────── -->
+<nav class="sidebar">
+<div class="sidebar-group">
+<div class="sidebar-group-title">Overview</div>
+<a class="sidebar-link" href="01_introduction.html"><span class="sidebar-num">01</span>Introduction</a>
+<a class="sidebar-link" href="02_getting_started.html"><span class="sidebar-num">02</span>Getting Started</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Using the App</div>
+<a class="sidebar-link" href="03_user_guide.html"><span class="sidebar-num">03</span>User Guide</a>
+<a class="sidebar-link" href="04_workflow_tutorials.html"><span class="sidebar-num">04</span>Workflow Tutorials</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Developing Nodes</div>
+<a class="sidebar-link" href="05_node_development.html"><span class="sidebar-num">05</span>Node Development Guide</a>
+<a class="sidebar-link" href="14_custom_nodes_api.html"><span class="sidebar-num">14</span>Custom Nodes API</a>
+<a class="sidebar-link" href="08_api_reference.html"><span class="sidebar-num">08</span>API Reference</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Architecture</div>
+<a class="sidebar-link" href="06_backend_architecture.html"><span class="sidebar-num">06</span>Backend Architecture</a>
+<a class="sidebar-link" href="07_frontend_architecture.html"><span class="sidebar-num">07</span>Frontend Architecture</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Advanced</div>
+<a class="sidebar-link active" href="09_advanced_topics.html"><span class="sidebar-num">09</span>Advanced Topics</a>
+<a class="sidebar-link" href="10_contribution_guide.html"><span class="sidebar-num">10</span>Contribution Guide</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Reference</div>
+<a class="sidebar-link" href="11_troubleshooting.html"><span class="sidebar-num">11</span>Troubleshooting</a>
+<a class="sidebar-link" href="12_examples_library.html"><span class="sidebar-num">12</span>Examples Library</a>
+<a class="sidebar-link" href="13_general_purpose_automation.html"><span class="sidebar-num">13</span>General Purpose Automation</a>
+</div>
+
+</nav>
+
+<!-- ── Main content ───────────────────────────────────────────────────── -->
+<main class="content">
+  <div class="content-inner">
+    <nav class="breadcrumb"><a href="index.html">Docs</a><span class="breadcrumb-sep">›</span><span>Advanced Topics</span></nav>
+    <h1 id="09-advanced-topics">09 — Advanced Topics</h1>
+<p><strong>Vibrante-Node v2.0.0 — Technical Reference</strong></p>
+<p>This document covers advanced usage patterns, production deployment, DCC integration deep-dives, headless execution, custom executors, security considerations, and version migration. It is intended for pipeline TDs, tool developers, and studio engineers who need to go beyond the basic node-authoring workflow.</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#1-building-a-node-plugin-package">Building a Node Plugin Package</a></li>
+<li><a href="#2-remote-and-headless-execution">Remote and Headless Execution</a></li>
+<li><a href="#3-distributed-workflows">Distributed Workflows</a></li>
+<li><a href="#4-custom-executors">Custom Executors</a></li>
+<li><a href="#5-houdini-integration-deep-dive">Houdini Integration Deep-Dive</a></li>
+<li><a href="#6-maya-headless-integration">Maya Headless Integration</a></li>
+<li><a href="#7-blender-headless-integration">Blender Headless Integration</a></li>
+<li><a href="#8-prism-pipeline-integration">Prism Pipeline Integration</a></li>
+<li><a href="#9-production-deployment-with-pyinstaller">Production Deployment with PyInstaller</a></li>
+<li><a href="#10-scaling-workflows">Scaling Workflows</a></li>
+<li><a href="#11-memory-and-state-management">Memory and State Management</a></li>
+<li><a href="#12-security-considerations">Security Considerations</a></li>
+<li><a href="#13-version-migration">Version Migration</a></li>
+<li><a href="#14-extending-the-node-builder-with-ai">Extending the Node Builder with AI</a></li>
+<li><a href="#15-hot-reload-during-development">Hot-Reload during Development</a></li>
+</ol>
+<hr />
+<h2 id="1-building-a-node-plugin-package">1. Building a Node Plugin Package</h2>
+<p>A node plugin package is a directory (or zip-distributed directory) containing <code>.json</code> node definition files and optionally <code>.py</code> script files. The engine loads it at startup when the <code>v_nodes_dir</code> environment variable points to its location.</p>
+<h3 id="recommended-folder-structure">Recommended folder structure</h3>
+<pre><code>my_pipeline_nodes/
+├── README.md
+├── icons/
+│   └── my_pipeline.svg
+├── scripts/               # optional; shown in Scripts menu via v_scripts_path
+│   ├── publish_asset.py
+│   └── open_shot_folder.py
+└── nodes/
+    ├── my_get_asset.json
+    ├── my_publish_version.json
+    ├── my_open_in_nuke.json
+    └── my_slate_generator.json
+</code></pre>
+<h3 id="registering-the-package">Registering the package</h3>
+<h4 id="option-a-environment-variable-any-host">Option A: Environment variable (any host)</h4>
+<p>Set <code>v_nodes_dir</code> to the <code>nodes/</code> subdirectory before launching Vibrante-Node:</p>
+<pre><code class="language-batch">:: Windows batch
+set v_nodes_dir=C:\pipeline\my_pipeline_nodes\nodes
+python src\main.py
+</code></pre>
+<pre><code class="language-bash"># Linux/macOS
+export v_nodes_dir=/pipeline/my_pipeline_nodes/nodes
+python src/main.py
+</code></pre>
+<p>Multiple directories are separated by the OS path separator (<code>;</code> on Windows, <code>:</code> on Linux/macOS):</p>
+<pre><code>v_nodes_dir=C:\nodes\houdini_nodes;C:\nodes\prism_nodes;C:\nodes\nuke_nodes
+</code></pre>
+<h4 id="option-b-houdini-package-json">Option B: Houdini package JSON</h4>
+<p>When Vibrante-Node is launched from Houdini, the <code>vibrante_node.json</code> package file can set <code>v_nodes_dir</code> for that DCC context:</p>
+<pre><code class="language-json">{
+    &quot;env&quot;: [
+        { &quot;VIBRANTE_NODE_APP&quot;: &quot;C:/pipeline/vibrante_node_app&quot; },
+        { &quot;VIBRANTE_PYTHON_EXE&quot;: &quot;C:/Python311/python.exe&quot; },
+        { &quot;v_nodes_dir&quot;: &quot;C:/pipeline/my_pipeline_nodes/nodes&quot; }
+    ],
+    &quot;path&quot;: &quot;$VIBRANTE_NODE_APP/plugins/houdini/houdini&quot;
+}
+</code></pre>
+<h4 id="option-c-scripts-directory-for-v_scripts_path">Option C: scripts directory for v_scripts_path</h4>
+<p>Point <code>v_scripts_path</code> to the <code>scripts/</code> subdirectory to populate the Scripts menu:</p>
+<pre><code>v_scripts_path=C:\pipeline\my_pipeline_nodes\scripts
+</code></pre>
+<p>Script files (<code>.py</code>) in that directory appear as clickable menu items. They are executed with:</p>
+<pre><code class="language-python">exec(script_code, {'window': main_window, 'scene': current_scene})
+</code></pre>
+<h3 id="node-json-authoring-checklist">Node JSON authoring checklist</h3>
+<ul>
+<li><code>node_id</code> must be globally unique. Use a studio prefix: <code>acme_get_asset</code>, not <code>get_asset</code>.</li>
+<li><code>category</code> groups nodes in the Library panel. Use a consistent studio category: <code>"ACME Pipeline"</code>.</li>
+<li><code>icon_path</code> can be an absolute path or a path relative to the app root.</li>
+<li><code>use_exec: true</code> for any node that participates in the execution flow.</li>
+<li>Include <code>exec_in</code> / <code>exec_out</code> in the <code>inputs</code> / <code>outputs</code> arrays when <code>use_exec: true</code>; the registry auto-inserts them if missing.</li>
+<li><code>python_code</code> must be a single JSON string. Use <code>\n</code> for newlines and <code>\"</code> for quotes. Test parsing with Python's <code>json.loads()</code> before committing.</li>
+</ul>
+<hr />
+<h2 id="2-remote-and-headless-execution">2. Remote and Headless Execution</h2>
+<p>Vibrante-Node does not have a dedicated headless runner, but the engine can be instantiated and run without the Qt UI by running <code>src/core/engine.py</code> directly from a script.</p>
+<h3 id="minimal-headless-runner">Minimal headless runner</h3>
+<pre><code class="language-python"># headless_run.py
+import asyncio
+import json
+import sys
+
+# Qt is required for QObject (NetworkExecutor inherits it)
+from PyQt5.QtWidgets import QApplication
+app = QApplication(sys.argv)
+
+from src.core.models import WorkflowModel
+from src.core.graph import GraphManager
+from src.core.registry import NodeRegistry
+from src.core.engine import NetworkExecutor
+
+# Load node definitions
+NodeRegistry.load_all_with_extras(&quot;nodes&quot;)
+
+# Load workflow
+with open(sys.argv[1]) as f:
+    data = json.load(f)
+model = WorkflowModel.model_validate(data)
+
+gm = GraphManager()
+gm.from_model(model)
+
+# Wire up logging
+executor = NetworkExecutor(gm)
+executor.node_log.connect(lambda nid, msg, lvl: print(f&quot;[{lvl}] {msg}&quot;))
+executor.node_error.connect(lambda nid, msg: print(f&quot;ERROR: {msg}&quot;, file=sys.stderr))
+executor.execution_finished.connect(lambda ok: print(f&quot;Finished: {ok}&quot;) or app.quit())
+
+# Run via asyncio directly (no _EventLoopRunner needed for headless)
+loop = asyncio.new_event_loop()
+asyncio.set_event_loop(loop)
+
+task = loop.create_task(executor.run())
+
+# Pump both loops
+import time
+while not task.done():
+    loop.call_soon(loop.stop)
+    loop.run_forever()
+    app.processEvents()
+    time.sleep(0.005)
+
+loop.close()
+sys.exit(0 if not executor._is_stopped else 1)
+</code></pre>
+<p>Usage:</p>
+<pre><code>python headless_run.py my_workflow.json
+</code></pre>
+<h3 id="cli-argument-pattern">CLI argument pattern</h3>
+<p>For scheduled or farm-submitted workflows, pass the workflow path and any parameter overrides as arguments:</p>
+<pre><code class="language-python">import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument(&quot;workflow&quot;, help=&quot;Path to .json workflow file&quot;)
+parser.add_argument(&quot;--param&quot;, nargs=2, action=&quot;append&quot;, metavar=(&quot;NODE_ID:PORT&quot;, &quot;VALUE&quot;))
+args = parser.parse_args()
+
+# Override parameters before execution:
+if args.param:
+    for node_port, value in args.param:
+        node_id, port = node_port.split(&quot;:&quot;, 1)
+        for node_model in model.nodes:
+            if node_model.node_id == node_id:
+                node_model.parameters[port] = value
+</code></pre>
+<h3 id="exit-code-convention">Exit code convention</h3>
+<p>Return exit code <code>0</code> on success, <code>1</code> on failure. Connect <code>execution_finished</code>:</p>
+<pre><code class="language-python">_result = [True]
+executor.execution_finished.connect(lambda ok: _result.__setitem__(0, ok))
+# ... run ...
+sys.exit(0 if _result[0] else 1)
+</code></pre>
+<hr />
+<h2 id="3-distributed-workflows">3. Distributed Workflows</h2>
+<p>Vibrante-Node does not have built-in distributed execution, but workflows can be split across machines using the following strategies.</p>
+<h3 id="strategy-1-split-at-file-boundaries">Strategy 1: Split at file boundaries</h3>
+<p>Design your workflow so that each segment writes its outputs to disk (files, databases, or shared network storage) at strategic checkpoints. Split the monolithic workflow into multiple smaller <code>.json</code> files:</p>
+<pre><code>00_asset_resolve.json    → writes asset_list.json to NAS
+01_scene_setup.json      → reads asset_list.json, writes hip files to NAS
+02_render_submit.json    → reads hip paths, submits to farm
+</code></pre>
+<p>Each workflow file is a self-contained unit that can be run on any machine with <code>headless_run.py</code>. A pipeline coordinator (e.g. a render farm scheduler, a Jenkins pipeline, or a simple Python script) runs them in sequence.</p>
+<h3 id="strategy-2-action-list-pattern-with-dcc-subprocesses">Strategy 2: Action-list pattern with DCC subprocesses</h3>
+<p>For DCC-specific work, use the headless action-list pattern (see sections 6 and 7). The Vibrante-Node workflow runs on one machine and launches DCC subprocesses on the same or remote machines via network file system + command-line:</p>
+<pre><code class="language-python"># In a node's execute():
+import subprocess
+ssh_cmd = [&quot;ssh&quot;, &quot;render_farm_host&quot;, &quot;mayapy&quot;, &quot;/nas/scripts/process_asset.py&quot;, asset_path]
+result = await asyncio.create_subprocess_exec(*ssh_cmd, stdout=asyncio.subprocess.PIPE)
+stdout, _ = await result.communicate()
+</code></pre>
+<h3 id="strategy-3-message-queue-integration">Strategy 3: Message queue integration</h3>
+<p>For true distributed workflows, add a node that publishes a message (e.g. to RabbitMQ, Redis Streams, or a REST API) and a separate workflow that subscribes and processes. This pattern decouples the publisher from the consumer and allows arbitrary scaling.</p>
+<h3 id="practical-considerations">Practical considerations</h3>
+<ul>
+<li><strong>Shared filesystem</strong>: All machines must be able to read/write to a common NAS path for the file-passing strategy.</li>
+<li><strong>Node registration</strong>: Each machine must have <code>v_nodes_dir</code> pointing to the same plugin package (or a network copy of it).</li>
+<li><strong>Credentials and secrets</strong>: Pass credentials via environment variables, not hardcoded in node JSON.</li>
+<li><strong>Idempotency</strong>: Design nodes so that re-running them produces the same result. This makes retry logic safe.</li>
+</ul>
+<hr />
+<h2 id="4-custom-executors">4. Custom Executors</h2>
+<h3 id="subclassing-networkexecutor">Subclassing NetworkExecutor</h3>
+<p>You can subclass <code>NetworkExecutor</code> to add pre/post hooks, intercept signals, or alter execution behaviour:</p>
+<pre><code class="language-python">from src.core.engine import NetworkExecutor
+
+class AuditingExecutor(NetworkExecutor):
+    &quot;&quot;&quot;Logs every node execution to an external audit trail.&quot;&quot;&quot;
+
+    def __init__(self, graph_manager, audit_client):
+        super().__init__(graph_manager)
+        self._audit = audit_client
+        # Connect to our own signals to audit them
+        self.node_started.connect(self._on_started)
+        self.node_finished.connect(self._on_finished)
+        self.node_error.connect(self._on_error)
+
+    def _on_started(self, node_id):
+        self._audit.record_start(str(node_id))
+
+    def _on_finished(self, node_id, status):
+        self._audit.record_finish(str(node_id), status)
+
+    def _on_error(self, node_id, message):
+        self._audit.record_error(str(node_id), message)
+</code></pre>
+<h3 id="adding-pre-execution-hooks">Adding pre-execution hooks</h3>
+<p>Override <code>run()</code> to inject setup logic:</p>
+<pre><code class="language-python">async def run(self, init_only=False):
+    # Pre-execution setup
+    await self._pre_run_hook()
+    # Run the standard engine
+    await super().run(init_only=init_only)
+    # Post-execution cleanup
+    await self._post_run_hook()
+
+async def _pre_run_hook(self):
+    self.node_log.emit(
+        list(self.graph_manager.nodes.keys())[0],
+        &quot;Pre-run hook: validating credentials...&quot;,
+        &quot;info&quot;
+    )
+    # ... your setup logic ...
+
+async def _post_run_hook(self):
+    # ... your cleanup logic ...
+</code></pre>
+<h3 id="intercepting-node-output">Intercepting node output</h3>
+<p>Override <code>_run_single_node_impl()</code> to intercept output after each node:</p>
+<pre><code class="language-python">async def _run_single_node_impl(self, node_id, is_data_pull=False):
+    result = await super()._run_single_node_impl(node_id, is_data_pull)
+    if result and node_id in self.node_results:
+        self._validate_outputs(node_id, self.node_results[node_id])
+    return result
+
+def _validate_outputs(self, node_id, outputs):
+    for key, value in outputs.items():
+        if value is None and key != &quot;exec_out&quot;:
+            self.node_log.emit(node_id, f&quot;Warning: output '{key}' is None&quot;, &quot;warning&quot;)
+</code></pre>
+<h3 id="using-a-custom-executor-in-the-ui">Using a custom executor in the UI</h3>
+<pre><code class="language-python"># In MainWindow.execute_pipeline():
+from my_pipeline.executor import AuditingExecutor
+
+executor = AuditingExecutor(graph_manager, audit_client=self._audit_client)
+runner = _EventLoopRunner(executor)
+# ... connect signals, start runner ...
+</code></pre>
+<hr />
+<h2 id="5-houdini-integration-deep-dive">5. Houdini Integration Deep-Dive</h2>
+<h3 id="architecture-overview">Architecture overview</h3>
+<pre><code>Houdini process                          Vibrante-Node subprocess
+┌─────────────────────────────────┐     ┌──────────────────────────────────┐
+│  hou (Python API)               │     │  NetworkExecutor                 │
+│                                 │     │      │                           │
+│  vibrante_hou_server.py         │◄────┤  HouBridge._send()               │
+│    ├─ _accept_loop (thread)     │     │      │ JSON-RPC over TCP          │
+│    ├─ _handle_client (thread)   │     │      │ 127.0.0.1:18811            │
+│    └─ hdefereval.executeDeferred│     │      │                           │
+│           (Houdini main thread) │     │  node python_code:               │
+│                                 │     │    bridge = get_bridge()         │
+│  pythonrc.py (startup)          │     │    bridge.create_node(...)       │
+│  vibrante_node_houdini.py       │     │    bridge.set_parm(...)          │
+│    ├─ launch()                  │─────►    bridge.run_code(...)          │
+│    ├─ setup_env()               │     └──────────────────────────────────┘
+│    └─ _ensure_command_server()  │
+└─────────────────────────────────┘
+</code></pre>
+<h3 id="rpc-server-lifecycle-vibrante_hou_serverpy">RPC server lifecycle (vibrante_hou_server.py)</h3>
+<p>The server starts when <code>launch()</code> is called inside Houdini:</p>
+<ol>
+<li><code>_ensure_command_server()</code> calls <code>vibrante_hou_server.start()</code>.</li>
+<li><code>start()</code> acquires <code>_lock</code> to prevent double-bind race conditions.</li>
+<li>Creates a TCP socket bound to <code>127.0.0.1:18811</code> with <code>SO_REUSEADDR</code>.</li>
+<li>Starts <code>_accept_loop()</code> in a daemon background thread.</li>
+<li>Returns the port number, which is passed to the subprocess as <code>VIBRANTE_HOU_PORT</code>.</li>
+</ol>
+<p>Per client connection, <code>_handle_client()</code> runs in its own daemon thread, reading newline-delimited JSON commands and dispatching them.</p>
+<h3 id="main-thread-dispatch">Main-thread dispatch</h3>
+<p>All Houdini API calls must run on Houdini's main thread. The server uses <code>hdefereval.executeDeferred()</code>:</p>
+<pre><code class="language-python">event = threading.Event()
+result_box = {&quot;result&quot;: None, &quot;error&quot;: None, &quot;done&quot;: False}
+
+def _run(h=handler, p=params, box=result_box, evt=event):
+    try:
+        box[&quot;result&quot;] = h(p)
+    except Exception as exc:
+        box[&quot;error&quot;] = f&quot;{type(exc).__name__}: {exc}\n{traceback.format_exc()}&quot;
+    box[&quot;done&quot;] = True
+    evt.set()
+
+hdefereval.executeDeferred(_run)
+event.wait(timeout=30)
+</code></pre>
+<p>The client thread blocks on <code>event.wait()</code> (max 30 seconds) while Houdini's main thread executes the command. If Houdini is blocked (e.g. cooking a slow geometry), the wait times out and the error is returned to the client.</p>
+<h3 id="houbridge-client-thread-safety">HouBridge client thread safety</h3>
+<p><code>HouBridge._send()</code> acquires <code>self._lock</code> before touching the socket. This means multiple nodes executed concurrently (from parallel exec chains) can safely call bridge methods without corrupting the response stream.</p>
+<h3 id="environment-variable-flow">Environment variable flow</h3>
+<p>When <code>launch()</code> is called:</p>
+<ol>
+<li><code>setup_env()</code> builds the subprocess environment:</li>
+<li>Strips <code>PYTHONHOME</code>, <code>PYTHONSTARTUP</code> (Houdini's Python vars that break system Python).</li>
+<li>Adds <code>$HFS/python3.Xlibs</code> to <code>PYTHONPATH</code> (so <code>import hou</code> works in the subprocess).</li>
+<li>Adds <code>$HFS/bin</code> to <code>PATH</code> (for <code>_hou.pyd</code> DLL dependencies).</li>
+<li>Sets <code>v_nodes_dir</code> to <code>plugins/houdini/v_nodes_houdini/</code>.</li>
+<li>Sets <code>v_scripts_path</code> to <code>plugins/houdini/v_scripts_houdini/</code>.</li>
+<li>Sets <code>VIBRANTE_HOUDINI_MODE=subprocess</code>.</li>
+<li>Sets <code>VIBRANTE_HIP_FILE</code> if a .hip is open.</li>
+<li>
+<p>Sets <code>VIBRANTE_HOU_PORT</code> to the command server port.</p>
+</li>
+<li>
+<p><code>_find_system_python()</code> locates a Python 3.11 installation with PyQt5 (Houdini's Python ships without PyQt5). Resolution order: <code>VIBRANTE_PYTHON_EXE</code> env var → Windows Registry → Windows Python Launcher → common paths → PATH scan.</p>
+</li>
+<li>
+<p><code>subprocess.Popen([python_exe, "src/main.py"], cwd=app_root, env=env)</code> launches the UI.</p>
+</li>
+</ol>
+<h3 id="accessing-hip-context-in-nodes">Accessing HIP context in nodes</h3>
+<p>After <code>launch_with_context()</code>, these environment variables are available inside node <code>execute()</code> code:</p>
+<pre><code class="language-python">import os
+hip_file = os.environ.get(&quot;VIBRANTE_HIP_FILE&quot;, &quot;&quot;)
+hip_name = os.environ.get(&quot;VIBRANTE_HIP_NAME&quot;, &quot;&quot;)
+hou_version = os.environ.get(&quot;VIBRANTE_HOUDINI_VERSION&quot;, &quot;&quot;)
+</code></pre>
+<h3 id="known-server-behaviours-and-workarounds">Known server behaviours and workarounds</h3>
+<table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>Behaviour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>hou.playbar</code> in headless (hbatch/hython)</td>
+<td><code>AttributeError</code> caught; <code>frame_range</code> returns <code>[1, 240]</code></td>
+</tr>
+<tr>
+<td><code>setDisplayFlag</code> on unsupported node types</td>
+<td><code>getattr</code> capability check + <code>hou.OperationFailed</code> guard; raises <code>ValueError</code> with message</td>
+</tr>
+<tr>
+<td>Double <code>start()</code> call</td>
+<td><code>_lock</code> prevents double-bind; logs existing port and returns it</td>
+</tr>
+<tr>
+<td>Houdini blocked cooking &gt; 30s</td>
+<td><code>event.wait(timeout=30)</code> expires; error returned to client; bridge disconnects</td>
+</tr>
+<tr>
+<td>Broken pipe (Houdini closed)</td>
+<td>Client catches <code>BrokenPipeError</code>, reconnects once, retries</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="6-maya-headless-integration">6. Maya Headless Integration</h2>
+<p>Maya integration uses the <strong>action-list pattern</strong>: nodes in Vibrante-Node build a list of action dictionaries, which a separate Maya subprocess processes in a single headless invocation. This avoids the overhead of launching Maya once per node.</p>
+<h3 id="action-node-skeleton">Action node skeleton</h3>
+<pre><code class="language-python"># nodes/maya_action_set_attr.json python_code:
+from src.nodes.base import BaseNode
+
+class Maya_Action_Set_Attr(BaseNode):
+    name = &quot;maya_action_set_attr&quot;
+    category = &quot;Maya&quot;
+
+    def __init__(self):
+        super().__init__()
+        # [AUTO-GENERATED-PORTS-START]
+        self.add_input(&quot;actions_in&quot;, &quot;list&quot;)
+        self.add_input(&quot;node_path&quot;, &quot;string&quot;, widget_type=&quot;text&quot;)
+        self.add_input(&quot;attribute&quot;, &quot;string&quot;, widget_type=&quot;text&quot;)
+        self.add_input(&quot;value&quot;, &quot;any&quot;)
+        self.add_output(&quot;actions_out&quot;, &quot;list&quot;)
+        # [AUTO-GENERATED-PORTS-END]
+
+    async def execute(self, inputs):
+        actions = list(inputs.get(&quot;actions_in&quot;) or [])
+        actions.append({
+            &quot;type&quot;: &quot;set_attr&quot;,
+            &quot;node&quot;: inputs.get(&quot;node_path&quot;, &quot;&quot;),
+            &quot;attr&quot;: inputs.get(&quot;attribute&quot;, &quot;&quot;),
+            &quot;value&quot;: inputs.get(&quot;value&quot;),
+        })
+        return {&quot;actions_out&quot;: actions, &quot;exec_out&quot;: True}
+
+def register_node():
+    return Maya_Action_Set_Attr
+</code></pre>
+<h3 id="maya-executor-node">Maya executor node</h3>
+<p>A terminal node (e.g. <code>maya_headless_execute</code>) receives the final action list and runs Maya:</p>
+<pre><code class="language-python">import subprocess, json, tempfile, os
+
+async def execute(self, inputs):
+    actions = inputs.get(&quot;actions_in&quot;) or []
+    scene_file = inputs.get(&quot;scene_file&quot;, &quot;&quot;)
+    maya_exe = inputs.get(&quot;maya_exe&quot;, &quot;mayapy&quot;)
+
+    # Write actions to temp file (avoid shell quoting issues)
+    with tempfile.NamedTemporaryFile(mode=&quot;w&quot;, suffix=&quot;.json&quot;,
+                                     delete=False) as f:
+        json.dump({&quot;scene&quot;: scene_file, &quot;actions&quot;: actions}, f)
+        actions_path = f.name
+
+    runner_script = os.path.join(
+        os.path.dirname(__file__), &quot;maya_runner.py&quot;
+    )
+
+    try:
+        proc = await asyncio.create_subprocess_exec(
+            maya_exe, runner_script, actions_path,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+        )
+        stdout, stderr = await proc.communicate()
+
+        if proc.returncode != 0:
+            self.log_error(f&quot;Maya failed:\n{stderr.decode()}&quot;)
+            return {&quot;success&quot;: False, &quot;exec_fail&quot;: True}
+
+        self.log_success(&quot;Maya execution complete.&quot;)
+        return {&quot;success&quot;: True, &quot;exec_out&quot;: True}
+    finally:
+        os.unlink(actions_path)
+</code></pre>
+<h3 id="maya-runner-script-maya_runnerpy">Maya runner script (maya_runner.py)</h3>
+<pre><code class="language-python"># maya_runner.py — runs inside mayapy
+import sys, json
+import maya.standalone
+maya.standalone.initialize(name=&quot;python&quot;)
+import maya.cmds as cmds
+
+with open(sys.argv[1]) as f:
+    data = json.load(f)
+
+if data.get(&quot;scene&quot;):
+    cmds.file(data[&quot;scene&quot;], open=True, force=True)
+
+handlers = {
+    &quot;set_attr&quot;: lambda a: cmds.setAttr(f&quot;{a['node']}.{a['attr']}&quot;, a[&quot;value&quot;]),
+    &quot;select&quot;:   lambda a: cmds.select(a[&quot;nodes&quot;]),
+    # ... add more action types here
+}
+
+for action in data.get(&quot;actions&quot;, []):
+    handler = handlers.get(action[&quot;type&quot;])
+    if handler:
+        handler(action)
+    else:
+        print(f&quot;Warning: unknown action type '{action['type']}'&quot;, file=sys.stderr)
+
+maya.standalone.uninitialize()
+</code></pre>
+<h3 id="node-id-convention">Node ID convention</h3>
+<p>Maya action nodes should use the prefix <code>maya_action_</code> (e.g. <code>maya_action_set_attr</code>, <code>maya_action_export_fbx</code>). The terminal executor node uses <code>maya_headless_execute</code>. Use category <code>"Maya"</code> for all Maya nodes.</p>
+<hr />
+<h2 id="7-blender-headless-integration">7. Blender Headless Integration</h2>
+<p>Blender follows the same action-list pattern as Maya. The key difference is that Blender's headless Python (<code>blender --background --python script.py</code>) does not use <code>standalone.initialize()</code>.</p>
+<h3 id="blender-runner-script-blender_runnerpy">Blender runner script (blender_runner.py)</h3>
+<pre><code class="language-python"># blender_runner.py — runs inside blender --background
+import sys, json
+import bpy
+
+with open(sys.argv[-1]) as f:
+    data = json.load(f)
+
+if data.get(&quot;scene&quot;):
+    bpy.ops.wm.open_mainfile(filepath=data[&quot;scene&quot;])
+
+handlers = {
+    &quot;set_object_location&quot;: lambda a: (
+        setattr(bpy.data.objects[a[&quot;name&quot;]].location, &quot;x&quot;, a[&quot;x&quot;]),
+        setattr(bpy.data.objects[a[&quot;name&quot;]].location, &quot;y&quot;, a[&quot;y&quot;]),
+        setattr(bpy.data.objects[a[&quot;name&quot;]].location, &quot;z&quot;, a[&quot;z&quot;]),
+    ),
+    &quot;render&quot;: lambda a: (
+        setattr(bpy.context.scene.render, &quot;filepath&quot;, a.get(&quot;output&quot;, &quot;/tmp/&quot;)),
+        bpy.ops.render.render(write_still=True),
+    ),
+    # ... more action types
+}
+
+for action in data.get(&quot;actions&quot;, []):
+    handler = handlers.get(action[&quot;type&quot;])
+    if handler:
+        handler(action)
+    else:
+        print(f&quot;Unknown action: {action['type']}&quot;)
+
+bpy.ops.wm.quit_blender()
+</code></pre>
+<h3 id="launching-blender-subprocess">Launching Blender subprocess</h3>
+<pre><code class="language-python">proc = await asyncio.create_subprocess_exec(
+    &quot;blender&quot;,
+    &quot;--background&quot;,
+    &quot;--python&quot;, runner_script,
+    &quot;--&quot;,            # separator: everything after -- is sys.argv in the script
+    actions_path,
+    stdout=asyncio.subprocess.PIPE,
+    stderr=asyncio.subprocess.PIPE,
+)
+</code></pre>
+<p>Note the <code>--</code> separator: Blender passes all arguments after <code>--</code> as <code>sys.argv</code> to the Python script.</p>
+<h3 id="node-id-convention_1">Node ID convention</h3>
+<p>Use prefix <code>blender_action_</code> for action nodes and <code>blender_headless_execute</code> for the terminal node. Use category <code>"Blender"</code>.</p>
+<hr />
+<h2 id="8-prism-pipeline-integration">8. Prism Pipeline Integration</h2>
+<p>Prism Pipeline is a studio project management system. Vibrante-Node integrates with it via <code>PrismCore</code>, which provides APIs for assets, shots, versions, and file paths.</p>
+<h3 id="bootstrap-prism_core_init-node">Bootstrap (prism_core_init node)</h3>
+<p>Place a <code>prism_core_init</code> node anywhere in the graph. The engine detects it during <code>_bootstrap_prism_if_needed()</code> before main graph execution and calls <code>bootstrap_prism_core()</code> on the Qt main thread:</p>
+<pre><code class="language-python"># From engine.py
+for node_id, node_model in self.graph_manager.nodes.items():
+    if node_model.node_id == &quot;prism_core_init&quot;:
+        params = node_model.parameters
+        bootstrap_prism_core(
+            prism_scripts_path=params.get(&quot;prism_scripts_path&quot;,
+                                          &quot;C:/Program Files/Prism2/Scripts&quot;),
+            load_project=bool(params.get(&quot;load_project&quot;, True)),
+            show_ui=bool(params.get(&quot;show_ui&quot;, False)),
+        )
+        break
+</code></pre>
+<p><code>bootstrap_prism_core()</code> (<code>src/utils/prism_core.py</code>) adds <code>prism_scripts_path</code> to <code>sys.path</code>, imports <code>PrismCore</code>, and calls <code>PrismCore.create(prismArgs=["noUI", "loadProject"])</code>. The resulting object is stored in both <code>_CACHED_PRISM_CORE</code> (module-level) and <code>BaseNode.memory["_prism_core"]</code>.</p>
+<p><strong>The <code>prism_core_init</code> node does not need to be wired to anything.</strong> Its mere presence in the graph triggers the bootstrap.</p>
+<h3 id="core-resolution-resolve_prism_core">Core resolution (resolve_prism_core)</h3>
+<p>Every <code>prism_*</code> node (except <code>prism_core_init</code>) gets its <code>core = inputs.get('core')</code> line automatically rewritten by <code>NodeRegistry._prepare_definition()</code> to:</p>
+<pre><code class="language-python">core = resolve_prism_core(inputs)
+</code></pre>
+<p><code>resolve_prism_core()</code> checks four sources in order:<br />
+1. <code>inputs["core"]</code> (explicit wire — backward compatible)<br />
+2. <code>BaseNode.memory["_prism_core"]</code> (shared workflow memory)<br />
+3. <code>_CACHED_PRISM_CORE</code> (module-level cache, survives multiple runs)<br />
+4. <code>__main__.pcore</code> (for nodes running directly inside a DCC that has Prism loaded)</p>
+<h3 id="prism-node-categories-and-examples">Prism node categories and examples</h3>
+<p>Prism nodes are organised by the area of the pipeline they address. All use <code>category: "Prism"</code> and <code>icon_path: "icons/prism_icon.png"</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Node IDs (examples)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Project</td>
+<td><code>prism_get_project_info</code>, <code>prism_set_project</code></td>
+</tr>
+<tr>
+<td>Assets</td>
+<td><code>prism_get_assets</code>, <code>prism_get_asset_info</code>, <code>prism_create_asset</code></td>
+</tr>
+<tr>
+<td>Shots</td>
+<td><code>prism_get_shots</code>, <code>prism_get_shot_info</code>, <code>prism_create_shot</code></td>
+</tr>
+<tr>
+<td>Sequences</td>
+<td><code>prism_get_sequences</code></td>
+</tr>
+<tr>
+<td>Versions</td>
+<td><code>prism_get_latest_version</code>, <code>prism_create_version</code>, <code>prism_get_version_path</code></td>
+</tr>
+<tr>
+<td>Export</td>
+<td><code>prism_export_scene</code>, <code>prism_publish_version</code></td>
+</tr>
+<tr>
+<td>Import</td>
+<td><code>prism_import_product</code>, <code>prism_load_asset_version</code></td>
+</tr>
+<tr>
+<td>Render</td>
+<td><code>prism_submit_render</code>, <code>prism_get_render_outputs</code></td>
+</tr>
+<tr>
+<td>Playblast</td>
+<td><code>prism_create_playblast</code></td>
+</tr>
+<tr>
+<td>Review</td>
+<td><code>prism_open_in_rv</code>, <code>prism_send_to_review</code></td>
+</tr>
+<tr>
+<td>Users</td>
+<td><code>prism_get_current_user</code>, <code>prism_get_users</code></td>
+</tr>
+<tr>
+<td>Settings</td>
+<td><code>prism_get_setting</code>, <code>prism_set_setting</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="writing-a-prism-node">Writing a Prism node</h3>
+<pre><code class="language-json">{
+    &quot;node_id&quot;: &quot;prism_get_assets&quot;,
+    &quot;name&quot;: &quot;prism_get_assets&quot;,
+    &quot;category&quot;: &quot;Prism&quot;,
+    &quot;icon_path&quot;: &quot;icons/prism_icon.png&quot;,
+    &quot;use_exec&quot;: true,
+    &quot;inputs&quot;: [
+        {&quot;name&quot;: &quot;exec_in&quot;, &quot;type&quot;: &quot;exec&quot;},
+        {&quot;name&quot;: &quot;entity_type&quot;, &quot;type&quot;: &quot;string&quot;, &quot;widget_type&quot;: &quot;text&quot;, &quot;default&quot;: &quot;&quot;}
+    ],
+    &quot;outputs&quot;: [
+        {&quot;name&quot;: &quot;exec_out&quot;, &quot;type&quot;: &quot;exec&quot;},
+        {&quot;name&quot;: &quot;assets&quot;, &quot;type&quot;: &quot;list&quot;}
+    ],
+    &quot;python_code&quot;: &quot;...&quot;
+}
+</code></pre>
+<pre><code class="language-python"># python_code (the registry auto-rewrites the core line):
+from src.nodes.base import BaseNode
+
+class Prism_Get_Assets(BaseNode):
+    name = &quot;prism_get_assets&quot;
+
+    def __init__(self):
+        super().__init__()
+        self.add_input(&quot;entity_type&quot;, &quot;string&quot;, widget_type=&quot;text&quot;)
+        self.add_output(&quot;assets&quot;, &quot;list&quot;)
+
+    async def execute(self, inputs):
+        core = inputs.get(&quot;core&quot;)   # auto-rewritten to resolve_prism_core(inputs)
+        if core is None:
+            self.log_error(&quot;PrismCore not initialized.&quot;)
+            return {&quot;assets&quot;: [], &quot;exec_out&quot;: True}
+        try:
+            assets = core.getAssets()
+            return {&quot;assets&quot;: assets, &quot;exec_out&quot;: True}
+        except Exception as e:
+            self.log_error(f&quot;Prism error: {e}&quot;)
+            return {&quot;assets&quot;: [], &quot;exec_out&quot;: True}
+
+def register_node():
+    return Prism_Get_Assets
+</code></pre>
+<h3 id="qt-compatibility-for-prism">Qt compatibility for Prism</h3>
+<p>Prism internally uses <code>QColor.fromString()</code> and <code>shiboken2</code> stubs that may not exist in all Qt5 builds. <code>src/utils/qt_compat.py</code> provides shims:</p>
+<pre><code class="language-python">from src.utils.qt_compat import ensure_qcolor_from_string, ensure_shiboken_stub
+ensure_qcolor_from_string()
+ensure_shiboken_stub()
+</code></pre>
+<p><code>bootstrap_prism_core()</code> calls both of these before importing <code>PrismCore</code>. Prism node authors do not need to call them directly.</p>
+<hr />
+<h2 id="9-production-deployment-with-pyinstaller">9. Production Deployment with PyInstaller</h2>
+<p>Vibrante-Node is bundled for distribution using PyInstaller with the spec file <code>vibrante_node.spec</code>.</p>
+<h3 id="bundling">Bundling</h3>
+<pre><code class="language-batch">pyinstaller vibrante_node.spec
+</code></pre>
+<p>The resulting <code>dist/vibrante_node/</code> directory (or <code>dist/vibrante_node.exe</code> for one-file mode) contains the full Python runtime, all dependencies, and the application code.</p>
+<h3 id="spec-file-customisation-points">Spec file customisation points</h3>
+<p>The spec file needs attention in several areas:</p>
+<h4 id="hidden-imports">Hidden imports</h4>
+<p>Some imports are dynamic (via <code>exec()</code> in <code>NodeRegistry</code>) and PyInstaller cannot detect them statically. Add them to <code>hiddenimports</code>:</p>
+<pre><code class="language-python"># vibrante_node.spec
+a = Analysis(
+    ['src/main.py'],
+    hiddenimports=[
+        'PyQt5.Qsci',           # optional QScintilla
+        'toposort',
+        'pydantic',
+        'pydantic.v1',          # some Prism versions use pydantic v1 shim
+        'PrismCore',            # if Prism nodes are bundled
+    ],
+    ...
+)
+</code></pre>
+<h4 id="data-files">Data files</h4>
+<p>Node JSON files and icons must be included as data:</p>
+<pre><code class="language-python">a = Analysis(
+    ...
+    datas=[
+        ('nodes', 'nodes'),           # bundled node definitions
+        ('icons', 'icons'),           # icon SVG/PNG files
+        ('plugins', 'plugins'),       # plugin directories
+    ],
+    ...
+)
+</code></pre>
+<p>The <code>resource_path()</code> function (<code>src/utils/paths.py</code>) handles the runtime path difference between running from source and running from a PyInstaller bundle (using <code>sys._MEIPASS</code> when frozen).</p>
+<h4 id="user-nodes-directory">User nodes directory</h4>
+<p>User-created nodes are stored in <code>app_dir()/nodes/</code>, where <code>app_dir()</code> returns the directory of the executable (not <code>sys._MEIPASS</code>). This allows users to add nodes without extracting the bundle:</p>
+<pre><code>dist/vibrante_node/          ← PyInstaller bundle root
+    vibrante_node.exe        ← or vibrante_node on Linux/macOS
+    _internal/               ← frozen modules and bundled nodes
+        nodes/               ← bundled node definitions (resource_path)
+nodes/                       ← user-created nodes (app_dir)
+</code></pre>
+<h4 id="excluding-houdini-specific-dependencies">Excluding Houdini-specific dependencies</h4>
+<p>Houdini integration relies on <code>hou</code>, which is only available inside Houdini's Python. Do <strong>not</strong> bundle <code>hou</code> in the PyInstaller distribution. The bridge is designed to work via dynamic import at runtime.</p>
+<h3 id="distributing-to-artists">Distributing to artists</h3>
+<p>Typical studio distribution:</p>
+<ol>
+<li>Build the bundle on a reference machine (same OS as target).</li>
+<li>Place the <code>dist/vibrante_node/</code> directory on a network share.</li>
+<li>Artists run <code>vibrante_node.exe</code> (or <code>./vibrante_node</code>) directly from the network share, or IT creates a shortcut/module to it.</li>
+<li>Each artist's user nodes directory (<code>app_dir()/nodes/</code>) is local to their machine or in their user profile.</li>
+</ol>
+<h3 id="version-locking">Version locking</h3>
+<p>Pin all dependencies in <code>requirements.txt</code> to exact versions for reproducible builds:</p>
+<pre><code>PyQt5==5.15.10
+PyQt5-Qt5==5.15.2
+pydantic==2.6.4
+toposort==1.10
+QScintilla==2.14.1
+</code></pre>
+<hr />
+<h2 id="10-scaling-workflows">10. Scaling Workflows</h2>
+<h3 id="node-count">Node count</h3>
+<p>The engine is designed for typical workflow sizes of 5–50 nodes. For graphs with 100+ nodes:</p>
+<ul>
+<li><strong>Pre-calculation is O(n + e)</strong>: The lookup maps (<code>_incoming_data_conns</code>, <code>_driven_by_flow</code>) are built once per run from all connections. This is fast even for large graphs.</li>
+<li><strong>Topological sort</strong>: The <code>toposort</code> library is O(n + e). Sorting 1000 nodes typically takes under 1 ms.</li>
+<li><strong>Scene rendering</strong>: The Qt scene renders all visible items on every paint event. For 200+ nodes, enable Qt's BSP tree (<code>scene.setItemIndexMethod(QGraphicsScene.BspTreeIndex)</code>) for faster item lookup. This is the default.</li>
+<li><strong>History snapshots</strong>: Each <code>push_history()</code> serialises the entire graph. For 100+ nodes with complex parameters, this can take 10–50 ms. If undo performance is degraded, reduce the history depth or skip history on mouse-move events (only push on mouse-release).</li>
+</ul>
+<h3 id="connection-count">Connection count</h3>
+<p>Each node output traverses all connections during reactive propagation. For a node with 500 downstream connections (unusual but possible in fan-out graphs), each <code>set_output()</code> call iterates 500 connection objects. This is rarely a bottleneck in practice but can be addressed by batching outputs.</p>
+<h3 id="memory-per-node-result">Memory per node result</h3>
+<p><code>node_results</code> holds every output of every node. For a 100-node workflow where each node outputs a 10 MB numpy array, <code>node_results</code> holds 1 GB in memory. Design pipelines to either:</p>
+<ul>
+<li>Chain data through a single path (pass by reference, not copy), or</li>
+<li>Offload large data to disk and pass file paths between nodes.</li>
+</ul>
+<h3 id="profiling">Profiling</h3>
+<p>To profile execution time per node, add <code>time.perf_counter()</code> calls around the <code>SafeRuntime.run_node_safe()</code> call (already done in <code>MainWindow</code> for the log panel). For deep profiling, use Python's <code>cProfile</code>:</p>
+<pre><code class="language-python">import cProfile
+cProfile.run('asyncio.run(executor.run())', 'profile_output')
+import pstats
+p = pstats.Stats('profile_output')
+p.sort_stats('cumulative').print_stats(20)
+</code></pre>
+<hr />
+<h2 id="11-memory-and-state-management">11. Memory and State Management</h2>
+<h3 id="basenodememory">BaseNode.memory</h3>
+<p><code>BaseNode.memory</code> is a class-level <code>Dict[str, Any]</code> shared across all node instances in a run. It is cleared at the start of every <code>run()</code> call.</p>
+<p>Use it for:<br />
+- Passing values between nodes that are not directly connected (e.g. <code>SetVariable</code> / <code>GetVariable</code>).<br />
+- Caching expensive lookups (e.g. database connections, credential tokens) across multiple nodes in the same run.<br />
+- Storing loop state.</p>
+<p>Do <strong>not</strong> use it for:<br />
+- Persistent state between separate run clicks (it is cleared each time).<br />
+- Large data structures that should be passed via wires (use output ports for that).<br />
+- Cross-tab state (each tab has its own executor, which clears <code>memory</code>).</p>
+<h3 id="persistent-state-between-runs">Persistent state between runs</h3>
+<p>If a node needs to persist state between run clicks (e.g. a connection pool, a cached credential), use Python module-level globals in the node's code, or a file-based cache. Module-level state persists for the lifetime of the Python process.</p>
+<pre><code class="language-python"># In node python_code:
+_CACHED_TOKEN = None
+
+async def execute(self, inputs):
+    global _CACHED_TOKEN
+    if _CACHED_TOKEN is None:
+        _CACHED_TOKEN = await _authenticate(inputs.get(&quot;api_key&quot;))
+    # use _CACHED_TOKEN
+</code></pre>
+<p>Be aware that reloading the workflow (which re-registers the node class via <code>exec()</code>) resets module-level state in that scope.</p>
+<h3 id="groupnode-memory-isolation">GroupNode memory isolation</h3>
+<p><code>GroupNode</code> saves and restores <code>BaseNode.memory</code> around sub-execution:</p>
+<pre><code class="language-python">saved_memory = dict(_BaseNode.memory)
+await sub_executor.run()   # clears memory internally
+_BaseNode.memory.clear()
+_BaseNode.memory.update(saved_memory)
+</code></pre>
+<p>Sub-graph nodes can read and write their own memory keys without affecting the outer graph's variables. Variables set in the outer graph before the <code>GroupNode</code> are visible to inner nodes because the sub-executor starts with an empty memory (not a copy of the outer memory).</p>
+<p>If you need to pass data from the outer graph into a sub-graph, use the <code>GroupInNode</code> / data wire mechanism, not <code>memory</code>.</p>
+<h3 id="clearing-state-between-runs">Clearing state between runs</h3>
+<p><code>NetworkExecutor.run()</code> clears at the start:</p>
+<pre><code class="language-python">BaseNode.memory.clear()
+self._executed_nodes.clear()
+self._currently_executing.clear()
+self._is_stopped = False
+self._active_tasks.clear()
+self.node_results = {}
+self.node_instances = {}
+</code></pre>
+<p>All node instances are re-created from scratch each run. Python objects held by previous instances are garbage-collected.</p>
+<hr />
+<h2 id="12-security-considerations">12. Security Considerations</h2>
+<h3 id="node-code-execution">Node code execution</h3>
+<p>Node <code>python_code</code> is executed via <code>exec()</code> in <code>NodeRegistry.register_definition()</code>:</p>
+<pre><code class="language-python">namespace = {}
+exec(definition.python_code, namespace)
+</code></pre>
+<p>This runs arbitrary Python code with the full privileges of the Python process. There is <strong>no sandboxing</strong>.</p>
+<h3 id="implications">Implications</h3>
+<ul>
+<li>A malicious node JSON file can execute any code on the machine, including file deletion, network access, and registry modification.</li>
+<li>Users who load workflows from untrusted sources are at risk if those workflows reference malicious node types.</li>
+<li>Nodes distributed via <code>v_nodes_dir</code> are loaded automatically on startup.</li>
+</ul>
+<h3 id="mitigations-in-production">Mitigations in production</h3>
+<ol>
+<li><strong>Code review before deployment</strong>: All node JSON files in the studio's plugin package should be reviewed by a trusted engineer before being added to <code>v_nodes_dir</code>.</li>
+<li><strong>Read-only plugin directories</strong>: Set the <code>v_nodes_dir</code> directory to read-only for regular users so they cannot replace node files with malicious versions.</li>
+<li><strong>Workflow allowlists</strong>: If running headless on a farm, validate that the workflow only uses node IDs from an approved list before executing.</li>
+<li><strong>Network isolation</strong>: Run the Vibrante-Node process under a service account with limited network and file system permissions.</li>
+<li><strong>Signed nodes</strong> (future): A potential enhancement is to require cryptographic signatures on node JSON files (e.g. using <code>nacl</code> or <code>cryptography</code>). Unsigned nodes would be rejected by the registry.</li>
+</ol>
+<h3 id="houdini-bridge-security">Houdini bridge security</h3>
+<p>The Houdini command server listens on <code>127.0.0.1</code> only (loopback). It cannot be accessed from other machines on the network. All commands require the caller to already have a local process on the same machine, which means an attacker would need local code execution to reach the server — at which point they already have the same privileges.</p>
+<h3 id="autosave-file">Autosave file</h3>
+<p>The autosave file at <code>~/.vibrante_node_autosave.json</code> contains a complete serialization of all open workflows. It is written with normal user file permissions. On shared workstations, other users with file system access could read workflow data. If workflows contain sensitive information (API keys in parameter widgets, file paths, credentials stored in node parameters), consider encrypting the autosave file or disabling it for sensitive use cases.</p>
+<hr />
+<h2 id="13-version-migration">13. Version Migration</h2>
+<p>Vibrante-Node uses Pydantic v2 for workflow serialization. The <code>WorkflowModel</code> schema has been stable since v1.5.0, but field additions and changes require migration logic for older files.</p>
+<h3 id="how-pydantic-handles-missing-fields">How Pydantic handles missing fields</h3>
+<p>Pydantic v2's <code>model_validate()</code> uses the field's <code>default</code> or <code>default_factory</code> for any key absent from the JSON. This means older workflow files load without errors even when new fields have been added, as long as new fields always have defaults.</p>
+<p>Current fields with defaults that were added in later versions:</p>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Field</th>
+<th>Added in</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>NodeInstanceModel</code></td>
+<td><code>bypassed</code></td>
+<td>v1.6.0</td>
+<td><code>False</code></td>
+</tr>
+<tr>
+<td><code>NodeInstanceModel</code></td>
+<td><code>init_priority</code></td>
+<td>v1.8.5</td>
+<td><code>0</code></td>
+</tr>
+<tr>
+<td><code>WorkflowModel</code></td>
+<td><code>sticky_notes</code></td>
+<td>v1.7.0</td>
+<td><code>[]</code></td>
+</tr>
+<tr>
+<td><code>WorkflowModel</code></td>
+<td><code>backdrops</code></td>
+<td>v1.7.0</td>
+<td><code>[]</code></td>
+</tr>
+<tr>
+<td><code>WorkflowModel</code></td>
+<td><code>metadata</code></td>
+<td>v1.8.0</td>
+<td><code>{}</code></td>
+</tr>
+<tr>
+<td><code>ConnectionModel</code></td>
+<td><code>is_exec</code></td>
+<td>v1.5.0</td>
+<td><code>False</code></td>
+</tr>
+</tbody>
+</table>
+<p>All of these have safe defaults that make old files load correctly without any migration script.</p>
+<h3 id="node-id-changes">Node ID changes</h3>
+<p>If a node is renamed (its <code>node_id</code> changes), existing workflows that use the old <code>node_id</code> will fail to load that node (the registry will not find it). To handle this:</p>
+<h4 id="option-a-alias-registration">Option A: Alias registration</h4>
+<p>Register the node under both the old and new IDs:</p>
+<pre><code class="language-python"># In NodeRegistry.register_builtins() or a plugin's __init__:
+NodeRegistry._classes[&quot;old_node_id&quot;] = NewNodeClass
+NodeRegistry._definitions[&quot;old_node_id&quot;] = NodeRegistry._definitions.get(&quot;new_node_id&quot;)
+</code></pre>
+<h4 id="option-b-migration-script">Option B: Migration script</h4>
+<p>Write a one-time script that reads old workflow files and rewrites the <code>node_id</code>:</p>
+<pre><code class="language-python">import json, glob, os
+
+OLD_ID = &quot;my_old_node&quot;
+NEW_ID = &quot;my_new_node&quot;
+
+for path in glob.glob(&quot;workflows/**/*.json&quot;, recursive=True):
+    with open(path) as f:
+        data = json.load(f)
+    changed = False
+    for node in data.get(&quot;nodes&quot;, []):
+        if node.get(&quot;node_id&quot;) == OLD_ID:
+            node[&quot;node_id&quot;] = NEW_ID
+            changed = True
+    if changed:
+        with open(path, &quot;w&quot;) as f:
+            json.dump(data, f, indent=2)
+        print(f&quot;Migrated: {path}&quot;)
+</code></pre>
+<h4 id="option-c-compatibility-shim-in-the-registry">Option C: Compatibility shim in the registry</h4>
+<p>Override <code>register_definition()</code> to detect old IDs during loading and transparently remap them:</p>
+<pre><code class="language-python">LEGACY_NODE_IDS = {
+    &quot;my_old_node&quot;: &quot;my_new_node&quot;,
+    &quot;hou_create_geo_v1&quot;: &quot;hou_create_geo&quot;,
+}
+
+@classmethod
+def load_node(cls, file_path):
+    # ... existing load logic ...
+    with open(file_path) as f:
+        data = json.load(f)
+    # Remap legacy node_id in the JSON before validation
+    if data.get(&quot;node_id&quot;) in LEGACY_NODE_IDS:
+        data[&quot;node_id&quot;] = LEGACY_NODE_IDS[data[&quot;node_id&quot;]]
+    definition = NodeDefinitionJSON.model_validate(data)
+    # ...
+</code></pre>
+<p>For workflow files that reference legacy <code>node_id</code> values, add the remapping in <code>NodeScene.from_workflow_model()</code>:</p>
+<pre><code class="language-python">for node_model in model.nodes:
+    if node_model.node_id in LEGACY_NODE_IDS:
+        node_model.node_id = LEGACY_NODE_IDS[node_model.node_id]
+</code></pre>
+<h3 id="parameter-schema-changes">Parameter schema changes</h3>
+<p>When a node's parameter names change, old workflow files will have the old key in <code>NodeInstanceModel.parameters</code>. The node's <code>restore_from_parameters()</code> method is the right place to handle this migration:</p>
+<pre><code class="language-python">def restore_from_parameters(self, parameters):
+    # Legacy: &quot;file&quot; was renamed to &quot;file_path&quot; in v1.8.0
+    if &quot;file&quot; in parameters and &quot;file_path&quot; not in parameters:
+        parameters[&quot;file_path&quot;] = parameters.pop(&quot;file&quot;)
+    # ... rest of restore logic ...
+</code></pre>
+<h3 id="workflow-version-field">Workflow version field</h3>
+<p><code>WorkflowModel.metadata</code> (a <code>Dict[str, Any]</code>) can store a version number:</p>
+<pre><code class="language-python"># When saving:
+model = scene.to_workflow_model()
+model.metadata[&quot;vibrante_version&quot;] = &quot;2.0.0&quot;
+</code></pre>
+<pre><code class="language-python"># When loading:
+ver = model.metadata.get(&quot;vibrante_version&quot;, &quot;unknown&quot;)
+if ver &lt; &quot;2.0.0&quot;:
+    # apply migration
+    pass
+</code></pre>
+<p>Version comparison with semantic version strings should use <code>packaging.version.Version</code> for correctness:</p>
+<pre><code class="language-python">from packaging.version import Version
+if Version(ver) &lt; Version(&quot;2.0.0&quot;):
+    # migrate
+</code></pre>
+<hr />
+<h2 id="14-extending-the-node-builder-with-ai">14. Extending the Node Builder with AI</h2>
+<p>The <code>NodeBuilderDialog</code> includes a <code>GeminiChatWidget</code> that connects to the Gemini API for AI-assisted node code generation. This can be extended or replaced with a different AI provider.</p>
+<h3 id="adding-a-custom-ai-provider">Adding a custom AI provider</h3>
+<ol>
+<li>Create a new chat widget class that inherits from <code>QWidget</code> and emits <code>code_generated(str)</code> when the AI returns code.</li>
+<li>Replace the <code>GeminiChatWidget</code> instantiation in <code>NodeBuilderDialog._init_ui()</code> with your widget.</li>
+<li>Connect the signal to <code>self.code_edit.setPlainText(code)</code>.</li>
+</ol>
+<h3 id="prompt-engineering-for-node-generation">Prompt engineering for node generation</h3>
+<p>The most effective prompts include:</p>
+<ul>
+<li>The full <code>CLAUDE.md</code> / <code>GEMINI.md</code> developer guide as system context.</li>
+<li>The specific node category and DCC target.</li>
+<li>Example input/output port names and data types.</li>
+<li>A description of what the node should do.</li>
+</ul>
+<p>The AI should output a complete JSON block (with <code>python_code</code> included) or just the <code>python_code</code> string, which the dialog can auto-fill into the editor.</p>
+<hr />
+<h2 id="15-hot-reload-during-development">15. Hot-Reload during Development</h2>
+<p>During active node development, it is not necessary to restart the application to pick up code changes in a node's <code>.json</code> file.</p>
+<h3 id="reloading-a-single-node">Reloading a single node</h3>
+<pre><code class="language-python"># From the Scripting Console:
+from src.core.registry import NodeRegistry
+
+# Re-read from disk and re-compile
+ok = NodeRegistry.reload_node_definition(&quot;my_node_id&quot;)
+if ok:
+    print(&quot;Reloaded successfully&quot;)
+else:
+    print(f&quot;Error: {NodeRegistry.last_error}&quot;)
+
+# Refresh the Library panel to show updated ports
+window.library_panel.refresh()
+</code></pre>
+<p>After reload, any newly placed <code>NodeWidget</code> of this type will use the new code. Existing widgets in the scene will continue to use the old instance until the scene is reloaded or the widget is removed and re-added.</p>
+<h3 id="reloading-all-nodes-from-a-directory">Reloading all nodes from a directory</h3>
+<pre><code class="language-python"># From the Scripting Console:
+from src.core.registry import NodeRegistry
+NodeRegistry._load_directory(&quot;/path/to/my_nodes&quot;)
+window.library_panel.refresh()
+</code></pre>
+<p>This scans the directory and re-registers any changed <code>.json</code> files. Existing node IDs are overwritten.</p>
+<h3 id="live-code-testing-in-the-scripting-console">Live code testing in the Scripting Console</h3>
+<p>You can prototype node logic directly in the Scripting Console before writing it into a <code>.json</code> file:</p>
+<pre><code class="language-python">from src.nodes.base import BaseNode
+import asyncio
+
+class TestNode(BaseNode):
+    name = &quot;test&quot;
+    def __init__(self):
+        super().__init__(use_exec=False)
+        self.add_input(&quot;x&quot;, &quot;float&quot;, default=1.0)
+        self.add_output(&quot;y&quot;, &quot;float&quot;)
+
+    async def execute(self, inputs):
+        return {&quot;y&quot;: inputs[&quot;x&quot;] * 2}
+
+n = TestNode()
+result = asyncio.run(n.execute({&quot;x&quot;: 5.0}))
+print(result)  # {&quot;y&quot;: 10.0}
+</code></pre>
+<p>This runs synchronously in the console and gives immediate feedback on the node's logic without touching the registry or canvas.</p>
+    <nav class="page-nav">
+      <a class="page-nav-link prev" href="08_api_reference.html"><span class="page-nav-label">Previous</span><span class="page-nav-title">API Reference</span></a>
+      <a class="page-nav-link next" href="10_contribution_guide.html"><span class="page-nav-label">Next</span><span class="page-nav-title">Contribution Guide</span></a>
+    </nav>
+  </div>
+</main>
+
+<!-- ── TOC ────────────────────────────────────────────────────────────── -->
+<aside class="toc">
+  <div class="toc-title">On this page</div>
+<a class="toc-link toc-h2" href="#table-of-contents">Table of Contents</a>
+<a class="toc-link toc-h2" href="#1-building-a-node-plugin-package">1. Building a Node Plugin Package</a>
+<a class="toc-link toc-h3" href="#recommended-folder-structure">Recommended folder structure</a>
+<a class="toc-link toc-h3" href="#registering-the-package">Registering the package</a>
+<a class="toc-link toc-h4" href="#option-a-environment-variable-any-host">Option A: Environment variable (any host)</a>
+<a class="toc-link toc-h4" href="#option-b-houdini-package-json">Option B: Houdini package JSON</a>
+<a class="toc-link toc-h4" href="#option-c-scripts-directory-for-v_scripts_path">Option C: scripts directory for v_scripts_path</a>
+<a class="toc-link toc-h3" href="#node-json-authoring-checklist">Node JSON authoring checklist</a>
+<a class="toc-link toc-h2" href="#2-remote-and-headless-execution">2. Remote and Headless Execution</a>
+<a class="toc-link toc-h3" href="#minimal-headless-runner">Minimal headless runner</a>
+<a class="toc-link toc-h3" href="#cli-argument-pattern">CLI argument pattern</a>
+<a class="toc-link toc-h3" href="#exit-code-convention">Exit code convention</a>
+<a class="toc-link toc-h2" href="#3-distributed-workflows">3. Distributed Workflows</a>
+<a class="toc-link toc-h3" href="#strategy-1-split-at-file-boundaries">Strategy 1: Split at file boundaries</a>
+<a class="toc-link toc-h3" href="#strategy-2-action-list-pattern-with-dcc-subprocesses">Strategy 2: Action-list pattern with DCC subprocesses</a>
+<a class="toc-link toc-h3" href="#strategy-3-message-queue-integration">Strategy 3: Message queue integration</a>
+<a class="toc-link toc-h3" href="#practical-considerations">Practical considerations</a>
+<a class="toc-link toc-h2" href="#4-custom-executors">4. Custom Executors</a>
+<a class="toc-link toc-h3" href="#subclassing-networkexecutor">Subclassing NetworkExecutor</a>
+<a class="toc-link toc-h3" href="#adding-pre-execution-hooks">Adding pre-execution hooks</a>
+<a class="toc-link toc-h3" href="#intercepting-node-output">Intercepting node output</a>
+<a class="toc-link toc-h3" href="#using-a-custom-executor-in-the-ui">Using a custom executor in the UI</a>
+<a class="toc-link toc-h2" href="#5-houdini-integration-deep-dive">5. Houdini Integration Deep-Dive</a>
+<a class="toc-link toc-h3" href="#architecture-overview">Architecture overview</a>
+<a class="toc-link toc-h3" href="#rpc-server-lifecycle-vibrante_hou_serverpy">RPC server lifecycle (vibrante_hou_server.py)</a>
+<a class="toc-link toc-h3" href="#main-thread-dispatch">Main-thread dispatch</a>
+<a class="toc-link toc-h3" href="#houbridge-client-thread-safety">HouBridge client thread safety</a>
+<a class="toc-link toc-h3" href="#environment-variable-flow">Environment variable flow</a>
+<a class="toc-link toc-h3" href="#accessing-hip-context-in-nodes">Accessing HIP context in nodes</a>
+<a class="toc-link toc-h3" href="#known-server-behaviours-and-workarounds">Known server behaviours and workarounds</a>
+<a class="toc-link toc-h2" href="#6-maya-headless-integration">6. Maya Headless Integration</a>
+<a class="toc-link toc-h3" href="#action-node-skeleton">Action node skeleton</a>
+<a class="toc-link toc-h3" href="#maya-executor-node">Maya executor node</a>
+<a class="toc-link toc-h3" href="#maya-runner-script-maya_runnerpy">Maya runner script (maya_runner.py)</a>
+<a class="toc-link toc-h3" href="#node-id-convention">Node ID convention</a>
+<a class="toc-link toc-h2" href="#7-blender-headless-integration">7. Blender Headless Integration</a>
+<a class="toc-link toc-h3" href="#blender-runner-script-blender_runnerpy">Blender runner script (blender_runner.py)</a>
+<a class="toc-link toc-h3" href="#launching-blender-subprocess">Launching Blender subprocess</a>
+<a class="toc-link toc-h3" href="#node-id-convention_1">Node ID convention</a>
+<a class="toc-link toc-h2" href="#8-prism-pipeline-integration">8. Prism Pipeline Integration</a>
+<a class="toc-link toc-h3" href="#bootstrap-prism_core_init-node">Bootstrap (prism_core_init node)</a>
+<a class="toc-link toc-h3" href="#core-resolution-resolve_prism_core">Core resolution (resolve_prism_core)</a>
+<a class="toc-link toc-h3" href="#prism-node-categories-and-examples">Prism node categories and examples</a>
+<a class="toc-link toc-h3" href="#writing-a-prism-node">Writing a Prism node</a>
+<a class="toc-link toc-h3" href="#qt-compatibility-for-prism">Qt compatibility for Prism</a>
+<a class="toc-link toc-h2" href="#9-production-deployment-with-pyinstaller">9. Production Deployment with PyInstaller</a>
+<a class="toc-link toc-h3" href="#bundling">Bundling</a>
+<a class="toc-link toc-h3" href="#spec-file-customisation-points">Spec file customisation points</a>
+<a class="toc-link toc-h4" href="#hidden-imports">Hidden imports</a>
+<a class="toc-link toc-h4" href="#data-files">Data files</a>
+<a class="toc-link toc-h4" href="#user-nodes-directory">User nodes directory</a>
+<a class="toc-link toc-h4" href="#excluding-houdini-specific-dependencies">Excluding Houdini-specific dependencies</a>
+<a class="toc-link toc-h3" href="#distributing-to-artists">Distributing to artists</a>
+<a class="toc-link toc-h3" href="#version-locking">Version locking</a>
+<a class="toc-link toc-h2" href="#10-scaling-workflows">10. Scaling Workflows</a>
+<a class="toc-link toc-h3" href="#node-count">Node count</a>
+<a class="toc-link toc-h3" href="#connection-count">Connection count</a>
+<a class="toc-link toc-h3" href="#memory-per-node-result">Memory per node result</a>
+<a class="toc-link toc-h3" href="#profiling">Profiling</a>
+<a class="toc-link toc-h2" href="#11-memory-and-state-management">11. Memory and State Management</a>
+<a class="toc-link toc-h3" href="#basenodememory">BaseNode.memory</a>
+<a class="toc-link toc-h3" href="#persistent-state-between-runs">Persistent state between runs</a>
+<a class="toc-link toc-h3" href="#groupnode-memory-isolation">GroupNode memory isolation</a>
+<a class="toc-link toc-h3" href="#clearing-state-between-runs">Clearing state between runs</a>
+<a class="toc-link toc-h2" href="#12-security-considerations">12. Security Considerations</a>
+<a class="toc-link toc-h3" href="#node-code-execution">Node code execution</a>
+<a class="toc-link toc-h3" href="#implications">Implications</a>
+<a class="toc-link toc-h3" href="#mitigations-in-production">Mitigations in production</a>
+<a class="toc-link toc-h3" href="#houdini-bridge-security">Houdini bridge security</a>
+<a class="toc-link toc-h3" href="#autosave-file">Autosave file</a>
+<a class="toc-link toc-h2" href="#13-version-migration">13. Version Migration</a>
+<a class="toc-link toc-h3" href="#how-pydantic-handles-missing-fields">How Pydantic handles missing fields</a>
+<a class="toc-link toc-h3" href="#node-id-changes">Node ID changes</a>
+<a class="toc-link toc-h4" href="#option-a-alias-registration">Option A: Alias registration</a>
+<a class="toc-link toc-h4" href="#option-b-migration-script">Option B: Migration script</a>
+<a class="toc-link toc-h4" href="#option-c-compatibility-shim-in-the-registry">Option C: Compatibility shim in the registry</a>
+<a class="toc-link toc-h3" href="#parameter-schema-changes">Parameter schema changes</a>
+<a class="toc-link toc-h3" href="#workflow-version-field">Workflow version field</a>
+<a class="toc-link toc-h2" href="#14-extending-the-node-builder-with-ai">14. Extending the Node Builder with AI</a>
+<a class="toc-link toc-h3" href="#adding-a-custom-ai-provider">Adding a custom AI provider</a>
+<a class="toc-link toc-h3" href="#prompt-engineering-for-node-generation">Prompt engineering for node generation</a>
+<a class="toc-link toc-h2" href="#15-hot-reload-during-development">15. Hot-Reload during Development</a>
+<a class="toc-link toc-h3" href="#reloading-a-single-node">Reloading a single node</a>
+<a class="toc-link toc-h3" href="#reloading-all-nodes-from-a-directory">Reloading all nodes from a directory</a>
+<a class="toc-link toc-h3" href="#live-code-testing-in-the-scripting-console">Live code testing in the Scripting Console</a>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/highlight.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lunr@2.3.9/lunr.min.js"></script>
+<script>
+// ── Search ──────────────────────────────────────────────────────────────
+let _idx = null, _docs = [];
+
+async function initSearch() {
+  try {
+    const base = document.getElementById('portal-base').dataset.base;
+    const resp = await fetch(base + 'search.json');
+    _docs = await resp.json();
+    _idx = lunr(function() {
+      this.ref('id');
+      this.field('title', { boost: 10 });
+      this.field('body');
+      _docs.forEach((d, i) => {
+        this.add({ id: i, title: d.title, body: d.body });
+      });
+    });
+  } catch(e) { console.warn('Search index not available', e); }
+}
+
+function doSearch(q) {
+  const box = document.getElementById('search-results');
+  if (!q || q.length < 2) { box.classList.remove('visible'); return; }
+  if (!_idx) { box.innerHTML = '<div class="search-no-results">Search index loading…</div>'; box.classList.add('visible'); return; }
+  const results = _idx.search(q + '~1');
+  if (!results.length) {
+    box.innerHTML = '<div class="search-no-results">No results for "' + q + '"</div>';
+    box.classList.add('visible'); return;
+  }
+  box.innerHTML = results.slice(0, 8).map(r => {
+    const d = _docs[r.ref];
+    const excerpt = d.body.substring(0, 140).replace(/[#*`]/g, '').trim() + '…';
+    return `<a class="search-result-item" href="${d.url}">
+      <div class="search-result-title">${d.title}</div>
+      <div class="search-result-excerpt">${excerpt}</div>
+    </a>`;
+  }).join('');
+  box.classList.add('visible');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initSearch();
+  const inp = document.getElementById('search-input');
+  if (inp) {
+    inp.addEventListener('input', e => doSearch(e.target.value));
+    inp.addEventListener('keydown', e => { if (e.key === 'Escape') { e.target.value=''; document.getElementById('search-results').classList.remove('visible'); }});
+  }
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.search-wrap')) document.getElementById('search-results')?.classList.remove('visible');
+  });
+  // Keyboard shortcut: / to focus search
+  document.addEventListener('keydown', e => {
+    if (e.key === '/' && !['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) {
+      e.preventDefault(); document.getElementById('search-input')?.focus();
+    }
+  });
+
+  // ── TOC active section ──────────────────────────────────────────────
+  const tocLinks = document.querySelectorAll('.toc-link');
+  const headings = document.querySelectorAll('h2[id],h3[id],h4[id]');
+  if (tocLinks.length && headings.length) {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          tocLinks.forEach(l => l.classList.remove('active'));
+          const link = document.querySelector(`.toc-link[href="#${entry.target.id}"]`);
+          if (link) link.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    headings.forEach(h => obs.observe(h));
+  }
+
+  // ── Copy buttons ────────────────────────────────────────────────────
+  document.querySelectorAll('pre').forEach(pre => {
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn'; btn.textContent = 'Copy';
+    btn.addEventListener('click', () => {
+      const code = pre.querySelector('code');
+      navigator.clipboard.writeText(code ? code.innerText : pre.innerText).then(() => {
+        btn.textContent = 'Copied!'; btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+      });
+    });
+    pre.style.position = 'relative';
+    pre.appendChild(btn);
+  });
+
+  // ── Sidebar active ──────────────────────────────────────────────────
+  const cur = window.location.pathname.split('/').pop();
+  document.querySelectorAll('.sidebar-link').forEach(l => {
+    if (l.getAttribute('href') === cur || l.getAttribute('href').endsWith(cur)) l.classList.add('active');
+  });
+
+  // ── highlight.js ────────────────────────────────────────────────────
+  if (window.hljs) {
+    hljs.configure({ ignoreUnescapedHTML: true });
+    hljs.highlightAll();
+  }
+});
+</script>
+</body>
+</html>
