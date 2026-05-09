@@ -319,6 +319,11 @@ class MainWindow(QMainWindow):
         find_action.triggered.connect(self._find_in_canvas)
         edit_menu.addAction(find_action)
 
+        group_action = QAction('&Group Selection', self)
+        group_action.setShortcut('Ctrl+Shift+G')
+        group_action.triggered.connect(self._group_selection)
+        edit_menu.addAction(group_action)
+
         node_menu = menubar.addMenu('&Nodes')
         new_node_action = QAction('&New Node Builder...', self)
         new_node_action.setShortcut('Ctrl+N')
@@ -1613,6 +1618,27 @@ class MainWindow(QMainWindow):
         view = self.get_current_view()
         if view:
             view.show_canvas_search()
+
+    def _group_selection(self):
+        scene = self.get_current_scene()
+        if scene:
+            scene.group_selection()
+
+    def _open_subgraph_tab(self, group_widget):
+        workflow_json = group_widget.node_definition.parameters.get("__workflow__", {})
+        if not workflow_json:
+            self.log_panel.log("Group node has no internal workflow.", "warning")
+            return
+        from src.core.models import WorkflowModel
+        try:
+            workflow_model = WorkflowModel.model_validate(workflow_json)
+        except Exception as e:
+            self.log_panel.log(f"Failed to open subgraph: {e}", "error")
+            return
+        group_name = group_widget.node_definition.parameters.get("__name__", "Group")
+        view = self.add_new_workflow(f"[{group_name}]")
+        view.scene().from_workflow_model(workflow_model)
+        self.log_panel.log(f"Opened subgraph '{group_name}' in new tab.", "info")
 
     def _toggle_mini_map(self):
         view = self.get_current_view()
