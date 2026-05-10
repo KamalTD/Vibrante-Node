@@ -1,0 +1,111 @@
+Vibrante-Node — Hybrid License Notice
+======================================
+
+Vibrante-Node uses an open-core licensing model. Different components of
+the project are licensed under different terms.
+
+────────────────────────────────────────────────────────────────────────
+
+  COMPONENT                    LICENSE
+  ─────────────────────────────────────────────────────────────────────
+  Core Runtime                 GNU Affero General Public License v3.0
+  SDK / Public API             MIT License
+  Documentation & Examples     Creative Commons Attribution 4.0 (CC BY 4.0)
+  Official Plugins & Nodes     Commercial License
+  Enterprise Integrations      Commercial License
+
+────────────────────────────────────────────────────────────────────────
+
+CORE RUNTIME — GNU AFFERO GENERAL PUBLIC LICENSE v3.0
+======================================================
+
+Copyright (C) 2024–2026 Mahmoud Kamal (KamalTD)
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+The full text of the AGPLv3 is available at:
+  https://www.gnu.org/licenses/agpl-3.0.en.html
+
+Network Use Clause (AGPLv3 §13)
+--------------------------------
+If you run a modified version of Vibrante-Node's core runtime on a
+server and allow other users to interact with it over a network, you
+must make the complete source code of your modified version available to
+those users under the AGPLv3, at no charge.
+
+────────────────────────────────────────────────────────────────────────
+
+SDK / PUBLIC API — MIT LICENSE
+================================
+
+Copyright (C) 2024–2026 Mahmoud Kamal (KamalTD)
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of the SDK and API surface (src/nodes/base.py, src/utils/,
+public node interface definitions), to deal in the Software without
+restriction, including without limitation the rights to use, copy,
+modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished
+to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+Full MIT License text: https://opensource.org/licenses/MIT
+
+────────────────────────────────────────────────────────────────────────
+
+DOCUMENTATION & EXAMPLES — CC BY 4.0
+=======================================
+
+Copyright (C) 2024–2026 Mahmoud Kamal (KamalTD)
+
+The documentation (docs_src/, examples/, node_examples/) is licensed
+under the Creative Commons Attribution 4.0 International License.
+
+You are free to share, adapt, and build upon this material for any
+purpose, even commercially, provided you give appropriate credit.
+
+Full license text: https://creativecommons.org/licenses/by/4.0/
+
+────────────────────────────────────────────────────────────────────────
+
+OFFICIAL PLUGINS, NODES & ENTERPRISE INTEGRATIONS — COMMERCIAL LICENSE
+========================================================================
+
+Certain components — including officially distributed plugins, curated
+node packs, enterprise DCC integrations, and cloud/SaaS deployment
+configurations — are available only under a commercial license.
+
+Free for:  individuals · students · open productions · research
+Paid for:  commercial studios · SaaS deployment · closed-source pipelines
+
+See COMMERCIAL_LICENSE.md for full terms and pricing.
+Contact:   m.kamalvfx@gmail.com
+
+────────────────────────────────────────────────────────────────────────
+
+ADDITIONAL DOCUMENTS
+====================
+
+  COMMERCIAL_LICENSE.md   Commercial usage terms and restrictions
+  TRADEMARK_POLICY.md     Vibrante-Node branding and logo guidelines
+  CLA.md                  Contributor License Agreement
+
+────────────────────────────────────────────────────────────────────────

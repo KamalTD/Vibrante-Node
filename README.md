@@ -207,8 +207,24 @@ Detailed documentation is available for both users and developers:
 
 ## 📜 License
 
-Permission is granted to use, modify, and test this software for personal and non-commercial purposes.
+Vibrante-Node uses an **open-core** hybrid licensing model.
 
-Commercial use, redistribution in commercial products, or use within commercial services requires written permission from the author.
+| Component | License |
+|---|---|
+| Core Runtime | [AGPLv3](LICENSE) |
+| SDK / Public API | [MIT](LICENSE) |
+| Documentation & Examples | [CC BY 4.0](LICENSE) |
+| Official Plugins & Nodes | [Commercial](COMMERCIAL_LICENSE.md) |
+| Enterprise Integrations | [Commercial](COMMERCIAL_LICENSE.md) |
 
-Contributions are welcome via pull requests.
+**Free for** individuals, students, education, and open productions.  
+**Commercial studio deployment** requires a [commercial license](COMMERCIAL_LICENSE.md).
+
+### Read the Full License Agreement
+
+- 📄 [LICENSE](LICENSE) — AGPLv3 runtime + MIT SDK + CC BY 4.0 docs
+- 💼 [COMMERCIAL_LICENSE.md](COMMERCIAL_LICENSE.md) — Studio, SaaS, and enterprise terms
+- ™️ [TRADEMARK_POLICY.md](TRADEMARK_POLICY.md) — Vibrante-Node branding guidelines
+- 🤝 [CLA.md](CLA.md) — Contributor License Agreement
+
+Licensing inquiries: **m.kamalvfx@gmail.com**

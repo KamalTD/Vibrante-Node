@@ -27,6 +27,7 @@ const footerLinks = {
     { label: 'Documentation', href: '/docs' },
     { label: 'Release Notes', href: '/docs#releases' },
     { label: 'Contribution Guide', href: '/docs#contributing' },
+    { label: 'License', href: '/license' },
   ],
 }
 
@@ -106,7 +107,8 @@ export function Footer() {
         {/* Bottom bar */}
         <div className="py-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-text-secondary">
-            © {new Date().getFullYear()} Vibrante-Node. Open source under MIT License.
+            © {new Date().getFullYear()} Vibrante-Node. Runtime: AGPLv3 · SDK: MIT ·{' '}
+            <Link href="/license" className="hover:text-primary transition-colors">License details</Link>
           </p>
           <div className="flex items-center gap-6">
             <span className="text-xs text-text-secondary/60 font-mono">
