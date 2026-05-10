@@ -441,7 +441,7 @@ td code { font-size: .85em; }
 <main class="content">
   <div class="content-inner">
     <nav class="breadcrumb"><a href="index.html">Docs</a><span class="breadcrumb-sep">›</span><span>General Purpose Automation</span></nav>
-    <div class="val-badge val-badge-error" title="Documentation accuracy issues found">&#10006; 1 error, 1 warning</div>
+    <div class="val-badge val-badge-ok" title="Verified against source code">&#10003; Verified</div>
 <h1 id="general-purpose-automation-with-vibrante-node">General-Purpose Automation with Vibrante-Node</h1>
 <p>Vibrante-Node is often introduced through its VFX integrations — Houdini, Maya, Prism. But those integrations are optional plugins that extend a general-purpose automation engine. At its core, Vibrante-Node is a visual, async, node-based Python execution framework that can orchestrate any automation task: file processing, API orchestration, data transformation, AI pipelines, database operations, DevOps workflows, and more.</p>
 <p>This chapter covers twelve practical automation domains, explains why a node-based approach outperforms linear scripts, and teaches you to decompose any problem into nodes.</p>
@@ -1206,7 +1206,9 @@ for attempt in range(1, MAX_RETRIES + 1):
 <p>Every workflow needs to handle failure. For each critical step, ask: "What happens if this fails?"</p>
 <p>The three patterns:</p>
 <p><strong>Silent fail with log:</strong> Return a safe default and <code>exec_out: True</code>. The chain continues; downstream nodes receive <code>None</code> or an empty value. Use for non-critical steps.</p>
-<pre><code class="language-python">except Exception as e:
+<pre><code class="language-python">try:
+    pass  # ... your work ...
+except Exception as e:
     self.log_error(f&quot;Step failed: {e}&quot;)
     return {&quot;result&quot;: None, &quot;exec_out&quot;: True}  # chain continues
 </code></pre>

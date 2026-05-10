@@ -441,7 +441,7 @@ td code { font-size: .85em; }
 <main class="content">
   <div class="content-inner">
     <nav class="breadcrumb"><a href="index.html">Docs</a><span class="breadcrumb-sep">›</span><span>API Reference</span></nav>
-    <div class="val-badge val-badge-error" title="Documentation accuracy issues found">&#10006; 3 errors, 31 warnings</div>
+    <div class="val-badge val-badge-ok" title="Verified against source code">&#10003; Verified</div>
 <h1 id="full-api-reference-vibrante-node-v200">Full API Reference — Vibrante-Node v2.0.0</h1>
 <p>This document is the complete public API reference for all classes, signals,<br />
 and utilities available to node authors, workflow automation scripts, and<br />
@@ -685,7 +685,7 @@ plugin developers.</p>
 <p><strong>Module:</strong> <code>src.nodes.base</code></p>
 <p>Describes a single input or output connection point.</p>
 <h3 id="constructor_1">Constructor</h3>
-<pre><code class="language-python">Port(
+<pre><code class="language-text">Port(
     name: str,
     data_type: str = &quot;any&quot;,
     widget_type: str = None,
@@ -738,7 +738,7 @@ plugin developers.</p>
 <p>The async execution engine. Receives a <code>GraphManager</code>, prepares all node<br />
 instances, and runs the graph.</p>
 <h3 id="constructor_2">Constructor</h3>
-<pre><code class="language-python">NetworkExecutor(graph_manager: GraphManager)
+<pre><code class="language-text">NetworkExecutor(graph_manager: GraphManager)
 </code></pre>
 <p><code>NetworkExecutor</code> is a <code>QObject</code>. It emits Qt signals for UI feedback.</p>
 <h3 id="signals">Signals</h3>
@@ -1692,7 +1692,7 @@ else:
     self.log_error(&quot;Houdini is not connected.&quot;)
 </code></pre>
 <h3 id="constructor-advanced-use">Constructor (advanced use)</h3>
-<pre><code class="language-python">HouBridge(host: str = &quot;127.0.0.1&quot;, port: int = None)
+<pre><code class="language-text">HouBridge(host: str = &quot;127.0.0.1&quot;, port: int = None)
 </code></pre>
 <p><code>port</code> defaults to the value of the <code>VIBRANTE_HOU_PORT</code> environment variable,<br />
 or <code>18811</code> if the variable is not set.</p>

@@ -441,7 +441,7 @@ td code { font-size: .85em; }
 <main class="content">
   <div class="content-inner">
     <nav class="breadcrumb"><a href="index.html">Docs</a><span class="breadcrumb-sep">›</span><span>Node Development Guide</span></nav>
-    <div class="val-badge val-badge-error" title="Documentation accuracy issues found">&#10006; 3 errors, 11 warnings</div>
+    <div class="val-badge val-badge-ok" title="Verified against source code">&#10003; Verified</div>
 <h1 id="node-development-guide-vibrante-node-v200">Node Development Guide — Vibrante-Node v2.0.0</h1>
 <p>This guide walks through everything you need to know to build custom nodes for<br />
 Vibrante-Node, from the simplest string transformer to a fully-async HTTP client<br />
@@ -916,6 +916,7 @@ self.rebuild_ports()
 <h3 id="checking-connection-status">Checking connection status</h3>
 <pre><code class="language-python">if self.is_port_connected(&quot;my_port&quot;, is_input=True):
     # port has a wire attached
+    pass
 </code></pre>
 <p>This queries the UI via the <code>_is_port_connected</code> hook set by the canvas.</p>
 <hr />
@@ -1090,7 +1091,7 @@ automatically in the library panel when at least one node uses it.</p>
 <p>Set <code>icon_path</code> to a path relative to the app root (e.g.,<br />
 <code>"icons/my_icon.svg"</code>). SVG and PNG are both supported. The icon appears on<br />
 the node header in the canvas.</p>
-<pre><code class="language-json">&quot;icon_path&quot;: &quot;icons/houdini.svg&quot;
+<pre><code class="language-text">&quot;icon_path&quot;: &quot;icons/houdini.svg&quot;
 </code></pre>
 <p>If <code>icon_path</code> is <code>null</code>, no icon is shown.</p>
 <p>To add a new icon, place the file in <code>icons/</code> and reference it by filename.</p>
@@ -1227,7 +1228,7 @@ async def execute(self, inputs):
 <h3 id="mismatched-node-name-and-node_id">Mismatched node name and node_id</h3>
 <p>The <code>name</code> class attribute, <code>node_id</code> in the JSON, and the class name used in<br />
 <code>register_node()</code> must all be consistent:</p>
-<pre><code class="language-json">{ &quot;node_id&quot;: &quot;text_upper&quot;, &quot;name&quot;: &quot;text_upper&quot;, ... }
+<pre><code class="language-json">{ &quot;node_id&quot;: &quot;text_upper&quot;, &quot;name&quot;: &quot;text_upper&quot; }
 </code></pre>
 <pre><code class="language-python">class Text_Upper(BaseNode):
     name = &quot;text_upper&quot;          # must match node_id

@@ -441,7 +441,7 @@ td code { font-size: .85em; }
 <main class="content">
   <div class="content-inner">
     <nav class="breadcrumb"><a href="index.html">Docs</a><span class="breadcrumb-sep">›</span><span>Advanced Topics</span></nav>
-    <div class="val-badge val-badge-error" title="Documentation accuracy issues found">&#10006; 4 errors, 22 warnings</div>
+    <div class="val-badge val-badge-ok" title="Verified against source code">&#10003; Verified</div>
 <h1 id="09-advanced-topics">09 — Advanced Topics</h1>
 <p><strong>Vibrante-Node v2.0.0 — Technical Reference</strong></p>
 <p>This document covers advanced usage patterns, production deployment, DCC integration deep-dives, headless execution, custom executors, security considerations, and version migration. It is intended for pipeline TDs, tool developers, and studio engineers who need to go beyond the basic node-authoring workflow.</p>
@@ -673,6 +673,7 @@ async def _pre_run_hook(self):
 
 async def _post_run_hook(self):
     # ... your cleanup logic ...
+    pass
 </code></pre>
 <h3 id="intercepting-node-output">Intercepting node output</h3>
 <p>Override <code>_run_single_node_impl()</code> to intercept output after each node:</p>
@@ -1113,19 +1114,19 @@ a = Analysis(
         'pydantic.v1',          # some Prism versions use pydantic v1 shim
         'PrismCore',            # if Prism nodes are bundled
     ],
-    ...
+    # ... other Analysis arguments ...
 )
 </code></pre>
 <h4 id="data-files">Data files</h4>
 <p>Node JSON files and icons must be included as data:</p>
 <pre><code class="language-python">a = Analysis(
-    ...
+    # ...
     datas=[
         ('nodes', 'nodes'),           # bundled node definitions
         ('icons', 'icons'),           # icon SVG/PNG files
         ('plugins', 'plugins'),       # plugin directories
     ],
-    ...
+    # ...
 )
 </code></pre>
 <p>The <code>resource_path()</code> function (<code>src/utils/paths.py</code>) handles the runtime path difference between running from source and running from a PyInstaller bundle (using <code>sys._MEIPASS</code> when frozen).</p>
@@ -1381,6 +1382,7 @@ if ver &lt; &quot;2.0.0&quot;:
 <pre><code class="language-python">from packaging.version import Version
 if Version(ver) &lt; Version(&quot;2.0.0&quot;):
     # migrate
+    pass
 </code></pre>
 <hr />
 <h2 id="14-extending-the-node-builder-with-ai">14. Extending the Node Builder with AI</h2>

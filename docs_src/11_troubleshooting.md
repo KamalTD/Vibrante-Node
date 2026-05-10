@@ -403,7 +403,7 @@ def handle_my_action_type(action: dict, scene_info: dict):
     pass
 
 HANDLERS = {
-    ...
+    # ... existing handlers ...
     "my_action_type": handle_my_action_type,
 }
 ```

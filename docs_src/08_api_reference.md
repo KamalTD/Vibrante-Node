@@ -101,7 +101,7 @@ Describes a single input or output connection point.
 
 ### Constructor
 
-```python
+```text
 Port(
     name: str,
     data_type: str = "any",
@@ -135,7 +135,7 @@ instances, and runs the graph.
 
 ### Constructor
 
-```python
+```text
 NetworkExecutor(graph_manager: GraphManager)
 ```
 
@@ -944,7 +944,7 @@ else:
 
 ### Constructor (advanced use)
 
-```python
+```text
 HouBridge(host: str = "127.0.0.1", port: int = None)
 ```
 

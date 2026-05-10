@@ -441,7 +441,7 @@ td code { font-size: .85em; }
 <main class="content">
   <div class="content-inner">
     <nav class="breadcrumb"><a href="index.html">Docs</a><span class="breadcrumb-sep">›</span><span>User Guide</span></nav>
-    <div class="val-badge val-badge-error" title="Documentation accuracy issues found">&#10006; 1 error, 10 warnings</div>
+    <div class="val-badge val-badge-ok" title="Verified against source code">&#10003; Verified</div>
 <h1 id="vibrante-node-v200-user-guide">Vibrante-Node v2.0.0 — User Guide</h1>
 <p>This guide is the comprehensive reference for working with Vibrante-Node. It covers every UI element, interaction, and workflow concept in depth — from beginner navigation to advanced features like subgraphs, bypass mode, and live inspection.</p>
 <hr />
@@ -1421,11 +1421,13 @@ After grouping (B is inside the group):
         {
             &quot;name&quot;: &quot;tab_label&quot;,
             &quot;file_path&quot;: &quot;/path/to/saved/file.json&quot;,
-            &quot;workflow&quot;: { ... WorkflowModel dict ... }
+            &quot;workflow&quot;: {}
         }
     ]
 }
 </code></pre>
+<!-- `workflow` contains the full WorkflowModel dict serialized to JSON -->
+
 <p>Autosave is skipped during active execution (<code>_is_executing</code> flag prevents saving a mid-run state). Failures during autosave are printed to the Python console only — the application never crashes due to a failed autosave.</p>
 <h3 id="clean-exit">Clean Exit</h3>
 <p>When you close the application normally (<code>Alt+F4</code>, File &gt; Exit, or the window X button), <code>closeEvent</code> deletes the autosave file before exiting. This ensures the crash recovery dialog does not appear on the next normal launch.</p>

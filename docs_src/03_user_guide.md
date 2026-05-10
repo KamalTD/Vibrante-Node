@@ -766,11 +766,12 @@ The autosave file has this structure:
         {
             "name": "tab_label",
             "file_path": "/path/to/saved/file.json",
-            "workflow": { ... WorkflowModel dict ... }
+            "workflow": {}
         }
     ]
 }
 ```
+<!-- `workflow` contains the full WorkflowModel dict serialized to JSON -->
 
 Autosave is skipped during active execution (`_is_executing` flag prevents saving a mid-run state). Failures during autosave are printed to the Python console only — the application never crashes due to a failed autosave.
 

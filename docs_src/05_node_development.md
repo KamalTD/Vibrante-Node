@@ -483,6 +483,7 @@ See `SequenceNode` in `src/nodes/builtins/nodes.py` for a complete example.
 ```python
 if self.is_port_connected("my_port", is_input=True):
     # port has a wire attached
+    pass
 ```
 
 This queries the UI via the `_is_port_connected` hook set by the canvas.
@@ -674,7 +675,7 @@ Set `icon_path` to a path relative to the app root (e.g.,
 `"icons/my_icon.svg"`). SVG and PNG are both supported. The icon appears on
 the node header in the canvas.
 
-```json
+```text
 "icon_path": "icons/houdini.svg"
 ```
 
@@ -868,7 +869,7 @@ The `name` class attribute, `node_id` in the JSON, and the class name used in
 `register_node()` must all be consistent:
 
 ```json
-{ "node_id": "text_upper", "name": "text_upper", ... }
+{ "node_id": "text_upper", "name": "text_upper" }
 ```
 
 ```python

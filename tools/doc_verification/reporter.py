@@ -118,20 +118,63 @@ class Validator:
     # ------------------------------------------------------------------
 
     # Terms that look like node IDs (snake_case) but are actually port names,
-    # signal names, environment variables, or other well-known identifiers.
+    # JSON field names, attribute names, variable names, or other well-known identifiers.
     _NODE_CLAIM_SKIP = frozenset({
-        "exec_in", "exec_out", "exec_fail",
+        # Built-in exec port names
+        "exec_in", "exec_out", "exec_fail", "exec_true", "exec_false",
+        "exec_step", "exec_loop_body", "exec_success",
+        "loop_exec_in", "loop_exec_out",
+        # Engine signals
         "node_started", "node_finished", "node_error", "node_output", "node_log",
         "execution_finished",
+        # Node definition JSON fields
         "node_id", "node_type", "node_results", "node_info", "node_exists",
-        "actions_in", "actions_out",
+        "node_instances", "python_code", "icon_path", "init_priority",
+        "parameter_types", "ignore_ports", "is_exec", "load_all",
         "data_type", "widget_type", "use_exec",
+        # Action node conventions
+        "actions_in", "actions_out",
+        # BaseNode API
         "add_input", "add_output", "add_exec_input", "add_exec_output",
-        "log_error", "log_info", "log_warn",
-        "get_bridge", "run_code",
-        "resolve_prism_core",
-        "register_node",
-        "async_def", "for_each", "while_loop",
+        "log_error", "log_info", "log_warn", "log_success", "set_output",
+        # Bridge / Prism API
+        "get_bridge", "run_code", "resolve_prism_core", "register_node",
+        "set_parm", "open_scene", "load_project", "show_ui",
+        # Environment variables and config keys
+        "v_nodes_dir", "v_scripts_path",
+        # Widget type names (not node IDs)
+        "text_area", "file_save",
+        # Port/output name examples used in tutorials
+        "out_1", "out_2", "true_out", "false_out", "json_out",
+        "current_item", "current_index", "current_list",
+        "appended_list", "final_list",
+        "log_output", "error_message",
+        # Internal attribute names (PyQt / canvas)
+        "instance_id", "sticky_notes", "redo_stack", "file_path",
+        "grid_pen", "scene_pos", "from_port", "to_port",
+        "error_line", "node_selected", "from_node", "to_node",
+        "input_idx", "frame_range", "break_condition", "inner_errors",
+        "run_forever", "to_thread", "default_factory",
+        # Tutorial variable / example names
+        "my_first_workflow", "create_geo", "delete_geo", "node_geo_info",
+        "my_box", "my_xform", "scene_path", "project_path",
+        "display_sop", "geo_path",
+        # Tutorial port/variable names
+        "folder_path", "file_list", "var_name", "port_name",
+        "final_name", "raw_name",
+        # Signal / callback names
+        "save_requested", "run_requested", "action_request",
+        "noun_past_tense", "restore_from_parameters", "on_parameter_changed",
+        # Test helper names
+        "test_init", "test_execute",
+        # Custom node example names
+        "acme_get_asset", "get_asset", "should_continue",
+        # Example node port names in tutorials (examples library)
+        "ignore_case", "match_count", "smtp_host", "smtp_port", "use_tls",
+        "db_path", "input_path", "output_path", "api_key", "new_files",
+        "watch_seconds", "asset_names", "entity_type", "publish_count",
+        # Misc identifiers that look like node IDs but are not
+        "last_error", "load_project", "open_scene", "init_only",
     })
 
     def _check_node_claims(self):

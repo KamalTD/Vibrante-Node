@@ -951,6 +951,8 @@ The three patterns:
 **Silent fail with log:** Return a safe default and `exec_out: True`. The chain continues; downstream nodes receive `None` or an empty value. Use for non-critical steps.
 
 ```python
+try:
+    pass  # ... your work ...
 except Exception as e:
     self.log_error(f"Step failed: {e}")
     return {"result": None, "exec_out": True}  # chain continues

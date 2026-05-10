@@ -441,7 +441,7 @@ td code { font-size: .85em; }
 <main class="content">
   <div class="content-inner">
     <nav class="breadcrumb"><a href="index.html">Docs</a><span class="breadcrumb-sep">›</span><span>Frontend Architecture</span></nav>
-    <div class="val-badge val-badge-error" title="Documentation accuracy issues found">&#10006; 1 error, 17 warnings</div>
+    <div class="val-badge val-badge-ok" title="Verified against source code">&#10003; Verified</div>
 <h1 id="07-frontend-architecture">07 — Frontend Architecture</h1>
 <p><strong>Vibrante-Node v2.0.0 — Technical Reference</strong></p>
 <p>This document describes the Qt5 widget hierarchy, rendering pipeline, event model, history system, and all supporting UI subsystems. It targets contributors who need to understand the canvas, add new UI panels, create custom graphics items, or modify how nodes and edges are drawn.</p>
@@ -552,10 +552,12 @@ executor.execution_finished.connect(self._on_execution_finished)
 <pre><code class="language-json">{
   &quot;version&quot;: 1,
   &quot;tabs&quot;: [
-    {&quot;name&quot;: &quot;tab label&quot;, &quot;file_path&quot;: &quot;/path/or/empty&quot;, &quot;workflow&quot;: { ...WorkflowModel... }}
+    {&quot;name&quot;: &quot;tab label&quot;, &quot;file_path&quot;: &quot;/path/or/empty&quot;, &quot;workflow&quot;: {}}
   ]
 }
 </code></pre>
+<!-- `workflow` contains the full WorkflowModel dict serialized to JSON -->
+
 <p>Empty tabs and the <code>_is_executing</code> guard prevent spurious writes. On next startup, <code>_try_restore_autosave()</code> checks for this file and shows a restore dialog. On clean exit (<code>closeEvent</code>), the file is deleted so the dialog never appears unnecessarily.</p>
 <h3 id="recent-files">Recent files</h3>
 <p><code>MainWindow._add_recent_file(path)</code> is called after every successful save or load. It delegates to <code>config.add_recent_file(path)</code> in <code>src/utils/config_manager.py</code>, which keeps a JSON list of up to 10 absolute paths (newest first). The <strong>Open Recent</strong> submenu is rebuilt dynamically by <code>_rebuild_recent_menu()</code> on <code>file_menu.aboutToShow</code>. Files that no longer exist on disk are shown grayed-out (disabled actions).</p>

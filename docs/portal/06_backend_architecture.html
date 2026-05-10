@@ -441,7 +441,7 @@ td code { font-size: .85em; }
 <main class="content">
   <div class="content-inner">
     <nav class="breadcrumb"><a href="index.html">Docs</a><span class="breadcrumb-sep">›</span><span>Backend Architecture</span></nav>
-    <div class="val-badge val-badge-error" title="Documentation accuracy issues found">&#10006; 2 errors, 15 warnings</div>
+    <div class="val-badge val-badge-ok" title="Verified against source code">&#10003; Verified</div>
 <h1 id="06-backend-architecture">06 — Backend Architecture</h1>
 <p><strong>Vibrante-Node v2.0.0 — Technical Reference</strong></p>
 <p>This document describes the execution engine, graph model, node registry, and all supporting subsystems that make up the Vibrante-Node backend. It is written for contributors, plugin authors, and advanced users who need to understand what happens between the moment the user clicks <strong>Run</strong> and the moment the last node finishes.</p>
@@ -783,9 +783,9 @@ for node_id in init_node_ids:
 <p><code>NetworkExecutor.node_results</code> is a <code>Dict[UUID, Dict[str, Any]]</code> that stores the most recent output values of every node in the current run.</p>
 <pre><code class="language-python"># Structure
 node_results = {
-    node_instance_id_1: {&quot;output_port_a&quot;: value, &quot;output_port_b&quot;: value, ...},
+    node_instance_id_1: {&quot;output_port_a&quot;: value, &quot;output_port_b&quot;: value},
     node_instance_id_2: {&quot;result&quot;: value, &quot;exec_out&quot;: True},
-    ...
+    # ... one entry per executed node ...
 }
 </code></pre>
 <h3 id="population">Population</h3>

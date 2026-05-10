@@ -297,6 +297,7 @@ async def _pre_run_hook(self):
 
 async def _post_run_hook(self):
     # ... your cleanup logic ...
+    pass
 ```
 
 ### Intercepting node output
@@ -761,7 +762,7 @@ a = Analysis(
         'pydantic.v1',          # some Prism versions use pydantic v1 shim
         'PrismCore',            # if Prism nodes are bundled
     ],
-    ...
+    # ... other Analysis arguments ...
 )
 ```
 
@@ -771,13 +772,13 @@ Node JSON files and icons must be included as data:
 
 ```python
 a = Analysis(
-    ...
+    # ...
     datas=[
         ('nodes', 'nodes'),           # bundled node definitions
         ('icons', 'icons'),           # icon SVG/PNG files
         ('plugins', 'plugins'),       # plugin directories
     ],
-    ...
+    # ...
 )
 ```
 
@@ -1085,6 +1086,7 @@ Version comparison with semantic version strings should use `packaging.version.V
 from packaging.version import Version
 if Version(ver) < Version("2.0.0"):
     # migrate
+    pass
 ```
 
 ---

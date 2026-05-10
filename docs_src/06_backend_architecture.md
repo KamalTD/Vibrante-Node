@@ -447,9 +447,9 @@ For CPU-bound work offloaded with `asyncio.to_thread()`, cancellation of the out
 ```python
 # Structure
 node_results = {
-    node_instance_id_1: {"output_port_a": value, "output_port_b": value, ...},
+    node_instance_id_1: {"output_port_a": value, "output_port_b": value},
     node_instance_id_2: {"result": value, "exec_out": True},
-    ...
+    # ... one entry per executed node ...
 }
 ```
 

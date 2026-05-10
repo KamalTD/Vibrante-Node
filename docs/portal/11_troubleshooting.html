@@ -441,7 +441,7 @@ td code { font-size: .85em; }
 <main class="content">
   <div class="content-inner">
     <nav class="breadcrumb"><a href="index.html">Docs</a><span class="breadcrumb-sep">›</span><span>Troubleshooting</span></nav>
-    <div class="val-badge val-badge-error" title="Documentation accuracy issues found">&#10006; 1 error, 8 warnings</div>
+    <div class="val-badge val-badge-ok" title="Verified against source code">&#10003; Verified</div>
 <h1 id="troubleshooting-guide">Troubleshooting Guide</h1>
 <p>This guide covers the most common problems users and developers encounter with Vibrante-Node v2.0.0, organized by symptom. For each issue you will find: what causes it, how to diagnose it, and how to fix it.</p>
 <hr />
@@ -703,7 +703,7 @@ export VIBRANTE_MAYA_EXE=/Applications/Autodesk/maya2024/Maya.app/Contents/bin/m
     pass
 
 HANDLERS = {
-    ...
+    # ... existing handlers ...
     &quot;my_action_type&quot;: handle_my_action_type,
 }
 </code></pre>

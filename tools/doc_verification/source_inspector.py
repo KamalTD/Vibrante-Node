@@ -314,8 +314,10 @@ class SourceInspector:
                     if not name.startswith("__"):
                         fact.class_attrs.append(name)
 
-                # Methods
+                # Methods — also scan __init__ for self.xxx instance attributes
                 if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    if item.name == "__init__":
+                        self._collect_instance_attrs(item, fact)
                     if item.name.startswith("__") and item.name != "__init__":
                         continue
                     margs = [
@@ -332,6 +334,27 @@ class SourceInspector:
 
         self.classes[class_name] = fact
         self.signals[class_name] = signals
+
+    def _collect_instance_attrs(self, init_node: ast.FunctionDef, fact: "ClassFact"):
+        """Scan __init__ body for `self.xxx = ...` and `self.xxx: T = ...` assignments."""
+        for node in ast.walk(init_node):
+            # self.attr = value
+            if isinstance(node, ast.Assign):
+                for t in node.targets:
+                    if (isinstance(t, ast.Attribute)
+                            and isinstance(t.value, ast.Name)
+                            and t.value.id == "self"
+                            and not t.attr.startswith("__")):
+                        if t.attr not in fact.instance_attrs:
+                            fact.instance_attrs.append(t.attr)
+            # self.attr: Type = value
+            elif isinstance(node, ast.AnnAssign):
+                if (isinstance(node.target, ast.Attribute)
+                        and isinstance(node.target.value, ast.Name)
+                        and node.target.value.id == "self"
+                        and not node.target.attr.startswith("__")):
+                    if node.target.attr not in fact.instance_attrs:
+                        fact.instance_attrs.append(node.target.attr)
 
     # ------------------------------------------------------------------
     # Pydantic models (src/core/models.py)

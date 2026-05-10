@@ -129,10 +129,11 @@ executor.execution_finished.connect(self._on_execution_finished)
 {
   "version": 1,
   "tabs": [
-    {"name": "tab label", "file_path": "/path/or/empty", "workflow": { ...WorkflowModel... }}
+    {"name": "tab label", "file_path": "/path/or/empty", "workflow": {}}
   ]
 }
 ```
+<!-- `workflow` contains the full WorkflowModel dict serialized to JSON -->
 
 Empty tabs and the `_is_executing` guard prevent spurious writes. On next startup, `_try_restore_autosave()` checks for this file and shows a restore dialog. On clean exit (`closeEvent`), the file is deleted so the dialog never appears unnecessarily.
 
