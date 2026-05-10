@@ -245,15 +245,12 @@ The following diagram shows how the major components relate to one another at ru
 
 | Version | Release | Major Milestones |
 |---|---|---|
-| **v1.0** | 2024 Q1 | Initial release. JSON node format, PyQt5 canvas, async engine, exec/data pins, Library panel, log panel, dark theme. |
-| **v1.5** | 2024 Q3 | Headless action node pattern for Maya, Houdini, and Blender. Deadline submission nodes. `python_script` inline node. |
-| **v1.6** | 2024 Q4 | Prism Pipeline integration (40+ nodes). `prism_core_init` auto-bootstrap. Shared PrismCore cache. |
-| **v1.8.4** | 2025 Q1 | Node Builder GUI. Scripting Console. Script Editor with QScintilla. Export to Python. Import from Python. |
-| **v1.8.5** | 2025 Q2 | QScintilla optional fallback (no hard crash on missing dependency). Houdini bridge socket fixes (TCP_NODELAY, lock, timeout). `vibrante_hou_server.py` headless fixes. `window.py` Houdini node/script loading fix. |
-| **v1.8.6** | 2025 Q3 | Live Wire Value Inspector. Autosave / Crash Recovery. Recent Files. Node Execution Timing. |
-| **v1.8.7** | 2025 Q4 | Canvas Search Bar (Ctrl+F). Mini-map (Ctrl+M). Ctrl+C crash fix (SIGINT handler). |
-| **v1.9.0** | 2026 Q1 | Subgraph / Group Node (Ctrl+Shift+G). Double-click to open subgraph in new tab. Dynamic ports. `exec_fail` pin. |
-| **v2.0.0** | 2026-05-10 | Consolidation release. All v1.8.6 through v1.9.0 features stable. GroupNode bugs fixed: exec_fail false positive, injected value lost, logs discarded, subgraph edits not persisted, UUID serialization. Subgraph tabs fully editable with sync-back. KeyboardInterrupt crash fix. |
+| **v1.0** | 2026 Q1 | Initial release. JSON node format, PyQt5 canvas, async engine, exec/data pins, Library panel, log panel, dark theme. |
+| **v1.5** | 2026 Q2 | Headless action node pattern for Maya, Houdini, and Blender. Deadline submission nodes. `python_script` inline node. |
+| **v1.6** | 2026 Q2 | Prism Pipeline integration (40+ nodes). `prism_core_init` auto-bootstrap. Shared PrismCore cache. |
+| **v1.8.4** | 2026 Q2 | Node Builder GUI. Scripting Console. Script Editor with QScintilla. Export to Python. Import from Python. |
+| **v1.8.5** | 2026 Q2 | QScintilla optional fallback (no hard crash on missing dependency). Houdini bridge socket fixes (TCP_NODELAY, lock, timeout). `vibrante_hou_server.py` headless fixes. `window.py` Houdini node/script loading fix. |
+| **v2.0.0** | 2026-05-10 | Live Wire Inspector. Autosave / Crash Recovery. Recent Files. Node Execution Timing. Canvas Search Bar (Ctrl+F). Mini-map (Ctrl+M). Subgraph / Group Node (Ctrl+Shift+G) with editable subgraph tabs and sync-back. GroupNode bugs fixed (exec_fail, injected value, UUID serialization). KeyboardInterrupt crash fix. |
 
 ---
 

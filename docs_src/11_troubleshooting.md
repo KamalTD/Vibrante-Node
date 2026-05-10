@@ -499,15 +499,15 @@ If you want to intentionally stop the exec chain (rare), return `"exec_out": Fal
 
 **Cause:** The `condition` input is receiving a truthy non-boolean value (e.g., the string `"False"` is truthy in Python).
 
-**Fix:** Ensure the condition value is a Python `bool`:
+**Fix:** Ensure the condition value is a Python `bool`. In a Python Script node:
 ```python
 # Wrong: string "False" is truthy
-outputs["condition"] = "False"
+result = "False"
 
 # Correct
-outputs["condition"] = False
-outputs["condition"] = some_value > threshold   # bool expression
-outputs["condition"] = bool(int(inputs.get("flag", 0)))  # explicit cast
+result = False
+result = some_value > threshold       # bool expression
+result = bool(int(inputs.get("data", 0)))  # explicit cast
 ```
 
 ---

@@ -29,23 +29,23 @@ In the node's code editor paste:
 ```python
 import os
 
-folder = inputs.get("folder_path", "")
+folder = inputs.get("data", "")
 if not folder or not os.path.isdir(folder):
-    outputs["file_list"] = []
+    result = []
 else:
-    outputs["file_list"] = [
+    result = [
         os.path.join(folder, f)
         for f in os.listdir(folder)
         if os.path.isfile(os.path.join(folder, f))
     ]
 ```
 
-Add a `folder_path` text input port and a `file_list` list output port using the node's port configuration panel. Connect `exec_out` to the ForEach node.
+Set the folder path as the default value on the `data` port (in the node's parameter editor). Connect `exec_out` to the ForEach node.
 
 **2. ForEach node**
 
 Drag a **ForEach** node onto the canvas. Connect:
-- `file_list` output → ForEach `items` input
+- `result` output → ForEach `items` input
 - Python Script `exec_out` → ForEach `exec_in`
 
 ForEach fires its `loop_exec_out` once per item, passing the current item on the `current_item` port.
@@ -60,36 +60,35 @@ This converts the full path to lowercase. However, we only want to lowercase the
 ```python
 import os
 
-full_path = inputs.get("current_item", "")
+full_path = inputs.get("data", "")
 folder = os.path.dirname(full_path)
 old_name = os.path.basename(full_path)
 
 new_name = old_name.lower().replace(" ", "_")
 new_path = os.path.join(folder, new_name)
 
-outputs["old_path"] = full_path
-outputs["new_path"] = new_path
-outputs["new_name"] = new_name
+result = {"old_path": full_path, "new_path": new_path, "new_name": new_name}
 ```
 
 **4. Rename Python Script node**
 
-Add another Python Script node with a `result` string output:
+Add another Python Script node. Wire the transform script's `result` → this node's `data` input:
 
 ```python
 import os
 
-old_path = inputs.get("old_path", "")
-new_path = inputs.get("new_path", "")
+info = inputs.get("data", {})
+old_path = info.get("old_path", "")
+new_path = info.get("new_path", "")
 
 if old_path and new_path and old_path != new_path:
     try:
         os.rename(old_path, new_path)
-        outputs["result"] = f"Renamed: {old_path} -> {new_path}"
+        result = f"Renamed: {old_path} -> {new_path}"
     except OSError as e:
-        outputs["result"] = f"ERROR: {e}"
+        result = f"ERROR: {e}"
 else:
-    outputs["result"] = f"Skipped (no change): {old_path}"
+    result = f"Skipped (no change): {old_path}"
 ```
 
 **5. Console Print**
@@ -102,7 +101,7 @@ Connect ForEach `exec_out` (fires after the loop completes) to a Console Print w
 
 ### Running the Workflow
 
-Set the `folder_path` default value on the entry node (or wire it from a text input widget). Click **Run**. Watch the log panel — each rename or skip appears in sequence.
+Set the folder path as the default value on the entry node's `data` port (or wire it from an upstream node). Click **Run**. Watch the log panel — each rename or skip appears in sequence.
 
 ---
 
@@ -156,25 +155,28 @@ for record in records:
 
     transformed.append(new_record)
 
-outputs["transformed"] = transformed
-outputs["count"] = len(transformed)
-outputs["json_out"] = json.dumps(transformed, indent=2)
+result = json.dumps(transformed, indent=2)
 ```
 
 **4. File Save**
 
-Connect `json_out` → `File Save.content`. Set `file_path` to `people_transformed.json`. Wire `exec_out` chain through.
+Connect the transform script's `result` → `File Save.content`. Set `file_path` to `people_transformed.json`. Wire `exec_out` chain through.
 
 **5. Console Print**
 
-Connect `count` to a **Python Script** that builds a summary string:
+Add another **Python Script** node. Wire the transform script's `result` → its `data` input to build a summary:
 
 ```python
-count = inputs.get("count", 0)
-outputs["message"] = f"Transformation complete. {count} records processed."
+import json
+json_str = inputs.get("data", "[]")
+try:
+    count = len(json.loads(json_str))
+except Exception:
+    count = 0
+result = f"Transformation complete. {count} records processed."
 ```
 
-Then connect `message` → Console Print.
+Then connect `result` → Console Print.
 
 ### Key Points
 
@@ -204,23 +206,24 @@ Then connect `message` → Console Print.
 
 ```python
 # Simulated: in practice this could come from a file, API, etc.
-outputs["value"] = 87.3
-outputs["threshold"] = 75.0
+result = {"value": 87.3, "threshold": 75.0}
 ```
 
 **2. Condition evaluator**
 
+Wire the source script's `result` → this node's `data` input:
+
 ```python
-value = inputs.get("value", 0.0)
-threshold = inputs.get("threshold", 0.0)
-outputs["condition"] = value > threshold
-outputs["summary"] = f"{value} vs threshold {threshold}"
+data = inputs.get("data", {})
+value = data.get("value", 0.0)
+threshold = data.get("threshold", 0.0)
+result = value > threshold
 ```
 
 **3. TwoWaySwitch**
 
 Connect:
-- `condition` (bool) → TwoWaySwitch `condition` input
+- `result` (bool) → TwoWaySwitch `condition` input
 - Condition evaluator `exec_out` → TwoWaySwitch `exec_in`
 
 TwoWaySwitch has two exec outputs:
@@ -280,7 +283,7 @@ Condition A → TwoWaySwitch 1
 Use **Create List** (or a Python Script) to produce your list:
 
 ```python
-outputs["names"] = ["alice smith", "BOB JONES", "carol WHITE", "david brown"]
+result = ["alice smith", "BOB JONES", "carol WHITE", "david brown"]
 ```
 
 **2. Initialize accumulator**
@@ -289,7 +292,7 @@ Drag **SetVariable**. Set `var_name` = `"processed_names"`, `value` = `[]` (empt
 
 **3. ForEach**
 
-Connect `names` → ForEach `items`.
+Connect `result` → ForEach `items`.
 
 ForEach exposes:
 - `current_item` — the value at the current index
@@ -299,16 +302,18 @@ ForEach exposes:
 
 **4. Process item**
 
+Wire ForEach `current_item` → this script's `data` input:
+
 ```python
-item = inputs.get("current_item", "")
-outputs["processed"] = item.title()
+item = inputs.get("data", "")
+result = item.title()
 ```
 
 **5. GetVariable → List Append → SetVariable**
 
 Chain:
 1. GetVariable: `var_name` = `"processed_names"` → `current_list`
-2. List Append: `list` = `current_list`, `item` = `processed` → `appended_list`
+2. List Append: `list` = `current_list`, `item` = `result` (from process script) → `appended_list`
 3. SetVariable: `var_name` = `"processed_names"`, `value` = `appended_list`
 
 Wire the loop exec chain: ForEach `loop_exec_out` → Process Script → GetVariable → List Append → SetVariable → ForEach `loop_exec_in` (to continue the loop).
@@ -317,7 +322,7 @@ Wire the loop exec chain: ForEach `loop_exec_out` → Process Script → GetVari
 
 After ForEach `exec_out`:
 1. GetVariable: `"processed_names"` → `final_list`
-2. Python Script: `outputs["message"] = str(inputs.get("final_list", []))` 
+2. Python Script (wire GetVariable `final_list` → `data`): `result = str(inputs.get("data", []))`
 3. Console Print
 
 ### Expected Output
@@ -365,7 +370,7 @@ actions.append({
     "type": "open_scene",
     "scene_path": inputs.get("scene_path", "")
 })
-outputs["actions_out"] = actions
+return {"actions_out": actions, "exec_out": True}
 ```
 
 Set `scene_path` to your `.mb` file path.
@@ -382,7 +387,7 @@ actions.append({
     "image_output": inputs.get("image_output", "/tmp/render/"),
     "image_prefix": inputs.get("image_prefix", "render")
 })
-outputs["actions_out"] = actions
+return {"actions_out": actions, "exec_out": True}
 ```
 
 **3. Maya Action: Export Alembic**
@@ -398,7 +403,7 @@ actions.append({
         int(inputs.get("end_frame", 100))
     ]
 })
-outputs["actions_out"] = actions
+return {"actions_out": actions, "exec_out": True}
 ```
 
 **4. Maya Headless Executor**
@@ -569,22 +574,21 @@ asset_name = asset.get("asset", "")
 try:
     paths = core.getExportPaths(asset=asset_name)
     latest = paths[-1] if paths else None
-    outputs["export_path"] = latest
-    outputs["asset_name"] = asset_name
+    return {"export_path": latest, "asset_name": asset_name, "exec_out": True}
 except Exception as e:
     self.log_error(f"Could not get export path for {asset_name}: {e}")
-    outputs["export_path"] = None
-    outputs["asset_name"] = asset_name
+    return {"export_path": None, "asset_name": asset_name, "exec_out": True}
 ```
 
 **4. Console Print**
 
-Build message:
+Build message (custom node receiving `asset_name` and `export_path` as named inputs):
 
 ```python
-name = inputs.get("asset_name", "")
-path = inputs.get("export_path", "N/A")
-outputs["message"] = f"  {name}: {path or 'No export found'}"
+async def execute(self, inputs):
+    name = inputs.get("asset_name", "")
+    path = inputs.get("export_path", None)
+    return {"message": f"  {name}: {path or 'No export found'}", "exec_out": True}
 ```
 
 ### Expected Output
@@ -651,19 +655,17 @@ async def execute(self, inputs):
         bridge.cook_node(out_path, force=True)
 
         self.log_info(f"Rendered {name}: frames {start}-{end}")
-        outputs["render_result"] = {"shot": name, "status": "ok", "frames": end - start + 1}
+        return {"render_result": {"shot": name, "status": "ok", "frames": end - start + 1}, "exec_out": True}
 
     except Exception as e:
         self.log_error(f"Failed to render {name}: {e}")
-        outputs["render_result"] = {"shot": name, "status": "error", "error": str(e)}
-
-    outputs["exec_out"] = True
+        return {"render_result": {"shot": name, "status": "error", "error": str(e)}, "exec_out": True}
 ```
 
 ### Post-Loop Summary
 
 ```python
-results = inputs.get("final_results", [])
+results = inputs.get("data", [])
 ok = [r for r in results if r.get("status") == "ok"]
 err = [r for r in results if r.get("status") == "error"]
 
@@ -671,7 +673,7 @@ lines = [f"Render complete: {len(ok)} succeeded, {len(err)} failed."]
 for r in err:
     lines.append(f"  FAILED: {r['shot']} — {r.get('error', '')}")
 
-outputs["message"] = "\n".join(lines)
+result = "\n".join(lines)
 ```
 
 ---
@@ -686,21 +688,21 @@ Create three nodes on the canvas:
 
 **Trim & Lower:**
 ```python
-s = inputs.get("raw_name", "")
-outputs["cleaned"] = s.strip().lower()
+s = inputs.get("data", "")  # GroupIn value wired to data port
+result = s.strip().lower()
 ```
 
 **Replace Spaces:**
 ```python
-s = inputs.get("cleaned", "")
-outputs["underscored"] = s.replace(" ", "_").replace("-", "_")
+s = inputs.get("data", "")  # wired from previous script's result
+result = s.replace(" ", "_").replace("-", "_")
 ```
 
 **Remove Special Chars:**
 ```python
 import re
-s = inputs.get("underscored", "")
-outputs["final_name"] = re.sub(r"[^a-z0-9_.]", "", s)
+s = inputs.get("data", "")  # wired from previous script's result
+result = re.sub(r"[^a-z0-9_.]", "", s)
 ```
 
 Wire them in sequence: exec_out → exec_in, and data outputs → inputs.
@@ -709,7 +711,7 @@ Wire them in sequence: exec_out → exec_in, and data outputs → inputs.
 
 Drag a **GroupIn** node. Set its `port_name` parameter to `"raw_name"`. This exposes an input port on the eventual GroupNode.
 
-Drag a **GroupOut** node. Set its `port_name` to `"final_name"`. Wire the Remove Special Chars `final_name` output → GroupOut `value` input.
+Drag a **GroupOut** node. Set its `port_name` to `"final_name"`. Wire the Remove Special Chars `result` output → GroupOut `value` input.
 
 Wire exec: GroupIn → Trim & Lower → Replace Spaces → Remove Special Chars → GroupOut.
 

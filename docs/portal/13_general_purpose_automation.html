@@ -721,8 +721,7 @@ async def execute(self, inputs):
     content = inputs.get(&quot;content&quot;, &quot;&quot;)
     reader  = csv.DictReader(io.StringIO(content))
     records = [dict(row) for row in reader]
-    outputs[&quot;records&quot;]      = records
-    outputs[&quot;record_count&quot;] = len(records)
+    return {&quot;records&quot;: records, &quot;record_count&quot;: len(records), &quot;exec_out&quot;: True}
 </code></pre>
 <h3 id="compute-metric-node">Compute Metric Node</h3>
 <pre><code class="language-python">async def execute(self, inputs):
@@ -736,7 +735,7 @@ async def execute(self, inputs):
         except (ValueError, ZeroDivisionError):
             r[&quot;revenue_per_unit&quot;] = 0.0
         enriched.append(r)
-    outputs[&quot;enriched&quot;] = enriched
+    return {&quot;enriched&quot;: enriched, &quot;exec_out&quot;: True}
 </code></pre>
 <p>Hover the wire between any two steps to see a sample of the data at that point.</p>
 <hr />
@@ -769,16 +768,14 @@ async def execute(self, inputs):
     token = data.get(&quot;access_token&quot;, &quot;&quot;) if isinstance(data, dict) else &quot;&quot;
     if not token:
         self.log_error(&quot;Authentication failed — no access_token in response.&quot;)
-    outputs[&quot;auth_header&quot;] = {&quot;Authorization&quot;: f&quot;Bearer {token}&quot;}
-    outputs[&quot;token&quot;]       = token
+    return {&quot;auth_header&quot;: {&quot;Authorization&quot;: f&quot;Bearer {token}&quot;}, &quot;token&quot;: token, &quot;exec_out&quot;: True}
 </code></pre>
 <h3 id="filter-by-assignee-node">Filter by Assignee Node</h3>
 <pre><code class="language-python">async def execute(self, inputs):
     tasks    = list(inputs.get(&quot;response_data&quot;) or [])
     assignee = inputs.get(&quot;assignee_id&quot;, &quot;&quot;)
     filtered = [t for t in tasks if str(t.get(&quot;assignee_id&quot;, &quot;&quot;)) == str(assignee)]
-    outputs[&quot;my_tasks&quot;] = filtered
-    outputs[&quot;count&quot;]    = len(filtered)
+    return {&quot;my_tasks&quot;: filtered, &quot;count&quot;: len(filtered), &quot;exec_out&quot;: True}
 </code></pre>
 <hr />
 <h2 id="use-case-6-aillm-workflow-orchestration">Use Case 6: AI/LLM Workflow Orchestration</h2>
@@ -813,10 +810,11 @@ async def execute(self, inputs):
 <h3 id="passing-context-with-setvariablegetvariable">Passing Context with SetVariable/GetVariable</h3>
 <p>Each LLM node needs context from previous steps. Use SetVariable after each LLM result, then GetVariable to build the next prompt:</p>
 <pre><code class="language-python"># In the &quot;Draft response&quot; LLM's prompt-building Python Script:
-sentiment = inputs.get(&quot;sentiment_var&quot;, &quot;neutral&quot;)
-topics    = inputs.get(&quot;topics_var&quot;, &quot;&quot;)
-raw_text  = inputs.get(&quot;raw_text&quot;, &quot;&quot;)
-outputs[&quot;prompt&quot;] = (
+context   = inputs.get(&quot;data&quot;, {})
+sentiment = context.get(&quot;sentiment&quot;, &quot;neutral&quot;)
+topics    = context.get(&quot;topics&quot;, &quot;&quot;)
+raw_text  = context.get(&quot;raw_text&quot;, &quot;&quot;)
+result = (
     f&quot;Write a professional customer service response to this {sentiment} &quot;
     f&quot;feedback about {topics}: {raw_text}&quot;
 )
@@ -938,8 +936,8 @@ async def execute(self, inputs):
         {&quot;category&quot;: cat, **vals}
         for cat, vals in sorted(totals.items(), key=lambda x: -x[1][&quot;revenue&quot;])
     ]
-    outputs[&quot;summary&quot;] = summary
-    outputs[&quot;total_revenue&quot;] = sum(v[&quot;revenue&quot;] for v in totals.values())
+    total_revenue = sum(v[&quot;revenue&quot;] for v in totals.values())
+    return {&quot;summary&quot;: summary, &quot;total_revenue&quot;: total_revenue, &quot;exec_out&quot;: True}
 </code></pre>
 <hr />
 <h2 id="use-case-9-task-scheduling">Use Case 9: Task Scheduling</h2>
@@ -980,14 +978,14 @@ def register_node():
     [HTTP Request: GET /api/job/{job_id}/status]
             ↓ response_data
     [Python Script: Check status]
-        status = response_data.get(&quot;status&quot;, &quot;&quot;)
-        outputs[&quot;complete&quot;] = status in (&quot;complete&quot;, &quot;failed&quot;, &quot;error&quot;)
-        outputs[&quot;status&quot;]   = status
-            ↓ complete (bool)
-    [TwoWaySwitch on complete]
+        data = inputs.get(&quot;data&quot;, {})
+        status = data.get(&quot;status&quot;, &quot;&quot;)
+        result = status in (&quot;complete&quot;, &quot;failed&quot;, &quot;error&quot;)
+            ↓ result (bool)
+    [TwoWaySwitch on result]
       exec_true  → [SetVariable: &quot;should_continue&quot; = False]
-                   [Console Print: f&quot;Job finished: {status}&quot;]
-      exec_false → [Console Print: f&quot;Still running: {status}&quot;]
+                   [Console Print: &quot;Job finished&quot;]
+      exec_false → [Console Print: &quot;Still running&quot;]
             ↓ (both branches back to WhileLoop loop_exec_in)
 
         ↓ exec_out (after WhileLoop exits)
@@ -1011,30 +1009,30 @@ def register_node():
         ↓ request (dict: amount, supplier, department, requester_email)
 
 [Python Script: Validate request]
-    valid = amount &gt; 0 and supplier != &quot;&quot; and department != &quot;&quot;
-    outputs[&quot;valid&quot;] = valid
-    outputs[&quot;validation_error&quot;] = &quot;&quot; if valid else &quot;Missing fields.&quot;
-        ↓ valid (bool)
+    request = inputs.get(&quot;data&quot;, {})
+    valid = request.get(&quot;amount&quot;, 0) &gt; 0 and request.get(&quot;supplier&quot;, &quot;&quot;) != &quot;&quot;
+    result = valid
+        ↓ result (bool)
 
-[TwoWaySwitch on valid]
-  exec_false → [Email Notification: &quot;Request invalid: {validation_error}&quot;]
-               [Console Print: &quot;Rejected: {request_id}&quot;]
+[TwoWaySwitch on result]
+  exec_false → [Email Notification: &quot;Request invalid — missing required fields&quot;]
+               [Console Print: &quot;Rejected&quot;]
   exec_true  →
 
     [Python Script: Check budget]
         budget_remaining = get_budget(department)   # DB query
-        outputs[&quot;budget_ok&quot;] = budget_remaining &gt;= amount
-            ↓ budget_ok
+        result = budget_remaining &gt;= amount
+            ↓ result (bool)
 
-    [TwoWaySwitch on budget_ok]
-      exec_false → [Email Notification: &quot;Insufficient budget for {department}&quot;]
+    [TwoWaySwitch on result]
+      exec_false → [Email Notification: &quot;Insufficient budget&quot;]
       exec_true  →
 
         [Python Script: Threshold check]
-            outputs[&quot;auto_approve&quot;] = amount &lt; 1000
-                ↓ auto_approve
+            result = amount &lt; 1000
+                ↓ result (bool)
 
-        [TwoWaySwitch on auto_approve]
+        [TwoWaySwitch on result]
           exec_true  → [Python Script: Approve and deduct budget]
                        [Email Notification: requester — &quot;Approved automatically&quot;]
           exec_false → [Python Script: Create review ticket]
@@ -1091,11 +1089,13 @@ async def execute(self, inputs):
         if not val:
             self.log_error(f&quot;Environment variable not set: {key}&quot;)
         env_values[key] = val
-    outputs[&quot;env_values&quot;] = env_values
-    # Also expose individual common vars
-    outputs[&quot;PATH&quot;]     = os.environ.get(&quot;PATH&quot;, &quot;&quot;)
-    outputs[&quot;HOME&quot;]     = os.environ.get(&quot;HOME&quot;, &quot;&quot;)
-    outputs[&quot;all_env&quot;]  = dict(os.environ)
+    return {
+        &quot;env_values&quot;: env_values,
+        &quot;PATH&quot;:       os.environ.get(&quot;PATH&quot;, &quot;&quot;),
+        &quot;HOME&quot;:       os.environ.get(&quot;HOME&quot;, &quot;&quot;),
+        &quot;all_env&quot;:    dict(os.environ),
+        &quot;exec_out&quot;:   True,
+    }
 </code></pre>
 <hr />
 <h2 id="use-case-12-background-services-and-workers">Use Case 12: Background Services and Workers</h2>

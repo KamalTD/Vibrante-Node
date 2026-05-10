@@ -484,20 +484,20 @@ td code { font-size: .85em; }
 <p>In the node's code editor paste:</p>
 <pre><code class="language-python">import os
 
-folder = inputs.get(&quot;folder_path&quot;, &quot;&quot;)
+folder = inputs.get(&quot;data&quot;, &quot;&quot;)
 if not folder or not os.path.isdir(folder):
-    outputs[&quot;file_list&quot;] = []
+    result = []
 else:
-    outputs[&quot;file_list&quot;] = [
+    result = [
         os.path.join(folder, f)
         for f in os.listdir(folder)
         if os.path.isfile(os.path.join(folder, f))
     ]
 </code></pre>
-<p>Add a <code>folder_path</code> text input port and a <code>file_list</code> list output port using the node's port configuration panel. Connect <code>exec_out</code> to the ForEach node.</p>
+<p>Set the folder path as the default value on the <code>data</code> port (in the node's parameter editor). Connect <code>exec_out</code> to the ForEach node.</p>
 <p><strong>2. ForEach node</strong></p>
 <p>Drag a <strong>ForEach</strong> node onto the canvas. Connect:<br />
-- <code>file_list</code> output → ForEach <code>items</code> input<br />
+- <code>result</code> output → ForEach <code>items</code> input<br />
 - Python Script <code>exec_out</code> → ForEach <code>exec_in</code></p>
 <p>ForEach fires its <code>loop_exec_out</code> once per item, passing the current item on the <code>current_item</code> port.</p>
 <p><strong>3. String Lower node</strong></p>
@@ -506,39 +506,38 @@ else:
 <p>This converts the full path to lowercase. However, we only want to lowercase the filename, not the whole path. Use a Python Script node instead:</p>
 <pre><code class="language-python">import os
 
-full_path = inputs.get(&quot;current_item&quot;, &quot;&quot;)
+full_path = inputs.get(&quot;data&quot;, &quot;&quot;)
 folder = os.path.dirname(full_path)
 old_name = os.path.basename(full_path)
 
 new_name = old_name.lower().replace(&quot; &quot;, &quot;_&quot;)
 new_path = os.path.join(folder, new_name)
 
-outputs[&quot;old_path&quot;] = full_path
-outputs[&quot;new_path&quot;] = new_path
-outputs[&quot;new_name&quot;] = new_name
+result = {&quot;old_path&quot;: full_path, &quot;new_path&quot;: new_path, &quot;new_name&quot;: new_name}
 </code></pre>
 <p><strong>4. Rename Python Script node</strong></p>
-<p>Add another Python Script node with a <code>result</code> string output:</p>
+<p>Add another Python Script node. Wire the transform script's <code>result</code> → this node's <code>data</code> input:</p>
 <pre><code class="language-python">import os
 
-old_path = inputs.get(&quot;old_path&quot;, &quot;&quot;)
-new_path = inputs.get(&quot;new_path&quot;, &quot;&quot;)
+info = inputs.get(&quot;data&quot;, {})
+old_path = info.get(&quot;old_path&quot;, &quot;&quot;)
+new_path = info.get(&quot;new_path&quot;, &quot;&quot;)
 
 if old_path and new_path and old_path != new_path:
     try:
         os.rename(old_path, new_path)
-        outputs[&quot;result&quot;] = f&quot;Renamed: {old_path} -&gt; {new_path}&quot;
+        result = f&quot;Renamed: {old_path} -&gt; {new_path}&quot;
     except OSError as e:
-        outputs[&quot;result&quot;] = f&quot;ERROR: {e}&quot;
+        result = f&quot;ERROR: {e}&quot;
 else:
-    outputs[&quot;result&quot;] = f&quot;Skipped (no change): {old_path}&quot;
+    result = f&quot;Skipped (no change): {old_path}&quot;
 </code></pre>
 <p><strong>5. Console Print</strong></p>
 <p>Connect the <code>result</code> output to a <strong>Console Print</strong> node. Wire the rename node's <code>exec_out</code> back to the ForEach <code>loop_exec_in</code> to continue the loop.</p>
 <p><strong>6. Final summary</strong></p>
 <p>Connect ForEach <code>exec_out</code> (fires after the loop completes) to a Console Print with the message <code>"Renaming complete."</code>.</p>
 <h3 id="running-the-workflow">Running the Workflow</h3>
-<p>Set the <code>folder_path</code> default value on the entry node (or wire it from a text input widget). Click <strong>Run</strong>. Watch the log panel — each rename or skip appears in sequence.</p>
+<p>Set the folder path as the default value on the entry node's <code>data</code> port (or wire it from an upstream node). Click <strong>Run</strong>. Watch the log panel — each rename or skip appears in sequence.</p>
 <hr />
 <h2 id="tutorial-2-data-transformation-pipeline">Tutorial 2: Data Transformation Pipeline</h2>
 <p><strong>Goal:</strong> Read a JSON file containing records (e.g., a list of people with names and birthdates), transform the data (uppercase names, reformat dates), and write the result to a new JSON file. Log a summary.</p>
@@ -602,18 +601,21 @@ for record in records:
 
     transformed.append(new_record)
 
-outputs[&quot;transformed&quot;] = transformed
-outputs[&quot;count&quot;] = len(transformed)
-outputs[&quot;json_out&quot;] = json.dumps(transformed, indent=2)
+result = json.dumps(transformed, indent=2)
 </code></pre>
 <p><strong>4. File Save</strong></p>
-<p>Connect <code>json_out</code> → <code>File Save.content</code>. Set <code>file_path</code> to <code>people_transformed.json</code>. Wire <code>exec_out</code> chain through.</p>
+<p>Connect the transform script's <code>result</code> → <code>File Save.content</code>. Set <code>file_path</code> to <code>people_transformed.json</code>. Wire <code>exec_out</code> chain through.</p>
 <p><strong>5. Console Print</strong></p>
-<p>Connect <code>count</code> to a <strong>Python Script</strong> that builds a summary string:</p>
-<pre><code class="language-python">count = inputs.get(&quot;count&quot;, 0)
-outputs[&quot;message&quot;] = f&quot;Transformation complete. {count} records processed.&quot;
+<p>Add another <strong>Python Script</strong> node. Wire the transform script's <code>result</code> → its <code>data</code> input to build a summary:</p>
+<pre><code class="language-python">import json
+json_str = inputs.get(&quot;data&quot;, &quot;[]&quot;)
+try:
+    count = len(json.loads(json_str))
+except Exception:
+    count = 0
+result = f&quot;Transformation complete. {count} records processed.&quot;
 </code></pre>
-<p>Then connect <code>message</code> → Console Print.</p>
+<p>Then connect <code>result</code> → Console Print.</p>
 <h3 id="key-points">Key Points</h3>
 <ul>
 <li>JSON Parse handles both list-of-dicts and plain dicts.</li>
@@ -657,18 +659,18 @@ outputs[&quot;message&quot;] = f&quot;Transformation complete. {count} records p
 <h3 id="step-by-step-build_2">Step-by-Step Build</h3>
 <p><strong>1. Source value</strong></p>
 <pre><code class="language-python"># Simulated: in practice this could come from a file, API, etc.
-outputs[&quot;value&quot;] = 87.3
-outputs[&quot;threshold&quot;] = 75.0
+result = {&quot;value&quot;: 87.3, &quot;threshold&quot;: 75.0}
 </code></pre>
 <p><strong>2. Condition evaluator</strong></p>
-<pre><code class="language-python">value = inputs.get(&quot;value&quot;, 0.0)
-threshold = inputs.get(&quot;threshold&quot;, 0.0)
-outputs[&quot;condition&quot;] = value &gt; threshold
-outputs[&quot;summary&quot;] = f&quot;{value} vs threshold {threshold}&quot;
+<p>Wire the source script's <code>result</code> → this node's <code>data</code> input:</p>
+<pre><code class="language-python">data = inputs.get(&quot;data&quot;, {})
+value = data.get(&quot;value&quot;, 0.0)
+threshold = data.get(&quot;threshold&quot;, 0.0)
+result = value &gt; threshold
 </code></pre>
 <p><strong>3. TwoWaySwitch</strong></p>
 <p>Connect:<br />
-- <code>condition</code> (bool) → TwoWaySwitch <code>condition</code> input<br />
+- <code>result</code> (bool) → TwoWaySwitch <code>condition</code> input<br />
 - Condition evaluator <code>exec_out</code> → TwoWaySwitch <code>exec_in</code></p>
 <p>TwoWaySwitch has two exec outputs:<br />
 - <code>exec_true</code> — fires when condition is <code>True</code><br />
@@ -743,31 +745,32 @@ outputs[&quot;summary&quot;] = f&quot;{value} vs threshold {threshold}&quot;
 <h3 id="step-by-step-build_3">Step-by-Step Build</h3>
 <p><strong>1. Create List</strong></p>
 <p>Use <strong>Create List</strong> (or a Python Script) to produce your list:</p>
-<pre><code class="language-python">outputs[&quot;names&quot;] = [&quot;alice smith&quot;, &quot;BOB JONES&quot;, &quot;carol WHITE&quot;, &quot;david brown&quot;]
+<pre><code class="language-python">result = [&quot;alice smith&quot;, &quot;BOB JONES&quot;, &quot;carol WHITE&quot;, &quot;david brown&quot;]
 </code></pre>
 <p><strong>2. Initialize accumulator</strong></p>
 <p>Drag <strong>SetVariable</strong>. Set <code>var_name</code> = <code>"processed_names"</code>, <code>value</code> = <code>[]</code> (empty list). Connect <code>exec_out</code> → ForEach <code>exec_in</code>.</p>
 <p><strong>3. ForEach</strong></p>
-<p>Connect <code>names</code> → ForEach <code>items</code>.</p>
+<p>Connect <code>result</code> → ForEach <code>items</code>.</p>
 <p>ForEach exposes:<br />
 - <code>current_item</code> — the value at the current index<br />
 - <code>current_index</code> — the 0-based index<br />
 - <code>loop_exec_out</code> — exec pin that fires for each iteration (connect your loop body here)<br />
 - <code>exec_out</code> — fires once after the loop finishes</p>
 <p><strong>4. Process item</strong></p>
-<pre><code class="language-python">item = inputs.get(&quot;current_item&quot;, &quot;&quot;)
-outputs[&quot;processed&quot;] = item.title()
+<p>Wire ForEach <code>current_item</code> → this script's <code>data</code> input:</p>
+<pre><code class="language-python">item = inputs.get(&quot;data&quot;, &quot;&quot;)
+result = item.title()
 </code></pre>
 <p><strong>5. GetVariable → List Append → SetVariable</strong></p>
 <p>Chain:<br />
 1. GetVariable: <code>var_name</code> = <code>"processed_names"</code> → <code>current_list</code><br />
-2. List Append: <code>list</code> = <code>current_list</code>, <code>item</code> = <code>processed</code> → <code>appended_list</code><br />
+2. List Append: <code>list</code> = <code>current_list</code>, <code>item</code> = <code>result</code> (from process script) → <code>appended_list</code><br />
 3. SetVariable: <code>var_name</code> = <code>"processed_names"</code>, <code>value</code> = <code>appended_list</code></p>
 <p>Wire the loop exec chain: ForEach <code>loop_exec_out</code> → Process Script → GetVariable → List Append → SetVariable → ForEach <code>loop_exec_in</code> (to continue the loop).</p>
 <p><strong>6. Post-loop</strong></p>
 <p>After ForEach <code>exec_out</code>:<br />
 1. GetVariable: <code>"processed_names"</code> → <code>final_list</code><br />
-2. Python Script: <code>outputs["message"] = str(inputs.get("final_list", []))</code> <br />
+2. Python Script (wire GetVariable <code>final_list</code> → <code>data</code>): <code>result = str(inputs.get("data", []))</code><br />
 3. Console Print</p>
 <h3 id="expected-output">Expected Output</h3>
 <pre><code>['Alice Smith', 'Bob Jones', 'Carol White', 'David Brown']
@@ -825,7 +828,7 @@ actions.append({
     &quot;type&quot;: &quot;open_scene&quot;,
     &quot;scene_path&quot;: inputs.get(&quot;scene_path&quot;, &quot;&quot;)
 })
-outputs[&quot;actions_out&quot;] = actions
+return {&quot;actions_out&quot;: actions, &quot;exec_out&quot;: True}
 </code></pre>
 <p>Set <code>scene_path</code> to your <code>.mb</code> file path.</p>
 <p><strong>2. Maya Action: Set Render Settings</strong></p>
@@ -838,7 +841,7 @@ actions.append({
     &quot;image_output&quot;: inputs.get(&quot;image_output&quot;, &quot;/tmp/render/&quot;),
     &quot;image_prefix&quot;: inputs.get(&quot;image_prefix&quot;, &quot;render&quot;)
 })
-outputs[&quot;actions_out&quot;] = actions
+return {&quot;actions_out&quot;: actions, &quot;exec_out&quot;: True}
 </code></pre>
 <p><strong>3. Maya Action: Export Alembic</strong></p>
 <pre><code class="language-python">actions = list(inputs.get(&quot;actions_in&quot;) or [])
@@ -851,7 +854,7 @@ actions.append({
         int(inputs.get(&quot;end_frame&quot;, 100))
     ]
 })
-outputs[&quot;actions_out&quot;] = actions
+return {&quot;actions_out&quot;: actions, &quot;exec_out&quot;: True}
 </code></pre>
 <p><strong>4. Maya Headless Executor</strong></p>
 <p>This node launches Maya, runs the actions, and outputs:<br />
@@ -1051,18 +1054,17 @@ asset_name = asset.get(&quot;asset&quot;, &quot;&quot;)
 try:
     paths = core.getExportPaths(asset=asset_name)
     latest = paths[-1] if paths else None
-    outputs[&quot;export_path&quot;] = latest
-    outputs[&quot;asset_name&quot;] = asset_name
+    return {&quot;export_path&quot;: latest, &quot;asset_name&quot;: asset_name, &quot;exec_out&quot;: True}
 except Exception as e:
     self.log_error(f&quot;Could not get export path for {asset_name}: {e}&quot;)
-    outputs[&quot;export_path&quot;] = None
-    outputs[&quot;asset_name&quot;] = asset_name
+    return {&quot;export_path&quot;: None, &quot;asset_name&quot;: asset_name, &quot;exec_out&quot;: True}
 </code></pre>
 <p><strong>4. Console Print</strong></p>
-<p>Build message:</p>
-<pre><code class="language-python">name = inputs.get(&quot;asset_name&quot;, &quot;&quot;)
-path = inputs.get(&quot;export_path&quot;, &quot;N/A&quot;)
-outputs[&quot;message&quot;] = f&quot;  {name}: {path or 'No export found'}&quot;
+<p>Build message (custom node receiving <code>asset_name</code> and <code>export_path</code> as named inputs):</p>
+<pre><code class="language-python">async def execute(self, inputs):
+    name = inputs.get(&quot;asset_name&quot;, &quot;&quot;)
+    path = inputs.get(&quot;export_path&quot;, None)
+    return {&quot;message&quot;: f&quot;  {name}: {path or 'No export found'}&quot;, &quot;exec_out&quot;: True}
 </code></pre>
 <h3 id="expected-output_1">Expected Output</h3>
 <pre><code>character_hero: /project/exports/assets/character_hero/model/v003/character_hero.abc
@@ -1150,16 +1152,14 @@ async def execute(self, inputs):
         bridge.cook_node(out_path, force=True)
 
         self.log_info(f&quot;Rendered {name}: frames {start}-{end}&quot;)
-        outputs[&quot;render_result&quot;] = {&quot;shot&quot;: name, &quot;status&quot;: &quot;ok&quot;, &quot;frames&quot;: end - start + 1}
+        return {&quot;render_result&quot;: {&quot;shot&quot;: name, &quot;status&quot;: &quot;ok&quot;, &quot;frames&quot;: end - start + 1}, &quot;exec_out&quot;: True}
 
     except Exception as e:
         self.log_error(f&quot;Failed to render {name}: {e}&quot;)
-        outputs[&quot;render_result&quot;] = {&quot;shot&quot;: name, &quot;status&quot;: &quot;error&quot;, &quot;error&quot;: str(e)}
-
-    outputs[&quot;exec_out&quot;] = True
+        return {&quot;render_result&quot;: {&quot;shot&quot;: name, &quot;status&quot;: &quot;error&quot;, &quot;error&quot;: str(e)}, &quot;exec_out&quot;: True}
 </code></pre>
 <h3 id="post-loop-summary">Post-Loop Summary</h3>
-<pre><code class="language-python">results = inputs.get(&quot;final_results&quot;, [])
+<pre><code class="language-python">results = inputs.get(&quot;data&quot;, [])
 ok = [r for r in results if r.get(&quot;status&quot;) == &quot;ok&quot;]
 err = [r for r in results if r.get(&quot;status&quot;) == &quot;error&quot;]
 
@@ -1167,7 +1167,7 @@ lines = [f&quot;Render complete: {len(ok)} succeeded, {len(err)} failed.&quot;]
 for r in err:
     lines.append(f&quot;  FAILED: {r['shot']} — {r.get('error', '')}&quot;)
 
-outputs[&quot;message&quot;] = &quot;\n&quot;.join(lines)
+result = &quot;\n&quot;.join(lines)
 </code></pre>
 <hr />
 <h2 id="tutorial-9-groupnode-subgraph-workflow">Tutorial 9: GroupNode (Subgraph) Workflow</h2>
@@ -1175,22 +1175,22 @@ outputs[&quot;message&quot;] = &quot;\n&quot;.join(lines)
 <h3 id="step-1-build-the-reusable-logic">Step 1: Build the Reusable Logic</h3>
 <p>Create three nodes on the canvas:</p>
 <p><strong>Trim &amp; Lower:</strong></p>
-<pre><code class="language-python">s = inputs.get(&quot;raw_name&quot;, &quot;&quot;)
-outputs[&quot;cleaned&quot;] = s.strip().lower()
+<pre><code class="language-python">s = inputs.get(&quot;data&quot;, &quot;&quot;)  # GroupIn value wired to data port
+result = s.strip().lower()
 </code></pre>
 <p><strong>Replace Spaces:</strong></p>
-<pre><code class="language-python">s = inputs.get(&quot;cleaned&quot;, &quot;&quot;)
-outputs[&quot;underscored&quot;] = s.replace(&quot; &quot;, &quot;_&quot;).replace(&quot;-&quot;, &quot;_&quot;)
+<pre><code class="language-python">s = inputs.get(&quot;data&quot;, &quot;&quot;)  # wired from previous script's result
+result = s.replace(&quot; &quot;, &quot;_&quot;).replace(&quot;-&quot;, &quot;_&quot;)
 </code></pre>
 <p><strong>Remove Special Chars:</strong></p>
 <pre><code class="language-python">import re
-s = inputs.get(&quot;underscored&quot;, &quot;&quot;)
-outputs[&quot;final_name&quot;] = re.sub(r&quot;[^a-z0-9_.]&quot;, &quot;&quot;, s)
+s = inputs.get(&quot;data&quot;, &quot;&quot;)  # wired from previous script's result
+result = re.sub(r&quot;[^a-z0-9_.]&quot;, &quot;&quot;, s)
 </code></pre>
 <p>Wire them in sequence: exec_out → exec_in, and data outputs → inputs.</p>
 <h3 id="step-2-add-groupin-and-groupout-nodes">Step 2: Add GroupIn and GroupOut Nodes</h3>
 <p>Drag a <strong>GroupIn</strong> node. Set its <code>port_name</code> parameter to <code>"raw_name"</code>. This exposes an input port on the eventual GroupNode.</p>
-<p>Drag a <strong>GroupOut</strong> node. Set its <code>port_name</code> to <code>"final_name"</code>. Wire the Remove Special Chars <code>final_name</code> output → GroupOut <code>value</code> input.</p>
+<p>Drag a <strong>GroupOut</strong> node. Set its <code>port_name</code> to <code>"final_name"</code>. Wire the Remove Special Chars <code>result</code> output → GroupOut <code>value</code> input.</p>
 <p>Wire exec: GroupIn → Trim &amp; Lower → Replace Spaces → Remove Special Chars → GroupOut.</p>
 <h3 id="step-3-collapse-into-a-groupnode">Step 3: Collapse into a GroupNode</h3>
 <p>Select all five nodes (Ctrl+A or drag-select). Press <strong>Ctrl+Shift+G</strong> (or Edit → Group Selection).</p>

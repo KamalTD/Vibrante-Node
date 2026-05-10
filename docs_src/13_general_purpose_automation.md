@@ -345,8 +345,7 @@ async def execute(self, inputs):
     content = inputs.get("content", "")
     reader  = csv.DictReader(io.StringIO(content))
     records = [dict(row) for row in reader]
-    outputs["records"]      = records
-    outputs["record_count"] = len(records)
+    return {"records": records, "record_count": len(records), "exec_out": True}
 ```
 
 ### Compute Metric Node
@@ -363,7 +362,7 @@ async def execute(self, inputs):
         except (ValueError, ZeroDivisionError):
             r["revenue_per_unit"] = 0.0
         enriched.append(r)
-    outputs["enriched"] = enriched
+    return {"enriched": enriched, "exec_out": True}
 ```
 
 Hover the wire between any two steps to see a sample of the data at that point.
@@ -407,8 +406,7 @@ async def execute(self, inputs):
     token = data.get("access_token", "") if isinstance(data, dict) else ""
     if not token:
         self.log_error("Authentication failed — no access_token in response.")
-    outputs["auth_header"] = {"Authorization": f"Bearer {token}"}
-    outputs["token"]       = token
+    return {"auth_header": {"Authorization": f"Bearer {token}"}, "token": token, "exec_out": True}
 ```
 
 ### Filter by Assignee Node
@@ -418,8 +416,7 @@ async def execute(self, inputs):
     tasks    = list(inputs.get("response_data") or [])
     assignee = inputs.get("assignee_id", "")
     filtered = [t for t in tasks if str(t.get("assignee_id", "")) == str(assignee)]
-    outputs["my_tasks"] = filtered
-    outputs["count"]    = len(filtered)
+    return {"my_tasks": filtered, "count": len(filtered), "exec_out": True}
 ```
 
 ---
@@ -465,10 +462,11 @@ Each LLM node needs context from previous steps. Use SetVariable after each LLM 
 
 ```python
 # In the "Draft response" LLM's prompt-building Python Script:
-sentiment = inputs.get("sentiment_var", "neutral")
-topics    = inputs.get("topics_var", "")
-raw_text  = inputs.get("raw_text", "")
-outputs["prompt"] = (
+context   = inputs.get("data", {})
+sentiment = context.get("sentiment", "neutral")
+topics    = context.get("topics", "")
+raw_text  = context.get("raw_text", "")
+result = (
     f"Write a professional customer service response to this {sentiment} "
     f"feedback about {topics}: {raw_text}"
 )
@@ -610,8 +608,8 @@ async def execute(self, inputs):
         {"category": cat, **vals}
         for cat, vals in sorted(totals.items(), key=lambda x: -x[1]["revenue"])
     ]
-    outputs["summary"] = summary
-    outputs["total_revenue"] = sum(v["revenue"] for v in totals.values())
+    total_revenue = sum(v["revenue"] for v in totals.values())
+    return {"summary": summary, "total_revenue": total_revenue, "exec_out": True}
 ```
 
 ---
@@ -662,14 +660,14 @@ def register_node():
     [HTTP Request: GET /api/job/{job_id}/status]
             ↓ response_data
     [Python Script: Check status]
-        status = response_data.get("status", "")
-        outputs["complete"] = status in ("complete", "failed", "error")
-        outputs["status"]   = status
-            ↓ complete (bool)
-    [TwoWaySwitch on complete]
+        data = inputs.get("data", {})
+        status = data.get("status", "")
+        result = status in ("complete", "failed", "error")
+            ↓ result (bool)
+    [TwoWaySwitch on result]
       exec_true  → [SetVariable: "should_continue" = False]
-                   [Console Print: f"Job finished: {status}"]
-      exec_false → [Console Print: f"Still running: {status}"]
+                   [Console Print: "Job finished"]
+      exec_false → [Console Print: "Still running"]
             ↓ (both branches back to WhileLoop loop_exec_in)
 
         ↓ exec_out (after WhileLoop exits)
@@ -707,30 +705,30 @@ An approval workflow: receive a purchase request, validate the amount and suppli
         ↓ request (dict: amount, supplier, department, requester_email)
 
 [Python Script: Validate request]
-    valid = amount > 0 and supplier != "" and department != ""
-    outputs["valid"] = valid
-    outputs["validation_error"] = "" if valid else "Missing fields."
-        ↓ valid (bool)
+    request = inputs.get("data", {})
+    valid = request.get("amount", 0) > 0 and request.get("supplier", "") != ""
+    result = valid
+        ↓ result (bool)
 
-[TwoWaySwitch on valid]
-  exec_false → [Email Notification: "Request invalid: {validation_error}"]
-               [Console Print: "Rejected: {request_id}"]
+[TwoWaySwitch on result]
+  exec_false → [Email Notification: "Request invalid — missing required fields"]
+               [Console Print: "Rejected"]
   exec_true  →
 
     [Python Script: Check budget]
         budget_remaining = get_budget(department)   # DB query
-        outputs["budget_ok"] = budget_remaining >= amount
-            ↓ budget_ok
+        result = budget_remaining >= amount
+            ↓ result (bool)
 
-    [TwoWaySwitch on budget_ok]
-      exec_false → [Email Notification: "Insufficient budget for {department}"]
+    [TwoWaySwitch on result]
+      exec_false → [Email Notification: "Insufficient budget"]
       exec_true  →
 
         [Python Script: Threshold check]
-            outputs["auto_approve"] = amount < 1000
-                ↓ auto_approve
+            result = amount < 1000
+                ↓ result (bool)
 
-        [TwoWaySwitch on auto_approve]
+        [TwoWaySwitch on result]
           exec_true  → [Python Script: Approve and deduct budget]
                        [Email Notification: requester — "Approved automatically"]
           exec_false → [Python Script: Create review ticket]
@@ -801,11 +799,13 @@ async def execute(self, inputs):
         if not val:
             self.log_error(f"Environment variable not set: {key}")
         env_values[key] = val
-    outputs["env_values"] = env_values
-    # Also expose individual common vars
-    outputs["PATH"]     = os.environ.get("PATH", "")
-    outputs["HOME"]     = os.environ.get("HOME", "")
-    outputs["all_env"]  = dict(os.environ)
+    return {
+        "env_values": env_values,
+        "PATH":       os.environ.get("PATH", ""),
+        "HOME":       os.environ.get("HOME", ""),
+        "all_env":    dict(os.environ),
+        "exec_out":   True,
+    }
 ```
 
 ---

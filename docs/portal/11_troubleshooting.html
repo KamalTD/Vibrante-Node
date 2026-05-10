@@ -759,14 +759,14 @@ sys.path.insert(0, &quot;/path/to/Prism2/Scripts&quot;)
 <h3 id="twowayswitch-not-routing-correctly">TwoWaySwitch not routing correctly</h3>
 <p><strong>Symptom:</strong> TwoWaySwitch always routes to <code>exec_true</code> even when condition should be False.</p>
 <p><strong>Cause:</strong> The <code>condition</code> input is receiving a truthy non-boolean value (e.g., the string <code>"False"</code> is truthy in Python).</p>
-<p><strong>Fix:</strong> Ensure the condition value is a Python <code>bool</code>:</p>
+<p><strong>Fix:</strong> Ensure the condition value is a Python <code>bool</code>. In a Python Script node:</p>
 <pre><code class="language-python"># Wrong: string &quot;False&quot; is truthy
-outputs[&quot;condition&quot;] = &quot;False&quot;
+result = &quot;False&quot;
 
 # Correct
-outputs[&quot;condition&quot;] = False
-outputs[&quot;condition&quot;] = some_value &gt; threshold   # bool expression
-outputs[&quot;condition&quot;] = bool(int(inputs.get(&quot;flag&quot;, 0)))  # explicit cast
+result = False
+result = some_value &gt; threshold       # bool expression
+result = bool(int(inputs.get(&quot;data&quot;, 0)))  # explicit cast
 </code></pre>
 <hr />
 <h2 id="11-autosave-restore-dialog-always-showing">11. Autosave Restore Dialog Always Showing</h2>

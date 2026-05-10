@@ -175,6 +175,7 @@ class Validator:
         "watch_seconds", "asset_names", "entity_type", "publish_count",
         # Misc identifiers that look like node IDs but are not
         "last_error", "load_project", "open_scene", "init_only",
+        "asset_name", "export_path",
     })
 
     def _check_node_claims(self):
