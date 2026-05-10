@@ -308,3 +308,25 @@ img {
   left: 0;
   color: var(--primary);
 }
+
+/* Docs markdown: override highlight.js github-dark to match site background */
+.docs-markdown .hljs {
+  background: transparent;
+  padding: 0;
+}
+
+/* Docs markdown: ordered list items rendered as plain text need bullet treatment */
+.docs-markdown ol li {
+  display: list-item;
+}
+
+/* Docs markdown: ensure tables don't overflow their container */
+.docs-markdown table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+/* Docs markdown: tighten up paragraph spacing inside list items */
+.docs-markdown li > p {
+  margin-bottom: 0.25rem;
+}
