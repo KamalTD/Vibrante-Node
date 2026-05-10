@@ -2,7 +2,7 @@
 *.py[cod]
 *$py.class
 __pycache__/
-
+tools/
 # Environments
 .venv/
 main/
@@ -13,7 +13,10 @@ env/
 .gemini/
 .specify/
 tutorials/
-
+website/node_modules/
+website/.next/
+website/tsconfig.tsbuildinfo
+website/next-env.d.ts
 # Testing
 .pytest_cache/
 .coverage
