@@ -5,7 +5,7 @@ import 'highlight.js/styles/github-dark.css'
 export const metadata: Metadata = {
   title: 'Vibrante-Node — Visual Workflow Automation for VFX & AI Pipelines',
   description:
-    'Open-source node-based automation platform. Connect Houdini, Maya, Blender, and Prism Pipeline. Build AI and VFX workflows visually.',
+    'Python-based visual node graph automation platform. Build complex multi-step workflows with PyQt5 and asyncio. Nodes for Houdini, Maya, Blender, Prism Pipeline, and Deadline.',
   keywords: [
     'VFX pipeline',
     'node-based automation',
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     url: 'https://vibrante-node.io',
     title: 'Vibrante-Node — Visual Workflow Automation for VFX & AI Pipelines',
     description:
-      'Open-source node-based automation platform. Connect Houdini, Maya, Blender, and Prism Pipeline. Build AI and VFX workflows visually.',
+      'Python-based visual node graph automation platform. Build complex multi-step workflows with PyQt5 and asyncio. Nodes for Houdini, Maya, Blender, Prism Pipeline, and Deadline.',
     siteName: 'Vibrante-Node',
     images: [
       {
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Vibrante-Node — Visual Workflow Automation for VFX & AI Pipelines',
     description:
-      'Open-source node-based automation platform for VFX studios, AI engineers, and pipeline developers.',
+      'Python-based visual node graph automation platform. Build multi-step workflows with PyQt5, asyncio, and nodes for Houdini, Maya, Blender, Prism Pipeline, and Deadline.',
     images: ['/shots/07.PNG'],
   },
   robots: {

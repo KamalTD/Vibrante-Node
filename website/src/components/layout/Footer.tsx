@@ -54,7 +54,7 @@ export function Footer() {
               </span>
             </Link>
             <p className="text-sm text-text-secondary leading-relaxed mb-6 max-w-xs">
-              Open-source node-based automation platform for VFX studios, AI engineers, and pipeline developers.
+              Python-based visual node graph automation platform. Build complex multi-step workflows with PyQt5, asyncio, and nodes for Houdini, Maya, Blender, Prism Pipeline, and Deadline.
             </p>
             {/* Social links */}
             <div className="flex gap-3">
