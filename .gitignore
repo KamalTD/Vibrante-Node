@@ -21,7 +21,7 @@ website/next-env.d.ts
 .pytest_cache/
 .coverage
 htmlcov/
-
+website/
 # Local configuration
 .env
 .vscode/
