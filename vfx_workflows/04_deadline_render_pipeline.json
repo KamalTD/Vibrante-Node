@@ -20,7 +20,8 @@
                 "found": true
             },
             "state": "idle",
-            "bypassed": false
+            "bypassed": false,
+            "init_priority": 0
         },
         {
             "instance_id": "40050000-4000-4400-8400-400000050000",
@@ -52,7 +53,8 @@
                 "entity_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002"
             },
             "state": "idle",
-            "bypassed": false
+            "bypassed": false,
+            "init_priority": 0
         },
         {
             "instance_id": "40060000-4000-4400-8400-400000060000",
@@ -85,7 +87,8 @@
                 "exists": true
             },
             "state": "idle",
-            "bypassed": false
+            "bypassed": false,
+            "init_priority": 0
         },
         {
             "instance_id": "40070000-4000-4400-8400-400000070000",
@@ -120,7 +123,8 @@
                 "success": true
             },
             "state": "idle",
-            "bypassed": false
+            "bypassed": false,
+            "init_priority": 0
         },
         {
             "instance_id": "40080000-4000-4400-8400-400000080000",
@@ -133,7 +137,7 @@
                 "exec_in": true,
                 "exec_out": true,
                 "actions_in": [],
-                "scene_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002\\Scenefiles\\lgt\\lighting\\seq_0001-shot_002_lighting_v0002.ma",
+                "scene_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002\\Scenefiles\\lgt\\lighting\\seq_0001-shot_002_lighting_v0004.ma",
                 "force": false,
                 "actions_out": [
                     {
@@ -144,7 +148,8 @@
                 ]
             },
             "state": "idle",
-            "bypassed": false
+            "bypassed": false,
+            "init_priority": 0
         },
         {
             "instance_id": "40090000-4000-4400-8400-400000090000",
@@ -159,8 +164,8 @@
                 "actions_in": [
                     {
                         "type": "open_scene",
-                        "scene_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002\\Scenefiles\\lgt\\lighting\\seq_0001-shot_002_lighting_v0002.ma",
-                        "force": true
+                        "scene_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002\\Scenefiles\\lgt\\lighting\\seq_0001-shot_002_lighting_v0004.ma",
+                        "force": false
                     }
                 ],
                 "frame_start": 1001,
@@ -179,7 +184,8 @@
                 ]
             },
             "state": "idle",
-            "bypassed": false
+            "bypassed": false,
+            "init_priority": 0
         },
         {
             "instance_id": "400a0000-4000-4400-8400-4000000a0000",
@@ -194,8 +200,8 @@
                 "actions_in": [
                     {
                         "type": "open_scene",
-                        "scene_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002\\Scenefiles\\lgt\\lighting\\seq_0001-shot_002_lighting_v0002.ma",
-                        "force": true
+                        "scene_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002\\Scenefiles\\lgt\\lighting\\seq_0001-shot_002_lighting_v0004.ma",
+                        "force": false
                     },
                     {
                         "type": "set_frame_range",
@@ -234,7 +240,8 @@
                 ]
             },
             "state": "idle",
-            "bypassed": false
+            "bypassed": false,
+            "init_priority": 0
         },
         {
             "instance_id": "400b0000-4000-4400-8400-4000000b0000",
@@ -249,8 +256,8 @@
                 "actions_in": [
                     {
                         "type": "open_scene",
-                        "scene_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002\\Scenefiles\\lgt\\lighting\\seq_0001-shot_002_lighting_v0002.ma",
-                        "force": true
+                        "scene_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002\\Scenefiles\\lgt\\lighting\\seq_0001-shot_002_lighting_v0004.ma",
+                        "force": false
                     },
                     {
                         "type": "set_frame_range",
@@ -268,7 +275,7 @@
                         "file_prefix": "<Scene>/<RenderLayer>/<Scene>"
                     }
                 ],
-                "save_scene_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002\\Scenefiles\\lgt\\lighting\\seq_0001-shot_002_lighting_v0003.ma",
+                "save_scene_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002\\Scenefiles\\lgt\\lighting\\seq_0001-shot_002_lighting_v0005.ma",
                 "file_type": "mayaAscii",
                 "actions_out": [
                     {
@@ -299,7 +306,8 @@
                 ]
             },
             "state": "idle",
-            "bypassed": false
+            "bypassed": false,
+            "init_priority": 0
         },
         {
             "instance_id": "400c0000-4000-4400-8400-4000000c0000",
@@ -319,8 +327,8 @@
                 "actions": [
                     {
                         "type": "open_scene",
-                        "scene_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002\\Scenefiles\\lgt\\lighting\\seq_0001-shot_002_lighting_v0002.ma",
-                        "force": true
+                        "scene_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002\\Scenefiles\\lgt\\lighting\\seq_0001-shot_002_lighting_v0004.ma",
+                        "force": false
                     },
                     {
                         "type": "set_frame_range",
@@ -339,7 +347,7 @@
                     },
                     {
                         "type": "save_scene",
-                        "save_scene_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002\\Scenefiles\\lgt\\lighting\\seq_0001-shot_002_lighting_v0003.ma",
+                        "save_scene_path": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002\\Scenefiles\\lgt\\lighting\\seq_0001-shot_002_lighting_v0005.ma",
                         "file_type": "mayaAscii"
                     }
                 ],
@@ -377,7 +385,8 @@
                 "skipped_actions": []
             },
             "state": "idle",
-            "bypassed": false
+            "bypassed": false,
+            "init_priority": 0
         },
         {
             "instance_id": "400d0000-4000-4400-8400-4000000d0000",
@@ -397,7 +406,8 @@
                 "result": true
             },
             "state": "idle",
-            "bypassed": false
+            "bypassed": false,
+            "init_priority": 0
         },
         {
             "instance_id": "400e0000-4000-4400-8400-4000000e0000",
@@ -410,7 +420,7 @@
                 "exec_in": true,
                 "exec_out": true,
                 "deadlinecommand": "C:/Program Files/Thinkbox/Deadline10/bin/deadlinecommand.exe",
-                "scene_file": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002\\Scenefiles\\lgt\\lighting\\seq_0001-shot_002_lighting_v0003.ma",
+                "scene_file": "G:\\Prism\\splash\\03_Production\\Shots\\seq_0001\\shot_002\\Scenefiles\\lgt\\lighting\\seq_0001-shot_002_lighting_v0005.ma",
                 "job_name": "EP01_0030_lighting",
                 "batch_name": "EP01_lighting_batch",
                 "comment": "Submitted via Vibrante-Node",
@@ -436,7 +446,8 @@
                 "stderr": ""
             },
             "state": "idle",
-            "bypassed": false
+            "bypassed": false,
+            "init_priority": 0
         },
         {
             "instance_id": "400f0000-4000-4400-8400-4000000f0000",
@@ -449,7 +460,7 @@
                 "exec_in": true,
                 "exec_out": true,
                 "deadlinecommand": "C:/Program Files/Thinkbox/Deadline10/bin/deadlinecommand.exe",
-                "job_id": "69e9ef12045e4bc1852e2c15",
+                "job_id": "69e9f0f79d40a8b608bcc0fe",
                 "poll_until_done": false,
                 "poll_interval": 15,
                 "timeout_minutes": 120,
@@ -464,7 +475,8 @@
                 "deadline_api_url": "http://deadline-server:8082"
             },
             "state": "idle",
-            "bypassed": false
+            "bypassed": false,
+            "init_priority": 0
         },
         {
             "instance_id": "40100000-4000-4400-8400-400000100000",
@@ -480,7 +492,8 @@
                 "out": "Unknown"
             },
             "state": "idle",
-            "bypassed": false
+            "bypassed": false,
+            "init_priority": 0
         },
         {
             "instance_id": "40110000-4000-4400-8400-400000110000",
@@ -496,7 +509,8 @@
                 "out": "Maya prep failed — scene not submitted to Deadline."
             },
             "state": "idle",
-            "bypassed": false
+            "bypassed": false,
+            "init_priority": 0
         },
         {
             "instance_id": "110df397-bbe2-4c54-ba8a-63ba4de161fd",
@@ -542,7 +556,8 @@
                 "found": true
             },
             "state": "idle",
-            "bypassed": false
+            "bypassed": false,
+            "init_priority": 0
         },
         {
             "instance_id": "32c17f55-51d9-4662-827e-36be18ba778f",
@@ -567,7 +582,8 @@
                 "found": true
             },
             "state": "idle",
-            "bypassed": false
+            "bypassed": false,
+            "init_priority": 0
         },
         {
             "instance_id": "7fd158ec-d379-44c6-af16-3f5e74519727",
@@ -586,12 +602,13 @@
                 "version": ""
             },
             "state": "idle",
-            "bypassed": false
+            "bypassed": false,
+            "init_priority": 0
         }
     ],
     "connections": [
         {
-            "id": "68a69d5d-1e66-45c7-b31e-2a1266c170f1",
+            "id": "74b98540-ccbd-41b7-b073-dd90c95fc281",
             "from_node": "40070000-4000-4400-8400-400000070000",
             "from_port": "exec_out",
             "to_node": "40080000-4000-4400-8400-400000080000",
@@ -599,7 +616,7 @@
             "is_exec": true
         },
         {
-            "id": "b30d326a-a910-4d8f-ac0e-9ad5194bfa44",
+            "id": "d6da86fe-ee69-40c9-a3af-1fecbe7e5415",
             "from_node": "40080000-4000-4400-8400-400000080000",
             "from_port": "exec_out",
             "to_node": "40090000-4000-4400-8400-400000090000",
@@ -607,7 +624,7 @@
             "is_exec": true
         },
         {
-            "id": "abd1f3e9-1426-4f2c-8d6b-cd393949f3b5",
+            "id": "6524c866-53dd-4ecc-a392-91916fe77ce8",
             "from_node": "40090000-4000-4400-8400-400000090000",
             "from_port": "exec_out",
             "to_node": "400a0000-4000-4400-8400-4000000a0000",
@@ -615,7 +632,7 @@
             "is_exec": true
         },
         {
-            "id": "8f053084-1ab2-4781-bb19-3a8d2ee5f657",
+            "id": "9e2d8647-b901-4bc1-b597-cefe6dc39937",
             "from_node": "400a0000-4000-4400-8400-4000000a0000",
             "from_port": "exec_out",
             "to_node": "400b0000-4000-4400-8400-4000000b0000",
@@ -623,7 +640,7 @@
             "is_exec": true
         },
         {
-            "id": "af693b1d-a29e-486f-a5f0-f8583b0f5814",
+            "id": "09858cba-2335-46fc-a3b9-fc0344471e01",
             "from_node": "400b0000-4000-4400-8400-4000000b0000",
             "from_port": "exec_out",
             "to_node": "400c0000-4000-4400-8400-4000000c0000",
@@ -631,7 +648,7 @@
             "is_exec": true
         },
         {
-            "id": "f8ea9057-e6c6-46c3-8708-255a95805430",
+            "id": "7db60a48-7d8c-441d-9fa1-16570d25aaeb",
             "from_node": "400c0000-4000-4400-8400-4000000c0000",
             "from_port": "exec_out",
             "to_node": "400d0000-4000-4400-8400-4000000d0000",
@@ -639,7 +656,7 @@
             "is_exec": true
         },
         {
-            "id": "1abf27ab-496b-40d8-bd7b-7ee9d3c462a3",
+            "id": "9f4e6ff9-b912-436c-aa3c-e256576c5d4a",
             "from_node": "400d0000-4000-4400-8400-4000000d0000",
             "from_port": "exec_out",
             "to_node": "400e0000-4000-4400-8400-4000000e0000",
@@ -647,7 +664,7 @@
             "is_exec": true
         },
         {
-            "id": "357091f0-10c0-406f-a988-7c0293b9c37a",
+            "id": "cb3258ef-8a27-4561-ade3-9f200b4367d6",
             "from_node": "400e0000-4000-4400-8400-4000000e0000",
             "from_port": "exec_out",
             "to_node": "400f0000-4000-4400-8400-4000000f0000",
@@ -655,7 +672,7 @@
             "is_exec": true
         },
         {
-            "id": "3db21fba-ca07-4867-9ae4-3a67f716763d",
+            "id": "51698037-c609-4c40-8218-969cfe46168b",
             "from_node": "400f0000-4000-4400-8400-4000000f0000",
             "from_port": "exec_out",
             "to_node": "40100000-4000-4400-8400-400000100000",
@@ -663,7 +680,7 @@
             "is_exec": true
         },
         {
-            "id": "fafaba9e-233e-41fd-a9eb-2ee13adb7ee7",
+            "id": "f2ac3374-a5ff-4e0c-993b-b4880c46963b",
             "from_node": "400d0000-4000-4400-8400-4000000d0000",
             "from_port": "exec_false",
             "to_node": "40110000-4000-4400-8400-400000110000",
@@ -671,7 +688,7 @@
             "is_exec": true
         },
         {
-            "id": "9bcbb089-a442-451c-b5c8-c23681f509f9",
+            "id": "dd58bfca-c5a2-4cb6-a68d-86aa424a2d72",
             "from_node": "40050000-4000-4400-8400-400000050000",
             "from_port": "frame_start",
             "to_node": "40090000-4000-4400-8400-400000090000",
@@ -679,7 +696,7 @@
             "is_exec": false
         },
         {
-            "id": "38bf933d-18ab-4f9c-b720-792319981740",
+            "id": "f35092b9-db85-430c-b7c3-0dc48a575f9c",
             "from_node": "40050000-4000-4400-8400-400000050000",
             "from_port": "frame_end",
             "to_node": "40090000-4000-4400-8400-400000090000",
@@ -687,7 +704,7 @@
             "is_exec": false
         },
         {
-            "id": "95ee1496-bb98-4122-886a-24b1c3e1ebe1",
+            "id": "53fdf6f1-f709-4801-8e0a-c305be759c6d",
             "from_node": "40050000-4000-4400-8400-400000050000",
             "from_port": "frame_start",
             "to_node": "400a0000-4000-4400-8400-4000000a0000",
@@ -695,7 +712,7 @@
             "is_exec": false
         },
         {
-            "id": "cb793737-978c-479e-bc4a-c2a9187195c4",
+            "id": "9660d3a9-896c-470f-be50-5723fae3bb51",
             "from_node": "40050000-4000-4400-8400-400000050000",
             "from_port": "frame_start",
             "to_node": "400e0000-4000-4400-8400-4000000e0000",
@@ -703,7 +720,7 @@
             "is_exec": false
         },
         {
-            "id": "9359ce7e-7182-4ff1-b863-f6cbc90b8d9d",
+            "id": "64184366-df4f-4ee2-9b5b-134eeb157e42",
             "from_node": "40070000-4000-4400-8400-400000070000",
             "from_port": "saved_path",
             "to_node": "400b0000-4000-4400-8400-4000000b0000",
@@ -711,7 +728,7 @@
             "is_exec": false
         },
         {
-            "id": "3d658161-6f44-4c0d-b145-35b25039ea71",
+            "id": "a54353d6-653e-4f0f-ae09-b270bcdd81bd",
             "from_node": "40070000-4000-4400-8400-400000070000",
             "from_port": "saved_path",
             "to_node": "400e0000-4000-4400-8400-4000000e0000",
@@ -719,7 +736,7 @@
             "is_exec": false
         },
         {
-            "id": "e3f54fd8-6564-4836-b820-3ebc6656fd8a",
+            "id": "e40aebdf-c856-4133-a0a5-1ef3eb8a44d7",
             "from_node": "40080000-4000-4400-8400-400000080000",
             "from_port": "actions_out",
             "to_node": "40090000-4000-4400-8400-400000090000",
@@ -727,7 +744,7 @@
             "is_exec": false
         },
         {
-            "id": "bfc47bac-0f1c-49ea-944f-e98336583e02",
+            "id": "573f1ceb-65e9-43c1-bfee-f59e75cc7ecd",
             "from_node": "40090000-4000-4400-8400-400000090000",
             "from_port": "actions_out",
             "to_node": "400a0000-4000-4400-8400-4000000a0000",
@@ -735,7 +752,7 @@
             "is_exec": false
         },
         {
-            "id": "fb02d7c8-4ceb-4f32-940b-032b65ba0849",
+            "id": "6d519896-5d25-40c8-a633-fa600b30742a",
             "from_node": "400a0000-4000-4400-8400-4000000a0000",
             "from_port": "actions_out",
             "to_node": "400b0000-4000-4400-8400-4000000b0000",
@@ -743,7 +760,7 @@
             "is_exec": false
         },
         {
-            "id": "dce57d81-860e-4b9b-aa8d-b856e5ea9be5",
+            "id": "8aeac80e-dd0e-4055-8ffe-49737b1a1d1e",
             "from_node": "400b0000-4000-4400-8400-4000000b0000",
             "from_port": "actions_out",
             "to_node": "400c0000-4000-4400-8400-4000000c0000",
@@ -751,7 +768,7 @@
             "is_exec": false
         },
         {
-            "id": "88b04f15-2226-4a60-b6bf-cc44f26e5933",
+            "id": "779cd36f-0352-4b42-8ed9-19d13a89d20e",
             "from_node": "400c0000-4000-4400-8400-4000000c0000",
             "from_port": "success",
             "to_node": "400d0000-4000-4400-8400-4000000d0000",
@@ -759,7 +776,7 @@
             "is_exec": false
         },
         {
-            "id": "98c8bd20-e244-4401-aaaa-8d7c2a38e7a0",
+            "id": "9a693b0e-423d-473c-9de4-b7f4714a91ce",
             "from_node": "400e0000-4000-4400-8400-4000000e0000",
             "from_port": "job_id",
             "to_node": "400f0000-4000-4400-8400-4000000f0000",
@@ -767,7 +784,7 @@
             "is_exec": false
         },
         {
-            "id": "b58474c9-bfd8-42d9-bf57-a6d73b384e6c",
+            "id": "ed468eb8-3cb0-4690-9bed-d4871553777f",
             "from_node": "400f0000-4000-4400-8400-4000000f0000",
             "from_port": "status",
             "to_node": "40100000-4000-4400-8400-400000100000",
@@ -775,7 +792,7 @@
             "is_exec": false
         },
         {
-            "id": "0804e5ca-daa6-40a8-b55b-a326902114c8",
+            "id": "9fbacc26-f8fb-4e18-9d54-12fa96934add",
             "from_node": "32c17f55-51d9-4662-827e-36be18ba778f",
             "from_port": "sequence",
             "to_node": "110df397-bbe2-4c54-ba8a-63ba4de161fd",
@@ -783,7 +800,7 @@
             "is_exec": false
         },
         {
-            "id": "7cf01099-021c-4845-99ef-e829801c1643",
+            "id": "c78ba410-3a6d-4fcd-89da-4c18754b4371",
             "from_node": "110df397-bbe2-4c54-ba8a-63ba4de161fd",
             "from_port": "entity",
             "to_node": "40050000-4000-4400-8400-400000050000",
@@ -791,7 +808,7 @@
             "is_exec": false
         },
         {
-            "id": "556452e7-6b41-4e64-a3c0-ebaaf7f151e0",
+            "id": "525f1131-2f64-4e98-9dab-48910b7494d7",
             "from_node": "110df397-bbe2-4c54-ba8a-63ba4de161fd",
             "from_port": "entity",
             "to_node": "40060000-4000-4400-8400-400000060000",
@@ -799,7 +816,7 @@
             "is_exec": false
         },
         {
-            "id": "f486e7c9-12b1-46ba-a76b-f15879ddc7e4",
+            "id": "39f8ad1e-f997-4db9-8029-aa9ffcd9b2d3",
             "from_node": "110df397-bbe2-4c54-ba8a-63ba4de161fd",
             "from_port": "entity",
             "to_node": "40070000-4000-4400-8400-400000070000",
@@ -807,7 +824,7 @@
             "is_exec": false
         },
         {
-            "id": "b30420b2-ed33-4906-be51-628c5ea2ba6f",
+            "id": "f296941b-487d-4787-9dd6-8956e17d8404",
             "from_node": "40020000-4000-4400-8400-400000020000",
             "from_port": "project",
             "to_node": "32c17f55-51d9-4662-827e-36be18ba778f",
@@ -815,7 +832,7 @@
             "is_exec": false
         },
         {
-            "id": "91e79fe8-5a35-422a-8bfd-77a50b8050a6",
+            "id": "281e4ae2-b138-414c-9c98-34aaab387326",
             "from_node": "40050000-4000-4400-8400-400000050000",
             "from_port": "frame_end",
             "to_node": "400a0000-4000-4400-8400-4000000a0000",
@@ -823,7 +840,7 @@
             "is_exec": false
         },
         {
-            "id": "9b009c5c-11f2-4b4f-acf3-9f09a56f7219",
+            "id": "91c3bc94-b6c3-4b0a-bdfd-1d492621564a",
             "from_node": "40050000-4000-4400-8400-400000050000",
             "from_port": "frame_end",
             "to_node": "400e0000-4000-4400-8400-4000000e0000",
@@ -831,7 +848,7 @@
             "is_exec": false
         },
         {
-            "id": "be0b283f-c527-4c1e-944d-54dd7151896a",
+            "id": "1938dbcd-e706-4102-ac60-f254ab02dec9",
             "from_node": "40060000-4000-4400-8400-400000060000",
             "from_port": "scene_path",
             "to_node": "40080000-4000-4400-8400-400000080000",
