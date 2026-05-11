@@ -55,15 +55,14 @@ export function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.35 }}
             >
-              Vibrante-Node is a Python-based visual node graph automation platform that lets you
-              build, run, and maintain complex multi-step workflows by wiring together reusable node
-              blocks on an interactive canvas. It ships with a PyQt5 graphical interface, an
-              asyncio-based execution engine, and a growing library of nodes covering
-              general-purpose automation, filesystem operations, DCC application control (Maya,
-              Houdini, Blender), studio pipeline management (Prism Pipeline), and render farm
-              submission (Deadline). Every node is a self-contained unit of logic defined in a
-              single JSON file paired with Python code, making the platform trivially extensible by
-              any Python developer without requiring modifications to the core application.
+              Vibrante-Node is a Python-node-based visual framework for building modular systems
+              through connected nodes and data flows. It provides an intuitive graph interface where
+              complex logic can be constructed visually by linking nodes together.{' '}
+              The project focuses on flexibility, extensibility, and developer productivity, making
+              it suitable for building tools such as visual pipelines, automation workflows, and
+              data-processing graphs. Node-based systems allow complex operations to be organized as
+              interconnected components rather than traditional linear code structures, improving
+              clarity and scalability in large workflows.
             </motion.p>
 
             {/* CTA buttons */}

@@ -54,7 +54,7 @@ export function Footer() {
               </span>
             </Link>
             <p className="text-sm text-text-secondary leading-relaxed mb-6 max-w-xs">
-              Python-based visual node graph automation platform. Build complex multi-step workflows with PyQt5, asyncio, and nodes for Houdini, Maya, Blender, Prism Pipeline, and Deadline.
+              Python-node-based visual framework for building modular systems through connected nodes and data flows. Visual pipelines, automation workflows, and data-processing graphs.
             </p>
             {/* Social links */}
             <div className="flex gap-3">
