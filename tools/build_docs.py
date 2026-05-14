@@ -14,23 +14,25 @@ MAIN_DOCS = [
 ]
 
 RELEASE_DOCS = [
+    ("RELEASE_v2.1.1.md", "Release Notes v2.1.1"),
+    ("RELEASE_v2.1.0.md", "Release Notes v2.1.0"),
     ("RELEASE_v2.0.0.md", "Release Notes v2.0.0"),
     ("RELEASE_v1.8.5.md", "Release Notes v1.8.5"),
     ("RELEASE_v1.8.4.md", "Release Notes v1.8.4"),
-    ("RELEASE_v1.8.3.md", "Release Notes v1.8.3"),
-    ("RELEASE_v1.8.2.md", "Release Notes v1.8.2"),
-    ("RELEASE_v1.8.1.md", "Release Notes v1.8.1"),
-    ("RELEASE_v1.8.0.md", "Release Notes v1.8.0"),
-    ("RELEASE_v1.7.0.md", "Release Notes v1.7.0"),
-    ("RELEASE_v1.6.1.md", "Release Notes v1.6.1"),
-    ("RELEASE_v1.6.0.md", "Release Notes v1.6.0"),
-    ("RELEASE_v1.5.0.md", "Release Notes v1.5.0"),
-    ("RELEASE_v1.4.0.md", "Release Notes v1.4.0"),
-    ("RELEASE_v1.3.0.md", "Release Notes v1.3.0"),
-    ("RELEASE_v1.2.0.md", "Release Notes v1.2.0"),
-    ("RELEASE_v1.1.5.md", "Release Notes v1.1.5"),
-    ("RELEASE_v1.1.0.md", "Release Notes v1.1.0"),
-    ("RELEASE_v1.0.5.md", "Release Notes v1.0.5"),
+    ("releases/RELEASE_v1.8.3.md", "Release Notes v1.8.3"),
+    ("releases/RELEASE_v1.8.2.md", "Release Notes v1.8.2"),
+    ("releases/RELEASE_v1.8.1.md", "Release Notes v1.8.1"),
+    ("releases/RELEASE_v1.8.0.md", "Release Notes v1.8.0"),
+    ("releases/RELEASE_v1.7.0.md", "Release Notes v1.7.0"),
+    ("releases/RELEASE_v1.6.1.md", "Release Notes v1.6.1"),
+    ("releases/RELEASE_v1.6.0.md", "Release Notes v1.6.0"),
+    ("releases/RELEASE_v1.5.0.md", "Release Notes v1.5.0"),
+    ("releases/RELEASE_v1.4.0.md", "Release Notes v1.4.0"),
+    ("releases/RELEASE_v1.3.0.md", "Release Notes v1.3.0"),
+    ("releases/RELEASE_v1.2.0.md", "Release Notes v1.2.0"),
+    ("releases/RELEASE_v1.1.5.md", "Release Notes v1.1.5"),
+    ("releases/RELEASE_v1.1.0.md", "Release Notes v1.1.0"),
+    ("releases/RELEASE_v1.0.5.md", "Release Notes v1.0.5"),
 ]
 
 ALL_DOCS = MAIN_DOCS + RELEASE_DOCS
@@ -90,7 +92,7 @@ MAIN_NAV = "\n".join(
 )
 
 RELEASE_NAV = "\n".join(
-    f'<a class="nav-release" href="{fn.replace(".md", ".html")}">{title}</a>'
+    f'<a class="nav-release" href="{os.path.basename(fn).replace(".md", ".html")}">{title}</a>'
     for fn, title in RELEASE_DOCS
 )
 
@@ -127,13 +129,13 @@ for filename, title in ALL_DOCS:
     body = md.convert(text)
     body = add_ids(body)
     sidebar_items = build_sidebar(body)
-    out_name = filename.replace(".md", ".html")
+    out_name = os.path.basename(filename).replace(".md", ".html")
     html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{title} — Vibrante-Node v2.0.0</title>
+<title>{title} — Vibrante-Node v2.1.1</title>
 <style>{CSS}</style>
 </head>
 <body>
@@ -164,7 +166,7 @@ main_cards = "\n".join(
     for fn, title in MAIN_DOCS
 )
 release_cards = "\n".join(
-    f'  <a class="card" href="{fn.replace(".md",".html")}"><h3>{title}</h3></a>'
+    f'  <a class="card" href="{os.path.basename(fn).replace(".md",".html")}"><h3>{title}</h3></a>'
     for fn, title in RELEASE_DOCS
 )
 
@@ -172,7 +174,7 @@ index_html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Vibrante-Node v2.0.0 — Help</title>
+<title>Vibrante-Node v2.1.1 — Help</title>
 <style>{CSS}
 .hero {{ text-align:center; padding: 60px 0 40px; }}
 .hero h1 {{ border:none; font-size:2.4em; }}
@@ -188,7 +190,7 @@ index_html = f"""<!DOCTYPE html>
 <body>
 <main class="content" style="margin-left:0;max-width:900px;margin:0 auto">
 <div class="hero">
-  <h1>Vibrante-Node v2.0.0</h1>
+  <h1>Vibrante-Node v2.1.1</h1>
   <p>Documentation &amp; Help</p>
 </div>
 <h2 class="section-title">Documentation</h2>

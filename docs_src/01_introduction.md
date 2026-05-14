@@ -1,4 +1,4 @@
-# Vibrante-Node v2.1.0 — Introduction
+# Vibrante-Node v2.1.1 — Introduction
 
 **Vibrante-Node** is a Python-based visual node graph automation platform that lets you build, run, and maintain complex multi-step workflows by wiring together reusable node blocks on an interactive canvas. It ships with a PyQt5 graphical interface, an asyncio-based execution engine, and a growing library of nodes covering general-purpose automation, filesystem operations, DCC application control (Maya, Houdini, Blender), studio pipeline management (Prism Pipeline), and render farm submission (Deadline). Every node is a self-contained unit of logic defined in a single JSON file paired with Python code, making the platform trivially extensible by any Python developer without requiring modifications to the core application.
 
@@ -252,6 +252,7 @@ The following diagram shows how the major components relate to one another at ru
 | **v1.8.5** | 2026 Q2 | QScintilla optional fallback (no hard crash on missing dependency). Houdini bridge socket fixes (TCP_NODELAY, lock, timeout). `vibrante_hou_server.py` headless fixes. `window.py` Houdini node/script loading fix. |
 | **v2.0.0** | 2026-05-10 | Live Wire Inspector. Autosave / Crash Recovery. Recent Files. Node Execution Timing. Canvas Search Bar (Ctrl+F). Mini-map (Ctrl+M). Subgraph / Group Node (Ctrl+Shift+G) with editable subgraph tabs and sync-back. GroupNode bugs fixed (exec_fail, injected value, UUID serialization). KeyboardInterrupt crash fix. |
 | **v2.1.0** | 2026-05-14 | Unsaved-changes detection: `*` tab marker, Save/Discard/Cancel on close. Port type mismatch warning in log panel. Fixed F5/Shift+F5 shortcuts. Fixed false `*` on loaded workflows. |
+| **v2.1.1** | 2026-05-14 | Scripting Console theme fix (all panels). Houdini plugin standalone LICENSE. Windows VERSIONINFO in exe (fixes "Unknown publisher" on Windows 11). Contact email and website cleanup. |
 
 ---
 
@@ -266,9 +267,10 @@ The following diagram shows how the major components relate to one another at ru
 | `CLAUDE.md` | Node file format specification for AI-assisted node authoring |
 | `AUTOMATION_API.md` | Programmatic control of Vibrante-Node from external scripts |
 | `NODE_BUILDER_API.md` | Node Builder GUI reference |
+| `RELEASE_v2.1.1.md` | Detailed changelog for v2.1.1 (current) |
 | `RELEASE_v2.1.0.md` | Detailed changelog for v2.1.0 |
 | `RELEASE_v2.0.0.md` | Detailed changelog for v2.0.0 |
 
 ---
 
-*Vibrante-Node v2.1.0 — Released 2026-05-14*
+*Vibrante-Node v2.1.1 — Released 2026-05-14*

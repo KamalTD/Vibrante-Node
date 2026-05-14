@@ -22,6 +22,12 @@ The project focuses on flexibility, extensibility, and developer productivity, m
 
 ## 🌟 Latest Enhancements
 
+### 🪟 Windows Publisher Fix — Proper VERSIONINFO in Exe (v2.1.1)
+The built `Vibrante-Node.exe` now embeds a Windows `VERSIONINFO` resource via `file_version_info.txt`, so file Properties and security dialogs show **"Vibrante-Node"** as publisher instead of "Unknown publisher".
+
+### 🎨 Scripting Console — Theme Fully Applied on Switch (v2.1.1)
+Switching between dark and light themes now correctly updates the code editor, debug output panel, and Git status panel inside the Scripting Console. Previously those panels kept the dark palette regardless of the active theme.
+
 ### 🔔 Unsaved Changes Detection — Tab `*` Marker (v2.1.0)
 Every workflow tab now tracks unsaved edits. A `*` prefix appears on the tab label the moment a change is made (e.g. `my_graph.json` → `* my_graph.json`). Closing a dirty tab or the whole application shows a **Save / Discard / Cancel** dialog per tab so no work is lost.
 
@@ -183,7 +189,8 @@ Detailed documentation is available for both users and developers:
 -   🤖 **[Automation API](AUTOMATION_API.md)**: Reference for Scripting Console automation.
 -   🛠️ **[Developer Documentation](DEVELOPER.md)**: Technical architecture and internal data flow.
 -   📄 **[Technical Feature List](DOCUMENTATION.md)**: Detailed breakdown of all platform features.
--   📋 **[Release Notes v2.1.0](RELEASE_v2.1.0.md)**: Full changelog for the current release.
+-   📋 **[Release Notes v2.1.1](RELEASE_v2.1.1.md)**: Full changelog for the current release.
+-   📋 **[Release Notes v2.1.0](RELEASE_v2.1.0.md)**: Changelog for v2.1.0.
 -   📋 **[Release Notes v2.0.0](RELEASE_v2.0.0.md)**: Changelog for v2.0.0.
 
 ---

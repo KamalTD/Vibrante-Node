@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Release Notes v2.1.0 — Vibrante-Node v2.1.1</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+       background: #1e1e2e; color: #cdd6f4; line-height: 1.7; }
+.sidebar { position: fixed; top: 0; left: 0; width: 220px; height: 100vh;
+           background: #181825; overflow-y: auto; padding: 20px 0; z-index: 100; }
+.sidebar h2 { font-size: 13px; color: #6c7086; text-transform: uppercase;
+              letter-spacing: .08em; padding: 0 18px 10px; }
+.sidebar a  { display: block; padding: 6px 18px; color: #a6adc8; text-decoration: none;
+              font-size: 13px; border-left: 3px solid transparent; transition: all .15s; }
+.sidebar a:hover, .sidebar a.active { color: #cba6f7; border-left-color: #cba6f7;
+                                       background: #1e1e2e; }
+.sidebar .nav-release { font-size: 12px; padding: 4px 18px; }
+.content { margin-left: 220px; max-width: 920px; padding: 40px 48px; }
+h1 { font-size: 2em; color: #cba6f7; border-bottom: 2px solid #313244; padding-bottom: 10px; margin: 28px 0 16px; }
+h2 { font-size: 1.45em; color: #89b4fa; margin: 32px 0 12px; }
+h3 { font-size: 1.15em; color: #94e2d5; margin: 22px 0 8px; }
+h4 { font-size: 1em; color: #f5c2e7; margin: 16px 0 6px; }
+p  { margin-bottom: 14px; color: #cdd6f4; }
+a  { color: #89b4fa; }
+ul, ol { margin: 10px 0 14px 22px; }
+li { margin-bottom: 5px; }
+code { background: #313244; color: #f38ba8; padding: 2px 6px; border-radius: 4px; font-size: .88em; font-family: 'Consolas','Courier New',monospace; }
+pre  { background: #181825; border: 1px solid #313244; border-radius: 8px;
+       padding: 18px 20px; overflow-x: auto; margin: 14px 0 20px; }
+pre code { background: none; color: #a6e3a1; padding: 0; font-size: .9em; }
+table { border-collapse: collapse; width: 100%; margin: 14px 0 20px; font-size: .92em; }
+th { background: #313244; color: #cba6f7; padding: 9px 14px; text-align: left; }
+td { border-top: 1px solid #313244; padding: 8px 14px; }
+tr:nth-child(even) td { background: #1e1e2e; }
+hr { border: none; border-top: 1px solid #313244; margin: 28px 0; }
+blockquote { border-left: 4px solid #6c7086; padding-left: 16px; color: #a6adc8; margin: 14px 0; }
+@media (max-width: 700px) { .sidebar { display: none; } .content { margin-left: 0; padding: 24px 18px; } }
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <h2>Vibrante-Node</h2>
+  <a href="USER_GUIDE.html">User Guide</a>
+<a href="NODE_BUILDER_API.html">Node Builder API</a>
+<a href="AUTOMATION_API.html">Automation API</a>
+<a href="DEVELOPER.html">Developer Documentation</a>
+<a href="DOCUMENTATION.html">Technical Feature List</a>
+  <hr style="border-color:#313244;margin:10px 18px">
+  <h2 style="margin-top:8px">Release Notes</h2>
+  <a class="nav-release" href="RELEASE_v2.1.1.html">Release Notes v2.1.1</a>
+<a class="nav-release" href="RELEASE_v2.1.0.html">Release Notes v2.1.0</a>
+<a class="nav-release" href="RELEASE_v2.0.0.html">Release Notes v2.0.0</a>
+<a class="nav-release" href="RELEASE_v1.8.5.html">Release Notes v1.8.5</a>
+<a class="nav-release" href="RELEASE_v1.8.4.html">Release Notes v1.8.4</a>
+<a class="nav-release" href="RELEASE_v1.8.3.html">Release Notes v1.8.3</a>
+<a class="nav-release" href="RELEASE_v1.8.2.html">Release Notes v1.8.2</a>
+<a class="nav-release" href="RELEASE_v1.8.1.html">Release Notes v1.8.1</a>
+<a class="nav-release" href="RELEASE_v1.8.0.html">Release Notes v1.8.0</a>
+<a class="nav-release" href="RELEASE_v1.7.0.html">Release Notes v1.7.0</a>
+<a class="nav-release" href="RELEASE_v1.6.1.html">Release Notes v1.6.1</a>
+<a class="nav-release" href="RELEASE_v1.6.0.html">Release Notes v1.6.0</a>
+<a class="nav-release" href="RELEASE_v1.5.0.html">Release Notes v1.5.0</a>
+<a class="nav-release" href="RELEASE_v1.4.0.html">Release Notes v1.4.0</a>
+<a class="nav-release" href="RELEASE_v1.3.0.html">Release Notes v1.3.0</a>
+<a class="nav-release" href="RELEASE_v1.2.0.html">Release Notes v1.2.0</a>
+<a class="nav-release" href="RELEASE_v1.1.5.html">Release Notes v1.1.5</a>
+<a class="nav-release" href="RELEASE_v1.1.0.html">Release Notes v1.1.0</a>
+<a class="nav-release" href="RELEASE_v1.0.5.html">Release Notes v1.0.5</a>
+  <hr style="border-color:#313244;margin:10px 18px">
+  <h2 style="margin-top:8px">On this page</h2>
+  <a href="#release-notes-vibrante-node-v210" style="padding-left:18px">Release Notes — Vibrante-Node v2.1.0</a>
+<a href="#overview" style="padding-left:18px">Overview</a>
+<a href="#new-features" style="padding-left:18px">New Features</a>
+<a href="#unsaved-changes-detection" style="padding-left:32px">Unsaved Changes Detection</a>
+<a href="#port-type-mismatch-warning" style="padding-left:32px">Port Type Mismatch Warning</a>
+<a href="#bug-fixes" style="padding-left:18px">Bug Fixes</a>
+<a href="#f5-shiftf5-keyboard-shortcuts-not-firing" style="padding-left:32px">F5 / Shift+F5 Keyboard Shortcuts Not Firing</a>
+<a href="#loaded-workflows-showing-dirty-marker" style="padding-left:32px">Loaded Workflows Showing * Dirty Marker</a>
+<a href="#keyboard-shortcuts" style="padding-left:18px">Keyboard Shortcuts</a>
+<a href="#architecture-notes-for-contributors" style="padding-left:18px">Architecture Notes (for contributors)</a>
+<a href="#nodescenedirty_changed-signal-srcuicanvasscenepy" style="padding-left:32px">NodeScene.dirty_changed signal (src/ui/canvas/scene.py)</a>
+<a href="#mainwindow_update_tab_dirty_markerview-dirty-srcuiwindowpy" style="padding-left:32px">MainWindow._update_tab_dirty_marker(view, dirty) (src/ui/window.py)</a>
+<a href="#nodescene_get_port_data_typeport-srcuicanvasscenepy" style="padding-left:32px">NodeScene._get_port_data_type(port) (src/ui/canvas/scene.py)</a>
+<a href="#upgrade-notes" style="padding-left:18px">Upgrade Notes</a>
+</nav>
+<main class="content">
+<h1 id="release-notes-vibrante-node-v210">Release Notes — Vibrante-Node v2.1.0</h1>
+<p><strong>Release date:</strong> 2026-05-14<br />
+<strong>Build:</strong> Python 3.10 / PyInstaller — Windows 64-bit<br />
+<strong>Previous release:</strong> v2.0.0 (2026-05-10)</p>
+<hr />
+<h2 id="overview">Overview</h2>
+<p>v2.1.0 is a UX quality-of-life release. It adds unsaved-changes tracking across all workflow tabs, a port type mismatch warning in the log panel, and fixes two regressions introduced in v2.0.0: the F5 / Shift+F5 execute shortcuts were wired to tooltips but never registered as actual key bindings, and loading a saved workflow incorrectly stamped a <code>*</code> dirty marker on its tab.</p>
+<hr />
+<h2 id="new-features">New Features</h2>
+<h3 id="unsaved-changes-detection">Unsaved Changes Detection</h3>
+<p>Every workflow tab now tracks whether it has been modified since the last save.</p>
+<ul>
+<li>A <code>*</code> prefix is prepended to the tab label as soon as the first edit is made (e.g. <code>my_graph.json</code> → <code>* my_graph.json</code>).</li>
+<li>The marker is removed automatically when the workflow is saved (Ctrl+S or File → Save).</li>
+<li><strong>Closing a dirty tab</strong> (via the ✕ button) shows a <strong>Save / Discard / Cancel</strong> dialog before the tab is removed.</li>
+<li><strong>Closing the application</strong> with one or more dirty tabs shows the same dialog for each dirty tab in order. Clicking Cancel on any tab aborts the close entirely.</li>
+<li>Loading a workflow from disk, opening via Recent Files, restoring from autosave, or opening a subgraph tab all start in a clean (unmarked) state.</li>
+</ul>
+<h3 id="port-type-mismatch-warning">Port Type Mismatch Warning</h3>
+<p>Connecting two ports whose data types are incompatible now logs a <code>warning</code> in the log panel immediately after the connection is made:</p>
+<pre><code>Type mismatch: 'NodeA.result' (string) → 'NodeB.count' (int)
+</code></pre>
+<ul>
+<li>The connection is <strong>still allowed</strong> — the warning is informational only.</li>
+<li>Ports typed <code>any</code> (including all exec flow pins) are always considered compatible and never trigger the warning.</li>
+<li>The warning respects the log panel's warning filter toggle.</li>
+</ul>
+<hr />
+<h2 id="bug-fixes">Bug Fixes</h2>
+<h3 id="f5-shiftf5-keyboard-shortcuts-not-firing">F5 / Shift+F5 Keyboard Shortcuts Not Firing</h3>
+<p>The Execute and Stop toolbar buttons showed <code>F5</code> and <code>Shift+F5</code> in their tooltips, but <code>setShortcut()</code> was never called. Pressing F5 had no effect.</p>
+<p><strong>Fix:</strong> Added <code>self.execute_btn.setShortcut("F5")</code> and <code>self.stop_btn.setShortcut("Shift+F5")</code> in <code>_init_toolbar()</code>.<br />
+<strong>File:</strong> <code>src/ui/window.py</code></p>
+<h3 id="loaded-workflows-showing-dirty-marker">Loaded Workflows Showing <code>*</code> Dirty Marker</h3>
+<p>Opening a previously saved workflow (via File → Open, Open Recent, or autosave restore) immediately stamped <code>*</code> on the tab label, making a clean file appear unsaved.</p>
+<p><strong>Root cause:</strong> <code>from_workflow_model()</code> internally calls <code>connect_nodes()</code>, <code>add_sticky_note()</code>, and <code>add_backdrop()</code>, each of which calls <code>push_history()</code>. The new dirty-tracking logic in <code>push_history()</code> fired <code>dirty_changed(True)</code> during the load, stamping <code>*</code> before the user touched anything.</p>
+<p><strong>Fix:</strong> <code>from_workflow_model()</code> now saves and restores <code>_undoing</code> around its entire body (<code>self._undoing = True</code>). While the flag is set, <code>push_history()</code> returns immediately (existing guard: <code>if self._undoing: return</code>), suppressing all nested history and dirty-state calls. <code>undo()</code> / <code>redo()</code> already set <code>_undoing = True</code> before calling <code>from_workflow_model()</code>, so this pattern nests correctly with no side effects.<br />
+<strong>File:</strong> <code>src/ui/canvas/scene.py</code></p>
+<hr />
+<h2 id="keyboard-shortcuts">Keyboard Shortcuts</h2>
+<table>
+<thead>
+<tr>
+<th>Shortcut</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Ctrl+Shift+G</code></td>
+<td>Group / collapse selected nodes into a subgraph</td>
+</tr>
+<tr>
+<td><code>Ctrl+F</code></td>
+<td>Open canvas search bar</td>
+</tr>
+<tr>
+<td><code>Ctrl+M</code></td>
+<td>Toggle mini-map</td>
+</tr>
+<tr>
+<td><code>F5</code></td>
+<td><strong>Run workflow</strong> <em>(was broken — now fixed)</em></td>
+</tr>
+<tr>
+<td><code>Shift+F5</code></td>
+<td><strong>Stop workflow</strong> <em>(was broken — now fixed)</em></td>
+</tr>
+<tr>
+<td><code>Tab</code></td>
+<td>Open node-search popup</td>
+</tr>
+<tr>
+<td><code>Ctrl+E</code></td>
+<td>Edit selected node in Node Builder</td>
+</tr>
+<tr>
+<td><code>Ctrl+R</code></td>
+<td>Reload selected node from disk</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+R</code></td>
+<td>Reload all nodes</td>
+</tr>
+<tr>
+<td><code>Ctrl+D</code></td>
+<td>Duplicate selected nodes in place</td>
+</tr>
+<tr>
+<td><code>Ctrl+B</code></td>
+<td>Toggle bypass on selected nodes</td>
+</tr>
+<tr>
+<td><code>Ctrl+G</code></td>
+<td>Wrap selection in backdrop</td>
+</tr>
+<tr>
+<td><code>Ctrl+C</code> / <code>Ctrl+V</code></td>
+<td>Copy / Paste nodes</td>
+</tr>
+<tr>
+<td><code>F</code></td>
+<td>Focus / fit selected nodes</td>
+</tr>
+<tr>
+<td><code>Delete</code></td>
+<td>Delete selected items</td>
+</tr>
+<tr>
+<td><code>Ctrl+Wheel</code></td>
+<td>Zoom canvas</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="architecture-notes-for-contributors">Architecture Notes (for contributors)</h2>
+<h3 id="nodescenedirty_changed-signal-srcuicanvasscenepy"><code>NodeScene.dirty_changed</code> signal (<code>src/ui/canvas/scene.py</code>)</h3>
+<ul>
+<li><code>dirty_changed = Signal(bool)</code> — fires <code>True</code> on the first edit after a clean state; fires <code>False</code> when <code>mark_clean()</code> is called.</li>
+<li><code>push_history()</code> emits <code>dirty_changed(True)</code> only on the clean→dirty transition (not on every edit).</li>
+<li><code>mark_clean()</code> resets <code>_dirty</code> and emits <code>dirty_changed(False)</code> — called by <code>MainWindow</code> after every successful save.</li>
+<li><code>from_workflow_model()</code> gates all nested <code>push_history()</code> calls with <code>_undoing = True</code> so loading never triggers the dirty signal.</li>
+</ul>
+<h3 id="mainwindow_update_tab_dirty_markerview-dirty-srcuiwindowpy"><code>MainWindow._update_tab_dirty_marker(view, dirty)</code> (<code>src/ui/window.py</code>)</h3>
+<ul>
+<li>Connected to <code>scene.dirty_changed</code> for every new tab created by <code>add_new_workflow()</code>.</li>
+<li>Prepends <code>"* "</code> to the tab text when <code>dirty=True</code>; strips it when <code>dirty=False</code>.</li>
+<li>Uses identity comparison (<code>is</code>) to find the correct tab, guarding against name collisions.</li>
+</ul>
+<h3 id="nodescene_get_port_data_typeport-srcuicanvasscenepy"><code>NodeScene._get_port_data_type(port)</code> (<code>src/ui/canvas/scene.py</code>)</h3>
+<ul>
+<li>Private helper that reads <code>.type</code> (PortModel) or <code>.data_type</code> (Port base class), falling back to <code>"any"</code>.</li>
+<li>Used by <code>mouseReleaseEvent()</code> to check compatibility before logging the type mismatch warning.</li>
+</ul>
+<hr />
+<h2 id="upgrade-notes">Upgrade Notes</h2>
+<ul>
+<li>No breaking changes for custom nodes or automation scripts.</li>
+<li>No new dependencies.</li>
+<li>Existing saved workflows open cleanly with no <code>*</code> marker.</li>
+<li>The <code>_dirty</code> and <code>_undoing</code> flags on <code>NodeScene</code> are internal — do not set them directly from node <code>python_code</code>.</li>
+</ul>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var links = document.querySelectorAll('.sidebar a');
+    var headings = document.querySelectorAll('h1,h2,h3');
+    window.addEventListener('scroll', function() {
+        var cur = '';
+        headings.forEach(function(h) { if (h.offsetTop <= window.scrollY + 80) cur = h.id; });
+        links.forEach(function(a) {
+            a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+        });
+    });
+});
+</script>
+</body>
+</html>

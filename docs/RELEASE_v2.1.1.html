@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Release Notes v1.8.3 — Vibrante-Node v2.1.1</title>
+<title>Release Notes v2.1.1 — Vibrante-Node v2.1.1</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -70,30 +70,60 @@ blockquote { border-left: 4px solid #6c7086; padding-left: 16px; color: #a6adc8;
 <a class="nav-release" href="RELEASE_v1.0.5.html">Release Notes v1.0.5</a>
   <hr style="border-color:#313244;margin:10px 18px">
   <h2 style="margin-top:8px">On this page</h2>
-  <a href="#release-notes-vibrante-node-v183" style="padding-left:18px">Release Notes — Vibrante-Node v1.8.3</a>
+  <a href="#release-notes-vibrante-node-v211" style="padding-left:18px">Release Notes — Vibrante-Node v2.1.1</a>
 <a href="#overview" style="padding-left:18px">Overview</a>
 <a href="#bug-fixes" style="padding-left:18px">Bug Fixes</a>
-<a href="#engine-on_parameter_changed-called-during-execution-enginepy" style="padding-left:32px">Engine — on_parameter_changed Called During Execution (engine.py)</a>
+<a href="#scripting-console-theme-not-applied-on-switch" style="padding-left:32px">Scripting Console — Theme Not Applied on Switch</a>
+<a href="#windows-11-unknown-publisher-on-exe-launch" style="padding-left:32px">Windows 11 — "Unknown publisher" on Exe Launch</a>
+<a href="#changes" style="padding-left:18px">Changes</a>
+<a href="#houdini-plugin" style="padding-left:32px">Houdini Plugin</a>
+<a href="#contact-legal" style="padding-left:32px">Contact &amp; Legal</a>
+<a href="#developer-notes" style="padding-left:18px">Developer Notes</a>
+<a href="#upgrade-notes" style="padding-left:18px">Upgrade Notes</a>
 </nav>
 <main class="content">
-<h1 id="release-notes-vibrante-node-v183">Release Notes — Vibrante-Node v1.8.3</h1>
-<p><strong>Release date:</strong> 2026-04-30<br />
-<strong>Build:</strong> Python 3.10 / PyInstaller</p>
+<h1 id="release-notes-vibrante-node-v211">Release Notes — Vibrante-Node v2.1.1</h1>
+<p><strong>Release date:</strong> 2026-05-14<br />
+<strong>Build:</strong> Python 3.10 / PyInstaller — Windows 64-bit<br />
+<strong>Previous release:</strong> v2.1.0 (2026-05-14)</p>
 <hr />
 <h2 id="overview">Overview</h2>
-<p>v1.8.3 is a targeted bugfix patch that fixes incorrect <code>on_parameter_changed</code> calls being fired during node execution, which caused cascading side effects, premature data propagation, and unexpected flow triggers in complex graphs.</p>
+<p>v2.1.1 is a patch release that fixes the Scripting Console theme not applying on theme switch, ships the Houdini plugin's standalone LICENSE file, adds proper Windows VERSIONINFO metadata to the exe (fixes "Unknown publisher" on Windows 11), and cleans up contact information throughout the codebase.</p>
 <hr />
 <h2 id="bug-fixes">Bug Fixes</h2>
-<h3 id="engine-on_parameter_changed-called-during-execution-enginepy">Engine — <code>on_parameter_changed</code> Called During Execution (<code>engine.py</code>)</h3>
+<h3 id="scripting-console-theme-not-applied-on-switch">Scripting Console — Theme Not Applied on Switch</h3>
+<p>Switching to the light theme previously left the Scripting Console's code editor, debug output panel, and Git status panel still rendering with the dark palette.</p>
+<p><strong>Root causes fixed:</strong><br />
+- <code>debug_output</code> and <code>git_status</code> <code>QTextEdit</code> widgets had hardcoded dark-theme stylesheets set at construction time and were never updated when the theme changed.<br />
+- <code>_cascade_editor_theme()</code> in <code>window.py</code> only searched for <code>QsciScintilla</code> children; on systems without QScintilla installed it returned early, leaving the fallback <code>QPlainTextEdit</code>-based <code>CodeEditor</code> untouched.</p>
+<p><strong>Fix:</strong> <code>ScriptingConsole.apply_theme(is_dark)</code> now updates all three widgets. <code>MainWindow._apply_dark_theme()</code> and <code>_apply_light_theme()</code> call <code>scripting_console.apply_theme()</code> before cascading to other panels.</p>
+<h3 id="windows-11-unknown-publisher-on-exe-launch">Windows 11 — "Unknown publisher" on Exe Launch</h3>
+<p>The built <code>Vibrante-Node.exe</code> showed "Unknown publisher" in file Properties and Windows security prompts because no Windows <code>VERSIONINFO</code> resource was embedded.</p>
+<p><strong>Fix:</strong> Added <code>file_version_info.txt</code> (PyInstaller <code>VSVersionInfo</code> format) and wired it into <code>vibrante_node.spec</code> via <code>version='file_version_info.txt'</code>. The exe now embeds company name, product name, version <code>2.1.1.0</code>, and copyright metadata readable by Windows Explorer and security dialogs.</p>
+<blockquote>
+<p><strong>Note:</strong> Windows SmartScreen and UAC elevation dialogs ("orange shield") still require a trusted code-signing certificate. This fix addresses the metadata layer only.</p>
+</blockquote>
+<hr />
+<h2 id="changes">Changes</h2>
+<h3 id="houdini-plugin">Houdini Plugin</h3>
 <ul>
-<li>
-<p><strong><code>on_parameter_changed</code> called during pre-execute input sync</strong> — Before calling a node's <code>execute</code>, the engine synced incoming connection values and called <code>on_parameter_changed</code> for each one. Nodes like <code>TwoWaySwitchNode</code> that call <code>set_output</code> inside <code>on_parameter_changed</code> would then eagerly propagate intermediate/stale values to downstream nodes before <code>execute</code> had run, causing incorrect or double-propagated results. Fixed by removing the <code>on_parameter_changed</code> call from the pre-execute sync phase — parameters are already set directly and <code>execute</code> receives the correct values in <code>inputs</code>.</p>
-</li>
-<li>
-<p><strong><code>on_parameter_changed</code> called during reactive output propagation</strong> — When a node called <code>set_output</code> during its <code>execute</code>, the engine's output handler fired <code>on_parameter_changed</code> on every downstream data node. This caused cascading <code>set_output</code> calls from downstream <code>on_parameter_changed</code> implementations while the upstream node's <code>execute</code> was still running, potentially triggering flow execution at unexpected times. Fixed by removing the <code>on_parameter_changed</code> call from the reactive data propagation in the output handler. Downstream data nodes still receive updated parameter values (the direct parameter assignment is kept) and are correctly pulled via <code>_run_single_node_impl</code> when a flow node needs them.</p>
-</li>
+<li>Added <code>plugins/houdini/LICENSE</code> — standalone commercial license for the Houdini integration plugin, separate from the core open-source LICENSE.</li>
+<li>About Vibrante-Node Integration dialog now shows the Houdini plugin license text.</li>
 </ul>
-<p><strong>Nodes not affected:</strong> <code>WhileLoopNode</code>, <code>ForEachNode</code> — these read <code>condition</code>, <code>break_condition</code>, and <code>continue_condition</code> directly from <code>self.parameters</code>, which are still updated reactively by the engine's output handler.</p>
+<h3 id="contact-legal">Contact &amp; Legal</h3>
+<ul>
+<li>Replaced personal email addresses throughout the codebase with the official <code>contact@vibrante-node.com</code> address.</li>
+<li>Added official website (<code>https://vibrante-node.com</code>) to all relevant locations.</li>
+</ul>
+<hr />
+<h2 id="developer-notes">Developer Notes</h2>
+<ul>
+<li><code>file_version_info.txt</code> — new file at project root; must be kept in sync with the version shown in <code>src/ui/window.py</code> (About dialog). Update both <code>filevers</code>/<code>prodvers</code> tuples and <code>FileVersion</code>/<code>ProductVersion</code> strings on every version bump.</li>
+<li><code>CLAUDE.md</code> — developer guide updated with section 10.17 documenting the VERSIONINFO fix and the maintenance rule.</li>
+</ul>
+<hr />
+<h2 id="upgrade-notes">Upgrade Notes</h2>
+<p>No workflow format changes. Existing <code>.json</code> workflow files are fully compatible with v2.1.1.</p>
 </main>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
