@@ -1,0 +1,151 @@
+Vibrante-Node — Houdini Integration Plugin
+License Notice
+==========================================
+
+Version 1.0 · Effective 2026-05-14
+Copyright © 2024–2026 Mahmoud Kamal (KamalTD). All rights reserved.
+
+────────────────────────────────────────────────────────────────────────
+
+COMPONENT OVERVIEW
+==================
+
+This directory contains the Vibrante-Node Houdini Integration Plugin
+("the Plugin"), which provides:
+
+  • A JSON-RPC command server (vibrante_hou_server.py) that runs inside
+    a live SideFX Houdini session and exposes a TCP bridge for node
+    creation, parameter manipulation, cooking, and code execution.
+
+  • Launch and environment management (vibrante_node_houdini.py) that
+    starts the Vibrante-Node subprocess from Houdini with the correct
+    environment variables and port bindings.
+
+  • A curated Houdini node library (v_nodes_houdini/) and script
+    collection (v_scripts_houdini/) that integrate natively with the
+    Vibrante-Node visual pipeline graph.
+
+  • Houdini package configuration (vibrante_node.json) for zero-config
+    installation via Houdini's package discovery system.
+
+────────────────────────────────────────────────────────────────────────
+
+LICENSE CLASSIFICATION
+======================
+
+The Houdini Integration Plugin is classified as an Enterprise DCC
+Integration under the Vibrante-Node open-core licensing model.
+
+  COMPONENT                        LICENSE
+  ─────────────────────────────────────────────────────────────────────
+  vibrante_hou_server.py           Commercial License
+  vibrante_node_houdini.py         Commercial License
+  pythonrc.py / panel scripts      Commercial License
+  v_nodes_houdini/ (node defs)     Commercial License
+  v_scripts_houdini/ (scripts)     Commercial License
+
+────────────────────────────────────────────────────────────────────────
+
+FREE USE — NO LICENSE REQUIRED
+================================
+
+The Plugin may be used at no charge by:
+
+  • Individuals using it on a personal workstation for personal,
+    portfolio, or skill-development purposes.
+  • Students and educators for coursework, academic research, or
+    classroom instruction.
+  • Open productions where the final work is released publicly without
+    charge and the pipeline tooling is not sold or licensed.
+  • Open-source contributors evaluating or extending the Plugin to
+    submit patches upstream.
+  • Commercial studios during an internal evaluation period not
+    exceeding 30 days.
+
+────────────────────────────────────────────────────────────────────────
+
+COMMERCIAL USE — LICENSE REQUIRED
+===================================
+
+A commercial license is required when the Plugin is used:
+
+  • As part of any commercial studio pipeline (VFX, animation,
+    advertising, games, or motion graphics), regardless of seat count.
+  • To automate or accelerate billable client work or paid productions.
+  • On a render farm or shared server integrated with commercial render
+    managers (Deadline, Tractor, Royal Render, etc.).
+  • Inside a proprietary tool, SaaS product, or enterprise platform
+    distributed to third parties.
+  • In any deployment where Houdini is used for revenue-generating
+    production work and the Plugin bridges or automates part of that
+    workflow.
+
+────────────────────────────────────────────────────────────────────────
+
+HOW TO OBTAIN A COMMERCIAL LICENSE
+=====================================
+
+Contact:  contact@vibrante-node.com
+Website:  https://vibrante-node.com
+
+Please include:
+  - Studio or organisation name and size
+  - Intended deployment scope (seats, pipeline components, geography)
+  - Expected start date
+
+See COMMERCIAL_LICENSE.md in the project root for full commercial
+terms, tier pricing (Studio Seat / Studio Pipeline / Enterprise), and
+restrictions.
+
+────────────────────────────────────────────────────────────────────────
+
+RESTRICTIONS
+=============
+
+Regardless of license tier, the following are prohibited:
+
+  1. Distributing or sublicensing the Plugin to third parties without
+     a separate OEM agreement.
+  2. Removing or obscuring copyright notices, license headers, or
+     attribution strings from any Plugin file.
+  3. Using the Plugin to develop a competing Houdini-to-node-graph
+     integration product without a separate written agreement.
+  4. Circumventing the AGPLv3 network-use disclosure obligation for
+     any modified open-source component of Vibrante-Node that the
+     Plugin interacts with.
+
+────────────────────────────────────────────────────────────────────────
+
+WARRANTY DISCLAIMER
+====================
+
+THE PLUGIN IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT. THE LICENSOR
+SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+OR CONSEQUENTIAL DAMAGES ARISING OUT OF OR RELATED TO THE USE OF THE
+PLUGIN, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+
+────────────────────────────────────────────────────────────────────────
+
+TRADEMARK NOTICE
+=================
+
+"Houdini" and the Houdini logo are registered trademarks of
+SideFX Software Inc. This Plugin is an independent integration and
+is not endorsed by, affiliated with, or sponsored by SideFX.
+
+"Vibrante-Node" is a trademark of Mahmoud Kamal (KamalTD).
+See TRADEMARK_POLICY.md in the project root for usage guidelines.
+
+────────────────────────────────────────────────────────────────────────
+
+ADDITIONAL DOCUMENTS
+=====================
+
+  ../../LICENSE                 Open-core license overview (AGPLv3 + MIT + CC + Commercial)
+  ../../COMMERCIAL_LICENSE.md   Full commercial terms and tier pricing
+  ../../TRADEMARK_POLICY.md     Vibrante-Node branding and logo guidelines
+  ../../CLA.md                  Contributor License Agreement
+
+────────────────────────────────────────────────────────────────────────

@@ -15,6 +15,8 @@ Copyright © 2024–2026 Mahmoud Kamal (KamalTD). All rights reserved.
 | **"SaaS Deployment"** | Hosting the Software (or any derivative) as a networked service accessible to third parties |
 | **"Open Production"** | A project whose final output is released publicly without charge and whose pipeline tooling is not sold or licensed |
 | **"Individual"** | A single human operator using the Software on their own workstation for personal, educational, or non-commercial purposes |
+| **"Houdini Integration Plugin"** | The official enterprise integration component in `plugins/houdini/`, comprising the JSON-RPC command server (`vibrante_hou_server.py`), the launch module (`vibrante_node_houdini.py`), the Houdini node library (`v_nodes_houdini/`), and the script collection (`v_scripts_houdini/`) |
+| **"DCC Integration Plugin"** | Any official Vibrante-Node plugin that bridges the application to a Digital Content Creation tool (Houdini, Maya, Blender, etc.) via a local inter-process protocol |
 
 ---
 
@@ -63,6 +65,20 @@ Automated integration of Vibrante-Node with commercial render management systems
 ### 3.6 Closed-Source Enterprise Integrations
 
 Embedding or bundling Vibrante-Node (or a derivative) inside a proprietary commercial application, SaaS product, or enterprise platform.
+
+### 3.7 DCC Integration Plugin Deployment
+
+Use of any official DCC Integration Plugin — including the **Houdini Integration Plugin** (`plugins/houdini/`) — as part of any commercial pipeline, regardless of whether the host DCC application is itself licensed commercially.
+
+This includes:
+
+- Running `vibrante_hou_server.py` inside a studio-owned Houdini installation to bridge a commercial pipeline.
+- Using the `v_nodes_houdini/` node library or `v_scripts_houdini/` scripts in a commercial production workflow.
+- Distributing a pre-configured `vibrante_node.json` Houdini package to artists within a commercial studio environment.
+- Integrating the Plugin with automated render farm or pipeline orchestration systems (Deadline, Tractor, Royal Render, etc.) for commercial work.
+- Embedding the Plugin's TCP command server as part of a proprietary DCC pipeline tool distributed to clients or third parties.
+
+> **Note:** The Houdini Integration Plugin is governed by the license notice in `plugins/houdini/LICENSE` in addition to this agreement. In the event of any conflict, this agreement takes precedence.
 
 ---
 
