@@ -599,7 +599,9 @@ class MainWindow(QMainWindow):
             f"<p>{description}</p>"
             f"<hr>"
             f"<p><b>Copyright &copy; 2026 Mahmoud Kamal - KamalTD</b></p>"
+            f"<p>Website: <a href='https://vibrante-node.com'>vibrante-node.com</a></p>"
             f"<p>GitHub: <a href='https://github.com/KamalTD'>https://github.com/KamalTD</a></p>"
+            f"<p>Contact: <a href='mailto:contact@vibrante-node.com'>contact@vibrante-node.com</a></p>"
             f"<p>Built with PyQt5, Asyncio, and ❤️</p>"
             f"<hr>"
             f"<p><small>{license_text}</small></p>")
@@ -1424,6 +1426,10 @@ class MainWindow(QMainWindow):
                     scene = view.scene()
                     scene.from_workflow_model(workflow_model)
                     scene.file_path = tab_data.get("file_path") or ""
+                    # Recovered data is unsaved crash content — mark dirty so the
+                    # user is prompted to save and the * marker is shown.
+                    scene._dirty = True
+                    scene.dirty_changed.emit(True)
                     self.log_panel.log(f"Autosave restored: {name}", "info")
                     restored = True
                 except Exception as e:
@@ -1451,8 +1457,11 @@ class MainWindow(QMainWindow):
                 workflow = scene.to_workflow_model()
                 if not workflow.nodes and not workflow.sticky_notes and not workflow.backdrops:
                     continue
+                tab_name = self.tabs.tabText(i)
+                if tab_name.startswith("* "):
+                    tab_name = tab_name[2:]
                 tabs_data.append({
-                    "name": self.tabs.tabText(i),
+                    "name": tab_name,
                     "file_path": scene.file_path or "",
                     "workflow": json.loads(workflow.model_dump_json()),
                 })

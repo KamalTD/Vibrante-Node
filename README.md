@@ -234,4 +234,4 @@ Vibrante-Node uses an **open-core** hybrid licensing model.
 - ™️ [TRADEMARK_POLICY.md](TRADEMARK_POLICY.md) — Vibrante-Node branding guidelines
 - 🤝 [CLA.md](CLA.md) — Contributor License Agreement
 
-Licensing inquiries: **m.kamalvfx@gmail.com**
+Licensing inquiries: **contact@vibrante-node.com** — [vibrante-node.com](https://vibrante-node.com)
