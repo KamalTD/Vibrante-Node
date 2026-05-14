@@ -828,3 +828,22 @@ def mouseDoubleClickEvent(self, event):
 - In `src/ui/window.py`, `_apply_dark_theme()` and `_apply_light_theme()` now call `self.scripting_console.apply_theme(is_dark)` alongside the existing panel calls, before `_cascade_editor_theme()` runs.
 
 **Files**: `src/ui/scripting_console.py`, `src/ui/window.py`
+
+### 10.17 `vibrante_node.spec` — "Unknown publisher" on Windows 11
+
+**Symptom**: Running `Vibrante-Node.exe` on Windows 11 shows "Unknown publisher" in the security dialog and the file Properties → Details tab contains no company, product, or version metadata.
+
+**Root cause**: `EXE()` in `vibrante_node.spec` had no `version=` parameter, so PyInstaller built the exe without a Windows `VERSIONINFO` resource. Windows reads this resource to populate publisher metadata; without it, the OS displays "Unknown publisher".
+
+**Fix**: Added `file_version_info.txt` (PyInstaller `VSVersionInfo` format) and wired it into the spec:
+```python
+# vibrante_node.spec — EXE() call
+version='file_version_info.txt',   # Embeds VERSIONINFO — fixes "Unknown publisher" on Windows 11
+```
+`file_version_info.txt` embeds: `CompanyName=Vibrante-Node`, `ProductName=Vibrante-Node`, `FileVersion=2.1.0.0`, `LegalCopyright=Copyright (C) 2024-2026 Mahmoud Kamal (KamalTD)`.
+
+**Limitation**: Windows SmartScreen and UAC elevation dialogs ("orange shield") still show "Unknown publisher" because those require a trusted code-signing certificate. VERSIONINFO fixes the metadata layer only.
+
+**Maintenance rule**: When bumping the app version, update both `filevers`/`prodvers` tuples and the `FileVersion`/`ProductVersion` strings in `file_version_info.txt` to keep them in sync with the version shown in the About dialog (`src/ui/window.py`).
+
+**Files**: `file_version_info.txt` (new), `vibrante_node.spec`
