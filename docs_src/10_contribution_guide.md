@@ -572,7 +572,7 @@ Vibrante-Node uses semantic versioning: `MAJOR.MINOR.PATCH`.
 The version string lives in `src/__init__.py`:
 
 ```python
-__version__ = "2.0.0"
+__version__ = "2.1.0"
 ```
 
 Update this, `RELEASE_vX.Y.Z.md`, and `README.md` version badge in the same commit.

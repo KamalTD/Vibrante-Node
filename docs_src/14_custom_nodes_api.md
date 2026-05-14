@@ -1,4 +1,4 @@
-# Custom Nodes SDK / API Reference — Vibrante-Node v2.0.0
+# Custom Nodes SDK / API Reference — Vibrante-Node v2.1.0
 
 This document is the authoritative reference for every class, method, attribute,
 and hook exposed to custom node authors. It covers the full lifecycle from

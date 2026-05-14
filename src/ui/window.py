@@ -183,6 +183,29 @@ class MainWindow(QMainWindow):
                    base64.b64encode(bytes(self.saveState())).decode())
 
     def closeEvent(self, event):
+        for i in range(self.tabs.count()):
+            view = self.tabs.widget(i)
+            scene = view.scene() if view else None
+            if scene and scene._dirty:
+                tab_name = self.tabs.tabText(i)
+                if tab_name.startswith("* "):
+                    tab_name = tab_name[2:]
+                res = QMessageBox.question(
+                    self, "Unsaved Changes",
+                    f"'{tab_name}' has unsaved changes. Save before closing?",
+                    QMessageBox.Save | QMessageBox.Discard | QMessageBox.Cancel,
+                    QMessageBox.Save
+                )
+                if res == QMessageBox.Save:
+                    self.tabs.setCurrentIndex(i)
+                    self.save_workflow()
+                    if scene._dirty:
+                        event.ignore()
+                        return
+                elif res == QMessageBox.Cancel:
+                    event.ignore()
+                    return
+
         self._save_user_settings()
         # Clean exit — remove autosave so recovery is not offered next launch
         try:
@@ -209,13 +232,15 @@ class MainWindow(QMainWindow):
         view = NodeView(scene, self)
         index = self.tabs.addTab(view, name)
         self.tabs.setCurrentIndex(index)
-        
+
         # Connect selection signal
         scene.selectionChanged.connect(self._on_selection_changed)
-        
+        # Track unsaved changes
+        scene.dirty_changed.connect(lambda dirty, v=view: self._update_tab_dirty_marker(v, dirty))
+
         # Apply current theme
         scene.apply_theme(is_dark=self._is_dark_theme)
-        
+
         return view
 
     def _on_selection_changed(self):
@@ -234,8 +259,37 @@ class MainWindow(QMainWindow):
         # Refresh description for new tab's selection
         self._on_selection_changed()
 
+    def _update_tab_dirty_marker(self, view, dirty):
+        for i in range(self.tabs.count()):
+            if self.tabs.widget(i) is view:
+                text = self.tabs.tabText(i)
+                if dirty and not text.startswith("* "):
+                    self.tabs.setTabText(i, "* " + text)
+                elif not dirty and text.startswith("* "):
+                    self.tabs.setTabText(i, text[2:])
+                break
+
     def _close_tab(self, index):
         if self.tabs.count() > 1:
+            view = self.tabs.widget(index)
+            scene = view.scene() if view else None
+            if scene and scene._dirty:
+                tab_name = self.tabs.tabText(index)
+                if tab_name.startswith("* "):
+                    tab_name = tab_name[2:]
+                res = QMessageBox.question(
+                    self, "Unsaved Changes",
+                    f"'{tab_name}' has unsaved changes. Save before closing?",
+                    QMessageBox.Save | QMessageBox.Discard | QMessageBox.Cancel,
+                    QMessageBox.Save
+                )
+                if res == QMessageBox.Save:
+                    self.tabs.setCurrentIndex(index)
+                    self.save_workflow()
+                    if scene._dirty:
+                        return  # save dialog was cancelled
+                elif res == QMessageBox.Cancel:
+                    return
             self.tabs.removeTab(index)
         else:
             QMessageBox.information(self, "Info", "Cannot close the last workflow.")
@@ -467,6 +521,7 @@ class MainWindow(QMainWindow):
 
         release_menu = help_menu.addMenu('Release Notes')
         for ver in [
+            ("v2.1.0", "RELEASE_v2.1.0.md"),
             ("v2.0.0", "RELEASE_v2.0.0.md"),
             ("v1.8.5", "RELEASE_v1.8.5.md"),
             ("v1.8.4", "RELEASE_v1.8.4.md"),
@@ -540,7 +595,7 @@ class MainWindow(QMainWindow):
         )
         
         QMessageBox.about(self, "About Vibrante-Node",
-            f"<h3>Vibrante-Node v2.0.0</h3>"
+            f"<h3>Vibrante-Node v2.1.0</h3>"
             f"<p>{description}</p>"
             f"<hr>"
             f"<p><b>Copyright &copy; 2026 Mahmoud Kamal - KamalTD</b></p>"
@@ -659,12 +714,14 @@ class MainWindow(QMainWindow):
         # Run Workflow
         self.execute_btn = QAction(self.style().standardIcon(QStyle.SP_MediaPlay), "Run Workflow", self)
         self.execute_btn.setToolTip("Execute the active pipeline (F5)")
+        self.execute_btn.setShortcut("F5")
         self.execute_btn.triggered.connect(self.execute_pipeline)
         toolbar.addAction(self.execute_btn)
 
         # Stop Workflow
         self.stop_btn = QAction(self.style().standardIcon(QStyle.SP_MediaStop), "Stop Workflow", self)
         self.stop_btn.setToolTip("Stop the active pipeline (Shift+F5)")
+        self.stop_btn.setShortcut("Shift+F5")
         self.stop_btn.triggered.connect(self.stop_execution)
         self.stop_btn.setEnabled(False)
         toolbar.addAction(self.stop_btn)
@@ -1437,6 +1494,7 @@ class MainWindow(QMainWindow):
             self._atomic_write(file_path, workflow_model.model_dump_json(indent=4))
             scene.file_path = file_path
             self.tabs.setTabText(self.tabs.currentIndex(), os.path.basename(file_path))
+            scene.mark_clean()
             self.log_panel.log(f"Workflow saved: {file_path}", "success")
             self._add_recent_file(file_path)
 
@@ -1454,6 +1512,7 @@ class MainWindow(QMainWindow):
             self._atomic_write(file_path, workflow_model.model_dump_json(indent=4))
             scene.file_path = file_path
             self.tabs.setTabText(self.tabs.currentIndex(), os.path.basename(file_path))
+            scene.mark_clean()
             self.log_panel.log(f"Workflow saved as: {file_path}", "success")
             self._add_recent_file(file_path)
 

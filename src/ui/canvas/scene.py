@@ -1,4 +1,4 @@
-from src.utils.qt_compat import QtWidgets, QtCore, QtGui, exec_dialog
+from src.utils.qt_compat import QtWidgets, QtCore, QtGui, exec_dialog, Signal
 import asyncio
 
 QGraphicsScene = QtWidgets.QGraphicsScene
@@ -23,6 +23,8 @@ from uuid import uuid4, UUID
 global_clipboard = {"nodes": None}
 
 class NodeScene(QGraphicsScene):
+    dirty_changed = Signal(bool)  # emitted when unsaved-state changes
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setBackgroundBrush(QColor(40, 40, 40)) # Darker background
@@ -41,6 +43,7 @@ class NodeScene(QGraphicsScene):
         self.history = []
         self.redo_stack = []
         self._undoing = False
+        self._dirty = False
         self._sync_callback = None  # Set by MainWindow when this scene is a subgraph tab
 
         self.grid_size = 20
@@ -53,8 +56,16 @@ class NodeScene(QGraphicsScene):
         self.redo_stack.clear()
         if len(self.history) > 50: # Limit history
             self.history.pop(0)
+        if not self._dirty:
+            self._dirty = True
+            self.dirty_changed.emit(True)
         if self._sync_callback:
             self._sync_callback(snapshot)
+
+    def mark_clean(self):
+        if self._dirty:
+            self._dirty = False
+            self.dirty_changed.emit(False)
 
     def undo(self):
         if not self.history: return
@@ -85,6 +96,15 @@ class NodeScene(QGraphicsScene):
     def _safe_async_call(self, coro):
         """Helper to call async methods from the UI thread using a background loop."""
         AsyncRuntime.run_coroutine(coro)
+
+    def _get_port_data_type(self, port):
+        """Returns the data type string for a port widget."""
+        pd = port.port_definition
+        if hasattr(pd, "type"):
+            return pd.type.lower()
+        if hasattr(pd, "data_type"):
+            return pd.data_type.lower()
+        return "any"
 
     def _trigger_unplug(self, from_port, to_port):
         """Triggers sync and async unplug events."""
@@ -539,6 +559,8 @@ class NodeScene(QGraphicsScene):
         return model
 
     def from_workflow_model(self, model: WorkflowModel):
+        _prev_undoing = self._undoing
+        self._undoing = True  # suppress push_history (and dirty marking) during load
         self.clear()
         self.nodes = []
         self.edges = []
@@ -595,6 +617,8 @@ class NodeScene(QGraphicsScene):
             
         for bd_model in model.backdrops:
             self.add_backdrop(bd_model.title, bd_model.position, bd_model.size, bd_model.color, bd_model.id)
+
+        self._undoing = _prev_undoing
 
     def add_sticky_note(self, text="New Note", pos=(0, 0), size=(200, 150), color="#ffffcc", instance_id=None):
         self.push_history()
@@ -720,6 +744,19 @@ class NodeScene(QGraphicsScene):
                     if self.active_edge not in self.edges:
                         self.edges.append(self.active_edge)
                     self._trigger_plug(target_output, target_input)
+
+                    out_type = self._get_port_data_type(target_output)
+                    in_type = self._get_port_data_type(target_input)
+                    if out_type != "any" and in_type != "any" and out_type != in_type:
+                        from_name = target_output.parentItem().node_definition.name
+                        to_name = target_input.parentItem().node_definition.name
+                        msg = (
+                            f"Type mismatch: '{from_name}.{target_output.port_definition.name}' "
+                            f"({out_type}) → '{to_name}.{target_input.port_definition.name}' ({in_type})"
+                        )
+                        if self.parent() and hasattr(self.parent(), 'log_panel'):
+                            self.parent().log_panel.log(msg, "warning")
+
                     self.active_edge = None
                 else:
                     self.removeItem(self.active_edge)

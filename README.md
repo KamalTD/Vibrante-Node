@@ -22,6 +22,12 @@ The project focuses on flexibility, extensibility, and developer productivity, m
 
 ## 🌟 Latest Enhancements
 
+### 🔔 Unsaved Changes Detection — Tab `*` Marker (v2.1.0)
+Every workflow tab now tracks unsaved edits. A `*` prefix appears on the tab label the moment a change is made (e.g. `my_graph.json` → `* my_graph.json`). Closing a dirty tab or the whole application shows a **Save / Discard / Cancel** dialog per tab so no work is lost.
+
+### ⚠️ Port Type Mismatch Warning (v2.1.0)
+Connecting ports of incompatible types (e.g. `string` → `int`) logs a warning to the log panel immediately. The connection is still allowed — the warning is informational. `any`-typed ports (including all exec flow pins) are always compatible.
+
 ### 🗂️ Subgraph / Group Node — Ctrl+Shift+G (v2.0.0)
 Collapse any selection of connected nodes into a single **GroupNode** that stores the full subgraph internally:
 - **Double-click** to open the subgraph in a new, fully editable tab. Changes sync back to the parent workflow in real time (undo/redo included).
@@ -177,7 +183,8 @@ Detailed documentation is available for both users and developers:
 -   🤖 **[Automation API](AUTOMATION_API.md)**: Reference for Scripting Console automation.
 -   🛠️ **[Developer Documentation](DEVELOPER.md)**: Technical architecture and internal data flow.
 -   📄 **[Technical Feature List](DOCUMENTATION.md)**: Detailed breakdown of all platform features.
--   📋 **[Release Notes v2.0.0](RELEASE_v2.0.0.md)**: Full changelog for the current release.
+-   📋 **[Release Notes v2.1.0](RELEASE_v2.1.0.md)**: Full changelog for the current release.
+-   📋 **[Release Notes v2.0.0](RELEASE_v2.0.0.md)**: Changelog for v2.0.0.
 
 ---
 
