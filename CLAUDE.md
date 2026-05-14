@@ -766,3 +766,45 @@ def mouseDoubleClickEvent(self, event):
 - Sets `scene._sync_callback` — a closure that writes every change back to `group_widget.node_definition.parameters["__workflow__"]` and pushes the parent scene's history. Triggered by `push_history()` (user edits), `undo()`, and `redo()` on the subgraph scene. Subgraph tabs are now fully editable.
 
 **Keyboard shortcut conflict note**: Ctrl+G is already used by "Wrap in Backdrop" in `view.keyPressEvent`. Group Selection uses **Ctrl+Shift+G** instead.
+
+### 10.13 `window.py` — F5 / Shift+F5 shortcuts not wired
+**Symptom**: Execute (F5) and Stop (Shift+F5) toolbar buttons showed the shortcuts in their tooltips but pressing the keys did nothing.  
+**Fix**: Added `self.execute_btn.setShortcut("F5")` and `self.stop_btn.setShortcut("Shift+F5")` immediately after the `setToolTip` calls in `_init_toolbar()`.  
+**File**: `src/ui/window.py`
+
+### 10.14 `scene.py` — Type mismatch warning on port connection
+**Feature**: When a user connects two ports whose types are incompatible (e.g. `string` → `float`), a `"warning"` level message is logged to the log panel immediately after the connection is made. The connection is still allowed — the warning is informational only.
+
+**How it works:**
+- `NodeScene._get_port_data_type(port)` — private helper that reads `.type` (PortModel) or `.data_type` (Port base class), falling back to `"any"`. Placed just above `_trigger_unplug`.
+- `mouseReleaseEvent` — after `_trigger_plug(target_output, target_input)`, calls `_get_port_data_type` on both ports and logs if neither side is `"any"` and the types differ:
+  ```
+  Type mismatch: 'NodeA.result' (string) → 'NodeB.count' (int)
+  ```
+- `"any"` is always compatible (exec flow ports use `type="any"`). Same types always pass silently.  
+**File**: `src/ui/canvas/scene.py`
+
+### 10.15 Unsaved-Changes Detection (tab `*` marker + close prompts)
+
+**Feature**: Any edit to a workflow marks its tab with a `*` prefix (e.g. `* my_graph.json`). Closing a dirty tab or the whole app shows a Save / Discard / Cancel dialog per dirty tab.
+
+**How it works:**
+
+`src/ui/canvas/scene.py`:
+- `NodeScene.dirty_changed = Signal(bool)` — class-level signal emitted when clean↔dirty state transitions.
+- `NodeScene._dirty = False` — initialised in `__init__`.
+- `push_history()` — after appending the snapshot, if `_dirty` was `False` it sets it to `True` and emits `dirty_changed(True)`. Subsequent edits are no-ops (signal only fires on clean→dirty transition).
+- `mark_clean()` — sets `_dirty = False` and emits `dirty_changed(False)`. Called by `MainWindow` after a successful save.
+
+`src/ui/window.py`:
+- `add_new_workflow()` — connects `scene.dirty_changed` to `lambda dirty, v=view: self._update_tab_dirty_marker(v, dirty)`.
+- `_update_tab_dirty_marker(view, dirty)` — finds the tab index for `view`, prepends `"* "` when dirty, strips it when clean. No-op if already in the correct state.
+- `save_workflow()` / `save_workflow_as()` — call `scene.mark_clean()` immediately after `setTabText(...)`.
+- `_close_tab(index)` — before `removeTab`, if `scene._dirty`: shows QMessageBox(Save|Discard|Cancel). Save → calls `save_workflow()`; if still dirty (dialog cancelled) → aborts close. Cancel → aborts close. Discard → proceeds.
+- `closeEvent()` — loops all tabs before `_save_user_settings()`; same Save/Discard/Cancel logic per dirty tab; calls `event.ignore()` and returns early on Save-cancelled or Cancel.
+
+**Invariants:**
+- Load / autosave-restore → scene starts with `_dirty = False` (data matches disk).
+- Undo/redo do NOT call `mark_clean()` — once dirty, only an explicit save cleans the tab.
+- Subgraph tabs participate in the same mechanism (edits propagate via `push_history`).
+- `from_workflow_model()` saves and restores `_undoing` around its body (`_prev_undoing = self._undoing; self._undoing = True … self._undoing = _prev_undoing`). This suppresses all nested `push_history` calls (from `connect_nodes`, `add_sticky_note`, `add_backdrop`) so loading a file never sets `_dirty = True`. `undo()`/`redo()` already set `_undoing = True` before calling `from_workflow_model`, so the save/restore is a safe no-op in those paths.

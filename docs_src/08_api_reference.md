@@ -1,4 +1,4 @@
-# Full API Reference — Vibrante-Node v2.0.0
+# Full API Reference — Vibrante-Node v2.1.0
 
 This document is the complete public API reference for all classes, signals,
 and utilities available to node authors, workflow automation scripts, and
@@ -511,7 +511,7 @@ description):
 
 ```python
 workflow.metadata["author"] = "Studio Pipeline Team"
-workflow.metadata["vibrante_version"] = "2.0.0"
+workflow.metadata["vibrante_version"] = "2.1.0"
 ```
 
 ---

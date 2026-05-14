@@ -1,6 +1,6 @@
 # 09 — Advanced Topics
 
-**Vibrante-Node v2.0.0 — Technical Reference**
+**Vibrante-Node v2.1.0 — Technical Reference**
 
 This document covers advanced usage patterns, production deployment, DCC integration deep-dives, headless execution, custom executors, security considerations, and version migration. It is intended for pipeline TDs, tool developers, and studio engineers who need to go beyond the basic node-authoring workflow.
 
@@ -1069,7 +1069,7 @@ def restore_from_parameters(self, parameters):
 ```python
 # When saving:
 model = scene.to_workflow_model()
-model.metadata["vibrante_version"] = "2.0.0"
+model.metadata["vibrante_version"] = "2.1.0"
 ```
 
 ```python
