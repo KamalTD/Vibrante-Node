@@ -1,5 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
-# PyInstaller spec for Vibrante-Node v2.1.0 Windows 64-bit build
+# PyInstaller spec for Vibrante-Node v2.1.1 Windows 64-bit build
 # Run: pyinstaller vibrante_node.spec
 
 import os
@@ -106,6 +106,7 @@ exe = EXE(
     codesign_identity=None,
     entitlements_file=None,
     icon='icons/vibrante-node-icon.png',  # App icon
+    version='file_version_info.txt',      # Embeds VERSIONINFO — fixes "Unknown publisher" on Windows 11
 )
 
 coll = COLLECT(

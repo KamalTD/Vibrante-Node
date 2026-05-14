@@ -521,6 +521,7 @@ class MainWindow(QMainWindow):
 
         release_menu = help_menu.addMenu('Release Notes')
         for ver in [
+            ("v2.1.1", "RELEASE_v2.1.1.md"),
             ("v2.1.0", "RELEASE_v2.1.0.md"),
             ("v2.0.0", "RELEASE_v2.0.0.md"),
             ("v1.8.5", "RELEASE_v1.8.5.md"),
@@ -599,7 +600,7 @@ class MainWindow(QMainWindow):
 
         # --- header ---
         header = QLabel(
-            "<h3 style='margin:0'>Vibrante-Node v2.1.0</h3>"
+            "<h3 style='margin:0'>Vibrante-Node v2.1.1</h3>"
             "<p style='margin:4px 0'>A Python-node-based visual framework for building modular systems "
             "through connected nodes and data flows.</p>"
             "<p style='margin:4px 0'>"
