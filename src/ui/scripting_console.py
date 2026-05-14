@@ -252,6 +252,15 @@ print('Hello from Scripting Console!')
     def _refresh_git_status(self):
         self._run_git(["status"])
 
+    def apply_theme(self, is_dark: bool):
+        self.editor.apply_theme(is_dark)
+        if is_dark:
+            panel_style = "background-color: #282a36; color: #f8f8f2; font-family: Consolas;"
+        else:
+            panel_style = "background-color: #fafafa; color: #383a42; font-family: Consolas;"
+        self.debug_output.setStyleSheet(panel_style)
+        self.git_status.setStyleSheet(panel_style)
+
     def _git_commit(self):
         msg = self.commit_msg.text()
         if not msg:

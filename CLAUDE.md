@@ -812,3 +812,19 @@ def mouseDoubleClickEvent(self, event):
 - Undo/redo do NOT call `mark_clean()` — once dirty, only an explicit save cleans the tab.
 - Subgraph tabs participate in the same mechanism (edits propagate via `push_history`).
 - `from_workflow_model()` saves and restores `_undoing` around its body (`_prev_undoing = self._undoing; self._undoing = True … self._undoing = _prev_undoing`). This suppresses all nested `push_history` calls (from `connect_nodes`, `add_sticky_note`, `add_backdrop`) so loading a file never sets `_dirty = True`. `undo()`/`redo()` already set `_undoing = True` before calling `from_workflow_model`, so the save/restore is a safe no-op in those paths.
+
+### 10.16 `scripting_console.py` — theme not applied on theme switch
+
+**Symptom**: Switching to the light theme left the Scripting Console's code editor, debug output panel, and Git status panel still rendering with the dark palette.
+
+**Root causes**:
+1. `debug_output` and `git_status` `QTextEdit`s had hardcoded dark-theme stylesheets set at construction time (`"background-color: #282a36; …"`) and were never updated on theme change.
+2. `_cascade_editor_theme()` in `window.py` only searches for `QsciScintilla` children; if QScintilla is not installed it returns early, leaving the fallback `QPlainTextEdit`-based `CodeEditor` untouched.
+
+**Fix**:
+- Added `ScriptingConsole.apply_theme(is_dark: bool)` in `src/ui/scripting_console.py` that:
+  - Delegates to `self.editor.apply_theme(is_dark)` (handles both QScintilla and fallback implementations).
+  - Switches `debug_output` and `git_status` between the dark (`#282a36`/`#f8f8f2`) and light (`#fafafa`/`#383a42`) palettes.
+- In `src/ui/window.py`, `_apply_dark_theme()` and `_apply_light_theme()` now call `self.scripting_console.apply_theme(is_dark)` alongside the existing panel calls, before `_cascade_editor_theme()` runs.
+
+**Files**: `src/ui/scripting_console.py`, `src/ui/window.py`

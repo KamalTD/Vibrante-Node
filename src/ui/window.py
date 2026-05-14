@@ -579,32 +579,81 @@ class MainWindow(QMainWindow):
             QMessageBox.critical(self, "Error", "Help index not found.")
 
     def _show_about(self):
-        description = (
-            "Vibrante-Node is a Python-node-based visual framework for building modular systems "
-            "through connected nodes and data flows. It provides an intuitive graph interface "
-            "where complex logic can be constructed visually by linking nodes together.<br><br>"
-            "The project focuses on flexibility, extensibility, and developer productivity, "
-            "making it suitable for building tools such as visual pipelines, automation workflows, "
-            "and data-processing graphs."
+        from PyQt5.QtWidgets import QDialog, QTextEdit, QPushButton, QHBoxLayout, QFrame
+        from PyQt5.QtGui import QFont
+
+        try:
+            with open(resource_path('LICENSE'), 'r', encoding='utf-8') as _f:
+                license_text = _f.read()
+        except Exception:
+            license_text = "LICENSE file not found. See https://vibrante-node.com for full license terms."
+
+        dlg = QDialog(self)
+        dlg.setWindowTitle("About Vibrante-Node")
+        dlg.setMinimumSize(620, 520)
+        dlg.resize(660, 560)
+
+        layout = QVBoxLayout(dlg)
+        layout.setSpacing(10)
+        layout.setContentsMargins(16, 16, 16, 12)
+
+        # --- header ---
+        header = QLabel(
+            "<h3 style='margin:0'>Vibrante-Node v2.1.0</h3>"
+            "<p style='margin:4px 0'>A Python-node-based visual framework for building modular systems "
+            "through connected nodes and data flows.</p>"
+            "<p style='margin:4px 0'>"
+            "<b>Copyright &copy; 2026 Mahmoud Kamal (KamalTD)</b><br>"
+            "Website: <a href='https://vibrante-node.com'>vibrante-node.com</a> &nbsp;|&nbsp; "
+            "GitHub: <a href='https://github.com/KamalTD'>github.com/KamalTD</a> &nbsp;|&nbsp; "
+            "Contact: <a href='mailto:contact@vibrante-node.com'>contact@vibrante-node.com</a>"
+            "</p>"
+            "<p style='margin:4px 0'>Built with PyQt5, Asyncio, and ❤️</p>"
         )
-        
-        license_text = (
-            "Permission is granted to use, modify, and test this software for personal and non-commercial purposes.<br><br>"
-            "Commercial use, redistribution in commercial products, or use within commercial services requires "
-            "written permission from the author."
+        header.setOpenExternalLinks(True)
+        header.setWordWrap(True)
+        layout.addWidget(header)
+
+        sep = QFrame()
+        sep.setFrameShape(QFrame.HLine)
+        sep.setFrameShadow(QFrame.Sunken)
+        layout.addWidget(sep)
+
+        # --- license text area ---
+        license_label = QLabel("<b>License Agreement</b>")
+        layout.addWidget(license_label)
+
+        text_edit = QTextEdit()
+        text_edit.setReadOnly(True)
+        text_edit.setPlainText(license_text)
+        text_edit.setFont(QFont("Courier New", 9))
+        text_edit.setLineWrapMode(QTextEdit.NoWrap)
+        layout.addWidget(text_edit, stretch=1)
+
+        # --- acceptance notice ---
+        sep2 = QFrame()
+        sep2.setFrameShape(QFrame.HLine)
+        sep2.setFrameShadow(QFrame.Sunken)
+        layout.addWidget(sep2)
+
+        notice = QLabel(
+            "<small>By using Vibrante-Node you acknowledge that you have read, understood, "
+            "and agree to be bound by the terms of the License Agreement above.</small>"
         )
-        
-        QMessageBox.about(self, "About Vibrante-Node",
-            f"<h3>Vibrante-Node v2.1.0</h3>"
-            f"<p>{description}</p>"
-            f"<hr>"
-            f"<p><b>Copyright &copy; 2026 Mahmoud Kamal - KamalTD</b></p>"
-            f"<p>Website: <a href='https://vibrante-node.com'>vibrante-node.com</a></p>"
-            f"<p>GitHub: <a href='https://github.com/KamalTD'>https://github.com/KamalTD</a></p>"
-            f"<p>Contact: <a href='mailto:contact@vibrante-node.com'>contact@vibrante-node.com</a></p>"
-            f"<p>Built with PyQt5, Asyncio, and ❤️</p>"
-            f"<hr>"
-            f"<p><small>{license_text}</small></p>")
+        notice.setWordWrap(True)
+        layout.addWidget(notice)
+
+        # --- close button ---
+        btn_row = QHBoxLayout()
+        btn_row.addStretch()
+        ok_btn = QPushButton("OK")
+        ok_btn.setDefault(True)
+        ok_btn.setFixedWidth(80)
+        ok_btn.clicked.connect(dlg.accept)
+        btn_row.addWidget(ok_btn)
+        layout.addLayout(btn_row)
+
+        dlg.exec_()
 
     def _link_to_gemini(self):
         import webbrowser
@@ -1088,6 +1137,8 @@ class MainWindow(QMainWindow):
                 if isinstance(view, NodeView):
                     view.scene().apply_theme(is_dark=True)
                     view.apply_theme(is_dark=True)
+        if hasattr(self, 'scripting_console'):
+            self.scripting_console.apply_theme(is_dark=True)
         self._cascade_editor_theme(True)
 
     def _apply_light_theme(self):
@@ -1109,6 +1160,8 @@ class MainWindow(QMainWindow):
                 if isinstance(view, NodeView):
                     view.scene().apply_theme(is_dark=False)
                     view.apply_theme(is_dark=False)
+        if hasattr(self, 'scripting_console'):
+            self.scripting_console.apply_theme(is_dark=False)
         self._cascade_editor_theme(False)
 
     def _cascade_editor_theme(self, is_dark: bool):

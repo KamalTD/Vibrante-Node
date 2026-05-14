@@ -12,6 +12,7 @@ the project are licensed under different terms.
   SDK / Public API             MIT License
   Documentation & Examples     Creative Commons Attribution 4.0 (CC BY 4.0)
   Official Plugins & Nodes     Commercial License
+  Houdini Integration Plugin   Commercial License  (plugins/houdini/)
   Enterprise Integrations      Commercial License
 
 ────────────────────────────────────────────────────────────────────────
@@ -95,6 +96,15 @@ configurations — are available only under a commercial license.
 
 Free for:  individuals · students · open productions · research
 Paid for:  commercial studios · SaaS deployment · closed-source pipelines
+
+Houdini Integration Plugin (plugins/houdini/)
+  The Houdini Integration Plugin bridges Vibrante-Node to a live SideFX
+  Houdini session via a local JSON-RPC command server. It is an
+  Enterprise DCC Integration subject to the commercial license. A
+  dedicated license notice is available at plugins/houdini/LICENSE.
+
+  "Houdini" is a trademark of SideFX Software Inc. This integration is
+  independent and is not endorsed by or affiliated with SideFX.
 
 See COMMERCIAL_LICENSE.md for full terms and pricing.
 Contact:   contact@vibrante-node.com
