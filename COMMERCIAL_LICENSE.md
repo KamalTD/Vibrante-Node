@@ -70,11 +70,11 @@ Embedding or bundling Vibrante-Node (or a derivative) inside a proprietary comme
 
 | Tier | Scope | Contact |
 |---|---|---|
-| **Studio Seat** | Single named artist at a commercial studio | m.kamalvfx@gmail.com |
-| **Studio Pipeline** | Unlimited seats within a single studio entity | m.kamalvfx@gmail.com |
-| **Enterprise** | Multi-studio, cloud deployment, SaaS, OEM embedding | m.kamalvfx@gmail.com |
+| **Studio Seat** | Single named artist at a commercial studio | contact@vibrante-node.com |
+| **Studio Pipeline** | Unlimited seats within a single studio entity | contact@vibrante-node.com |
+| **Enterprise** | Multi-studio, cloud deployment, SaaS, OEM embedding | contact@vibrante-node.com |
 
-Pricing and terms are negotiated per engagement. Contact the author at **m.kamalvfx@gmail.com** to request a quote.
+Pricing and terms are negotiated per engagement. Contact the author at **contact@vibrante-node.com** to request a quote.
 
 ---
 
@@ -140,7 +140,8 @@ This agreement is governed by the laws of the jurisdiction in which the Licensor
 ## 11. Contact
 
 **Mahmoud Kamal**  
-Email: m.kamalvfx@gmail.com  
+Email: contact@vibrante-node.com  
+Website: [vibrante-node.com](https://vibrante-node.com)  
 GitHub: [github.com/KamalTD](https://github.com/KamalTD)
 
 For commercial licensing inquiries, please include:

@@ -89,18 +89,18 @@ The following uses are **not permitted** without explicit written permission fro
 
 Commercial license holders (see [COMMERCIAL_LICENSE.md](COMMERCIAL_LICENSE.md)) may request permission to use the **"Powered by Vibrante-Node"** mark on their pipeline tools, subject to the following:
 
-- The mark must link to the official repository or website.
+- The mark must link to the official website ([vibrante-node.com](https://vibrante-node.com)) or repository.
 - The Vibrante-Node name must not appear larger or more prominently than the Licensee's own product name.
 - The mark must not appear alongside content that is misleading or disparaging.
 - Permission is revocable if the commercial license lapses or is terminated.
 
-To request permission, contact **m.kamalvfx@gmail.com** with a description of the intended use.
+To request permission, contact **contact@vibrante-node.com** with a description of the intended use.
 
 ---
 
 ## 6. Reporting Violations
 
-If you observe a use of the Vibrante-Node marks that you believe violates this policy, please report it by opening a GitHub issue or contacting **m.kamalvfx@gmail.com**.
+If you observe a use of the Vibrante-Node marks that you believe violates this policy, please report it by opening a GitHub issue or contacting **contact@vibrante-node.com**.
 
 ---
 

@@ -648,6 +648,10 @@ These bugs were found and fixed. Do not revert these changes.
 
 **Guarded against**: execution in progress (`_is_executing`), empty tabs, corrupt autosave file (silently deleted), missing file on removal.
 
+**Bug fixes (v2.1.0)**:
+- `_autosave()` now strips the `"* "` dirty prefix from tab names before writing. Without this, a dirty tab named `"* my_graph.json"` was restored as `"[Recovered] * my_graph.json"`. Fix: `tab_name = tabText(i); if tab_name.startswith("* "): tab_name = tab_name[2:]`.
+- `_try_restore_autosave()` now sets `scene._dirty = True` and emits `dirty_changed(True)` after `from_workflow_model()`. `from_workflow_model` suppresses `push_history` via `_undoing`, so restored tabs started with `_dirty = False` — no `*` marker, no save prompt on close. Recovered data is unsaved crash content and must be treated as dirty.
+
 ### 10.6 Recent Files (v1.8.6+)
 
 **Feature**: File menu → **Open Recent** submenu lists the last 10 saved/loaded workflows. Entries for files that no longer exist on disk are shown grayed-out (disabled). "Clear Recent Files" wipes the list.

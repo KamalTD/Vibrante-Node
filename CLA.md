@@ -80,14 +80,15 @@ You provide your Contribution **"as is,"** without warranty of any kind, express
 
 This CLA is accepted implicitly by submitting any Contribution (pull request, patch, or code-bearing issue) to the Vibrante-Node repository.
 
-If your organisation requires a formal signed CLA, contact **m.kamalvfx@gmail.com** to request a countersigned copy.
+If your organisation requires a formal signed CLA, contact **contact@vibrante-node.com** to request a countersigned copy.
 
 ---
 
 ## 11. Contact
 
 **Mahmoud Kamal**  
-Email: m.kamalvfx@gmail.com  
+Email: contact@vibrante-node.com  
+Website: [vibrante-node.com](https://vibrante-node.com)  
 GitHub: [github.com/KamalTD](https://github.com/KamalTD)
 
 ---
