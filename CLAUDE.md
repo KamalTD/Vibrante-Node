@@ -1060,6 +1060,16 @@ Also added `QDialog` to the top-level `PyQt5.QtWidgets` import at line 7.
 
 All version update targets as per section 10.18 have been updated for v2.2.0. Key items for future reference:
 
-- `file_version_info.txt` tuples use `(X, Y, 0, 0)` — the third component is always 0 for minor/patch releases (e.g. v2.2.0 → `(2, 2, 0, 0)`).
+- `file_version_info.txt` tuples map directly to semver: `(MAJOR, MINOR, PATCH, 0)` — e.g. v2.2.0 → `(2, 2, 0, 0)`, v2.2.1 → `(2, 2, 1, 0)`.
 - `tools/build_docs.py` and `tools/build_docs_portal.py` are in `.gitignore` as a directory path but tracked individually — use `git add -f tools/build_docs.py tools/build_docs_portal.py` when staging.
 - Build artifacts live in `dist/Vibrante-Node-v{ver}-Windows-x64.zip`. GitHub release upload requires `gh auth login` first.
+
+### 10.24 v2.2.1 Release Maintenance Rules
+
+**Version**: v2.2.1 — Released 2026-05-15
+**Type**: Patch — exe build bug fixes only
+
+All version update targets as per section 10.18 have been updated for v2.2.1. Key fixes recorded in this release:
+
+- `QTextEdit` → `QTextBrowser` in `_show_about()` — `QTextEdit` does not have `setOpenExternalLinks()`. `QTextBrowser` is the drop-in subclass that supports both `setOpenExternalLinks(True)` and the full `QTextEdit` API. **Never revert to `QTextEdit` for the license panel.**
+- `LICENSE` added to PyInstaller `datas` as `('LICENSE', '.')` → lands in `_internal/`. `resource_path('LICENSE')` resolves to `sys._MEIPASS/LICENSE` in the frozen exe. Both the fallback branch and the real file path now work correctly in the exe.
