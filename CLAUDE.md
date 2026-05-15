@@ -842,11 +842,28 @@ version='file_version_info.txt',   # Embeds VERSIONINFO — fixes "Unknown publi
 ```
 `file_version_info.txt` embeds: `CompanyName=Vibrante-Node`, `ProductName=Vibrante-Node`, `FileVersion=2.1.1.0`, `LegalCopyright=Copyright (C) 2024-2026 Mahmoud Kamal (KamalTD)`.
 
-**Limitation**: Windows SmartScreen and UAC elevation dialogs ("orange shield") still show "Unknown publisher" because those require a trusted code-signing certificate. VERSIONINFO fixes the metadata layer only.
+**Limitation**: Windows SmartScreen and UAC elevation dialogs ("orange shield") still show "Unknown publisher" because those require a trusted Authenticode signature. VERSIONINFO fixes the Properties → Details metadata only. Authenticode signing is handled separately (see below).
+
+**Authenticode signing** (removes "Unknown publisher" from security dialogs):
+
+- `tools/create_dev_cert.ps1` — creates a self-signed code signing cert and trusts it in `CurrentUser\Trusted Root CA`. Changes "Unknown publisher" → "Vibrante-Node Dev" on the local machine. Self-signed certs are NOT trusted by Windows SmartScreen for other users.
+- `tools/sign_release.ps1` — signs the built exe with the best available cert in the cert store. Pass `-Thumbprint` to target a specific cert.
+
+```
+# Dev/testing (local machine only):
+powershell -ExecutionPolicy Bypass -File tools\create_dev_cert.ps1
+powershell -ExecutionPolicy Bypass -File tools\sign_release.ps1
+
+# Release (requires commercial OV or EV cert installed in cert store):
+powershell -ExecutionPolicy Bypass -File tools\sign_release.ps1
+```
+
+OV cert (~$100-200/yr): removes "Unknown publisher" from SmartScreen after ~100 clean downloads.  
+EV cert (~$300-500/yr): removes "Unknown publisher" from SmartScreen immediately.
 
 **Maintenance rule**: When bumping the app version, update both `filevers`/`prodvers` tuples and the `FileVersion`/`ProductVersion` strings in `file_version_info.txt` to keep them in sync with the version shown in the About dialog (`src/ui/window.py`).
 
-**Files**: `file_version_info.txt` (new), `vibrante_node.spec`
+**Files**: `file_version_info.txt`, `vibrante_node.spec`, `tools/sign_release.ps1`, `tools/create_dev_cert.ps1`
 
 ### 10.18 Documentation Build System — Release Maintenance Rules
 
