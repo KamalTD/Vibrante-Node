@@ -8,6 +8,23 @@ Full release notes for each version: see `RELEASE_vX.Y.Z.md` / `releases/` direc
 
 ---
 
+## [v2.2.0] — 2026-05-15
+
+**Type:** Minor — new features + bug fixes
+
+### Added
+- Settings dialog (`src/ui/settings_window.py`) — Edit → Preferences (Ctrl+,). Four pages: Python Runtime, Application Paths, Environment Variables, Vibrante Variables (read-only). Persists to `~/.vibrante_node_config.json`. Applies changes immediately on OK (node registry reload, library panel refresh, scripts menu rebuild).
+- EnvManager singleton (`src/utils/env_manager.py`) — centralized manager for `VIBRANTE_PYTHONPATH`, `v_nodes_dir`, `v_scripts_path`, and custom `os.environ` variables. `initialize()` called at startup in `main.py`.
+- Import/Export settings to JSON file — **Import Settings…** / **Export Settings…** buttons in the Settings dialog. Round-trip portable format.
+- `website_examples/` — 10 production-quality example node JSON files for website demos (regex_replace, http_request, file_batch_processor, email_notification, database_query, image_resizer, llm_text_generation, folder_monitor, hou_sop_chain, prism_multi_asset_publisher).
+- 4 new test files: `test_env_manager.py`, `test_reactive_propagation.py`, `test_settings_persistence.py`, `test_website_examples.py`. Total: 142 tests.
+
+### Fixed
+- Qt thread-violation crash when typing in a node text input wired to a downstream node — `_propagate_all_outputs()` was called from the `AsyncRuntime` background thread. Fixed with `_MainThreadDispatcher(QObject)` + `pyqtSignal(object)` + `Qt.QueuedConnection` in `src/ui/node_widget.py`.
+- Settings changes not applied in the same session — `_open_settings()` discarded the `exec_()` return value. Now checks `QDialog.Accepted` and triggers node registry reload + library panel refresh + scripts menu rebuild in `src/ui/window.py`.
+
+---
+
 ## [v2.1.1] — 2026-05-14
 
 **Type:** Patch

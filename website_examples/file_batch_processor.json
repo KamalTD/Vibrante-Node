@@ -1,0 +1,62 @@
+{
+    "node_id": "file_batch_processor",
+    "name": "file_batch_processor",
+    "description": "Scan a folder for files matching a glob pattern and return a list of absolute paths.",
+    "category": "Files",
+    "icon_path": null,
+    "use_exec": true,
+    "inputs": [
+        {
+            "name": "exec_in",
+            "type": "any",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "folder_path",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": ""
+        },
+        {
+            "name": "pattern",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": "*"
+        },
+        {
+            "name": "recursive",
+            "type": "bool",
+            "widget_type": "checkbox",
+            "options": null,
+            "default": false
+        }
+    ],
+    "outputs": [
+        {
+            "name": "file_list",
+            "type": "list",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "file_count",
+            "type": "int",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "exec_out",
+            "type": "any",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        }
+    ],
+    "python_code": "import glob\nimport os\nimport asyncio\nfrom src.nodes.base import BaseNode\n\n\nclass File_Batch_Processor(BaseNode):\n    name = \"file_batch_processor\"\n\n    def __init__(self):\n        super().__init__()\n        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"folder_path\", \"string\", widget_type=\"text\",     default=\"\")\n        self.add_input(\"pattern\",     \"string\", widget_type=\"text\",     default=\"*\")\n        self.add_input(\"recursive\",   \"bool\",   widget_type=\"checkbox\", default=False)\n        self.add_output(\"file_list\",  \"list\")\n        self.add_output(\"file_count\", \"int\")\n        # [AUTO-GENERATED-PORTS-END]\n\n    async def execute(self, inputs: dict) -> dict:\n        folder    = inputs.get(\"folder_path\", \"\")\n        pattern   = inputs.get(\"pattern\", \"*\")\n        recursive = inputs.get(\"recursive\", False)\n\n        if not folder:\n            self.log_error(\"No folder path provided.\")\n            return {\"file_list\": [], \"file_count\": 0, \"exec_out\": True}\n\n        folder = os.path.abspath(folder)\n\n        if not os.path.isdir(folder):\n            self.log_error(f\"Folder does not exist: {folder}\")\n            return {\"file_list\": [], \"file_count\": 0, \"exec_out\": True}\n\n        def _scan():\n            if recursive:\n                glob_pattern = os.path.join(folder, \"**\", pattern)\n                paths = glob.glob(glob_pattern, recursive=True)\n            else:\n                glob_pattern = os.path.join(folder, pattern)\n                paths = glob.glob(glob_pattern)\n            return sorted(p for p in paths if os.path.isfile(p))\n\n        file_list = await asyncio.to_thread(_scan)\n\n        self.log_info(f\"Found {len(file_list)} file(s) matching '{pattern}' in {folder}\")\n        return {\n            \"file_list\":  file_list,\n            \"file_count\": len(file_list),\n            \"exec_out\":   True,\n        }\n\n\ndef register_node():\n    return File_Batch_Processor\n"
+}

@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Release Notes v2.2.0 — Vibrante-Node v2.2.0</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+       background: #1e1e2e; color: #cdd6f4; line-height: 1.7; }
+.sidebar { position: fixed; top: 0; left: 0; width: 220px; height: 100vh;
+           background: #181825; overflow-y: auto; padding: 20px 0; z-index: 100; }
+.sidebar h2 { font-size: 13px; color: #6c7086; text-transform: uppercase;
+              letter-spacing: .08em; padding: 0 18px 10px; }
+.sidebar a  { display: block; padding: 6px 18px; color: #a6adc8; text-decoration: none;
+              font-size: 13px; border-left: 3px solid transparent; transition: all .15s; }
+.sidebar a:hover, .sidebar a.active { color: #cba6f7; border-left-color: #cba6f7;
+                                       background: #1e1e2e; }
+.sidebar .nav-release { font-size: 12px; padding: 4px 18px; }
+.content { margin-left: 220px; max-width: 920px; padding: 40px 48px; }
+h1 { font-size: 2em; color: #cba6f7; border-bottom: 2px solid #313244; padding-bottom: 10px; margin: 28px 0 16px; }
+h2 { font-size: 1.45em; color: #89b4fa; margin: 32px 0 12px; }
+h3 { font-size: 1.15em; color: #94e2d5; margin: 22px 0 8px; }
+h4 { font-size: 1em; color: #f5c2e7; margin: 16px 0 6px; }
+p  { margin-bottom: 14px; color: #cdd6f4; }
+a  { color: #89b4fa; }
+ul, ol { margin: 10px 0 14px 22px; }
+li { margin-bottom: 5px; }
+code { background: #313244; color: #f38ba8; padding: 2px 6px; border-radius: 4px; font-size: .88em; font-family: 'Consolas','Courier New',monospace; }
+pre  { background: #181825; border: 1px solid #313244; border-radius: 8px;
+       padding: 18px 20px; overflow-x: auto; margin: 14px 0 20px; }
+pre code { background: none; color: #a6e3a1; padding: 0; font-size: .9em; }
+table { border-collapse: collapse; width: 100%; margin: 14px 0 20px; font-size: .92em; }
+th { background: #313244; color: #cba6f7; padding: 9px 14px; text-align: left; }
+td { border-top: 1px solid #313244; padding: 8px 14px; }
+tr:nth-child(even) td { background: #1e1e2e; }
+hr { border: none; border-top: 1px solid #313244; margin: 28px 0; }
+blockquote { border-left: 4px solid #6c7086; padding-left: 16px; color: #a6adc8; margin: 14px 0; }
+@media (max-width: 700px) { .sidebar { display: none; } .content { margin-left: 0; padding: 24px 18px; } }
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <h2>Vibrante-Node</h2>
+  <a href="USER_GUIDE.html">User Guide</a>
+<a href="NODE_BUILDER_API.html">Node Builder API</a>
+<a href="AUTOMATION_API.html">Automation API</a>
+<a href="DEVELOPER.html">Developer Documentation</a>
+<a href="DOCUMENTATION.html">Technical Feature List</a>
+  <hr style="border-color:#313244;margin:10px 18px">
+  <h2 style="margin-top:8px">Release Notes</h2>
+  <a class="nav-release" href="RELEASE_v2.2.0.html">Release Notes v2.2.0</a>
+<a class="nav-release" href="RELEASE_v2.1.1.html">Release Notes v2.1.1</a>
+<a class="nav-release" href="RELEASE_v2.1.0.html">Release Notes v2.1.0</a>
+<a class="nav-release" href="RELEASE_v2.0.0.html">Release Notes v2.0.0</a>
+<a class="nav-release" href="RELEASE_v1.8.5.html">Release Notes v1.8.5</a>
+<a class="nav-release" href="RELEASE_v1.8.4.html">Release Notes v1.8.4</a>
+<a class="nav-release" href="RELEASE_v1.8.3.html">Release Notes v1.8.3</a>
+<a class="nav-release" href="RELEASE_v1.8.2.html">Release Notes v1.8.2</a>
+<a class="nav-release" href="RELEASE_v1.8.1.html">Release Notes v1.8.1</a>
+<a class="nav-release" href="RELEASE_v1.8.0.html">Release Notes v1.8.0</a>
+<a class="nav-release" href="RELEASE_v1.7.0.html">Release Notes v1.7.0</a>
+<a class="nav-release" href="RELEASE_v1.6.1.html">Release Notes v1.6.1</a>
+<a class="nav-release" href="RELEASE_v1.6.0.html">Release Notes v1.6.0</a>
+<a class="nav-release" href="RELEASE_v1.5.0.html">Release Notes v1.5.0</a>
+<a class="nav-release" href="RELEASE_v1.4.0.html">Release Notes v1.4.0</a>
+<a class="nav-release" href="RELEASE_v1.3.0.html">Release Notes v1.3.0</a>
+<a class="nav-release" href="RELEASE_v1.2.0.html">Release Notes v1.2.0</a>
+<a class="nav-release" href="RELEASE_v1.1.5.html">Release Notes v1.1.5</a>
+<a class="nav-release" href="RELEASE_v1.1.0.html">Release Notes v1.1.0</a>
+<a class="nav-release" href="RELEASE_v1.0.5.html">Release Notes v1.0.5</a>
+  <hr style="border-color:#313244;margin:10px 18px">
+  <h2 style="margin-top:8px">On this page</h2>
+  <a href="#release-notes-vibrante-node-v220" style="padding-left:18px">Release Notes — Vibrante-Node v2.2.0</a>
+<a href="#highlights" style="padding-left:18px">Highlights</a>
+<a href="#new-features" style="padding-left:18px">New Features</a>
+<a href="#settings-dialog-edit-preferences-ctrl" style="padding-left:32px">Settings Dialog — Edit → Preferences (Ctrl+,)</a>
+<a href="#import-export-settings" style="padding-left:32px">Import / Export Settings</a>
+<a href="#envmanager-srcutilsenv_managerpy" style="padding-left:32px">EnvManager (src/utils/env_manager.py)</a>
+<a href="#website-example-nodes-website_examples" style="padding-left:32px">Website Example Nodes (website_examples/)</a>
+<a href="#bug-fixes" style="padding-left:18px">Bug Fixes</a>
+<a href="#typing-crash-qt-thread-violation-in-reactive-propagation" style="padding-left:32px">Typing Crash — Qt Thread Violation in Reactive Propagation</a>
+<a href="#settings-changes-not-applied-in-same-session" style="padding-left:32px">Settings Changes Not Applied in Same Session</a>
+<a href="#improvements" style="padding-left:18px">Improvements</a>
+<a href="#startup-environment-initialization" style="padding-left:32px">Startup Environment Initialization</a>
+<a href="#testing" style="padding-left:18px">Testing</a>
+<a href="#migration-notes" style="padding-left:18px">Migration Notes</a>
+<a href="#files-modified" style="padding-left:18px">Files Modified</a>
+</nav>
+<main class="content">
+<h1 id="release-notes-vibrante-node-v220">Release Notes — Vibrante-Node v2.2.0</h1>
+<p><strong>Release date:</strong> 2026-05-15<br />
+<strong>Type:</strong> Minor — new features + bug fixes<br />
+<strong>Previous release:</strong> v2.1.1</p>
+<hr />
+<h2 id="highlights">Highlights</h2>
+<ul>
+<li><strong>Full Settings Dialog</strong> — Edit → Preferences (Ctrl+,) opens a persistent, multi-page settings dialog with live apply on OK.</li>
+<li><strong>Environment Manager</strong> — Centralized <code>EnvManager</code> singleton persists Python paths, extra node directories, extra script directories, and custom environment variables across relaunches.</li>
+<li><strong>Import / Export Settings</strong> — Save your full settings profile to a portable JSON file; restore it on any machine.</li>
+<li><strong>Reactive Propagation Crash Fix</strong> — Typing in a node text input while wired downstream no longer crashes the application.</li>
+</ul>
+<hr />
+<h2 id="new-features">New Features</h2>
+<h3 id="settings-dialog-edit-preferences-ctrl">Settings Dialog — Edit → Preferences (Ctrl+,)</h3>
+<p>A full, persistent settings dialog accessible via <strong>Edit → Preferences</strong> (keyboard shortcut <code>Ctrl+,</code>).</p>
+<p>Four pages:</p>
+<table>
+<thead>
+<tr>
+<th>Page</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Python Runtime</strong></td>
+<td><code>VIBRANTE_PYTHONPATH</code> — extra <code>sys.path</code> entries, one path per line. Browse button. Current <code>sys.path</code> preview for applied entries.</td>
+</tr>
+<tr>
+<td><strong>Application Paths</strong></td>
+<td><code>v_nodes_dir</code> — extra node directories. <code>v_scripts_path</code> — extra script directories. Both support multiple paths (one per line) and a Browse button.</td>
+</tr>
+<tr>
+<td><strong>Environment Variables</strong></td>
+<td>Custom <code>os.environ</code> key/value pairs, editable table. Add/Remove buttons. Variable names validated (alphanumeric + underscore).</td>
+</tr>
+<tr>
+<td><strong>Vibrante Variables</strong></td>
+<td>Read-only display of all built-in Vibrante-Node runtime variables (<code>VIBRANTE_NODE_APP</code>, <code>VIBRANTE_PYTHON_EXE</code>, etc.) with their current <code>os.environ</code> values. Refresh button.</td>
+</tr>
+</tbody>
+</table>
+<p>Clicking <strong>OK</strong> persists all values to <code>~/.vibrante_node_config.json</code>, immediately applies them to the running session (reloads node registry, rebuilds Scripts menu), and logs <code>[Settings] Settings saved and applied.</code> to the log panel.</p>
+<h3 id="import-export-settings">Import / Export Settings</h3>
+<p>Two buttons at the bottom-left of the Settings dialog:</p>
+<ul>
+<li><strong>Import Settings…</strong> — Opens a file dialog for a <code>.json</code> file. Loads all settings into the dialog's UI widgets. The user reviews before clicking OK. Unknown keys in the file are silently ignored for forward-compatibility.</li>
+<li><strong>Export Settings…</strong> — Opens a save-file dialog. Writes the <strong>current UI state</strong> (including unsaved edits) to a JSON file with <code>indent=2</code>.</li>
+</ul>
+<p><strong>File format:</strong></p>
+<pre><code class="language-json">{
+  &quot;vibrante_pythonpath&quot;: [&quot;C:/MyLibs/python&quot;],
+  &quot;v_nodes_dir&quot;: [&quot;C:/MyStudio/nodes&quot;],
+  &quot;v_scripts_path&quot;: [&quot;C:/MyStudio/scripts&quot;],
+  &quot;custom_variables&quot;: {&quot;STUDIO_ROOT&quot;: &quot;/studio&quot;}
+}
+</code></pre>
+<h3 id="envmanager-srcutilsenv_managerpy">EnvManager (<code>src/utils/env_manager.py</code>)</h3>
+<p>New singleton that manages all user-configurable environment settings:</p>
+<pre><code class="language-python">from src.utils.env_manager import env_manager
+env_manager.initialize()   # called once at startup in main.py
+</code></pre>
+<ul>
+<li><strong><code>get/set_vibrante_pythonpath()</code></strong> — extra <code>sys.path</code> entries</li>
+<li><strong><code>get/set_v_nodes_dir()</code></strong> — extra node directories (merged with Houdini-injected values)</li>
+<li><strong><code>get/set_v_scripts_path()</code></strong> — extra script directories (merged with Houdini-injected values)</li>
+<li><strong><code>get/set_custom_variables()</code></strong> — user-defined <code>os.environ</code> entries</li>
+<li><strong><code>export_settings()</code> / <code>import_settings(data)</code></strong> — serialization helpers</li>
+<li><strong><code>reinitialize()</code></strong> — re-apply settings after runtime changes</li>
+<li><strong><code>apply_to_subprocess_env()</code></strong> — returns a subprocess-safe copy; never mutates <code>os.environ</code></li>
+</ul>
+<h3 id="website-example-nodes-website_examples">Website Example Nodes (<code>website_examples/</code>)</h3>
+<p>Ten production-quality example node JSON files for website demonstrations:</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Category</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>regex_replace.json</code></td>
+<td>String</td>
+<td>Regex substitution with match count</td>
+</tr>
+<tr>
+<td><code>http_request.json</code></td>
+<td>Network</td>
+<td>Full HTTP client (GET/POST/etc)</td>
+</tr>
+<tr>
+<td><code>file_batch_processor.json</code></td>
+<td>Files</td>
+<td>Batch-process files matching a glob</td>
+</tr>
+<tr>
+<td><code>email_notification.json</code></td>
+<td>Network</td>
+<td>SMTP email with TLS</td>
+</tr>
+<tr>
+<td><code>database_query.json</code></td>
+<td>Data</td>
+<td>SQLite query with parameterized inputs</td>
+</tr>
+<tr>
+<td><code>image_resizer.json</code></td>
+<td>Image</td>
+<td>PIL-based resize with aspect ratio control</td>
+</tr>
+<tr>
+<td><code>llm_text_generation.json</code></td>
+<td>AI</td>
+<td>Anthropic/OpenAI-compatible text generation</td>
+</tr>
+<tr>
+<td><code>folder_monitor.json</code></td>
+<td>Files</td>
+<td>Watch a folder for new files</td>
+</tr>
+<tr>
+<td><code>hou_sop_chain.json</code></td>
+<td>Houdini</td>
+<td>Box → Extrude SOP chain</td>
+</tr>
+<tr>
+<td><code>prism_multi_asset_publisher.json</code></td>
+<td>Prism</td>
+<td>Batch Prism asset publisher</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="bug-fixes">Bug Fixes</h2>
+<h3 id="typing-crash-qt-thread-violation-in-reactive-propagation">Typing Crash — Qt Thread Violation in Reactive Propagation</h3>
+<p><strong>Symptom:</strong> App crashed (or produced silent corruption) when typing in a node text input (e.g. Message Node) while it was wired to a downstream node (e.g. Console Print).</p>
+<p><strong>Root cause:</strong> <code>_propagate_all_outputs()</code> was called directly from the <code>AsyncRuntime</code> background thread. It accessed <code>scene().edges</code> and called Qt widget methods (<code>blockSignals()</code>, <code>setText()</code>, <code>setValue()</code>) — all Qt thread-affinity violations when called from a non-main thread.</p>
+<p><strong>Fix:</strong> Added <code>_MainThreadDispatcher(QObject)</code> at module level in <code>src/ui/node_widget.py</code>. A <code>pyqtSignal(object)</code> with <code>Qt.QueuedConnection</code> is used to schedule <code>_propagate_all_outputs</code> on the Qt main thread from any thread. The <code>_is_propagating</code> re-entry guard is now inside <code>_propagate_all_outputs</code> itself (with <code>try/finally</code>).</p>
+<p><strong>File:</strong> <code>src/ui/node_widget.py</code></p>
+<h3 id="settings-changes-not-applied-in-same-session">Settings Changes Not Applied in Same Session</h3>
+<p><strong>Symptom:</strong> After clicking OK in the Settings dialog, changes to <code>v_nodes_dir</code>, <code>v_scripts_path</code>, and custom variables only took effect after restarting the application. The Library panel and Scripts menu were not updated.</p>
+<p><strong>Root cause:</strong> <code>_open_settings()</code> discarded the return value of <code>dialog.exec_()</code>, so it never detected that the user clicked OK.</p>
+<p><strong>Fix:</strong> <code>_open_settings()</code> now checks <code>dialog.exec_() == QDialog.Accepted</code>. On accept: reloads the node registry (<code>NodeRegistry.load_all_with_extras</code>), reloads the user node directory, refreshes the Library panel, and rebuilds the Scripts menu.</p>
+<p><strong>File:</strong> <code>src/ui/window.py</code></p>
+<hr />
+<h2 id="improvements">Improvements</h2>
+<h3 id="startup-environment-initialization">Startup Environment Initialization</h3>
+<p><code>main.py</code> now calls <code>env_manager.initialize()</code> at startup (before <code>MainWindow</code> is created). This ensures:<br />
+- Custom variables are in <code>os.environ</code> before any node <code>execute()</code> runs<br />
+- <code>VIBRANTE_PYTHONPATH</code> entries are in <code>sys.path</code> before the library panel is built<br />
+- <code>v_nodes_dir</code> and <code>v_scripts_path</code> are merged into <code>os.environ</code> before <code>NodeRegistry.load_all_with_extras</code> is called</p>
+<hr />
+<h2 id="testing">Testing</h2>
+<p>New test files added; all 142 tests pass:</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Coverage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tests/unit/test_env_manager.py</code></td>
+<td>EnvManager initialize, path merging, custom variables, subprocess env</td>
+</tr>
+<tr>
+<td><code>tests/unit/test_reactive_propagation.py</code></td>
+<td>Thread check on <code>_propagate_all_outputs</code>, propagation value delivery, rapid typing</td>
+</tr>
+<tr>
+<td><code>tests/unit/test_settings_persistence.py</code></td>
+<td>Save/persist, apply-on-accept, load-back in dialog, relaunch, import/export round-trip</td>
+</tr>
+<tr>
+<td><code>tests/unit/test_website_examples.py</code></td>
+<td>All 10 example nodes: existence, load, registration, category, ports, instantiation</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="migration-notes">Migration Notes</h2>
+<p>No breaking changes. Existing workflows, nodes, and configurations are fully compatible.</p>
+<p><strong>If upgrading from v2.1.x:</strong><br />
+- The new Settings dialog automatically reads any values previously set in <code>~/.vibrante_node_config.json</code> (the config file is backward-compatible).<br />
+- <code>env_manager.initialize()</code> is now called at startup. If you have custom startup scripts that set environment variables early, ensure they run before <code>main.py</code> is imported or that they use the <code>env_manager.set_custom_variables()</code> API.<br />
+- No changes to node JSON format.<br />
+- No changes to workflow JSON format.</p>
+<hr />
+<h2 id="files-modified">Files Modified</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Change</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>src/main.py</code></td>
+<td>Version bump to v2.2.0; <code>env_manager.initialize()</code> at startup</td>
+</tr>
+<tr>
+<td><code>src/ui/window.py</code></td>
+<td><code>_open_settings()</code> applies changes on accept; <code>QDialog</code> import; v2.2.0 in About dialog</td>
+</tr>
+<tr>
+<td><code>src/ui/node_widget.py</code></td>
+<td><code>_MainThreadDispatcher</code> for safe cross-thread propagation</td>
+</tr>
+<tr>
+<td><code>src/ui/settings_window.py</code></td>
+<td><strong>New</strong> — full Settings dialog</td>
+</tr>
+<tr>
+<td><code>src/utils/env_manager.py</code></td>
+<td><strong>New</strong> — EnvManager singleton</td>
+</tr>
+<tr>
+<td><code>file_version_info.txt</code></td>
+<td>Version <code>2.2.0.0</code></td>
+</tr>
+<tr>
+<td><code>vibrante_node.spec</code></td>
+<td>Version comment updated</td>
+</tr>
+<tr>
+<td><code>website_examples/</code></td>
+<td><strong>New</strong> — 10 example node JSON files</td>
+</tr>
+<tr>
+<td><code>tests/unit/test_env_manager.py</code></td>
+<td><strong>New</strong></td>
+</tr>
+<tr>
+<td><code>tests/unit/test_reactive_propagation.py</code></td>
+<td><strong>New</strong></td>
+</tr>
+<tr>
+<td><code>tests/unit/test_settings_persistence.py</code></td>
+<td><strong>New</strong> (with import/export tests added)</td>
+</tr>
+<tr>
+<td><code>tests/unit/test_website_examples.py</code></td>
+<td><strong>New</strong></td>
+</tr>
+</tbody>
+</table>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var links = document.querySelectorAll('.sidebar a');
+    var headings = document.querySelectorAll('h1,h2,h3');
+    window.addEventListener('scroll', function() {
+        var cur = '';
+        headings.forEach(function(h) { if (h.offsetTop <= window.scrollY + 80) cur = h.id; });
+        links.forEach(function(a) {
+            a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+        });
+    });
+});
+</script>
+</body>
+</html>

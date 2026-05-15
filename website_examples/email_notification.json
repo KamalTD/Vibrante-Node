@@ -1,0 +1,104 @@
+{
+    "node_id": "email_notification",
+    "name": "email_notification",
+    "description": "Send an email via SMTP with optional TLS. Supports Gmail and other providers.",
+    "category": "Network",
+    "icon_path": null,
+    "use_exec": true,
+    "inputs": [
+        {
+            "name": "exec_in",
+            "type": "any",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "smtp_host",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": "smtp.gmail.com"
+        },
+        {
+            "name": "smtp_port",
+            "type": "int",
+            "widget_type": "int",
+            "options": null,
+            "default": 587
+        },
+        {
+            "name": "username",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": ""
+        },
+        {
+            "name": "password",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": ""
+        },
+        {
+            "name": "from_addr",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": ""
+        },
+        {
+            "name": "to_addr",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": ""
+        },
+        {
+            "name": "subject",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": ""
+        },
+        {
+            "name": "body",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": ""
+        },
+        {
+            "name": "use_tls",
+            "type": "bool",
+            "widget_type": "checkbox",
+            "options": null,
+            "default": true
+        }
+    ],
+    "outputs": [
+        {
+            "name": "sent",
+            "type": "bool",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "error_msg",
+            "type": "string",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "exec_out",
+            "type": "any",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        }
+    ],
+    "python_code": "import asyncio\nimport smtplib\nimport ssl\nfrom email.mime.text import MIMEText\nfrom email.mime.multipart import MIMEMultipart\nfrom src.nodes.base import BaseNode\n\n\nclass Email_Notification(BaseNode):\n    name = \"email_notification\"\n\n    def __init__(self):\n        super().__init__()\n        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"smtp_host\", \"string\", widget_type=\"text\",     default=\"smtp.gmail.com\")\n        self.add_input(\"smtp_port\", \"int\",    widget_type=\"int\",      default=587)\n        self.add_input(\"username\",  \"string\", widget_type=\"text\",     default=\"\")\n        self.add_input(\"password\",  \"string\", widget_type=\"text\",     default=\"\")\n        self.add_input(\"from_addr\", \"string\", widget_type=\"text\",     default=\"\")\n        self.add_input(\"to_addr\",   \"string\", widget_type=\"text\",     default=\"\")\n        self.add_input(\"subject\",   \"string\", widget_type=\"text\",     default=\"\")\n        self.add_input(\"body\",      \"string\", widget_type=\"text\",     default=\"\")\n        self.add_input(\"use_tls\",   \"bool\",   widget_type=\"checkbox\", default=True)\n        self.add_output(\"sent\",      \"bool\")\n        self.add_output(\"error_msg\", \"string\")\n        # [AUTO-GENERATED-PORTS-END]\n\n    async def execute(self, inputs: dict) -> dict:\n        host      = inputs.get(\"smtp_host\", \"\")\n        port      = int(inputs.get(\"smtp_port\") or 587)\n        username  = inputs.get(\"username\", \"\")\n        password  = inputs.get(\"password\", \"\")\n        from_addr = inputs.get(\"from_addr\", \"\") or username\n        to_addr   = inputs.get(\"to_addr\", \"\")\n        subject   = inputs.get(\"subject\", \"(no subject)\")\n        body      = inputs.get(\"body\", \"\")\n        use_tls   = inputs.get(\"use_tls\", True)\n\n        if not host or not to_addr:\n            self.log_error(\"smtp_host and to_addr are required.\")\n            return {\"sent\": False, \"error_msg\": \"Missing host or recipient.\", \"exec_out\": True}\n\n        def _send():\n            msg = MIMEMultipart(\"alternative\")\n            msg[\"Subject\"] = subject\n            msg[\"From\"]    = from_addr\n            msg[\"To\"]      = to_addr\n            msg.attach(MIMEText(body, \"plain\"))\n\n            context = ssl.create_default_context()\n\n            if use_tls:\n                with smtplib.SMTP(host, port) as server:\n                    server.ehlo()\n                    server.starttls(context=context)\n                    if username:\n                        server.login(username, password)\n                    server.sendmail(from_addr, to_addr, msg.as_string())\n            else:\n                with smtplib.SMTP_SSL(host, port, context=context) as server:\n                    if username:\n                        server.login(username, password)\n                    server.sendmail(from_addr, to_addr, msg.as_string())\n\n        try:\n            await asyncio.to_thread(_send)\n            self.log_info(f\"Email sent to {to_addr}: {subject}\")\n            return {\"sent\": True, \"error_msg\": \"\", \"exec_out\": True}\n        except Exception as e:\n            self.log_error(f\"Email failed: {e}\")\n            return {\"sent\": False, \"error_msg\": str(e), \"exec_out\": True}\n\n\ndef register_node():\n    return Email_Notification\n"
+}

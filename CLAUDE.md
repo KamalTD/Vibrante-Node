@@ -382,10 +382,10 @@ When `launch()` is called from Houdini, `setup_env()` builds the subprocess envi
 | `VIBRANTE_HOUDINI_MODE` | `setup_env()` → `"subprocess"` | `src/utils/qt_compat.py` (selects PyQt5) |
 | `VIBRANTE_HOU_PORT` | `setup_env()` after server starts | `src/utils/hou_bridge.py` (default: 18811) |
 | `VIBRANTE_HIP_FILE` | `setup_env()` with hip path | Available in node python_code via `os.environ` |
-| `v_nodes_dir` | `setup_env()` → path to `v_nodes_houdini/` | `NodeRegistry.load_all_with_extras()` in `window.py` |
-| `v_scripts_path` | `setup_env()` → path to `v_scripts_houdini/` | `MainWindow._populate_scripts_menu()` in `window.py` |
+| `v_nodes_dir` | `setup_env()` → path to `v_nodes_houdini/` **and/or** `EnvManager` config | `NodeRegistry.load_all_with_extras()` in `window.py` |
+| `v_scripts_path` | `setup_env()` → path to `v_scripts_houdini/` **and/or** `EnvManager` config | `MainWindow._populate_scripts_menu()` in `window.py` |
 
-**Critical**: `v_nodes_dir` and `v_scripts_path` are only set in the **subprocess** environment (not in Houdini itself). They are computed by `setup_env()` each time `launch()` is called.
+**General-purpose**: `v_nodes_dir` and `v_scripts_path` are general-use variables, not Houdini-only. Users can configure them in Settings → Application Paths; `EnvManager.initialize()` merges those config paths with any values already set by Houdini's `setup_env()`. Both support multiple directories (os.pathsep-separated). Both consumers (`load_all_with_extras` and `_populate_scripts_menu`) already split on `os.pathsep`.
 
 ### 6.4 Node loading at startup
 
@@ -882,3 +882,171 @@ python tools/build_docs.py        # regenerates docs/ + docs/portal/
 **Older release markdown files** (v1.0.5 through v1.8.3) live in `releases/` not root. The build script references them with the `releases/` prefix; new releases go at root.
 
 **Files**: `tools/build_docs.py`, `tools/build_docs_portal.py`, `CHANGELOG.md`
+
+### 10.19 `window.py` — About dialog LICENSE fallback with clickable link (exe builds)
+
+**Context**: `LICENSE` is intentionally not bundled in `vibrante_node.spec`. In the frozen exe, `resource_path('LICENSE')` raises `FileNotFoundError`.
+
+**Previous behavior**: The fallback set plain text `"LICENSE file not found. See https://vibrante-node.com for full license terms."` via `setPlainText()` inside a monospace `QTextEdit` — URL was not clickable.
+
+**Fix**: Added `license_is_fallback` boolean flag. When `True` (exe build, file missing), the `QTextEdit` uses `setHtml()` with a proper `<a href>` and `setOpenExternalLinks(True)` so the URL is clickable. When `False` (dev mode, file found), existing monospace `setPlainText()` behavior is unchanged.
+
+**File**: `src/ui/window.py` — `_show_about()`
+
+---
+
+## 11. Settings & Environment Variable Architecture
+
+### 11.1 EnvManager (`src/utils/env_manager.py`)
+
+Singleton (matches `ConfigManager` pattern). Loaded once in `src/main.py` at startup.
+
+```python
+from src.utils.env_manager import env_manager
+env_manager.initialize()   # called once at startup in main.py
+```
+
+**Config keys** (stored via existing `config.get/set` API in `~/.vibrante_node_config.json`):
+- `env.vibrante_pythonpath` — `List[str]` of extra sys.path entries
+- `env.v_nodes_dir` — `List[str]` of extra node directories (general-use, not Houdini-only)
+- `env.v_scripts_path` — `List[str]` of extra script directories (general-use, not Houdini-only)
+- `env.custom_variables` — `Dict[str, str]` of user-defined os.environ variables
+
+**Key API**:
+```python
+# VIBRANTE_PYTHONPATH
+env_manager.get_vibrante_pythonpath()         # → List[str]
+env_manager.set_vibrante_pythonpath(paths)    # persists to config
+
+# v_nodes_dir (multi-path, supports multiple extra node directories)
+env_manager.get_v_nodes_dir()                 # → List[str]
+env_manager.set_v_nodes_dir(paths)            # persists to config
+
+# v_scripts_path (multi-path, supports multiple extra script directories)
+env_manager.get_v_scripts_path()              # → List[str]
+env_manager.set_v_scripts_path(paths)         # persists to config
+
+# Custom variables
+env_manager.get_custom_variables()            # → Dict[str, str]
+env_manager.set_custom_variables(d)           # persists all
+env_manager.set_custom_variable(name, value)  # set one
+env_manager.remove_custom_variable(name)      # remove one
+env_manager.get_custom_variable(name)         # → str | None
+
+# Subprocess helper — returns a new dict, never mutates os.environ
+env = env_manager.apply_to_subprocess_env(base_env=None)
+
+# Re-apply after settings change at runtime
+env_manager.reinitialize()
+```
+
+**Safety constraints**:
+- `VIBRANTE_PYTHONPATH` injects into `sys.path` only (not `PYTHONPATH`). Does NOT overwrite existing `sys.path` entries.
+- `v_nodes_dir` and `v_scripts_path` are **merged** into `os.environ` — existing values (e.g. set by Houdini's `setup_env()`) are preserved; config paths are appended as additional entries. No paths are dropped.
+- Custom variables inject into `os.environ` at the process level — app-scoped only, not permanent.
+- `apply_to_subprocess_env()` never mutates `os.environ` — returns a copy.
+- Thread-safe via `threading.Lock`.
+
+### 11.2 Settings Window (`src/ui/settings_window.py`)
+
+`SettingsWindow(QDialog)` — opened via Edit → Preferences… (Ctrl+,) from `MainWindow._open_settings()`.
+
+**Sidebar pages:**
+
+| Page | Contents |
+|------|----------|
+| Python Runtime | VIBRANTE_PYTHONPATH editor (one path per line) + Browse button + sys.path preview |
+| Application Paths | `v_nodes_dir` and `v_scripts_path` editors (one path per line each) + Browse buttons. Node changes require restart; script changes apply via Scripts → Refresh Scripts. |
+| Environment Variables | QTableWidget of custom Name/Value pairs with Add/Remove |
+| Vibrante Variables | Read-only table of built-in Vibrante-Node env vars (`_VIBRANTE_BUILTIN_VARS`) with current `os.environ` values + Refresh button. Does NOT include `v_nodes_dir`/`v_scripts_path` (those are on Application Paths). |
+
+**General page**: `_build_general_page()` is preserved in the file but **not wired** to the sidebar/stacked widget — hidden for future use.
+
+**Save flow**: validates paths (warn-on-missing, not block) → validates variable names (alphanumeric + underscore) → calls `env_manager.set_vibrante_pythonpath()` + `env_manager.set_custom_variables()` → calls `env_manager.reinitialize()` → `accept()`.
+
+### 11.3 Startup sequence (main.py)
+
+```python
+_apply_pythonpath()          # existing: reads system PYTHONPATH env var
+_register_houdini_dlls()     # existing: registers HFS DLL dirs
+env_manager.initialize()     # NEW: injects VIBRANTE_PYTHONPATH + custom vars
+```
+
+Order matters: `env_manager.initialize()` runs after the existing bootstraps and before Qt / MainWindow are imported.
+
+### 11.4 Accessing variables in nodes
+
+Custom variables are standard `os.environ` entries after `initialize()`. Nodes access them normally:
+
+```python
+import os
+studio_root = os.environ.get("STUDIO_ROOT", "")
+```
+
+VIBRANTE_PYTHONPATH entries are in `sys.path`, so `import mylib` works without any special node code.
+
+### 11.5 What NOT to do with EnvManager
+
+- Do NOT call `env_manager.initialize()` from node `execute()` — it runs once at startup only.
+- Do NOT read `config.get("env.*")` directly in node code — use `os.environ` for custom vars, `sys.path` for Python paths.
+- Do NOT call `apply_to_subprocess_env()` and then assign its result to `os.environ` — that would mutate the shared process environment.
+
+---
+
+### 10.20 `node_widget.py` — Typing crash: Qt thread violation in reactive propagation (v2.1.2+)
+
+**Symptom**: App crashes when typing in a node's text input (e.g. Message Node) while it is wired to a downstream node (e.g. Console Print).
+
+**Root cause**: `_update_param` and `set_parameter` called `_propagate_all_outputs()` directly inside the `_run_then_propagate` async coroutine. That coroutine runs on the `AsyncRuntime` background thread. `_propagate_all_outputs` accesses `scene().edges` and calls Qt widget methods (`w.blockSignals()`, `w.setText()`, `w.setValue()`) — all of which are Qt threading violations when called from a non-main thread.
+
+**Fix**: `_propagate_all_outputs` is now dispatched to the Qt main thread via `_main_dispatcher.post(self._propagate_all_outputs)`. `_MainThreadDispatcher` is a module-level `QObject` whose `pyqtSignal` is connected with `Qt.QueuedConnection`. Qt automatically routes the signal delivery to the receiver's thread (main thread) when emitted from a background thread. The `_is_propagating` re-entry guard was moved from the coroutine into `_propagate_all_outputs` itself (with try/finally), so it still prevents double-propagation if `_propagate_all_outputs` is queued multiple times before executing.
+
+**Files**: `src/ui/node_widget.py`
+
+**Test**: `tests/unit/test_reactive_propagation.py` — `test_reactive_propagation_runs_on_main_thread` directly verifies the thread via a patch on `_propagate_all_outputs`.
+
+### 10.21 `window.py` — Settings changes not applied in the same session (v2.1.2+)
+
+**Symptom**: After clicking OK in the Settings dialog (Edit → Preferences), changes to `v_nodes_dir`, `v_scripts_path`, and custom variables took effect only on the next application launch. The Library panel did not refresh and new script paths were not added to the Scripts menu.
+
+**Root cause**: `_open_settings()` called `dialog.exec_()` but discarded the return value, so it never checked whether the user clicked OK or Cancel. No refresh logic ran at all after the dialog closed.
+
+**Fix**: Check `dialog.exec_() == QDialog.Accepted`. On accept, call:
+1. `NodeRegistry.load_all_with_extras(resource_path('nodes'))` — picks up new `v_nodes_dir` paths
+2. `NodeRegistry._load_directory(self.nodes_dir)` — reloads user node dir if it exists
+3. `self.library_panel.refresh()` — updates the Library panel UI
+4. `self._populate_scripts_menu()` — rebuilds the Scripts menu from updated `v_scripts_path`
+5. `self.log_panel.log("[Settings] Settings saved and applied.", "info")` — user feedback
+
+Also added `QDialog` to the top-level `PyQt5.QtWidgets` import at line 7.
+
+**Files**: `src/ui/window.py` — `_open_settings()`
+
+**Test**: `tests/unit/test_settings_persistence.py` — `test_open_settings_refreshes_library_and_scripts_on_accept` and `test_open_settings_no_refresh_on_cancel`.
+
+### 10.22 `settings_window.py` — Import / Export settings to file (v2.1.2+)
+
+**Feature**: Two buttons at the bottom-left of the Settings dialog: **Import Settings…** and **Export Settings…**. Allows saving all settings to a portable JSON file and restoring them on another machine or after a reinstall.
+
+**Data layer** (`src/utils/env_manager.py`):
+- `env_manager.export_settings()` → `dict` with keys `vibrante_pythonpath`, `v_nodes_dir`, `v_scripts_path`, `custom_variables`. Pure read — does not mutate state.
+- `env_manager.import_settings(data: dict)` → persists all 4 groups via the existing `set_*` methods. Unknown keys are silently ignored for forward-compatibility. Each key is type-checked before calling `set_*` (list or dict as appropriate).
+
+**UI layer** (`src/ui/settings_window.py`):
+- **Import Settings…**: opens a `QFileDialog` for a `.json` file → reads JSON → validates it is a `dict` → populates all four UI widgets (text editors + variable table) without saving. The user reviews and clicks OK to persist.
+- **Export Settings…**: opens a `QFileDialog` (save) → reads current UI widget state (not saved config) → writes JSON with `indent=2`. Captures unsaved edits so "export what I see" semantics are preserved.
+- Both buttons show a `QMessageBox.critical` on file I/O errors.
+
+**File format**:
+```json
+{
+  "vibrante_pythonpath": ["C:/MyLibs/python"],
+  "v_nodes_dir": ["C:/MyStudio/nodes"],
+  "v_scripts_path": ["C:/MyStudio/scripts"],
+  "custom_variables": {"STUDIO_ROOT": "/studio"}
+}
+```
+
+**Files**: `src/utils/env_manager.py`, `src/ui/settings_window.py`
+
+**Tests**: `tests/unit/test_settings_persistence.py` — `test_export_settings_returns_all_required_keys`, `test_export_settings_reflects_current_state`, `test_import_settings_applies_values`, `test_import_settings_ignores_unknown_keys`, `test_settings_file_round_trip`.

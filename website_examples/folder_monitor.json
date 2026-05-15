@@ -1,0 +1,55 @@
+{
+    "node_id": "folder_monitor",
+    "name": "folder_monitor",
+    "description": "Watch a folder for new files matching a pattern for a fixed number of seconds. Requires watchdog.",
+    "category": "Files",
+    "icon_path": null,
+    "use_exec": true,
+    "inputs": [
+        {
+            "name": "exec_in",
+            "type": "any",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "folder_path",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": ""
+        },
+        {
+            "name": "pattern",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": "*.png"
+        },
+        {
+            "name": "watch_seconds",
+            "type": "int",
+            "widget_type": "int",
+            "options": null,
+            "default": 30
+        }
+    ],
+    "outputs": [
+        {
+            "name": "new_files",
+            "type": "list",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "exec_out",
+            "type": "any",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        }
+    ],
+    "python_code": "import asyncio\nimport time\nfrom src.nodes.base import BaseNode\n\ntry:\n    from watchdog.observers import Observer\n    from watchdog.events import FileSystemEventHandler\n    _WATCHDOG_AVAILABLE = True\nexcept ImportError:\n    _WATCHDOG_AVAILABLE = False\n\n\nclass Folder_Monitor(BaseNode):\n    name = \"folder_monitor\"\n\n    def __init__(self):\n        super().__init__()\n        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"folder_path\",   \"string\", widget_type=\"text\", default=\"\")\n        self.add_input(\"pattern\",       \"string\", widget_type=\"text\", default=\"*.png\")\n        self.add_input(\"watch_seconds\", \"int\",    widget_type=\"int\",  default=30)\n        self.add_output(\"new_files\", \"list\")\n        # [AUTO-GENERATED-PORTS-END]\n\n    async def execute(self, inputs: dict) -> dict:\n        if not _WATCHDOG_AVAILABLE:\n            self.log_error(\"watchdog not installed. Run: pip install watchdog\")\n            return {\"new_files\": [], \"exec_out\": True}\n\n        import fnmatch\n\n        folder  = inputs.get(\"folder_path\", \"\")\n        pattern = inputs.get(\"pattern\", \"*.png\")\n        seconds = int(inputs.get(\"watch_seconds\") or 30)\n        new_files = []\n\n        class Handler(FileSystemEventHandler):\n            def on_created(self, event):\n                if not event.is_directory:\n                    if fnmatch.fnmatch(event.src_path, pattern):\n                        new_files.append(event.src_path)\n\n        def _watch():\n            observer = Observer()\n            observer.schedule(Handler(), folder, recursive=False)\n            observer.start()\n            time.sleep(seconds)\n            observer.stop()\n            observer.join()\n\n        self.log_info(f\"Watching {folder} for {pattern} for {seconds}s...\")\n        await asyncio.to_thread(_watch)\n        self.log_info(f\"Monitor finished. {len(new_files)} new file(s) detected.\")\n        return {\"new_files\": new_files, \"exec_out\": True}\n\n\ndef register_node():\n    return Folder_Monitor\n"
+}
