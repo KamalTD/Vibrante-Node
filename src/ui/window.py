@@ -530,6 +530,7 @@ class MainWindow(QMainWindow):
 
         release_menu = help_menu.addMenu('Release Notes')
         for ver in [
+            ("v2.2.1", "RELEASE_v2.2.1.md"),
             ("v2.2.0", "RELEASE_v2.2.0.md"),
             ("v2.1.1", "RELEASE_v2.1.1.md"),
             ("v2.1.0", "RELEASE_v2.1.0.md"),
@@ -590,7 +591,7 @@ class MainWindow(QMainWindow):
             QMessageBox.critical(self, "Error", "Help index not found.")
 
     def _show_about(self):
-        from PyQt5.QtWidgets import QDialog, QTextEdit, QPushButton, QHBoxLayout, QFrame
+        from PyQt5.QtWidgets import QDialog, QTextEdit, QTextBrowser, QPushButton, QHBoxLayout, QFrame
         from PyQt5.QtGui import QFont
 
         try:
@@ -612,7 +613,7 @@ class MainWindow(QMainWindow):
 
         # --- header ---
         header = QLabel(
-            "<h3 style='margin:0'>Vibrante-Node v2.2.0</h3>"
+            "<h3 style='margin:0'>Vibrante-Node v2.2.1</h3>"
             "<p style='margin:4px 0'>A Python-node-based visual framework for building modular systems "
             "through connected nodes and data flows.</p>"
             "<p style='margin:4px 0'>"
@@ -636,7 +637,7 @@ class MainWindow(QMainWindow):
         license_label = QLabel("<b>License Agreement</b>")
         layout.addWidget(license_label)
 
-        text_edit = QTextEdit()
+        text_edit = QTextBrowser()
         text_edit.setReadOnly(True)
         if license_is_fallback:
             text_edit.setOpenExternalLinks(True)
