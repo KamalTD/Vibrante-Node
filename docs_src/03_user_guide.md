@@ -1,4 +1,4 @@
-# Vibrante-Node v2.2.0 — User Guide
+# Vibrante-Node v2.2.1 — User Guide
 
 This guide is the comprehensive reference for working with Vibrante-Node. It covers every UI element, interaction, and workflow concept in depth — from beginner navigation to advanced features like subgraphs, bypass mode, and live inspection.
 
@@ -886,4 +886,4 @@ The node registry re-reads the file, regenerates the Python class, and signals a
 
 ---
 
-*Vibrante-Node v2.2.0 — Released 2026-05-14*
+*Vibrante-Node v2.2.1 — Released 2026-05-14*

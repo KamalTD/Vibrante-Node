@@ -198,7 +198,8 @@ Detailed documentation is available for both users and developers:
 -   🤖 **[Automation API](AUTOMATION_API.md)**: Reference for Scripting Console automation.
 -   🛠️ **[Developer Documentation](DEVELOPER.md)**: Technical architecture and internal data flow.
 -   📄 **[Technical Feature List](DOCUMENTATION.md)**: Detailed breakdown of all platform features.
--   📋 **[Release Notes v2.2.0](RELEASE_v2.2.0.md)**: Full changelog for the current release.
+-   📋 **[Release Notes v2.2.1](RELEASE_v2.2.1.md)**: Full changelog for the current release.
+-   📋 **[Release Notes v2.2.0](RELEASE_v2.2.0.md)**: Changelog for v2.2.0.
 -   📋 **[Release Notes v2.1.1](RELEASE_v2.1.1.md)**: Changelog for v2.1.1.
 -   📋 **[Release Notes v2.1.0](RELEASE_v2.1.0.md)**: Changelog for v2.1.0.
 -   📋 **[Release Notes v2.0.0](RELEASE_v2.0.0.md)**: Changelog for v2.0.0.

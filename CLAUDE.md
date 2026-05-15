@@ -885,11 +885,13 @@ python tools/build_docs.py        # regenerates docs/ + docs/portal/
 
 ### 10.19 `window.py` — About dialog LICENSE fallback with clickable link (exe builds)
 
-**Context**: `LICENSE` is intentionally not bundled in `vibrante_node.spec`. In the frozen exe, `resource_path('LICENSE')` raises `FileNotFoundError`.
+**Context**: `LICENSE` is bundled in `vibrante_node.spec` as `('LICENSE', '.')` → placed in `_internal/` by PyInstaller. `resource_path('LICENSE')` resolves to `sys._MEIPASS/LICENSE` in the frozen exe and finds the file. The `license_is_fallback` branch is a safety net for dev environments where LICENSE might be absent.
 
 **Previous behavior**: The fallback set plain text `"LICENSE file not found. See https://vibrante-node.com for full license terms."` via `setPlainText()` inside a monospace `QTextEdit` — URL was not clickable.
 
-**Fix**: Added `license_is_fallback` boolean flag. When `True` (exe build, file missing), the `QTextEdit` uses `setHtml()` with a proper `<a href>` and `setOpenExternalLinks(True)` so the URL is clickable. When `False` (dev mode, file found), existing monospace `setPlainText()` behavior is unchanged.
+**Fix**: Added `license_is_fallback` boolean flag. When `True` (exe build, file missing), the widget uses `setHtml()` with a proper `<a href>` and `setOpenExternalLinks(True)` so the URL is clickable. When `False` (dev mode, file found), existing monospace `setPlainText()` behavior is unchanged.
+
+**Widget type**: The license display widget is `QTextBrowser` (not `QTextEdit`). `QTextBrowser` is a subclass of `QTextEdit` and is the only Qt widget that supports both `setOpenExternalLinks(True)` and the full `QTextEdit` API (`setFont`, `setLineWrapMode`, `setPlainText`, `setHtml`). `QTextEdit` does NOT have `setOpenExternalLinks` — calling it crashes with `AttributeError`. Do not revert to `QTextEdit`.
 
 **File**: `src/ui/window.py` — `_show_about()`
 
@@ -1050,3 +1052,24 @@ Also added `QDialog` to the top-level `PyQt5.QtWidgets` import at line 7.
 **Files**: `src/utils/env_manager.py`, `src/ui/settings_window.py`
 
 **Tests**: `tests/unit/test_settings_persistence.py` — `test_export_settings_returns_all_required_keys`, `test_export_settings_reflects_current_state`, `test_import_settings_applies_values`, `test_import_settings_ignores_unknown_keys`, `test_settings_file_round_trip`.
+
+### 10.23 v2.2.0 Release Maintenance Rules
+
+**Version**: v2.2.0 — Released 2026-05-15
+**Type**: Minor
+
+All version update targets as per section 10.18 have been updated for v2.2.0. Key items for future reference:
+
+- `file_version_info.txt` tuples map directly to semver: `(MAJOR, MINOR, PATCH, 0)` — e.g. v2.2.0 → `(2, 2, 0, 0)`, v2.2.1 → `(2, 2, 1, 0)`.
+- `tools/build_docs.py` and `tools/build_docs_portal.py` are in `.gitignore` as a directory path but tracked individually — use `git add -f tools/build_docs.py tools/build_docs_portal.py` when staging.
+- Build artifacts live in `dist/Vibrante-Node-v{ver}-Windows-x64.zip`. GitHub release upload requires `gh auth login` first.
+
+### 10.24 v2.2.1 Release Maintenance Rules
+
+**Version**: v2.2.1 — Released 2026-05-15
+**Type**: Patch — exe build bug fixes only
+
+All version update targets as per section 10.18 have been updated for v2.2.1. Key fixes recorded in this release:
+
+- `QTextEdit` → `QTextBrowser` in `_show_about()` — `QTextEdit` does not have `setOpenExternalLinks()`. `QTextBrowser` is the drop-in subclass that supports both `setOpenExternalLinks(True)` and the full `QTextEdit` API. **Never revert to `QTextEdit` for the license panel.**
+- `LICENSE` added to PyInstaller `datas` as `('LICENSE', '.')` → lands in `_internal/`. `resource_path('LICENSE')` resolves to `sys._MEIPASS/LICENSE` in the frozen exe. Both the fallback branch and the real file path now work correctly in the exe.

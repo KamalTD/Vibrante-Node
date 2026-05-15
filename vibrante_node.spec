@@ -1,5 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
-# PyInstaller spec for Vibrante-Node v2.2.0 Windows 64-bit build
+# PyInstaller spec for Vibrante-Node v2.2.1 Windows 64-bit build
 # Run: pyinstaller vibrante_node.spec
 
 import os
@@ -17,6 +17,7 @@ datas = google_datas + grpc_datas + [
     # UI assets
     ('splash.png', '.'),
     ('logo.png', '.'),
+    ('LICENSE', '.'),
     ('icons', 'icons'),
     # Node definitions
     ('nodes', 'nodes'),

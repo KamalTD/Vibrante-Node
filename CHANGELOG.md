@@ -8,6 +8,16 @@ Full release notes for each version: see `RELEASE_vX.Y.Z.md` / `releases/` direc
 
 ---
 
+## [v2.2.1] — 2026-05-15
+
+**Type:** Patch — exe build bug fixes
+
+### Fixed
+- About dialog crash (`AttributeError: 'QTextEdit' object has no attribute 'setOpenExternalLinks'`) — changed license display widget from `QTextEdit` to `QTextBrowser` in `src/ui/window.py`.
+- LICENSE file not displayed in exe About dialog — added `('LICENSE', '.')` to PyInstaller `datas` in `vibrante_node.spec` so the file is bundled in `_internal/`.
+
+---
+
 ## [v2.2.0] — 2026-05-15
 
 **Type:** Minor — new features + bug fixes

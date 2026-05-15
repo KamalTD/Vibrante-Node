@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Release Notes v1.8.2 — Vibrante-Node v2.2.1</title>
+<title>Release Notes v2.2.1 — Vibrante-Node v2.2.1</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -72,24 +72,73 @@ blockquote { border-left: 4px solid #6c7086; padding-left: 16px; color: #a6adc8;
 <a class="nav-release" href="RELEASE_v1.0.5.html">Release Notes v1.0.5</a>
   <hr style="border-color:#313244;margin:10px 18px">
   <h2 style="margin-top:8px">On this page</h2>
-  <a href="#release-notes-vibrante-node-v182" style="padding-left:18px">Release Notes — Vibrante-Node v1.8.2</a>
-<a href="#overview" style="padding-left:18px">Overview</a>
+  <a href="#release-notes-vibrante-node-v221" style="padding-left:18px">Release Notes — Vibrante-Node v2.2.1</a>
+<a href="#summary" style="padding-left:18px">Summary</a>
 <a href="#bug-fixes" style="padding-left:18px">Bug Fixes</a>
-<a href="#dropdown-parameter-value-node_widgetpy" style="padding-left:32px">Dropdown Parameter Value (node_widget.py)</a>
+<a href="#about-dialog-crash-attributeerror-qtextedit-object-has-no-attribute-setopenexternallinks" style="padding-left:32px">About Dialog crash — AttributeError: 'QTextEdit' object has no attribute 'setOpenExternalLinks'</a>
+<a href="#about-dialog-always-showed-license-file-not-found-fallback-in-exe-build" style="padding-left:32px">About Dialog always showed "LICENSE file not found" fallback in exe build</a>
+<a href="#migration-notes" style="padding-left:18px">Migration Notes</a>
+<a href="#files-modified" style="padding-left:18px">Files Modified</a>
 </nav>
 <main class="content">
-<h1 id="release-notes-vibrante-node-v182">Release Notes — Vibrante-Node v1.8.2</h1>
-<p><strong>Release date:</strong> 2026-04-27<br />
-<strong>Build:</strong> Python 3.10 / PyInstaller</p>
+<h1 id="release-notes-vibrante-node-v221">Release Notes — Vibrante-Node v2.2.1</h1>
+<p><strong>Release date:</strong> 2026-05-15<br />
+<strong>Type:</strong> Patch — exe build bug fixes<br />
+<strong>Previous release:</strong> v2.2.0</p>
 <hr />
-<h2 id="overview">Overview</h2>
-<p>v1.8.2 is a targeted bugfix patch fixing a dropdown parameter value mismatch that caused <code>execute</code> to receive an empty string instead of the actually selected item.</p>
+<h2 id="summary">Summary</h2>
+<p>Two bugs that only manifested in the frozen Windows exe (not in dev mode) are fixed in this release.</p>
 <hr />
 <h2 id="bug-fixes">Bug Fixes</h2>
-<h3 id="dropdown-parameter-value-node_widgetpy">Dropdown Parameter Value (<code>node_widget.py</code>)</h3>
-<ul>
-<li><strong>Dropdown returns empty string in <code>execute</code></strong> — <code>add_input</code> initialises <code>parameters[name]</code> to <code>""</code> for <code>string</code> type ports. When the widget was built, <code>setCurrentText("")</code> found no match in the combobox and left it visually at index 0, but <code>parameters[name]</code> stayed <code>""</code>. Calling <code>self.get_parameter(name)</code> or reading <code>inputs[name]</code> in <code>execute</code> therefore returned <code>""</code> instead of the displayed item. Fixed by always syncing <code>parameters[name]</code> from <code>w.currentText()</code> after the initial-value setup, so the stored value always matches what is shown in the UI.</li>
-</ul>
+<h3 id="about-dialog-crash-attributeerror-qtextedit-object-has-no-attribute-setopenexternallinks">About Dialog crash — <code>AttributeError: 'QTextEdit' object has no attribute 'setOpenExternalLinks'</code></h3>
+<p><strong>Symptom:</strong> Opening <strong>Help → About Vibrante-Node</strong> in the exe build crashed with:</p>
+<pre><code>AttributeError: 'QTextEdit' object has no attribute 'setOpenExternalLinks'
+</code></pre>
+<p><strong>Root cause:</strong> The <code>_show_about()</code> fallback branch (shown when the LICENSE file cannot be found) called <code>text_edit.setOpenExternalLinks(True)</code> on a <code>QTextEdit</code> instance. <code>setOpenExternalLinks</code> is a method of <code>QLabel</code> and <code>QTextBrowser</code>, not <code>QTextEdit</code>.</p>
+<p><strong>Fix:</strong> Changed the license display widget from <code>QTextEdit</code> to <code>QTextBrowser</code>. <code>QTextBrowser</code> is a subclass of <code>QTextEdit</code> with identical API plus full support for <code>setOpenExternalLinks(True)</code>. All existing calls (<code>setReadOnly</code>, <code>setFont</code>, <code>setLineWrapMode</code>, <code>setPlainText</code>, <code>setHtml</code>) continue to work unchanged.</p>
+<p><strong>File:</strong> <code>src/ui/window.py</code></p>
+<hr />
+<h3 id="about-dialog-always-showed-license-file-not-found-fallback-in-exe-build">About Dialog always showed "LICENSE file not found" fallback in exe build</h3>
+<p><strong>Symptom:</strong> Even after installing the exe, the About dialog displayed:</p>
+<blockquote>
+<p>"LICENSE file not found. See https://vibrante-node.com for full license terms."</p>
+</blockquote>
+<p>instead of the actual license text.</p>
+<p><strong>Root cause:</strong> The <code>LICENSE</code> file was not included in the PyInstaller <code>datas</code> list in <code>vibrante_node.spec</code>. When <code>resource_path('LICENSE')</code> was called at runtime, it looked for the file at <code>sys._MEIPASS/LICENSE</code> (<code>_internal/LICENSE</code>) — but the file was never bundled there.</p>
+<p><strong>Fix:</strong> Added <code>('LICENSE', '.')</code> to the <code>datas</code> list in <code>vibrante_node.spec</code>. PyInstaller now copies <code>LICENSE</code> into <code>_internal/</code> alongside <code>splash.png</code>, <code>logo.png</code>, and the other bundled assets. <code>resource_path('LICENSE')</code> finds it correctly in the frozen exe.</p>
+<p><strong>File:</strong> <code>vibrante_node.spec</code></p>
+<hr />
+<h2 id="migration-notes">Migration Notes</h2>
+<p>No breaking changes. No configuration changes required.</p>
+<p>Both fixes are transparent to the user — the About dialog now opens correctly and shows the full license text. No workflow, node, or settings files are affected.</p>
+<hr />
+<h2 id="files-modified">Files Modified</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Change</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>src/ui/window.py</code></td>
+<td><code>QTextEdit</code> → <code>QTextBrowser</code> in <code>_show_about()</code>; added <code>QTextBrowser</code> to local import</td>
+</tr>
+<tr>
+<td><code>vibrante_node.spec</code></td>
+<td>Added <code>('LICENSE', '.')</code> to <code>datas</code>; version comment updated to v2.2.1</td>
+</tr>
+<tr>
+<td><code>file_version_info.txt</code></td>
+<td>Version <code>2.2.1.0</code></td>
+</tr>
+<tr>
+<td><code>src/main.py</code></td>
+<td>Version bump to v2.2.1</td>
+</tr>
+</tbody>
+</table>
 </main>
 <script>
 document.addEventListener('DOMContentLoaded', function() {

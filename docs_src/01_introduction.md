@@ -1,4 +1,4 @@
-# Vibrante-Node v2.2.0 — Introduction
+# Vibrante-Node v2.2.1 — Introduction
 
 **Vibrante-Node** is a Python-based visual node graph automation platform that lets you build, run, and maintain complex multi-step workflows by wiring together reusable node blocks on an interactive canvas. It ships with a PyQt5 graphical interface, an asyncio-based execution engine, and a growing library of nodes covering general-purpose automation, filesystem operations, DCC application control (Maya, Houdini, Blender), studio pipeline management (Prism Pipeline), and render farm submission (Deadline). Every node is a self-contained unit of logic defined in a single JSON file paired with Python code, making the platform trivially extensible by any Python developer without requiring modifications to the core application.
 
@@ -254,6 +254,7 @@ The following diagram shows how the major components relate to one another at ru
 | **v2.1.0** | 2026-05-14 | Unsaved-changes detection: `*` tab marker, Save/Discard/Cancel on close. Port type mismatch warning in log panel. Fixed F5/Shift+F5 shortcuts. Fixed false `*` on loaded workflows. |
 | **v2.1.1** | 2026-05-14 | Scripting Console theme fix (all panels). Houdini plugin standalone LICENSE. Windows VERSIONINFO in exe (fixes "Unknown publisher" on Windows 11). Contact email and website cleanup. |
 | **v2.2.0** | 2026-05-15 | Settings dialog (Edit → Preferences, Ctrl+,). EnvManager persists Python paths, node dirs, script dirs, and custom env vars. Import/Export settings to JSON file. Qt thread-violation crash fix when typing in wired nodes. 10 website example nodes. 142 tests. |
+| **v2.2.1** | 2026-05-15 | Patch: About dialog crash fix (`QTextEdit` → `QTextBrowser`). LICENSE file now bundled in exe (`_internal/`). |
 
 ---
 
@@ -268,11 +269,12 @@ The following diagram shows how the major components relate to one another at ru
 | `CLAUDE.md` | Node file format specification for AI-assisted node authoring |
 | `AUTOMATION_API.md` | Programmatic control of Vibrante-Node from external scripts |
 | `NODE_BUILDER_API.md` | Node Builder GUI reference |
-| `RELEASE_v2.2.0.md` | Detailed changelog for v2.2.0 (current) |
+| `RELEASE_v2.2.1.md` | Detailed changelog for v2.2.1 (current) |
+| `RELEASE_v2.2.0.md` | Detailed changelog for v2.2.0 |
 | `RELEASE_v2.1.1.md` | Detailed changelog for v2.1.1 |
 | `RELEASE_v2.1.0.md` | Detailed changelog for v2.1.0 |
 | `RELEASE_v2.0.0.md` | Detailed changelog for v2.0.0 |
 
 ---
 
-*Vibrante-Node v2.2.0 — Released 2026-05-15*
+*Vibrante-Node v2.2.1 — Released 2026-05-15*

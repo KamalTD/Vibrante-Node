@@ -14,6 +14,7 @@ MAIN_DOCS = [
 ]
 
 RELEASE_DOCS = [
+    ("RELEASE_v2.2.1.md", "Release Notes v2.2.1"),
     ("RELEASE_v2.2.0.md", "Release Notes v2.2.0"),
     ("RELEASE_v2.1.1.md", "Release Notes v2.1.1"),
     ("RELEASE_v2.1.0.md", "Release Notes v2.1.0"),
@@ -136,7 +137,7 @@ for filename, title in ALL_DOCS:
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{title} — Vibrante-Node v2.2.0</title>
+<title>{title} — Vibrante-Node v2.2.1</title>
 <style>{CSS}</style>
 </head>
 <body>
@@ -175,7 +176,7 @@ index_html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Vibrante-Node v2.2.0 — Help</title>
+<title>Vibrante-Node v2.2.1 — Help</title>
 <style>{CSS}
 .hero {{ text-align:center; padding: 60px 0 40px; }}
 .hero h1 {{ border:none; font-size:2.4em; }}
@@ -191,7 +192,7 @@ index_html = f"""<!DOCTYPE html>
 <body>
 <main class="content" style="margin-left:0;max-width:900px;margin:0 auto">
 <div class="hero">
-  <h1>Vibrante-Node v2.2.0</h1>
+  <h1>Vibrante-Node v2.2.1</h1>
   <p>Documentation &amp; Help</p>
 </div>
 <h2 class="section-title">Documentation</h2>
