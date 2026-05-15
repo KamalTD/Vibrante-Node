@@ -36,6 +36,9 @@ def _register_houdini_dlls():
 _apply_pythonpath()
 _register_houdini_dlls()
 
+from src.utils.env_manager import env_manager
+env_manager.initialize()
+
 from src.utils.qt_compat import QtWidgets, QtGui, QtCore, exec_app
 from src.utils.paths import resource_path
 QApplication = QtWidgets.QApplication
@@ -65,7 +68,7 @@ sys.excepthook = exception_hook
 
 
 class SplashScreen(QSplashScreen):
-    VERSION = "v2.1.0"
+    VERSION = "v2.2.0"
     COPYRIGHT = "\u00a9 2026 Mahmoud Kamal - KamalTD"
 
     def __init__(self):

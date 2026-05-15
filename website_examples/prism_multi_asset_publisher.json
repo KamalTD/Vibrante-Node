@@ -1,0 +1,76 @@
+{
+    "node_id": "prism_multi_asset_publisher",
+    "name": "prism_multi_asset_publisher",
+    "description": "Iterate over a list of assets and publish each via PrismCore. Requires a prism_core_init node.",
+    "category": "Prism",
+    "icon_path": "icons/prism_icon.png",
+    "use_exec": true,
+    "inputs": [
+        {
+            "name": "exec_in",
+            "type": "any",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "asset_names",
+            "type": "list",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "entity_type",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": "Asset"
+        },
+        {
+            "name": "task",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": "model"
+        },
+        {
+            "name": "version_comment",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": ""
+        }
+    ],
+    "outputs": [
+        {
+            "name": "published",
+            "type": "list",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "failed",
+            "type": "list",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "publish_count",
+            "type": "int",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "exec_out",
+            "type": "any",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.prism_core import resolve_prism_core\n\n\nclass Prism_Multi_Asset_Publisher(BaseNode):\n    name = \"prism_multi_asset_publisher\"\n\n    def __init__(self):\n        super().__init__()\n        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"asset_names\",    \"list\")\n        self.add_input(\"entity_type\",    \"string\", widget_type=\"text\", default=\"Asset\")\n        self.add_input(\"task\",           \"string\", widget_type=\"text\", default=\"model\")\n        self.add_input(\"version_comment\",\"string\", widget_type=\"text\", default=\"\")\n        self.add_output(\"published\",     \"list\")\n        self.add_output(\"failed\",        \"list\")\n        self.add_output(\"publish_count\", \"int\")\n        # [AUTO-GENERATED-PORTS-END]\n\n    async def execute(self, inputs: dict) -> dict:\n        core = resolve_prism_core(inputs)\n        if core is None:\n            self.log_error(\"PrismCore not available. Add prism_core_init node.\")\n            return {\"published\": [], \"failed\": [], \"publish_count\": 0, \"exec_out\": True}\n\n        asset_names = list(inputs.get(\"asset_names\") or [])\n        entity_type = inputs.get(\"entity_type\", \"Asset\")\n        task        = inputs.get(\"task\", \"model\")\n        comment     = inputs.get(\"version_comment\", \"\")\n\n        published = []\n        failed    = []\n\n        for asset_name in asset_names:\n            try:\n                paths = core.getExportPaths(\n                    entity=asset_name,\n                    entityType=entity_type,\n                    task=task,\n                )\n\n                if not paths:\n                    failed.append({\"asset\": asset_name, \"reason\": \"No export paths found\"})\n                    self.log_error(f\"No export paths for: {asset_name}\")\n                    continue\n\n                latest_path = paths[-1]\n\n                result = core.publishProduct(\n                    entity=asset_name,\n                    entityType=entity_type,\n                    task=task,\n                    sourceFile=latest_path,\n                    comment=comment or \"Published by Vibrante-Node automation\",\n                )\n\n                if result and result.get(\"success\"):\n                    published.append({\n                        \"asset\":        asset_name,\n                        \"source\":       latest_path,\n                        \"publish_path\": result.get(\"path\", \"\"),\n                        \"version\":      result.get(\"version\", \"\"),\n                    })\n                    self.log_info(f\"Published: {asset_name} v{result.get('version', '?')}\")\n                else:\n                    reason = result.get(\"error\", \"Unknown error\") if result else \"No response\"\n                    failed.append({\"asset\": asset_name, \"reason\": reason})\n                    self.log_error(f\"Publish failed for {asset_name}: {reason}\")\n\n            except Exception as e:\n                failed.append({\"asset\": asset_name, \"reason\": str(e)})\n                self.log_error(f\"Exception publishing {asset_name}: {e}\")\n\n        self.log_info(\n            f\"Multi-asset publish complete: {len(published)} succeeded, {len(failed)} failed.\"\n        )\n        return {\n            \"published\":     published,\n            \"failed\":        failed,\n            \"publish_count\": len(published),\n            \"exec_out\":      True,\n        }\n\n\ndef register_node():\n    return Prism_Multi_Asset_Publisher\n"
+}

@@ -1,0 +1,90 @@
+{
+    "node_id": "llm_text_generation",
+    "name": "llm_text_generation",
+    "description": "Generate text using the Google Generative AI API (Gemini). Requires google-generativeai.",
+    "category": "AI",
+    "icon_path": null,
+    "use_exec": true,
+    "inputs": [
+        {
+            "name": "exec_in",
+            "type": "any",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "api_key",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": ""
+        },
+        {
+            "name": "model",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": "gemini-1.5-flash"
+        },
+        {
+            "name": "prompt",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": ""
+        },
+        {
+            "name": "system",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": ""
+        },
+        {
+            "name": "temperature",
+            "type": "float",
+            "widget_type": "float",
+            "options": null,
+            "default": 0.7
+        },
+        {
+            "name": "max_tokens",
+            "type": "int",
+            "widget_type": "int",
+            "options": null,
+            "default": 1024
+        }
+    ],
+    "outputs": [
+        {
+            "name": "generated_text",
+            "type": "string",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "token_count",
+            "type": "int",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "success",
+            "type": "bool",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "exec_out",
+            "type": "any",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        }
+    ],
+    "python_code": "import asyncio\nfrom src.nodes.base import BaseNode\n\ntry:\n    import google.generativeai as genai\n    _GENAI_AVAILABLE = True\nexcept ImportError:\n    _GENAI_AVAILABLE = False\n\n\nclass LLM_Text_Generation(BaseNode):\n    name = \"llm_text_generation\"\n\n    def __init__(self):\n        super().__init__()\n        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"api_key\",     \"string\", widget_type=\"text\",  default=\"\")\n        self.add_input(\"model\",       \"string\", widget_type=\"text\",  default=\"gemini-1.5-flash\")\n        self.add_input(\"prompt\",      \"string\", widget_type=\"text\",  default=\"\")\n        self.add_input(\"system\",      \"string\", widget_type=\"text\",  default=\"\")\n        self.add_input(\"temperature\", \"float\",  widget_type=\"float\", default=0.7)\n        self.add_input(\"max_tokens\",  \"int\",    widget_type=\"int\",   default=1024)\n        self.add_output(\"generated_text\", \"string\")\n        self.add_output(\"token_count\",    \"int\")\n        self.add_output(\"success\",        \"bool\")\n        # [AUTO-GENERATED-PORTS-END]\n\n    async def execute(self, inputs: dict) -> dict:\n        if not _GENAI_AVAILABLE:\n            self.log_error(\"google-generativeai not installed. Run: pip install google-generativeai\")\n            return {\"generated_text\": \"\", \"token_count\": 0, \"success\": False, \"exec_out\": True}\n\n        api_key     = inputs.get(\"api_key\", \"\")\n        model_name  = inputs.get(\"model\", \"gemini-1.5-flash\")\n        prompt      = inputs.get(\"prompt\", \"\")\n        system      = inputs.get(\"system\", \"\")\n        temperature = float(inputs.get(\"temperature\") or 0.7)\n        max_tokens  = int(inputs.get(\"max_tokens\") or 1024)\n\n        if not api_key:\n            import os\n            api_key = os.environ.get(\"GOOGLE_API_KEY\", \"\")\n\n        if not api_key:\n            self.log_error(\"No API key provided. Set api_key input or GOOGLE_API_KEY env var.\")\n            return {\"generated_text\": \"\", \"token_count\": 0, \"success\": False, \"exec_out\": True}\n\n        if not prompt:\n            self.log_error(\"No prompt provided.\")\n            return {\"generated_text\": \"\", \"token_count\": 0, \"success\": False, \"exec_out\": True}\n\n        def _generate():\n            genai.configure(api_key=api_key)\n\n            generation_config = genai.GenerationConfig(\n                temperature=temperature,\n                max_output_tokens=max_tokens,\n            )\n\n            model = genai.GenerativeModel(\n                model_name=model_name,\n                generation_config=generation_config,\n                system_instruction=system if system else None,\n            )\n\n            response    = model.generate_content(prompt)\n            text        = response.text if response.text else \"\"\n            token_count = 0\n            if hasattr(response, \"usage_metadata\") and response.usage_metadata:\n                token_count = response.usage_metadata.total_token_count or 0\n            return text, token_count\n\n        try:\n            text, tokens = await asyncio.to_thread(_generate)\n            self.log_info(f\"LLM generated {len(text)} chars, ~{tokens} tokens.\")\n            return {\n                \"generated_text\": text,\n                \"token_count\":    tokens,\n                \"success\":        True,\n                \"exec_out\":       True,\n            }\n        except Exception as e:\n            self.log_error(f\"LLM generation failed: {e}\")\n            return {\"generated_text\": \"\", \"token_count\": 0, \"success\": False, \"exec_out\": True}\n\n\ndef register_node():\n    return LLM_Text_Generation\n"
+}

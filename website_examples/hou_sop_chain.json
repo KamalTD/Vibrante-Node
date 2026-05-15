@@ -1,0 +1,69 @@
+{
+    "node_id": "hou_sop_chain",
+    "name": "hou_sop_chain",
+    "description": "Create a Houdini geo container with a Box SOP and PolyExtrude SOP wired and cooked.",
+    "category": "Houdini",
+    "icon_path": "icons/houdini.svg",
+    "use_exec": true,
+    "inputs": [
+        {
+            "name": "exec_in",
+            "type": "any",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "geo_name",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": "my_geo"
+        },
+        {
+            "name": "box_size",
+            "type": "float",
+            "widget_type": "float",
+            "options": null,
+            "default": 1.0
+        },
+        {
+            "name": "extrude_dist",
+            "type": "float",
+            "widget_type": "float",
+            "options": null,
+            "default": 0.3
+        },
+        {
+            "name": "extrude_divs",
+            "type": "int",
+            "widget_type": "int",
+            "options": null,
+            "default": 1
+        }
+    ],
+    "outputs": [
+        {
+            "name": "geo_path",
+            "type": "string",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "display_sop",
+            "type": "string",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "exec_out",
+            "type": "any",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        }
+    ],
+    "python_code": "from src.nodes.base import BaseNode\nfrom src.utils.hou_bridge import get_bridge\n\n\nclass Hou_SOP_Chain(BaseNode):\n    name = \"hou_sop_chain\"\n\n    def __init__(self):\n        super().__init__()\n        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"geo_name\",     \"string\", widget_type=\"text\",  default=\"my_geo\")\n        self.add_input(\"box_size\",     \"float\",  widget_type=\"float\", default=1.0)\n        self.add_input(\"extrude_dist\", \"float\",  widget_type=\"float\", default=0.3)\n        self.add_input(\"extrude_divs\", \"int\",    widget_type=\"int\",   default=1)\n        self.add_output(\"geo_path\",    \"string\")\n        self.add_output(\"display_sop\", \"string\")\n        # [AUTO-GENERATED-PORTS-END]\n\n    async def execute(self, inputs: dict) -> dict:\n        geo_name     = inputs.get(\"geo_name\", \"my_geo\") or \"my_geo\"\n        box_size     = float(inputs.get(\"box_size\") or 1.0)\n        extrude_dist = float(inputs.get(\"extrude_dist\") or 0.3)\n        extrude_divs = int(inputs.get(\"extrude_divs\") or 1)\n\n        try:\n            bridge = get_bridge()\n\n            ping = bridge.ping()\n            if ping.get(\"status\") != \"ok\":\n                self.log_error(\"Cannot reach Houdini.\")\n                return {\"geo_path\": \"\", \"display_sop\": \"\", \"exec_out\": True}\n\n            geo_result = bridge.create_node(\"/obj\", \"geo\", geo_name)\n            geo_path   = geo_result[\"path\"]\n\n            for child in bridge.children(geo_path):\n                bridge.delete_node(child[\"path\"])\n\n            box_result = bridge.create_node(geo_path, \"box\", \"box1\")\n            box_path   = box_result[\"path\"]\n            bridge.set_parms(box_path, {\n                \"sizex\": box_size,\n                \"sizey\": box_size,\n                \"sizez\": box_size,\n            })\n\n            extrude_result = bridge.create_node(geo_path, \"polyextrude\", \"extrude1\")\n            extrude_path   = extrude_result[\"path\"]\n            bridge.connect_nodes(box_path, extrude_path, output=0, input_idx=0)\n            bridge.set_parms(extrude_path, {\n                \"dist\": extrude_dist,\n                \"divs\": extrude_divs,\n            })\n\n            bridge.set_display_flag(extrude_path, True)\n            bridge.set_render_flag(extrude_path, True)\n            bridge.cook_node(extrude_path, force=True)\n            bridge.layout_children(geo_path)\n\n            self.log_info(f\"SOP chain built at {geo_path}, display SOP: {extrude_path}\")\n            return {\n                \"geo_path\":    geo_path,\n                \"display_sop\": extrude_path,\n                \"exec_out\":    True,\n            }\n\n        except Exception as e:\n            self.log_error(f\"Houdini SOP chain failed: {e}\")\n            return {\"geo_path\": \"\", \"display_sop\": \"\", \"exec_out\": True}\n\n\ndef register_node():\n    return Hou_SOP_Chain\n"
+}

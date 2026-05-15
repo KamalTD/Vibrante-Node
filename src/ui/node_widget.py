@@ -50,6 +50,32 @@ class _MenuCloser(QtCore.QObject):
         return False
 
 
+class _MainThreadDispatcher(QtCore.QObject):
+    """Routes callables from background threads onto the Qt main thread.
+
+    Emitting a pyqtSignal from a non-main thread with a QueuedConnection
+    (Qt's default when receiver and sender live in different threads) posts
+    the call to the receiver's thread event loop.  NodeWidget uses this to
+    dispatch _propagate_all_outputs back to the main thread after
+    on_parameter_changed completes in the AsyncRuntime background thread.
+    """
+    _dispatch = QtCore.pyqtSignal(object)
+
+    def __init__(self):
+        super().__init__()
+        self._dispatch.connect(self._run, QtCore.Qt.QueuedConnection)
+
+    def post(self, fn):
+        """Schedule fn() on the main thread from any thread."""
+        self._dispatch.emit(fn)
+
+    def _run(self, fn):
+        fn()
+
+
+_main_dispatcher = _MainThreadDispatcher()
+
+
 class QComboBox(_QComboBox):
     """QComboBox that works correctly inside a QGraphicsProxyWidget.
 
@@ -621,14 +647,13 @@ class NodeWidget(QGraphicsItem):
         # 2. Trigger node logic, then push downstream so on_parameter_changed
         #    (which may update output ports via set_output) runs before propagation.
         if propagate:
-            async def _run_then_propagate():
+            async def _run_on_change():
                 await self.node_definition.on_parameter_changed(name, target_value)
-                self._is_propagating = True
-                try:
-                    self._propagate_all_outputs()
-                finally:
-                    self._is_propagating = False
-            AsyncRuntime.run_coroutine(_run_then_propagate())
+                # Dispatch Qt widget operations to the main thread — accessing
+                # scene().edges and calling w.blockSignals/setText from the
+                # background AsyncRuntime thread causes a Qt threading crash.
+                _main_dispatcher.post(self._propagate_all_outputs)
+            AsyncRuntime.run_coroutine(_run_on_change())
         else:
             AsyncRuntime.run_coroutine(self.node_definition.on_parameter_changed(name, target_value))
 
@@ -636,30 +661,32 @@ class NodeWidget(QGraphicsItem):
         """Internal handler for widget value changes."""
         self.node_definition.parameters[name] = value
 
-        async def _run_then_propagate():
+        async def _run_on_change():
             await self.node_definition.on_parameter_changed(name, value)
-            self._is_propagating = True
-            try:
-                self._propagate_all_outputs()
-            finally:
-                self._is_propagating = False
+            _main_dispatcher.post(self._propagate_all_outputs)
 
-        AsyncRuntime.run_coroutine(_run_then_propagate())
+        AsyncRuntime.run_coroutine(_run_on_change())
 
     def _propagate_all_outputs(self):
-        """Pushes all current output port values to connected downstream nodes."""
+        """Pushes all current output port values to connected downstream nodes.
+        Must only run on the Qt main thread (always dispatched via QTimer.singleShot).
+        """
+        if self._is_propagating: return
         if not self.scene(): return
-        
-        for edge in self.scene().edges:
-            if edge.from_port.parentItem() == self:
-                out_port_name = edge.from_port.port_definition.name
-                current_val = self.node_definition.get_parameter(out_port_name)
-                
-                target_node = edge.to_port.parentItem()
-                target_port_name = edge.to_port.port_definition.name
-                
-                # Recursive push to destination
-                target_node.set_parameter(target_port_name, current_val, propagate=True)
+
+        self._is_propagating = True
+        try:
+            for edge in self.scene().edges:
+                if edge.from_port.parentItem() == self:
+                    out_port_name = edge.from_port.port_definition.name
+                    current_val = self.node_definition.get_parameter(out_port_name)
+
+                    target_node = edge.to_port.parentItem()
+                    target_port_name = edge.to_port.port_definition.name
+
+                    target_node.set_parameter(target_port_name, current_val, propagate=True)
+        finally:
+            self._is_propagating = False
 
     def update_dropdown_options(self, name: str, options: list):
         """Update the items of a dropdown (QComboBox) widget for the given parameter name."""

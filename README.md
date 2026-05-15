@@ -22,6 +22,21 @@ The project focuses on flexibility, extensibility, and developer productivity, m
 
 ## 🌟 Latest Enhancements
 
+### ⚙️ Settings Dialog — Edit → Preferences (v2.2.0)
+A persistent, multi-page settings dialog (Ctrl+,) with four pages: **Python Runtime** (`VIBRANTE_PYTHONPATH`), **Application Paths** (`v_nodes_dir` / `v_scripts_path`), **Environment Variables** (custom `os.environ` pairs), and **Vibrante Variables** (read-only runtime diagnostics). Clicking OK applies all changes immediately — the node registry is reloaded and the Scripts menu is rebuilt without restarting the app.
+
+### 📥 Import / Export Settings (v2.2.0)
+Two buttons at the bottom of the Settings dialog let you save your complete settings profile to a portable JSON file and restore it on any machine. Import populates the UI widgets for review before committing. Export captures the current dialog state (including unsaved edits).
+
+### 🐛 Typing Crash Fix — Reactive Propagation (v2.2.0)
+Typing in a node text input while it is wired downstream (e.g. Message Node → Console Print) no longer crashes the application. Root cause: `_propagate_all_outputs()` was called from the background `AsyncRuntime` thread and accessed Qt widget methods — a thread-affinity violation. Fixed with a `_MainThreadDispatcher(QObject)` that dispatches propagation to the Qt main thread via a queued signal.
+
+### 🪟 Windows Publisher Fix — Proper VERSIONINFO in Exe (v2.1.1)
+The built `Vibrante-Node.exe` now embeds a Windows `VERSIONINFO` resource via `file_version_info.txt`, so file Properties and security dialogs show **"Vibrante-Node"** as publisher instead of "Unknown publisher".
+
+### 🎨 Scripting Console — Theme Fully Applied on Switch (v2.1.1)
+Switching between dark and light themes now correctly updates the code editor, debug output panel, and Git status panel inside the Scripting Console. Previously those panels kept the dark palette regardless of the active theme.
+
 ### 🔔 Unsaved Changes Detection — Tab `*` Marker (v2.1.0)
 Every workflow tab now tracks unsaved edits. A `*` prefix appears on the tab label the moment a change is made (e.g. `my_graph.json` → `* my_graph.json`). Closing a dirty tab or the whole application shows a **Save / Discard / Cancel** dialog per tab so no work is lost.
 
@@ -183,7 +198,9 @@ Detailed documentation is available for both users and developers:
 -   🤖 **[Automation API](AUTOMATION_API.md)**: Reference for Scripting Console automation.
 -   🛠️ **[Developer Documentation](DEVELOPER.md)**: Technical architecture and internal data flow.
 -   📄 **[Technical Feature List](DOCUMENTATION.md)**: Detailed breakdown of all platform features.
--   📋 **[Release Notes v2.1.0](RELEASE_v2.1.0.md)**: Full changelog for the current release.
+-   📋 **[Release Notes v2.2.0](RELEASE_v2.2.0.md)**: Full changelog for the current release.
+-   📋 **[Release Notes v2.1.1](RELEASE_v2.1.1.md)**: Changelog for v2.1.1.
+-   📋 **[Release Notes v2.1.0](RELEASE_v2.1.0.md)**: Changelog for v2.1.0.
 -   📋 **[Release Notes v2.0.0](RELEASE_v2.0.0.md)**: Changelog for v2.0.0.
 
 ---

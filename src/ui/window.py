@@ -4,7 +4,7 @@ import shutil
 import asyncio
 import json
 import time
-from PyQt5.QtWidgets import QMainWindow, QAction, QFileDialog, QVBoxLayout, QWidget, QGraphicsView, QGraphicsScene, QToolBar, QMessageBox, QDockWidget, QMenu, QStyle, QTabWidget, QStatusBar, QLabel
+from PyQt5.QtWidgets import QMainWindow, QAction, QFileDialog, QVBoxLayout, QWidget, QGraphicsView, QGraphicsScene, QToolBar, QMessageBox, QDockWidget, QMenu, QStyle, QTabWidget, QStatusBar, QLabel, QDialog
 from PyQt5.QtCore import Qt, QTimer, QByteArray
 import base64
 from PyQt5.QtGui import QCursor, QIcon
@@ -21,6 +21,7 @@ from src.ui.node_widget import NodeWidget
 
 from src.ui.gemini_api_dialog import GeminiApiDialog
 from src.ui.export_python_dialog import ExportPythonDialog
+from src.ui.settings_window import SettingsWindow
 from src.utils.paths import resource_path, app_dir
 
 
@@ -378,6 +379,14 @@ class MainWindow(QMainWindow):
         group_action.triggered.connect(self._group_selection)
         edit_menu.addAction(group_action)
 
+        edit_menu.addSeparator()
+
+        preferences_action = QAction('&Preferences...', self)
+        preferences_action.setShortcut('Ctrl+,')
+        preferences_action.setToolTip("Open application settings and environment variable manager")
+        preferences_action.triggered.connect(self._open_settings)
+        edit_menu.addAction(preferences_action)
+
         node_menu = menubar.addMenu('&Nodes')
         new_node_action = QAction('&New Node Builder...', self)
         new_node_action.setShortcut('Ctrl+N')
@@ -521,6 +530,7 @@ class MainWindow(QMainWindow):
 
         release_menu = help_menu.addMenu('Release Notes')
         for ver in [
+            ("v2.2.0", "RELEASE_v2.2.0.md"),
             ("v2.1.1", "RELEASE_v2.1.1.md"),
             ("v2.1.0", "RELEASE_v2.1.0.md"),
             ("v2.0.0", "RELEASE_v2.0.0.md"),
@@ -586,8 +596,10 @@ class MainWindow(QMainWindow):
         try:
             with open(resource_path('LICENSE'), 'r', encoding='utf-8') as _f:
                 license_text = _f.read()
+            license_is_fallback = False
         except Exception:
             license_text = "LICENSE file not found. See https://vibrante-node.com for full license terms."
+            license_is_fallback = True
 
         dlg = QDialog(self)
         dlg.setWindowTitle("About Vibrante-Node")
@@ -600,7 +612,7 @@ class MainWindow(QMainWindow):
 
         # --- header ---
         header = QLabel(
-            "<h3 style='margin:0'>Vibrante-Node v2.1.1</h3>"
+            "<h3 style='margin:0'>Vibrante-Node v2.2.0</h3>"
             "<p style='margin:4px 0'>A Python-node-based visual framework for building modular systems "
             "through connected nodes and data flows.</p>"
             "<p style='margin:4px 0'>"
@@ -626,9 +638,18 @@ class MainWindow(QMainWindow):
 
         text_edit = QTextEdit()
         text_edit.setReadOnly(True)
-        text_edit.setPlainText(license_text)
-        text_edit.setFont(QFont("Courier New", 9))
-        text_edit.setLineWrapMode(QTextEdit.NoWrap)
+        if license_is_fallback:
+            text_edit.setOpenExternalLinks(True)
+            text_edit.setHtml(
+                "<p style='font-family:Segoe UI,sans-serif;font-size:10pt;'>"
+                "LICENSE file not found. "
+                "See <a href='https://vibrante-node.com'>https://vibrante-node.com</a> "
+                "for full license terms.</p>"
+            )
+        else:
+            text_edit.setFont(QFont("Courier New", 9))
+            text_edit.setLineWrapMode(QTextEdit.NoWrap)
+            text_edit.setPlainText(license_text)
         layout.addWidget(text_edit, stretch=1)
 
         # --- acceptance notice ---
@@ -661,6 +682,16 @@ class MainWindow(QMainWindow):
         webbrowser.open("https://aistudio.google.com/app/api-keys?project=gen-lang-client-0761136562")
         dialog = GeminiApiDialog(self)
         dialog.exec_()
+
+    def _open_settings(self):
+        dialog = SettingsWindow(self)
+        if dialog.exec_() == QDialog.Accepted:
+            NodeRegistry.load_all_with_extras(resource_path('nodes'))
+            if os.path.isdir(self.nodes_dir):
+                NodeRegistry._load_directory(self.nodes_dir)
+            self.library_panel.refresh()
+            self._populate_scripts_menu()
+            self.log_panel.log("[Settings] Settings saved and applied.", "info")
 
     def _populate_scripts_menu(self):
         """Scan v_scripts_path directories and rebuild the Scripts menu."""

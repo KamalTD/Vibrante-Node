@@ -1,0 +1,69 @@
+{
+    "node_id": "regex_replace",
+    "name": "regex_replace",
+    "description": "Replace all regex matches in a string with a substitution value.",
+    "category": "String",
+    "icon_path": null,
+    "use_exec": true,
+    "inputs": [
+        {
+            "name": "exec_in",
+            "type": "any",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "text",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": ""
+        },
+        {
+            "name": "pattern",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": ""
+        },
+        {
+            "name": "replacement",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": ""
+        },
+        {
+            "name": "ignore_case",
+            "type": "bool",
+            "widget_type": "checkbox",
+            "options": null,
+            "default": false
+        }
+    ],
+    "outputs": [
+        {
+            "name": "result",
+            "type": "string",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "match_count",
+            "type": "int",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "exec_out",
+            "type": "any",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        }
+    ],
+    "python_code": "import re\nfrom src.nodes.base import BaseNode\n\n\nclass Regex_Replace(BaseNode):\n    name = \"regex_replace\"\n\n    def __init__(self):\n        super().__init__()\n        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"text\",        \"string\", widget_type=\"text\",     default=\"\")\n        self.add_input(\"pattern\",     \"string\", widget_type=\"text\",     default=\"\")\n        self.add_input(\"replacement\", \"string\", widget_type=\"text\",     default=\"\")\n        self.add_input(\"ignore_case\", \"bool\",   widget_type=\"checkbox\", default=False)\n        self.add_output(\"result\",      \"string\")\n        self.add_output(\"match_count\", \"int\")\n        # [AUTO-GENERATED-PORTS-END]\n\n    async def execute(self, inputs: dict) -> dict:\n        text        = inputs.get(\"text\", \"\")\n        pattern     = inputs.get(\"pattern\", \"\")\n        replacement = inputs.get(\"replacement\", \"\")\n        ignore_case = inputs.get(\"ignore_case\", False)\n\n        if not pattern:\n            return {\"result\": text, \"match_count\": 0, \"exec_out\": True}\n\n        flags = re.IGNORECASE if ignore_case else 0\n\n        try:\n            compiled = re.compile(pattern, flags)\n            matches  = compiled.findall(text)\n            result   = compiled.sub(replacement, text)\n            return {\n                \"result\":      result,\n                \"match_count\": len(matches),\n                \"exec_out\":    True,\n            }\n        except re.error as e:\n            self.log_error(f\"Invalid regex pattern '{pattern}': {e}\")\n            return {\"result\": text, \"match_count\": 0, \"exec_out\": True}\n\n\ndef register_node():\n    return Regex_Replace\n"
+}

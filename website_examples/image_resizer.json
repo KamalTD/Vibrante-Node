@@ -1,0 +1,90 @@
+{
+    "node_id": "image_resizer",
+    "name": "image_resizer",
+    "description": "Resize an image file using Pillow with optional aspect-ratio locking.",
+    "category": "Image",
+    "icon_path": null,
+    "use_exec": true,
+    "inputs": [
+        {
+            "name": "exec_in",
+            "type": "any",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "input_path",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": ""
+        },
+        {
+            "name": "output_path",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": ""
+        },
+        {
+            "name": "width",
+            "type": "int",
+            "widget_type": "int",
+            "options": null,
+            "default": 1920
+        },
+        {
+            "name": "height",
+            "type": "int",
+            "widget_type": "int",
+            "options": null,
+            "default": 1080
+        },
+        {
+            "name": "keep_aspect",
+            "type": "bool",
+            "widget_type": "checkbox",
+            "options": null,
+            "default": true
+        },
+        {
+            "name": "resample",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": "LANCZOS"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "out_path",
+            "type": "string",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "out_width",
+            "type": "int",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "out_height",
+            "type": "int",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "exec_out",
+            "type": "any",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        }
+    ],
+    "python_code": "import asyncio\nimport os\nfrom src.nodes.base import BaseNode\n\ntry:\n    from PIL import Image\n    _PIL_AVAILABLE = True\nexcept ImportError:\n    _PIL_AVAILABLE = False\n\n\nclass Image_Resizer(BaseNode):\n    name = \"image_resizer\"\n\n    def __init__(self):\n        super().__init__()\n        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"input_path\",  \"string\", widget_type=\"text\",     default=\"\")\n        self.add_input(\"output_path\", \"string\", widget_type=\"text\",     default=\"\")\n        self.add_input(\"width\",       \"int\",    widget_type=\"int\",      default=1920)\n        self.add_input(\"height\",      \"int\",    widget_type=\"int\",      default=1080)\n        self.add_input(\"keep_aspect\", \"bool\",   widget_type=\"checkbox\", default=True)\n        self.add_input(\"resample\",    \"string\", widget_type=\"text\",     default=\"LANCZOS\")\n        self.add_output(\"out_path\",   \"string\")\n        self.add_output(\"out_width\",  \"int\")\n        self.add_output(\"out_height\", \"int\")\n        # [AUTO-GENERATED-PORTS-END]\n\n    async def execute(self, inputs: dict) -> dict:\n        if not _PIL_AVAILABLE:\n            self.log_error(\"Pillow is not installed. Run: pip install Pillow\")\n            return {\"out_path\": \"\", \"out_width\": 0, \"out_height\": 0, \"exec_out\": True}\n\n        input_path   = inputs.get(\"input_path\", \"\")\n        output_path  = inputs.get(\"output_path\", \"\")\n        target_w     = int(inputs.get(\"width\")  or 1920)\n        target_h     = int(inputs.get(\"height\") or 1080)\n        keep_aspect  = inputs.get(\"keep_aspect\", True)\n        resample_str = (inputs.get(\"resample\") or \"LANCZOS\").upper()\n\n        resample_map = {\n            \"LANCZOS\":  Image.LANCZOS,\n            \"BICUBIC\":  Image.BICUBIC,\n            \"BILINEAR\": Image.BILINEAR,\n            \"NEAREST\":  Image.NEAREST,\n        }\n        resample = resample_map.get(resample_str, Image.LANCZOS)\n\n        if not input_path or not os.path.isfile(input_path):\n            self.log_error(f\"Input file not found: {input_path}\")\n            return {\"out_path\": \"\", \"out_width\": 0, \"out_height\": 0, \"exec_out\": True}\n\n        if not output_path:\n            base, ext   = os.path.splitext(input_path)\n            output_path = f\"{base}_resized{ext}\"\n\n        def _resize():\n            with Image.open(input_path) as img:\n                if keep_aspect:\n                    img.thumbnail((target_w, target_h), resample)\n                    out_w, out_h = img.size\n                else:\n                    img = img.resize((target_w, target_h), resample)\n                    out_w, out_h = img.size\n                img.save(output_path)\n            return out_w, out_h\n\n        try:\n            out_w, out_h = await asyncio.to_thread(_resize)\n            self.log_info(f\"Resized {input_path} to {output_path} ({out_w}x{out_h})\")\n            return {\"out_path\": output_path, \"out_width\": out_w, \"out_height\": out_h, \"exec_out\": True}\n        except Exception as e:\n            self.log_error(f\"Image resize failed: {e}\")\n            return {\"out_path\": \"\", \"out_width\": 0, \"out_height\": 0, \"exec_out\": True}\n\n\ndef register_node():\n    return Image_Resizer\n"
+}

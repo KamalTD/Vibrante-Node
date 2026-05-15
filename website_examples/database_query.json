@@ -1,0 +1,69 @@
+{
+    "node_id": "database_query",
+    "name": "database_query",
+    "description": "Execute a parameterized SQL query against a SQLite database and return rows as dicts.",
+    "category": "Data",
+    "icon_path": null,
+    "use_exec": true,
+    "inputs": [
+        {
+            "name": "exec_in",
+            "type": "any",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "db_path",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": ":memory:"
+        },
+        {
+            "name": "query",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": ""
+        },
+        {
+            "name": "parameters",
+            "type": "list",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        }
+    ],
+    "outputs": [
+        {
+            "name": "rows",
+            "type": "list",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "row_count",
+            "type": "int",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "columns",
+            "type": "list",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "exec_out",
+            "type": "any",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        }
+    ],
+    "python_code": "import asyncio\nimport sqlite3\nfrom src.nodes.base import BaseNode\n\n\nclass Database_Query(BaseNode):\n    name = \"database_query\"\n\n    def __init__(self):\n        super().__init__()\n        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"db_path\",    \"string\", widget_type=\"text\", default=\":memory:\")\n        self.add_input(\"query\",      \"string\", widget_type=\"text\", default=\"\")\n        self.add_input(\"parameters\", \"list\",   default=None)\n        self.add_output(\"rows\",      \"list\")\n        self.add_output(\"row_count\", \"int\")\n        self.add_output(\"columns\",   \"list\")\n        # [AUTO-GENERATED-PORTS-END]\n\n    async def execute(self, inputs: dict) -> dict:\n        db_path    = inputs.get(\"db_path\", \":memory:\")\n        query      = inputs.get(\"query\", \"\")\n        parameters = tuple(inputs.get(\"parameters\") or [])\n\n        if not query:\n            self.log_error(\"No SQL query provided.\")\n            return {\"rows\": [], \"row_count\": 0, \"columns\": [], \"exec_out\": True}\n\n        def _run_query():\n            con = sqlite3.connect(db_path)\n            con.row_factory = sqlite3.Row\n            try:\n                cur = con.execute(query, parameters)\n                if cur.description:\n                    columns = [desc[0] for desc in cur.description]\n                    rows    = [dict(row) for row in cur.fetchall()]\n                else:\n                    con.commit()\n                    columns = []\n                    rows    = []\n                return rows, columns\n            finally:\n                con.close()\n\n        try:\n            rows, columns = await asyncio.to_thread(_run_query)\n            self.log_info(f\"Query returned {len(rows)} row(s).\")\n            return {\n                \"rows\":      rows,\n                \"row_count\": len(rows),\n                \"columns\":   columns,\n                \"exec_out\":  True,\n            }\n        except sqlite3.Error as e:\n            self.log_error(f\"SQL error: {e}\")\n            return {\"rows\": [], \"row_count\": 0, \"columns\": [], \"exec_out\": True}\n\n\ndef register_node():\n    return Database_Query\n"
+}
