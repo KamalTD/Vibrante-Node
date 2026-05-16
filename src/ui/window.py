@@ -1238,8 +1238,32 @@ class MainWindow(QMainWindow):
             self.library_panel.refresh()
 
     def load_node_json(self):
-        file_path, _ = QFileDialog.getOpenFileName(self, "Load Node JSON", "", "Node Files (*.json)")
+        # Start in the user nodes dir (predictable location, not the workflow dir)
+        start_dir = self.nodes_dir if os.path.isdir(self.nodes_dir) else os.path.expanduser("~")
+        file_path, _ = QFileDialog.getOpenFileName(self, "Load Node JSON", start_dir, "Node Files (*.json)")
         if not file_path:
+            return
+
+        # Content pre-check: detect workflow files before handing off to the registry
+        try:
+            with open(file_path, "r", encoding="utf-8") as _f:
+                _raw = json.load(_f)
+        except (json.JSONDecodeError, OSError) as e:
+            QMessageBox.critical(self, "Error", f"Could not read file:\n{e}")
+            return
+        if not isinstance(_raw, dict) or "node_id" not in _raw or "python_code" not in _raw:
+            if isinstance(_raw, dict) and ("nodes" in _raw or "connections" in _raw):
+                QMessageBox.critical(
+                    self, "Wrong File Type",
+                    "This is a workflow file, not a node definition.\n\n"
+                    "Use File → Load Workflow to open workflow files."
+                )
+            else:
+                QMessageBox.critical(
+                    self, "Invalid Node File",
+                    "The selected file is missing required node fields "
+                    "('node_id' and/or 'python_code')."
+                )
             return
 
         try:
@@ -1264,9 +1288,12 @@ class MainWindow(QMainWindow):
                                          QMessageBox.Yes | QMessageBox.No)
                 if res == QMessageBox.No: return
 
+            os.makedirs(self.nodes_dir, exist_ok=True)
             shutil.copy2(file_path, dest_path)
+            # Update source path so Reload Node works from the installed copy
+            NodeRegistry._source_paths[node_id] = dest_path
             self.library_panel.refresh()
-            self.log_panel.log(f"Node '{node_id}' added to library from {file_path}", "success")
+            self.log_panel.log(f"Node '{node_id}' installed to {dest_path}", "success")
             QMessageBox.information(self, "Success", f"Node '{node_id}' has been added to your library.")
 
         except Exception as e:
@@ -1453,6 +1480,17 @@ class MainWindow(QMainWindow):
             QMessageBox.critical(self, "Load Error", f"Workflow file is empty or corrupted:\n{file_path}")
             self.log_panel.log(f"Failed to load workflow — file is empty: {file_path}", "error")
             return
+        # Pre-check: reject node definition files silently accepted by WorkflowModel
+        try:
+            _raw = json.loads(json_data)
+            if self._looks_like_node_json(_raw):
+                QMessageBox.critical(self, "Wrong File Type",
+                    "This is a node definition file, not a workflow.\n\n"
+                    "Use Nodes → Load Node From JSON to install it.")
+                self.log_panel.log(f"Rejected node JSON selected as workflow: {file_path}", "warning")
+                return
+        except json.JSONDecodeError:
+            pass  # handled below by model_validate_json
         try:
             workflow_model = WorkflowModel.model_validate_json(json_data)
         except Exception as e:
@@ -1611,6 +1649,11 @@ class MainWindow(QMainWindow):
             self.log_panel.log(f"Workflow saved as: {file_path}", "success")
             self._add_recent_file(file_path)
 
+    @staticmethod
+    def _looks_like_node_json(raw) -> bool:
+        """Return True if the parsed JSON dict has the required fields of a node definition."""
+        return isinstance(raw, dict) and "node_id" in raw and "python_code" in raw
+
     def load_workflow(self):
         file_path, _ = QFileDialog.getOpenFileName(self, "Load Workflow", "workflows", "Workflow Files (*.json)")
         if file_path:
@@ -1620,6 +1663,17 @@ class MainWindow(QMainWindow):
                 QMessageBox.critical(self, "Load Error", f"Workflow file is empty or corrupted:\n{file_path}")
                 self.log_panel.log(f"Failed to load workflow — file is empty: {file_path}", "error")
                 return
+            # Pre-check: reject node definition files silently accepted by WorkflowModel
+            try:
+                _raw = json.loads(json_data)
+                if self._looks_like_node_json(_raw):
+                    QMessageBox.critical(self, "Wrong File Type",
+                        "This is a node definition file, not a workflow.\n\n"
+                        "Use Nodes → Load Node From JSON to install it.")
+                    self.log_panel.log(f"Rejected node JSON selected as workflow: {file_path}", "warning")
+                    return
+            except json.JSONDecodeError:
+                pass  # handled below by model_validate_json
             try:
                 workflow_model = WorkflowModel.model_validate_json(json_data)
             except Exception as e:
