@@ -61,7 +61,7 @@ class NodeBuilderDialog(QDialog):
         self.inputs_table.itemChanged.connect(self._on_table_changed)
         self.outputs_table.itemChanged.connect(self._on_table_changed)
         self.name_edit.textChanged.connect(self._on_metadata_changed)
-        self.icon_edit.textChanged.connect(lambda: self._sync_ui_to_code(update_exec_hints=False))
+        self.icon_edit.textChanged.connect(self._sync_icon_to_code)
         self.category_combo.currentTextChanged.connect(self._on_category_changed)
         self.exec_in_check.stateChanged.connect(self._on_exec_changed)
         self.exec_out_check.stateChanged.connect(self._on_exec_changed)
@@ -148,8 +148,8 @@ class NodeBuilderDialog(QDialog):
 
         # Inputs Table
         config_layout.addWidget(QLabel("Inputs:"))
-        self.inputs_table = QTableWidget(0, 4)
-        self.inputs_table.setHorizontalHeaderLabels(["Name", "Type", "Widget", "Options (csv)"])
+        self.inputs_table = QTableWidget(0, 5)
+        self.inputs_table.setHorizontalHeaderLabels(["Name", "Type", "Widget", "Options (csv)", "Default"])
         config_layout.addWidget(self.inputs_table)
         
         in_btn_layout = QHBoxLayout()
@@ -163,8 +163,8 @@ class NodeBuilderDialog(QDialog):
         
         # Outputs Table
         config_layout.addWidget(QLabel("Outputs:"))
-        self.outputs_table = QTableWidget(0, 4)
-        self.outputs_table.setHorizontalHeaderLabels(["Name", "Type", "Widget", "Options (csv)"])
+        self.outputs_table = QTableWidget(0, 5)
+        self.outputs_table.setHorizontalHeaderLabels(["Name", "Type", "Widget", "Options (csv)", "Default"])
         config_layout.addWidget(self.outputs_table)
         
         out_btn_layout = QHBoxLayout()
@@ -313,6 +313,21 @@ def register_node():
         if not self._is_syncing:
             self._sync_ui_to_code(update_set_output_hints=False, update_exec_out_hint=False)
 
+    def _sync_icon_to_code(self):
+        """Update only the self.icon_path assignment line — no other regeneration."""
+        if self._is_syncing:
+            return
+        self._is_syncing = True
+        try:
+            code = self.code_edit.toPlainText()
+            icon_val = self.icon_edit.text().strip()
+            icon_replacement = f'self.icon_path = "{icon_val}"' if icon_val else 'self.icon_path = None'
+            new_code = re.sub(r'self\.icon_path\s*=\s*(?:"[^"]*"|None)', icon_replacement, code)
+            if new_code != code:
+                self.code_edit.setPlainText(new_code)
+        finally:
+            self._is_syncing = False
+
     def _on_table_changed(self):
         if not self._is_syncing:
             self._sync_ui_to_code(update_set_output_hints=True, update_exec_out_hint=False)
@@ -370,9 +385,13 @@ def register_node():
 
             PortVisitor().visit(tree)
 
-            # Convert to list for comparison and update
-            input_list = [(k, v[0], v[1]) for k, v in inputs.items()]
-            output_list = [(k, v[0], v[1]) for k, v in outputs.items()]
+            # Convert to list for comparison and update — exec ports are managed
+            # by the checkboxes, never by the table; filter them here so a
+            # hand-written JSON that lists exec_in/exec_out in its arrays does
+            # not leak into the port table and get re-emitted as add_input calls.
+            _exec_names = {"exec_in", "exec_out"}
+            input_list = [(k, v[0], v[1]) for k, v in inputs.items() if k not in _exec_names]
+            output_list = [(k, v[0], v[1]) for k, v in outputs.items() if k not in _exec_names]
 
             # Check if actual changes happened before updating table to avoid signal storm
             if self._table_needs_update(self.inputs_table, input_list):
@@ -428,26 +447,29 @@ def register_node():
             p_type = p.type if hasattr(p, 'type') else p[1]
             p_widget = p.widget_type if hasattr(p, 'widget_type') else (p[2] if len(p) > 2 else "")
             p_options = ",".join(p.options) if hasattr(p, 'options') and p.options else ""
-            
+            p_default_val = p.default if hasattr(p, 'default') else None
+            p_default = str(p_default_val) if p_default_val is not None else ""
+
             row = table.rowCount()
             table.insertRow(row)
             table.setItem(row, 0, QTableWidgetItem(name))
-            
+
             # Use Dropdown for type column
             type_combo = QComboBox()
             type_combo.addItems(AVAILABLE_TYPES)
             type_combo.setCurrentText(p_type or "any")
             type_combo.currentTextChanged.connect(self._sync_ui_to_code)
             table.setCellWidget(row, 1, type_combo)
-            
+
             # Use Dropdown for widget column
             widget_combo = QComboBox()
             widget_combo.addItems(AVAILABLE_WIDGETS)
             widget_combo.setCurrentText(p_widget or "")
             widget_combo.currentTextChanged.connect(self._sync_ui_to_code)
             table.setCellWidget(row, 2, widget_combo)
-            
+
             table.setItem(row, 3, QTableWidgetItem(p_options))
+            table.setItem(row, 4, QTableWidgetItem(p_default))
         table.blockSignals(False)
 
     def _sync_ui_to_code(self, update_exec_hints=True, update_set_output_hints=None, update_exec_out_hint=None):
@@ -648,6 +670,7 @@ def register_node():
         table.setCellWidget(row, 2, widget_combo)
         
         table.setItem(row, 3, QTableWidgetItem("")) # Options column
+        table.setItem(row, 4, QTableWidgetItem("")) # Default column
         table.blockSignals(False)
         self._sync_ui_to_code()
 
@@ -685,9 +708,9 @@ def register_node():
             name_item = self.inputs_table.item(r, 0)
             if not name_item: continue
             name = name_item.text().strip()
-            if not name or name in seen_inputs: continue
+            if not name or name in seen_inputs or name in {"exec_in", "exec_out"}: continue
             seen_inputs.add(name)
-            
+
             type_combo = self.inputs_table.cellWidget(r, 1)
             p_type = type_combo.currentText() if type_combo else "any"
             
@@ -696,7 +719,8 @@ def register_node():
             
             p_options_str = self.inputs_table.item(r, 3).text() if self.inputs_table.item(r, 3) else ""
             p_options = [o.strip() for o in p_options_str.split(",")] if p_options_str else None
-            inputs.append(PortModel(name=name, type=p_type, widget_type=p_widget or None, options=p_options))
+            p_default_str = self.inputs_table.item(r, 4).text().strip() if self.inputs_table.item(r, 4) else ""
+            inputs.append(PortModel(name=name, type=p_type, widget_type=p_widget or None, options=p_options, default=p_default_str or None))
             
         outputs = []
         seen_outputs = set()
@@ -704,12 +728,13 @@ def register_node():
             name_item = self.outputs_table.item(r, 0)
             if not name_item: continue
             name = name_item.text().strip()
-            if not name or name in seen_outputs: continue
+            if not name or name in seen_outputs or name in {"exec_in", "exec_out"}: continue
             seen_outputs.add(name)
-            
+
             type_combo = self.outputs_table.cellWidget(r, 1)
             p_type = type_combo.currentText() if type_combo else "any"
-            outputs.append(PortModel(name=name, type=p_type))
+            p_default_str = self.outputs_table.item(r, 4).text().strip() if self.outputs_table.item(r, 4) else ""
+            outputs.append(PortModel(name=name, type=p_type, default=p_default_str or None))
 
         display_name = self.display_name_edit.text().strip() or node_id
 
@@ -749,8 +774,9 @@ def register_node():
                 self.desc_edit.setPlainText(defn.description)
                 self.category_combo.setCurrentText(defn.category or "General")
                 self.icon_edit.setText(defn.icon_path or "")
-                self._update_table(self.inputs_table, defn.inputs)
-                self._update_table(self.outputs_table, defn.outputs)
+                _exec_names = {"exec_in", "exec_out"}
+                self._update_table(self.inputs_table, [p for p in defn.inputs if p.name not in _exec_names])
+                self._update_table(self.outputs_table, [p for p in defn.outputs if p.name not in _exec_names])
                 # Set exec checkboxes from existing code
                 code = defn.python_code
                 default_exec = bool(
@@ -782,9 +808,11 @@ def register_node():
             p_options_str = self.inputs_table.item(r, 3).text() if self.inputs_table.item(r, 3) else ""
             p_options = [o.strip() for o in p_options_str.split(",")] if p_options_str else None
             
+            p_default_str = self.inputs_table.item(r, 4).text().strip() if self.inputs_table.item(r, 4) else ""
             port_data = {"name": name, "type": p_type}
             if p_widget: port_data["widget_type"] = p_widget
             if p_options: port_data["options"] = p_options
+            if p_default_str: port_data["default"] = p_default_str
             inputs.append(port_data)
             
         outputs = []
@@ -796,7 +824,10 @@ def register_node():
             
             type_combo = self.outputs_table.cellWidget(r, 1)
             p_type = type_combo.currentText() if type_combo else "any"
-            outputs.append({"name": name, "type": p_type})
+            p_default_str = self.outputs_table.item(r, 4).text().strip() if self.outputs_table.item(r, 4) else ""
+            out_data = {"name": name, "type": p_type}
+            if p_default_str: out_data["default"] = p_default_str
+            outputs.append(out_data)
 
         return {
             "node_id": self.name_edit.text().strip(),

@@ -1090,3 +1090,182 @@ All version update targets as per section 10.18 have been updated for v2.2.1. Ke
 
 - `QTextEdit` → `QTextBrowser` in `_show_about()` — `QTextEdit` does not have `setOpenExternalLinks()`. `QTextBrowser` is the drop-in subclass that supports both `setOpenExternalLinks(True)` and the full `QTextEdit` API. **Never revert to `QTextEdit` for the license panel.**
 - `LICENSE` added to PyInstaller `datas` as `('LICENSE', '.')` → lands in `_internal/`. `resource_path('LICENSE')` resolves to `sys._MEIPASS/LICENSE` in the frozen exe. Both the fallback branch and the real file path now work correctly in the exe.
+
+### 10.25 `window.py` — "Load Node from JSON" crash when nodes directory absent
+
+**Symptom**: Nodes → Load Node from JSON… → select any valid node JSON → `[Errno 2] No such file or directory: '…\nodes\<node_id>.json'` error dialog. The node appears to load (registry validation passes) but the install step fails.
+
+**Root cause**: `load_node_json()` called `shutil.copy2(file_path, dest_path)` where `dest_path` is inside `self.nodes_dir` (`<app_dir>/nodes/`). That directory is never created automatically when running the compiled exe from a fresh location — startup only calls `_load_directory(self.nodes_dir)` if `os.path.isdir(self.nodes_dir)` is already true. No creation code existed for the user-writable nodes directory.
+
+**Fix** (3 lines added in `load_node_json()`, `src/ui/window.py`):
+```python
+os.makedirs(self.nodes_dir, exist_ok=True)          # create dir if absent
+shutil.copy2(file_path, dest_path)
+NodeRegistry._source_paths[node_id] = dest_path     # reload targets installed copy
+```
+`os.makedirs(..., exist_ok=True)` is idempotent — no-op if the directory already exists.
+
+**`_source_paths` update**: After copying, the registry's source path for the node is updated to `dest_path`. Without this, "Reload Selected Node" in the current session would target the original file location (wherever the user selected it from), rather than the installed copy in the user's node directory. This could silently fail if the original file is later moved or deleted.
+
+**Do not** create `self.nodes_dir` at `__init__` time — the directory should only be created on first actual use (lazy creation) to avoid leaving an empty `nodes/` folder for users who never use this feature.
+
+**File**: `src/ui/window.py` — `load_node_json()`
+
+### 10.26 `window.py` — "Load Node From JSON" opened a workflow tab on first use
+
+**Symptom**: First use of Nodes → Load Node from JSON… resulted in a workflow tab opening instead of the node appearing in the library. Selecting a workflow `.json` file showed no clear error, or the dialog silently misdirected the user.
+
+**Root causes** (two independent issues):
+
+1. **Wrong initial directory**: `QFileDialog.getOpenFileName` was called with `dir=""`. On Windows, Qt's native file dialog inherits the shell's last-visited directory from any previous dialog in the same process. If `Load Workflow` (which starts in `"workflows"`) had been used earlier, `Load Node From JSON` would also open in `workflows/`, presenting workflow files to the user.
+
+2. **No content pre-check**: If the user selected a workflow file, `NodeRegistry.load_node()` would return `False` with a raw Pydantic `ValidationError` — no message indicating it was a workflow file. The user could misread the failure or accidentally trigger the File → Load Workflow path separately.
+
+**Fix** (`src/ui/window.py` — `load_node_json()`):
+
+```python
+# Start in user nodes dir (predictable; does not inherit workflow dir)
+start_dir = self.nodes_dir if os.path.isdir(self.nodes_dir) else os.path.expanduser("~")
+file_path, _ = QFileDialog.getOpenFileName(self, "Load Node JSON", start_dir, "Node Files (*.json)")
+
+# Content pre-check before touching the registry
+with open(file_path, "r", encoding="utf-8") as _f:
+    _raw = json.load(_f)
+if not isinstance(_raw, dict) or "node_id" not in _raw or "python_code" not in _raw:
+    if isinstance(_raw, dict) and ("nodes" in _raw or "connections" in _raw):
+        QMessageBox.critical(self, "Wrong File Type",
+            "This is a workflow file, not a node definition.\n\n"
+            "Use File → Load Workflow to open workflow files.")
+    else:
+        QMessageBox.critical(self, "Invalid Node File",
+            "The selected file is missing required node fields ('node_id' and/or 'python_code').")
+    return
+```
+
+**Invariants**:
+- The `nodes_dir` starting directory is only used once it exists (lazy — same policy as section 10.25).
+- The pre-check reads the file exactly once; `NodeRegistry.load_node()` re-reads it internally. No double-parse overhead in the happy path since the pre-check only runs before the expensive registry call.
+- The `"nodes"` / `"connections"` heuristic correctly identifies standard workflow JSONs. Custom files that have neither key but are still missing `node_id`/`python_code` fall into the generic "missing required fields" branch.
+
+**File**: `src/ui/window.py` — `load_node_json()`
+
+### 10.27 `window.py` — "Load Workflow" silently accepted node JSON files
+
+**Symptom**: `[INFO] Workflow loaded: …/website_examples/http_request.json` — selecting a node definition file through File → Load Workflow created an empty workflow tab with no error. `WorkflowModel.model_validate_json()` accepts any valid JSON (all fields optional, extras ignored).
+
+**Root cause**: `load_workflow()` and `_load_workflow_from_path()` passed `json_data` directly to `WorkflowModel.model_validate_json()` without first checking whether the file was actually a workflow. Node JSON files (which have `node_id` and `python_code` at the top level) produce a valid but empty `WorkflowModel`.
+
+**Fix** (`src/ui/window.py`):
+
+Added one shared private helper and applied the pre-check to both callers:
+
+```python
+@staticmethod
+def _looks_like_node_json(raw) -> bool:
+    return isinstance(raw, dict) and "node_id" in raw and "python_code" in raw
+```
+
+Inserted between the empty-file guard and `model_validate_json` in both `load_workflow()` and `_load_workflow_from_path()`:
+
+```python
+try:
+    _raw = json.loads(json_data)
+    if self._looks_like_node_json(_raw):
+        QMessageBox.critical(self, "Wrong File Type",
+            "This is a node definition file, not a workflow.\n\n"
+            "Use Nodes → Load Node From JSON to install it.")
+        self.log_panel.log(f"Rejected node JSON selected as workflow: {file_path}", "warning")
+        return
+except json.JSONDecodeError:
+    pass  # handled by model_validate_json below
+```
+
+**Invariants**:
+- Uses the already-read `json_data` string — no extra file I/O.
+- `json.JSONDecodeError` is intentionally swallowed: `model_validate_json` raises its own exception for malformed JSON, caught by the existing handler.
+- Symmetric with 10.26: `load_node_json` detects workflow files; `load_workflow` / `_load_workflow_from_path` detect node files — bidirectional cross-protection.
+
+**Files**: `src/ui/window.py` — `_looks_like_node_json()`, `load_workflow()`, `_load_workflow_from_path()`
+
+### 10.28 `node_builder.py` — Edit Node corrupts exec port types
+
+**Symptom**: Opening any hand-written node JSON for editing via Node Builder, then saving, changes the type of `exec_in` / `exec_out` — or adds a duplicate `add_input("exec_in", "any")` alongside the `add_exec_input("exec_in")` call.
+
+**Root cause**: `_load_existing_node()` passed `defn.inputs` / `defn.outputs` directly to `_update_table()`. Hand-written node JSONs list `exec_in` and `exec_out` in their arrays (type `any`). Once those rows appear in the ports table, `_sync_ui_to_code()` regenerates the `[AUTO-GENERATED-PORTS-START]` block and emits `self.add_input("exec_in", "any")` alongside the `self.add_exec_input("exec_in")` line that the exec checkbox generates. The two calls conflict; if the user changes the type combo for that row before the 1-second debounce clears it, the exec port is permanently saved with the wrong type.
+
+**Fix** — three locations in `src/ui/node_builder.py`:
+
+1. **`_load_existing_node()`** — filter before populating tables:
+```python
+_exec_names = {"exec_in", "exec_out"}
+self._update_table(self.inputs_table, [p for p in defn.inputs if p.name not in _exec_names])
+self._update_table(self.outputs_table, [p for p in defn.outputs if p.name not in _exec_names])
+```
+
+2. **`_sync_code_to_ui()`** — filter AST results before updating tables (catches exec ports injected by a prior buggy round-trip):
+```python
+_exec_names = {"exec_in", "exec_out"}
+input_list = [(k, v[0], v[1]) for k, v in inputs.items() if k not in _exec_names]
+output_list = [(k, v[0], v[1]) for k, v in outputs.items() if k not in _exec_names]
+```
+
+3. **`save_node()`** — defensive guard so exec ports can never enter the JSON arrays regardless of table state:
+```python
+if not name or name in seen_inputs or name in {"exec_in", "exec_out"}: continue
+# ... (same pattern for outputs)
+```
+
+**Invariant**: `exec_in` and `exec_out` are exclusively owned by the exec checkboxes + `add_exec_input` / `add_exec_output` calls. They must never appear as table rows or in the `inputs` / `outputs` JSON arrays.
+
+**File**: `src/ui/node_builder.py` — `_load_existing_node()`, `_sync_code_to_ui()`, `save_node()`
+
+### 10.29 `node_builder.py` — Edit Node silently cleared all `PortModel.default` values
+
+**Symptom**: Opening any node for editing via Node Builder and saving reset every port's `default` value to `null` — regardless of what was in the original JSON.
+
+**Root cause**: The port tables had 4 columns (Name, Type, Widget, Options) with no Default column. `_update_table()` read `name`, `type`, `widget_type`, and `options` from `PortModel` but ignored `default`. `save_node()` constructed `PortModel(…)` without a `default=` argument, so every round-trip through the editor silently zeroed all defaults.
+
+**Fix** — five locations in `src/ui/node_builder.py`:
+
+| Location | Change |
+|---|---|
+| `_init_ui()` | Tables: 4 → 5 columns; header added `"Default"` at index 4 |
+| `_update_table()` | Reads `p.default`, writes `str(value)` or `""` to column 4 |
+| `_add_row()` | Initialises column 4 with empty `QTableWidgetItem` |
+| `save_node()` | Reads column 4 text for both inputs and outputs; passes `default=value or None` to `PortModel` |
+| `get_node_definition()` | Reads column 4; includes `"default"` key in the returned port dict when non-empty |
+
+**Invariants**:
+- Default values are stored as strings in the table; `None` is stored as `""` and round-trips back to `None`.
+- When `_sync_code_to_ui()` rebuilds the table from AST (no default info in Python code), the Default column is cleared — consistent with how Options is also cleared on port list changes. This is acceptable: defaults come from the JSON definition, not the Python code.
+- `get_node_definition()` (used by Gemini chat context) now also surfaces defaults.
+
+**File**: `src/ui/node_builder.py` — `_init_ui()`, `_update_table()`, `_add_row()`, `save_node()`, `get_node_definition()`
+
+### 10.30 `node_builder.py` — Icon path change incorrectly mutated exec ports, `init_first`, and `use_exec`
+
+**Symptom**: Changing the icon path field (typing or using the browse button) unexpectedly modified `init_first`, `use_exec`, and exec input/output port settings in the generated code.
+
+**Root cause**: `icon_edit.textChanged` was connected to `lambda: self._sync_ui_to_code(update_exec_hints=False)`. `_sync_ui_to_code` is a full pipeline that always runs — regardless of flags — the AUTO-GENERATED-PORTS rebuild, exec-line strip/re-inject, `init_first` insertion/update, `use_exec` rewrite inside `super().__init__()`, and class-name/name-attribute sync. Every keystroke in the icon field triggered all of this, causing `super().__init__()` to be rewritten to `super().__init__(use_exec=True)`, `init_first = False` to be inserted if absent, and exec port lines to be stripped and re-emitted.
+
+**Fix**: Replaced the `icon_edit.textChanged` connection with a dedicated `_sync_icon_to_code()` method that performs exactly one operation — update the `self.icon_path = …` assignment line via a single `re.sub` — and returns. It reads no other UI state and writes no other code.
+
+```python
+def _sync_icon_to_code(self):
+    if self._is_syncing:
+        return
+    self._is_syncing = True
+    try:
+        code = self.code_edit.toPlainText()
+        icon_val = self.icon_edit.text().strip()
+        icon_replacement = f'self.icon_path = "{icon_val}"' if icon_val else 'self.icon_path = None'
+        new_code = re.sub(r'self\.icon_path\s*=\s*(?:"[^"]*"|None)', icon_replacement, code)
+        if new_code != code:
+            self.code_edit.setPlainText(new_code)
+    finally:
+        self._is_syncing = False
+```
+
+**Invariant**: `_sync_ui_to_code` still syncs `icon_path` at its end — so any other UI change (table, exec checkbox, metadata) also keeps the icon line correct. `_sync_icon_to_code` is only called from `icon_edit.textChanged`; nothing else routes through it.
+
+**File**: `src/ui/node_builder.py` — `__init__` (signal re-wire), `_sync_icon_to_code()` (new method)
