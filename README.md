@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="icons/vibrante-node-main_logo.png" width="300" alt="Vibrante-Node">
+  <img src="icons/vibrante-node-resize_main_logo.png" width="300" alt="Vibrante-Node">
 
   <h3>Visual Workflow Orchestration for Python Developers and Production Pipelines</h3>
 
