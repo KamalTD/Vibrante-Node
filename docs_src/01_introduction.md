@@ -260,20 +260,45 @@ The following diagram shows how the major components relate to one another at ru
 
 ## Documentation Map
 
+### Primary Guides (root-level docs)
+
+| Document | Audience | Contents |
+|---|---|---|
+| [USER_GUIDE.md](../USER_GUIDE.md) | All users | Interface, canvas, execution model, all features, keyboard shortcuts, troubleshooting |
+| [NODE_BUILDER_API.md](../NODE_BUILDER_API.md) | Node authors | BaseNode class reference, port system, lifecycle hooks, JSON schema, distribution, DCC integration patterns |
+| [AUTOMATION_API.md](../AUTOMATION_API.md) | Pipeline TDs | Scripting console, scene/app/registry API, automation script examples, headless execution |
+| [DEVELOPER.md](../DEVELOPER.md) | Contributors | Execution engine internals, event loop, data flow, node registry, serialization, Qt threading, EnvManager, plugin architecture |
+| [DOCUMENTATION.md](../DOCUMENTATION.md) | Reference lookup | Complete node index, BaseNode API table, port/serialization schemas, env vars, signals, shortcuts, error index |
+
+### Portal Documentation (this site)
+
 | Document | Contents |
 |---|---|
-| **01_introduction.md** (this file) | What Vibrante-Node is, philosophy, audiences, architecture |
-| **02_getting_started.md** | Installation, first launch, your first workflow tutorial |
-| **03_user_guide.md** | Canvas navigation, node anatomy, execution flow, all features |
-| `DEVELOPER.md` | Node authoring deep-dive, Python code rules, bridge API |
-| `CLAUDE.md` | Node file format specification for AI-assisted node authoring |
-| `AUTOMATION_API.md` | Programmatic control of Vibrante-Node from external scripts |
-| `NODE_BUILDER_API.md` | Node Builder GUI reference |
-| `RELEASE_v2.2.1.md` | Detailed changelog for v2.2.1 (current) |
-| `RELEASE_v2.2.0.md` | Detailed changelog for v2.2.0 |
-| `RELEASE_v2.1.1.md` | Detailed changelog for v2.1.1 |
-| `RELEASE_v2.1.0.md` | Detailed changelog for v2.1.0 |
-| `RELEASE_v2.0.0.md` | Detailed changelog for v2.0.0 |
+| **01_introduction.md** (this file) | What Vibrante-Node is, philosophy, audiences, architecture, version history |
+| **02_getting_started.md** | Installation, first launch, first workflow walkthrough |
+| **03_user_guide.md** | Canvas navigation, execution flow, all UI features |
+| **04_workflow_tutorials.md** | Step-by-step workflow build tutorials |
+| **05_node_development.md** | Complete node development guide (1,000+ lines) |
+| **06_backend_architecture.md** | Execution engine deep dive with flow diagrams |
+| **07_frontend_architecture.md** | Qt canvas architecture — NodeScene, NodeWidget, Edge |
+| **08_api_reference.md** | Full class/method API reference (1,500+ lines) |
+| **09_advanced_topics.md** | GroupNode, autosave, wire inspector, canvas search internals |
+| **10_contribution_guide.md** | Contributing, testing, code style |
+| **11_troubleshooting.md** | Diagnostic checklist, known issues, log interpretation |
+| **12_examples_library.md** | Curated examples from `node_examples/`, `website_examples/` |
+| **13_general_purpose_automation.md** | Automation patterns from `examples/automation/` |
+| **14_custom_nodes_api.md** | Custom node SDK — extended reference |
+
+### Release Notes
+
+| Version | Type | File |
+|---|---|---|
+| v2.2.1 | Patch | [RELEASE_v2.2.1.md](../RELEASE_v2.2.1.md) |
+| v2.2.0 | Minor | [RELEASE_v2.2.0.md](../RELEASE_v2.2.0.md) |
+| v2.1.1 | Patch | [RELEASE_v2.1.1.md](../RELEASE_v2.1.1.md) |
+| v2.1.0 | Minor | [RELEASE_v2.1.0.md](../RELEASE_v2.1.0.md) |
+| v2.0.0 | Major | [RELEASE_v2.0.0.md](../RELEASE_v2.0.0.md) |
+| Earlier | — | [releases/](../releases/) |
 
 ---
 

@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Vibrante-Node v2.2.1 — Houdini Bridge Integration">
+<title>Houdini Bridge — Vibrante-Node Docs</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/atom-one-dark.min.css">
+<style>
+/* ── Reset & Variables ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:       #1e1e2e;
+  --surface:  #181825;
+  --surface2: #11111b;
+  --border:   #313244;
+  --text:     #cdd6f4;
+  --subtext:  #a6adc8;
+  --muted:    #6c7086;
+  --lavender: #b4befe;
+  --blue:     #89b4fa;
+  --teal:     #94e2d5;
+  --green:    #a6e3a1;
+  --yellow:   #f9e2af;
+  --peach:    #fab387;
+  --red:      #f38ba8;
+  --pink:     #f5c2e7;
+  --mauve:    #cba6f7;
+  --sidebar-w: 260px;
+  --toc-w:    220px;
+  --header-h: 56px;
+  --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --mono: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+}
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: var(--header-h) 1fr;
+  grid-template-columns: var(--sidebar-w) 1fr var(--toc-w);
+  grid-template-areas:
+    "header header header"
+    "sidebar content toc";
+}
+.header {
+  grid-area: header;
+  position: sticky; top: 0; z-index: 200;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 16px;
+  padding: 0 24px;
+}
+.header-logo { font-weight: 700; font-size: 1.05em; color: var(--mauve); text-decoration: none; white-space: nowrap; }
+.header-version { font-size: .78em; background: var(--border); color: var(--subtext); padding: 2px 8px; border-radius: 12px; }
+.header-spacer { flex: 1; }
+.search-wrap { position: relative; }
+#search-input {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+  color: var(--text); font-family: var(--font); font-size: .9em;
+  padding: 6px 14px 6px 36px; width: 260px; outline: none; transition: border-color .15s;
+}
+#search-input:focus { border-color: var(--mauve); }
+.search-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; font-size: .9em; }
+#search-results {
+  position: absolute; top: calc(100% + 8px); right: 0; width: 380px; max-height: 420px; overflow-y: auto;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.5); display: none; z-index: 300;
+}
+#search-results.visible { display: block; }
+.search-result-item { padding: 10px 16px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background .1s; }
+.search-result-item:last-child { border-bottom: none; }
+.search-result-item:hover { background: var(--bg); }
+.search-result-title { color: var(--blue); font-weight: 600; font-size: .9em; }
+.search-result-excerpt { color: var(--subtext); font-size: .82em; margin-top: 2px; line-height: 1.4; }
+.search-no-results { padding: 16px; color: var(--muted); text-align: center; font-size: .9em; }
+.sidebar {
+  grid-area: sidebar; position: sticky; top: var(--header-h);
+  height: calc(100vh - var(--header-h)); overflow-y: auto;
+  background: var(--surface); border-right: 1px solid var(--border);
+  padding: 20px 0; scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+.sidebar-group { margin-bottom: 4px; }
+.sidebar-group-title { font-size: .7em; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); padding: 10px 20px 4px; font-weight: 600; }
+.sidebar-link { display: flex; align-items: center; gap: 8px; padding: 6px 20px; color: var(--subtext); text-decoration: none; font-size: .88em; border-left: 3px solid transparent; transition: all .12s; line-height: 1.3; }
+.sidebar-link:hover { color: var(--text); background: var(--bg); }
+.sidebar-link.active { color: var(--mauve); border-left-color: var(--mauve); background: rgba(180,190,254,.06); font-weight: 600; }
+.sidebar-num { font-size: .7em; color: var(--muted); background: var(--border); border-radius: 4px; padding: 1px 5px; flex-shrink: 0; }
+.content { grid-area: content; min-width: 0; padding: 40px 48px 80px; max-width: 860px; }
+.content-inner { max-width: 820px; }
+.breadcrumb { font-size: .8em; color: var(--muted); margin-bottom: 28px; display: flex; align-items: center; gap: 6px; }
+.breadcrumb a { color: var(--blue); text-decoration: none; }
+.breadcrumb a:hover { text-decoration: underline; }
+.breadcrumb-sep { color: var(--border); }
+h1 { font-size: 2em; color: var(--mauve); border-bottom: 2px solid var(--border); padding-bottom: 12px; margin: 20px 0 20px; }
+h2 { font-size: 1.45em; color: var(--blue); margin: 40px 0 14px; padding-top: 8px; }
+h3 { font-size: 1.15em; color: var(--teal); margin: 28px 0 10px; }
+h4 { font-size: 1em; color: var(--pink); margin: 20px 0 8px; }
+h5 { font-size: .95em; color: var(--yellow); margin: 16px 0 6px; }
+p  { margin-bottom: 16px; color: var(--text); }
+a  { color: var(--blue); }
+a:hover { text-decoration: underline; }
+strong { color: var(--peach); }
+em { color: var(--yellow); font-style: italic; }
+ul, ol { margin: 10px 0 16px 24px; }
+li { margin-bottom: 6px; }
+li > ul, li > ol { margin-top: 4px; margin-bottom: 4px; }
+blockquote { border-left: 4px solid var(--mauve); padding: 10px 20px; margin: 16px 0; background: rgba(180,190,254,.05); border-radius: 0 8px 8px 0; color: var(--subtext); }
+blockquote strong { color: var(--mauve); }
+hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+code { background: var(--surface2); color: var(--red); padding: 2px 7px; border-radius: 5px; font-family: var(--mono); font-size: .87em; }
+pre { background: var(--surface2) !important; border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; overflow-x: auto; margin: 16px 0 22px; position: relative; }
+pre code { background: none !important; color: inherit !important; padding: 0; font-size: .9em; border-radius: 0; }
+.copy-btn { position: absolute; top: 10px; right: 12px; background: var(--border); color: var(--subtext); border: none; border-radius: 5px; padding: 3px 10px; font-size: .75em; cursor: pointer; transition: all .12s; font-family: var(--font); }
+.copy-btn:hover { background: var(--mauve); color: var(--surface2); }
+.copy-btn.copied { background: var(--green); color: var(--surface2); }
+table { border-collapse: collapse; width: 100%; margin: 16px 0 22px; font-size: .9em; }
+th { background: var(--border); color: var(--mauve); padding: 10px 14px; text-align: left; font-weight: 600; }
+td { border-top: 1px solid var(--border); padding: 9px 14px; color: var(--text); }
+tr:nth-child(even) td { background: rgba(17,17,27,.4); }
+td code { font-size: .85em; }
+.callout { border-radius: 8px; padding: 14px 18px; margin: 16px 0 22px; border-left: 4px solid; }
+.callout-note    { background: rgba(137,180,250,.08); border-color: var(--blue);   }
+.callout-tip     { background: rgba(166,227,161,.08); border-color: var(--green);  }
+.callout-warning { background: rgba(249,226,175,.08); border-color: var(--yellow); }
+.callout-danger  { background: rgba(243,139,168,.08); border-color: var(--red);    }
+.callout-title   { font-weight: 700; font-size: .85em; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
+.callout-note    .callout-title { color: var(--blue);   }
+.callout-tip     .callout-title { color: var(--green);  }
+.callout-warning .callout-title { color: var(--yellow); }
+.callout-danger  .callout-title { color: var(--red);    }
+.val-badge { display: inline-block; font-size: .78em; font-weight: 600; padding: 4px 12px; border-radius: 20px; margin-bottom: 18px; border: 1px solid transparent; letter-spacing: .02em; }
+.val-badge-ok      { background: rgba(166,227,161,.12); border-color: var(--green);  color: var(--green);  }
+.val-badge-warn    { background: rgba(249,226,175,.12); border-color: var(--yellow); color: var(--yellow); }
+.page-nav { display: flex; justify-content: space-between; margin-top: 60px; padding-top: 24px; border-top: 1px solid var(--border); gap: 16px; }
+.page-nav-link { display: flex; flex-direction: column; text-decoration: none; padding: 14px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; min-width: 200px; transition: border-color .15s; max-width: 48%; }
+.page-nav-link:hover { border-color: var(--mauve); }
+.page-nav-label { font-size: .75em; color: var(--muted); margin-bottom: 4px; }
+.page-nav-title { color: var(--blue); font-weight: 600; font-size: .95em; }
+.page-nav-link.prev .page-nav-label::before { content: '← '; }
+.page-nav-link.next { margin-left: auto; text-align: right; }
+.page-nav-link.next .page-nav-label::after { content: ' →'; }
+.toc { grid-area: toc; position: sticky; top: var(--header-h); height: calc(100vh - var(--header-h)); overflow-y: auto; padding: 28px 16px 28px 8px; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+.toc-title { font-size: .72em; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); font-weight: 600; margin-bottom: 12px; padding-left: 8px; }
+.toc-link { display: block; padding: 4px 8px; color: var(--subtext); text-decoration: none; font-size: .82em; border-left: 2px solid transparent; border-radius: 0 4px 4px 0; transition: all .12s; line-height: 1.35; margin-bottom: 1px; }
+.toc-link:hover { color: var(--text); border-left-color: var(--border); }
+.toc-link.active { color: var(--mauve); border-left-color: var(--mauve); background: rgba(180,190,254,.05); }
+.toc-link.toc-h3 { padding-left: 20px; font-size: .79em; }
+@media (max-width: 1100px) { body { grid-template-columns: var(--sidebar-w) 1fr 0; } .toc { display: none; } }
+@media (max-width: 760px) { body { grid-template-columns: 0 1fr 0; } .sidebar { display: none; } .content { padding: 24px 20px 60px; } #search-input { width: 180px; } }
+</style>
+<span id="portal-base" data-base="" style="display:none"></span>
+</head>
+<body>
+
+<!-- ── Header ─────────────────────────────────────────────────────────── -->
+<header class="header">
+  <a class="header-logo" href="index.html">Vibrante-Node</a>
+  <span class="header-version">v2.2.1</span>
+  <div class="header-spacer"></div>
+  <div class="search-wrap">
+    <span class="search-icon">&#128269;</span>
+    <input id="search-input" type="text" placeholder="Search docs… (/)" autocomplete="off" spellcheck="false">
+    <div id="search-results"></div>
+  </div>
+</header>
+
+<!-- ── Sidebar ────────────────────────────────────────────────────────── -->
+<nav class="sidebar">
+<div class="sidebar-group">
+<div class="sidebar-group-title">Overview</div>
+<a class="sidebar-link" href="01_introduction.html"><span class="sidebar-num">01</span>Introduction</a>
+<a class="sidebar-link" href="02_getting_started.html"><span class="sidebar-num">02</span>Getting Started</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Using the App</div>
+<a class="sidebar-link" href="03_user_guide.html"><span class="sidebar-num">03</span>User Guide</a>
+<a class="sidebar-link" href="04_workflow_tutorials.html"><span class="sidebar-num">04</span>Workflow Tutorials</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Developing Nodes</div>
+<a class="sidebar-link" href="05_node_development.html"><span class="sidebar-num">05</span>Node Development Guide</a>
+<a class="sidebar-link" href="14_custom_nodes_api.html"><span class="sidebar-num">14</span>Custom Nodes API</a>
+<a class="sidebar-link" href="08_api_reference.html"><span class="sidebar-num">08</span>API Reference</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Architecture</div>
+<a class="sidebar-link" href="06_backend_architecture.html"><span class="sidebar-num">06</span>Backend Architecture</a>
+<a class="sidebar-link" href="07_frontend_architecture.html"><span class="sidebar-num">07</span>Frontend Architecture</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Advanced</div>
+<a class="sidebar-link" href="09_advanced_topics.html"><span class="sidebar-num">09</span>Advanced Topics</a>
+<a class="sidebar-link" href="10_contribution_guide.html"><span class="sidebar-num">10</span>Contribution Guide</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Integrations</div>
+<a class="sidebar-link active" href="integrations_houdini.html">Houdini Bridge</a>
+<a class="sidebar-link" href="integrations_maya.html">Maya Headless</a>
+<a class="sidebar-link" href="integrations_blender.html">Blender Headless</a>
+<a class="sidebar-link" href="integrations_prism.html">Prism Pipeline</a>
+<a class="sidebar-link" href="integrations_deadline.html">Deadline Render Farm</a>
+</div>
+<div class="sidebar-group">
+<div class="sidebar-group-title">Reference</div>
+<a class="sidebar-link" href="11_troubleshooting.html"><span class="sidebar-num">11</span>Troubleshooting</a>
+<a class="sidebar-link" href="12_examples_library.html"><span class="sidebar-num">12</span>Examples Library</a>
+<a class="sidebar-link" href="13_general_purpose_automation.html"><span class="sidebar-num">13</span>General Purpose Automation</a>
+</div>
+</nav>
+
+<!-- ── Main content ───────────────────────────────────────────────────── -->
+<main class="content">
+  <div class="content-inner">
+    <nav class="breadcrumb">
+      <a href="index.html">Docs</a>
+      <span class="breadcrumb-sep">›</span>
+      <span>Integrations</span>
+      <span class="breadcrumb-sep">›</span>
+      <span>Houdini Bridge</span>
+    </nav>
+    <div class="val-badge val-badge-ok">&#10003; Verified — v2.2.1</div>
+
+    <h1 id="houdini-bridge">Houdini Bridge Integration</h1>
+
+    <p>The Houdini Bridge is a <strong>live, bidirectional integration</strong> between Vibrante-Node and a running Houdini session. It operates over a local TCP JSON-RPC connection managed by <code>vibrante_hou_server.py</code> (running inside Houdini) and <code>src/utils/hou_bridge.py</code> (the client singleton in Vibrante-Node). Unlike the headless Maya/Blender patterns, the Houdini bridge is always-live — nodes interact with the live Houdini session in real time as the graph executes.</p>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">Key distinction</div>
+      The Houdini Bridge is a <em>live</em> connection. Every bridge method call is a synchronous RPC round-trip to a running Houdini process. This is different from the Maya and Blender integrations, which accumulate an action list and then spawn a batch DCC session only when the executor node fires.
+    </div>
+
+    <hr>
+
+    <h2 id="architecture">Architecture</h2>
+
+    <p>The integration spans two OS processes connected by a local TCP socket. The server runs inside Houdini and has full access to the <code>hou</code> Python API. The client is a singleton in the Vibrante-Node subprocess.</p>
+
+<pre><code class="language-text">Houdini Process                    Vibrante-Node Subprocess
+─────────────────                  ──────────────────────────
+vibrante_hou_server.py             src/utils/hou_bridge.py
+  JSON-RPC server                    HouBridge singleton
+  port 18811 (default)   &lt;─TCP─&gt;    _send() / _recv()
+  hou.* API available                threading.Lock per instance
+  runs on Houdini thread             TCP_NODELAY, 30 s timeout
+                                     auto-reconnect on pipe error
+</code></pre>
+
+    <h3 id="plugin-file-layout">Plugin file layout</h3>
+
+<pre><code class="language-text">plugins/houdini/
+├── vibrante_node.json                  ← Houdini package file (user installs this)
+├── v_nodes_houdini/                    ← Houdini node .json definitions
+│   ├── hou_create_geo.json
+│   ├── hou_set_parm.json
+│   └── …
+├── v_scripts_houdini/                  ← Houdini-specific .py scripts (Scripts menu)
+│   └── …
+└── houdini/                            ← Added to HOUDINI_PATH by package JSON
+    ├── MainMenuCommon.xml              ← Adds "Vibrante-Node" menu to Houdini bar
+    ├── toolbar/vibrante_node.shelf     ← Shelf tool
+    └── scripts/python/
+        ├── pythonrc.py                 ← Startup validation
+        ├── vibrante_node_houdini.py    ← launch(), setup_env(), show_about()
+        └── vibrante_hou_server.py      ← JSON-RPC server running inside Houdini
+</code></pre>
+
+    <hr>
+
+    <h2 id="installation">Installation &amp; Configuration</h2>
+
+    <h3 id="package-json">vibrante_node.json — the Houdini package file</h3>
+
+    <p>Copy <code>plugins/houdini/vibrante_node.json</code> to your Houdini packages directory (e.g. <code>~/houdini20.5/packages/</code>). Open it and set the two required variables:</p>
+
+<pre><code class="language-json">{
+    "env": [
+        { "VIBRANTE_NODE_APP": "/path/to/vibrante-node" },
+        { "VIBRANTE_PYTHON_EXE": "C:/Python311/python.exe" }
+    ],
+    "path": "$VIBRANTE_NODE_APP/plugins/houdini/houdini"
+}
+</code></pre>
+
+    <table>
+      <thead><tr><th>Variable</th><th>Required</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>VIBRANTE_NODE_APP</code></td><td>Yes</td><td>Absolute path to the Vibrante-Node app root (where <code>src/main.py</code> lives)</td></tr>
+        <tr><td><code>VIBRANTE_PYTHON_EXE</code></td><td>Optional</td><td>Path to Python 3.11 executable with PyQt5. Auto-detected if absent, but explicit is faster.</td></tr>
+      </tbody>
+    </table>
+
+    <p>The <code>path</code> entry adds <code>plugins/houdini/houdini/</code> to <code>HOUDINI_PATH</code> so Houdini finds the menu XML, shelf, and <code>pythonrc.py</code> automatically on next launch.</p>
+
+    <hr>
+
+    <h2 id="launch-sequence">Launch Sequence</h2>
+
+    <p>Once the package is installed, the full launch flow is:</p>
+
+    <ol>
+      <li>User opens Houdini — <code>pythonrc.py</code> runs automatically and validates <code>VIBRANTE_NODE_APP</code> and <code>VIBRANTE_PYTHON_EXE</code> in the Python console.</li>
+      <li>User clicks <strong>Vibrante-Node → Launch Vibrante-Node</strong> in the Houdini menu bar (or the shelf tool).</li>
+      <li><code>launch()</code> calls <code>setup_env()</code> exactly once — this sets all required environment variables for the subprocess.</li>
+      <li>The Vibrante-Node subprocess starts; <code>NodeRegistry.load_all_with_extras()</code> picks up <code>v_nodes_houdini/</code> nodes alongside the bundled node library.</li>
+      <li><code>HouBridge.connect()</code> establishes the TCP socket to port 18811 (or <code>VIBRANTE_HOU_PORT</code> if overridden).</li>
+      <li>Graph execution can now use any <code>bridge.*</code> method — each call is a live RPC round-trip into Houdini.</li>
+    </ol>
+
+    <div class="callout callout-note">
+      <div class="callout-title">Single setup_env call</div>
+      <code>setup_env()</code> is called exactly once inside <code>launch()</code>. It must never be called a second time in the same session — doing so would append duplicate path entries to <code>v_nodes_dir</code> and <code>v_scripts_path</code>. See CLAUDE.md §10.4 for the full bug history.
+    </div>
+
+    <hr>
+
+    <h2 id="environment-variables">Environment Variables</h2>
+
+    <table>
+      <thead><tr><th>Variable</th><th>Set by</th><th>Consumed by</th></tr></thead>
+      <tbody>
+        <tr><td><code>VIBRANTE_NODE_APP</code></td><td><code>vibrante_node.json</code></td><td><code>vibrante_node_houdini.get_app_root()</code></td></tr>
+        <tr><td><code>VIBRANTE_PYTHON_EXE</code></td><td><code>vibrante_node.json</code></td><td><code>vibrante_node_houdini._find_system_python()</code></td></tr>
+        <tr><td><code>VIBRANTE_HOUDINI_MODE</code></td><td><code>setup_env()</code> → <code>"subprocess"</code></td><td><code>src/utils/qt_compat.py</code> — selects PyQt5 mode</td></tr>
+        <tr><td><code>VIBRANTE_HOU_PORT</code></td><td><code>setup_env()</code> after server starts</td><td><code>src/utils/hou_bridge.py</code> — default 18811</td></tr>
+        <tr><td><code>VIBRANTE_HIP_FILE</code></td><td><code>setup_env()</code> with current .hip path</td><td>Available in node <code>python_code</code> via <code>os.environ</code></td></tr>
+        <tr><td><code>v_nodes_dir</code></td><td><code>setup_env()</code> + EnvManager config</td><td><code>NodeRegistry.load_all_with_extras()</code> in <code>window.py</code></td></tr>
+        <tr><td><code>v_scripts_path</code></td><td><code>setup_env()</code> + EnvManager config</td><td><code>MainWindow._populate_scripts_menu()</code> in <code>window.py</code></td></tr>
+      </tbody>
+    </table>
+
+    <p><code>v_nodes_dir</code> and <code>v_scripts_path</code> are general-purpose multi-directory variables (os.pathsep-separated). Studio TDs can configure additional paths in Settings → Application Paths without overwriting what Houdini's <code>setup_env()</code> already set.</p>
+
+    <hr>
+
+    <h2 id="bridge-api">Bridge API Reference</h2>
+
+    <p>Import and obtain the bridge singleton at the top of any node's <code>python_code</code>:</p>
+
+<pre><code class="language-python">from src.utils.hou_bridge import get_bridge
+
+bridge = get_bridge()   # returns the HouBridge singleton — never import hou directly
+</code></pre>
+
+    <div class="callout callout-danger">
+      <div class="callout-title">Never import hou directly</div>
+      Never write <code>import hou</code> in node code. The <code>hou</code> module is only available inside the Houdini process. All Houdini operations must go through the bridge client.
+    </div>
+
+    <h3 id="ping">Connectivity</h3>
+
+    <table>
+      <thead><tr><th>Method</th><th>Returns</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>bridge.ping()</code></td><td><code>{"status": "ok", "version": "…"}</code></td><td>Check server reachability and Houdini version</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="node-creation">Node Creation &amp; Deletion</h3>
+
+    <table>
+      <thead><tr><th>Method</th><th>Returns</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><code>create_node(parent, node_type, name="")</code></td><td><code>{"path": "…", "name": "…", "type": "…"}</code></td><td>Creates a node inside <code>parent</code>. Returns <code>result["path"]</code> for chaining.</td></tr>
+        <tr><td><code>delete_node(path)</code></td><td><code>{"deleted": "…"}</code></td><td>Deletes the node at <code>path</code>.</td></tr>
+      </tbody>
+    </table>
+
+<pre><code class="language-python">result = bridge.create_node("/obj", "geo", "my_geo")
+geo_path = result["path"]   # e.g. "/obj/my_geo"
+</code></pre>
+
+    <h3 id="parameters">Parameters</h3>
+
+    <table>
+      <thead><tr><th>Method</th><th>Returns</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><code>set_parm(node, parm, value)</code></td><td><code>{"set": True}</code></td><td>Set a single parameter by name</td></tr>
+        <tr><td><code>get_parm(node, parm)</code></td><td><code>{"value": …}</code></td><td>Read a single parameter value</td></tr>
+        <tr><td><code>set_parms(node, parms_dict)</code></td><td><code>{"set": True, "count": N}</code></td><td>Set multiple parameters in one RPC call</td></tr>
+        <tr><td><code>get_parms(node)</code></td><td>flat dict of all parms</td><td>Dump all parameter name→value pairs</td></tr>
+      </tbody>
+    </table>
+
+<pre><code class="language-python">bridge.set_parm("/obj/my_geo/alembic1", "fileName", "/path/to/file.abc")
+value = bridge.get_parm("/obj/my_geo/alembic1", "fileName")["value"]
+bridge.set_parms("/obj/my_geo/null1", {"tx": 1.0, "ty": 2.0, "tz": 0.5})
+</code></pre>
+
+    <h3 id="connections-cooking">Connections &amp; Cooking</h3>
+
+    <table>
+      <thead><tr><th>Method</th><th>Returns</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><code>connect_nodes(from_node, to_node, output=0, input_idx=0)</code></td><td><code>{"connected": True}</code></td><td>Wire <code>from_node</code>'s output into <code>to_node</code>'s input</td></tr>
+        <tr><td><code>cook_node(path, force=False)</code></td><td><code>{"cooked": True}</code></td><td>Force-cook a node. <code>force=True</code> bypasses Houdini's cook cache.</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="arbitrary-code">Arbitrary Python Execution</h3>
+
+    <p><code>bridge.run_code(code)</code> executes a string of Python <strong>inside Houdini</strong>. The <code>hou</code> module is available. Assign to the local variable <code>result</code> to receive a value back.</p>
+
+<pre><code class="language-python">run_result = bridge.run_code(
+    "n = hou.node('/obj/my_geo'); result = n.displayNode().path() if n and n.displayNode() else None"
+)
+display_path = run_result.get("result")   # e.g. "/obj/my_geo/convert1" or None
+</code></pre>
+
+    <div class="callout callout-warning">
+      <div class="callout-title">Use run_code sparingly</div>
+      Prefer the typed bridge methods (<code>set_parm</code>, <code>create_node</code>, etc.) over <code>run_code</code> wherever possible. <code>run_code</code> is powerful but its results are untyped and harder to debug. Use it when a Houdini operation has no corresponding bridge method.
+    </div>
+
+    <h3 id="scene-node-info">Scene &amp; Node Inspection</h3>
+
+    <table>
+      <thead><tr><th>Method</th><th>Returns</th></tr></thead>
+      <tbody>
+        <tr><td><code>scene_info()</code></td><td><code>{"hip_file": …, "fps": …, "frame": …, "frame_range": [start, end]}</code></td></tr>
+        <tr><td><code>node_info(path)</code></td><td><code>{"path": …, "name": …, "type": …, "category": …, "inputs": […], "outputs": […], "children": […]}</code></td></tr>
+        <tr><td><code>children(path="/obj")</code></td><td>List of <code>{"name": …, "type": …, "path": …}</code> dicts</td></tr>
+        <tr><td><code>node_exists(path)</code></td><td><code>{"exists": True}</code> or <code>{"exists": False}</code></td></tr>
+      </tbody>
+    </table>
+
+    <p>The <code>node_info</code> <code>category</code> field returns <code>"Object"</code>, <code>"Sop"</code>, <code>"Shop"</code>, etc. — use this to distinguish geo containers from SOP nodes when resolving ambiguous path inputs.</p>
+
+    <h3 id="flags-layout">Flags, Layout &amp; Save</h3>
+
+    <table>
+      <thead><tr><th>Method</th><th>Returns</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><code>set_display_flag(path, on=True)</code></td><td><code>{"set": True}</code></td><td>Toggle the blue display flag</td></tr>
+        <tr><td><code>set_render_flag(path, on=True)</code></td><td><code>{"set": True}</code></td><td>Toggle the purple render flag</td></tr>
+        <tr><td><code>layout_children(path="/obj")</code></td><td><code>{"done": True}</code></td><td>Auto-layout child nodes</td></tr>
+        <tr><td><code>save_hip(path="")</code></td><td><code>{"saved": "…"}</code></td><td>Save the .hip file; empty path saves in-place</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="animation">Animation &amp; Expressions</h3>
+
+    <table>
+      <thead><tr><th>Method</th><th>Returns</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><code>set_expression(node, parm, expression, language="hscript")</code></td><td><code>{"set": True}</code></td><td><code>language</code> = <code>"hscript"</code> or <code>"python"</code></td></tr>
+        <tr><td><code>set_keyframe(node, parm, frame, value)</code></td><td><code>{"set": True}</code></td><td>Set a single keyframe on a parameter</td></tr>
+        <tr><td><code>set_frame(frame)</code></td><td><code>{"frame": …}</code></td><td>Move Houdini's current frame</td></tr>
+        <tr><td><code>set_playback_range(start, end)</code></td><td><code>{"start": …, "end": …}</code></td><td>Set the timeline range</td></tr>
+      </tbody>
+    </table>
+
+<pre><code class="language-python">bridge.set_expression("/obj/my_geo/null1", "tx", "sin($F * 0.1)", language="hscript")
+bridge.set_expression("/obj/my_geo/null1", "ty", "hou.frame() * 0.05", language="python")
+bridge.set_keyframe("/obj/my_cam", "tx", frame=1, value=0.0)
+bridge.set_keyframe("/obj/my_cam", "tx", frame=240, value=100.0)
+</code></pre>
+
+    <hr>
+
+    <h2 id="common-patterns">Common Node Patterns</h2>
+
+    <h3 id="pattern-create-geo">Creating a geometry container with SOPs</h3>
+
+<pre><code class="language-python">from src.nodes.base import BaseNode
+from src.utils.hou_bridge import get_bridge
+
+class Hou_Create_Geo(BaseNode):
+    name = "hou_create_geo"
+
+    def __init__(self):
+        super().__init__()
+        # [AUTO-GENERATED-PORTS-START]
+        self.add_input("geo_name", "string", widget_type="text", default="my_geo")
+        self.add_output("geo_path", "string")
+        # [AUTO-GENERATED-PORTS-END]
+
+    async def execute(self, inputs):
+        geo_name = inputs.get("geo_name", "my_geo")
+        if not geo_name:
+            self.log_error("geo_name is required.")
+            return {"geo_path": "", "exec_out": True}
+        try:
+            bridge = get_bridge()
+            # Create /obj-level geo container
+            result = bridge.create_node("/obj", "geo", geo_name)
+            geo_path = result["path"]
+            # Clear the default file SOP Houdini adds automatically
+            for child in bridge.children(geo_path):
+                bridge.delete_node(child["path"])
+            bridge.layout_children("/obj")
+            return {"geo_path": geo_path, "exec_out": True}
+        except Exception as e:
+            self.log_error(f"Houdini create_geo failed: {e}")
+            return {"geo_path": "", "exec_out": True}
+
+def register_node():
+    return Hou_Create_Geo
+</code></pre>
+
+    <h3 id="pattern-resolve-sop">Resolving Object vs SOP input paths</h3>
+
+    <p>Many nodes accept a <code>geo_path</code> that may be either an Object-level geo container or a SOP node. Use <code>node_info</code> to distinguish them:</p>
+
+<pre><code class="language-python">node_info = bridge.node_info(geo_path)
+category = node_info.get("category", "")
+
+if category == "Object":
+    # Descend into the geo container to find the display SOP
+    run_result = bridge.run_code(
+        f"n = hou.node('{geo_path}'); result = n.displayNode().path() if n and n.displayNode() else None"
+    )
+    input_sop = run_result.get("result")
+    if not input_sop:
+        raise Exception(f"No display SOP found inside: {geo_path}")
+    sop_context = geo_path
+elif category == "Sop":
+    # Already a SOP — parent is the geo container
+    sop_context = "/".join(geo_path.rstrip("/").split("/")[:-1])
+    input_sop = geo_path
+else:
+    raise Exception(f"Unsupported node category '{category}': {geo_path}")
+</code></pre>
+
+    <h3 id="pattern-vex-wrangle">VEX attribwrangle</h3>
+
+<pre><code class="language-python">vex_code = (
+    'vector p0 = point(0, "P", primpoint(0, @primnum, 0));\n'
+    'vector p1 = point(0, "P", primpoint(0, @primnum, 1));\n'
+    'vector dir = normalize(p1 - p0);\n'
+    'if (abs(dot(dir, set(1,0,0))) &lt; 0.9) { removeprim(0, @primnum, 1); }'
+)
+
+wrangle_result = bridge.create_node(sop_context, "attribwrangle", "edge_filter")
+wrangle_path = wrangle_result["path"]
+bridge.connect_nodes(input_sop, wrangle_path, output=0, input_idx=0)
+bridge.set_parm(wrangle_path, "class", 1)       # 0=detail, 1=primitive, 2=point, 3=vertex
+bridge.set_parm(wrangle_path, "snippet", vex_code)
+bridge.set_display_flag(wrangle_path, True)
+bridge.set_render_flag(wrangle_path, True)
+bridge.layout_children(sop_context)
+</code></pre>
+
+    <h3 id="pattern-execute-skeleton">Standard execute() pattern</h3>
+
+    <p>All Houdini nodes follow this guard pattern — validate input, get bridge, wrap in try/except, always return <code>exec_out</code>:</p>
+
+<pre><code class="language-python">async def execute(self, inputs):
+    geo_path = inputs.get("geo_path", "")
+    if not geo_path:
+        self.log_error("No geo path provided.")
+        return {"result_path": "", "exec_out": True}
+
+    try:
+        bridge = get_bridge()
+        # … create / modify nodes …
+        return {"result_path": result_path, "exec_out": True}
+    except Exception as e:
+        self.log_error(f"Houdini operation failed: {str(e)}")
+        return {"result_path": "", "exec_out": True}
+</code></pre>
+
+    <hr>
+
+    <h2 id="node-library">Node Library</h2>
+
+    <p>Houdini nodes live in <code>plugins/houdini/v_nodes_houdini/</code> and appear under the <strong>Houdini</strong> category in the Library panel. They are loaded via <code>v_nodes_dir</code> and are only present when launching from Houdini.</p>
+
+    <table>
+      <thead><tr><th>Node ID</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>hou_create_geo</code></td><td>Create an Object-level geo container at <code>/obj</code></td></tr>
+        <tr><td><code>hou_create_node</code></td><td>Create any node type at any network path</td></tr>
+        <tr><td><code>hou_delete_node</code></td><td>Delete a node by path</td></tr>
+        <tr><td><code>hou_set_parm</code></td><td>Set a single parameter value</td></tr>
+        <tr><td><code>hou_get_parm</code></td><td>Read a single parameter value</td></tr>
+        <tr><td><code>hou_set_parms</code></td><td>Set multiple parameters in one call</td></tr>
+        <tr><td><code>hou_get_parms</code></td><td>Dump all parameters of a node</td></tr>
+        <tr><td><code>hou_connect_nodes</code></td><td>Wire one node's output to another's input</td></tr>
+        <tr><td><code>hou_cook_node</code></td><td>Force-cook a node</td></tr>
+        <tr><td><code>hou_run_code</code></td><td>Execute arbitrary Python inside Houdini</td></tr>
+        <tr><td><code>hou_scene_info</code></td><td>Read current .hip file, fps, frame, frame range</td></tr>
+        <tr><td><code>hou_node_info</code></td><td>Query node type, category, children, connections</td></tr>
+        <tr><td><code>hou_node_exists</code></td><td>Check whether a node path exists</td></tr>
+        <tr><td><code>hou_set_display_flag</code></td><td>Toggle the blue display flag on a SOP</td></tr>
+        <tr><td><code>hou_set_render_flag</code></td><td>Toggle the purple render flag on a SOP</td></tr>
+        <tr><td><code>hou_layout_children</code></td><td>Auto-layout nodes inside a network</td></tr>
+        <tr><td><code>hou_save_hip</code></td><td>Save the current .hip file</td></tr>
+        <tr><td><code>hou_set_expression</code></td><td>Set an HScript or Python expression on a parameter</td></tr>
+        <tr><td><code>hou_set_keyframe</code></td><td>Set a keyframe at a specific frame and value</td></tr>
+      </tbody>
+    </table>
+
+    <hr>
+
+    <h2 id="production-use-cases">Production Use Cases</h2>
+
+    <ul>
+      <li><strong>Procedural geometry from asset databases</strong> — query a SQL/JSON asset registry, then drive <code>create_node</code>, <code>set_parm</code>, and <code>cook_node</code> to build the geometry network automatically.</li>
+      <li><strong>Camera rig setup from shot metadata</strong> — read shot data (focal length, film back, clipping planes) from a spreadsheet or Prism and push to a camera node's parameters in one execution run.</li>
+      <li><strong>Parameter sweeps</strong> — loop over a list of values, <code>set_parm</code>, <code>cook_node</code>, and export each variant to disk — useful for wedge renders and look-dev iterations.</li>
+      <li><strong>Live scene validation</strong> — after an artist sets up a scene, run a validation workflow that queries node state, checks parameter values, verifies expected topology, and logs issues — all without leaving Houdini.</li>
+      <li><strong>Keyframe injection from external data</strong> — parse mocap BVH or simulation CSV files and call <code>set_keyframe</code> in a loop to bake the curves onto Houdini nodes.</li>
+      <li><strong>HDA parameter exposure and locking</strong> — use <code>run_code</code> to call <code>hou.HDADefinition</code> APIs for bulk HDA management workflows.</li>
+      <li><strong>Automated USD export</strong> — chain <code>hou_cook_node</code> → <code>hou_run_code</code> (call <code>ropNode.render()</code>) → a file copy node for fully automated USD/Alembic output.</li>
+    </ul>
+
+    <hr>
+
+    <h2 id="troubleshooting">Troubleshooting</h2>
+
+    <h3 id="startup-diagnostics">Startup diagnostics</h3>
+
+    <p>After Houdini loads the package, check the Python Shell for startup messages from <code>pythonrc.py</code>. Each variable is printed with an <code>OK</code> or <code>ERROR</code>/<code>MISSING</code> status:</p>
+
+    <ul>
+      <li><code>VIBRANTE_NODE_APP</code> — OK / ERROR (not set or path doesn't exist)</li>
+      <li><code>VIBRANTE_PYTHON_EXE</code> — OK / WARNING (missing or path not found)</li>
+      <li><code>v_nodes_houdini/</code> — OK / MISSING</li>
+      <li><code>v_scripts_houdini/</code> — OK / MISSING</li>
+    </ul>
+
+    <p>You can also trigger these diagnostics on demand via <strong>Vibrante-Node → About Vibrante-Node Integration</strong> in the Houdini menu bar.</p>
+
+    <h3 id="common-issues">Common issues</h3>
+
+    <table>
+      <thead><tr><th>Symptom</th><th>Cause</th><th>Fix</th></tr></thead>
+      <tbody>
+        <tr><td>Houdini nodes missing from Library</td><td><code>VIBRANTE_NODE_APP</code> not set, or <code>v_nodes_houdini/</code> not found</td><td>Check package JSON path; verify startup diagnostics show OK</td></tr>
+        <tr><td>Port already in use on launch</td><td>Another Houdini session is using port 18811</td><td>Add <code>{ "VIBRANTE_HOU_PORT": "18812" }</code> to package JSON env block</td></tr>
+        <tr><td>30-second timeout / <code>ConnectionError</code></td><td>Houdini is blocked cooking a heavy scene</td><td>The bridge reconnects automatically on the next call. Reduce cook complexity or increase timeout in <code>hou_bridge.py</code>.</td></tr>
+        <tr><td><code>AttributeError: hou.playbar</code> in hbatch</td><td>Headless Houdini has no playbar</td><td>Handled automatically by the server — returns fallback range <code>[1, 240]</code>.</td></tr>
+        <tr><td><code>hou.OperationFailed</code> on set_display_flag</td><td>Node type doesn't support display flags (e.g. Object-level null)</td><td>The server catches this and raises a clear <code>ValueError</code> — check your node category before calling the flag methods.</td></tr>
+        <tr><td>Nodes or scripts load twice (duplicates in Library)</td><td><code>setup_env()</code> called more than once</td><td>Ensure <code>launch_with_context()</code> calls <code>launch()</code> — never calls <code>setup_env()</code> itself. See §10.4.</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="mistakes-to-avoid">Mistakes to avoid</h3>
+
+    <table>
+      <thead><tr><th>Wrong</th><th>Correct</th></tr></thead>
+      <tbody>
+        <tr><td><code>import hou; hou.node("/obj").createNode("geo")</code></td><td><code>bridge.create_node("/obj", "geo")</code></td></tr>
+        <tr><td><code>hou_bridge.get_hou()</code></td><td><code>from src.utils.hou_bridge import get_bridge; bridge = get_bridge()</code></td></tr>
+        <tr><td><code>result = bridge.create_node(…); result.path()</code></td><td><code>result = bridge.create_node(…); path = result["path"]</code></td></tr>
+        <tr><td><code>for c in bridge.children(p): c.destroy()</code></td><td><code>for c in bridge.children(p): bridge.delete_node(c["path"])</code></td></tr>
+        <tr><td>Adding <code>exec_in</code>/<code>exec_out</code> in <code>__init__</code> manually</td><td>They are added by <code>super().__init__()</code> automatically</td></tr>
+      </tbody>
+    </table>
+
+    <hr>
+
+    <h2 id="technical-notes">Technical Notes</h2>
+
+    <h3 id="thread-safety">Thread safety</h3>
+    <p>Each <code>HouBridge</code> instance has its own <code>threading.Lock</code>. The <code>_send()</code> / <code>_recv()</code> cycle acquires the lock, so concurrent node calls from the AsyncRuntime thread pool serialize safely through the socket without corrupting the response stream.</p>
+
+    <h3 id="nagle">TCP_NODELAY</h3>
+    <p><code>socket.TCP_NODELAY</code> is set on every new connection. Without it, Nagle's algorithm on Windows introduces ~40 ms of latency per RPC call. With it, small JSON-RPC payloads are sent immediately.</p>
+
+    <h3 id="reconnect">Auto-reconnect</h3>
+    <p>On <code>BrokenPipeError</code> or <code>ConnectionResetError</code> (e.g. Houdini was restarted), the client reconnects once automatically and retries the send. If the reconnect also fails, a clear <code>ConnectionError</code> is raised and the socket is closed so the next call starts fresh.</p>
+
+    <!-- Page nav -->
+    <nav class="page-nav">
+      <a class="page-nav-link prev" href="09_advanced_topics.html">
+        <span class="page-nav-label">Previous</span>
+        <span class="page-nav-title">Advanced Topics</span>
+      </a>
+      <a class="page-nav-link next" href="integrations_maya.html">
+        <span class="page-nav-label">Next</span>
+        <span class="page-nav-title">Maya Headless</span>
+      </a>
+    </nav>
+
+  </div>
+</main>
+
+<!-- ── TOC ────────────────────────────────────────────────────────────── -->
+<aside class="toc">
+  <div class="toc-title">On this page</div>
+  <a class="toc-link" href="#houdini-bridge">Houdini Bridge</a>
+  <a class="toc-link" href="#architecture">Architecture</a>
+  <a class="toc-link toc-h3" href="#plugin-file-layout">Plugin file layout</a>
+  <a class="toc-link" href="#installation">Installation &amp; Configuration</a>
+  <a class="toc-link toc-h3" href="#package-json">vibrante_node.json</a>
+  <a class="toc-link" href="#launch-sequence">Launch Sequence</a>
+  <a class="toc-link" href="#environment-variables">Environment Variables</a>
+  <a class="toc-link" href="#bridge-api">Bridge API Reference</a>
+  <a class="toc-link toc-h3" href="#ping">Connectivity</a>
+  <a class="toc-link toc-h3" href="#node-creation">Node Creation &amp; Deletion</a>
+  <a class="toc-link toc-h3" href="#parameters">Parameters</a>
+  <a class="toc-link toc-h3" href="#connections-cooking">Connections &amp; Cooking</a>
+  <a class="toc-link toc-h3" href="#arbitrary-code">Arbitrary Python</a>
+  <a class="toc-link toc-h3" href="#scene-node-info">Scene &amp; Node Inspection</a>
+  <a class="toc-link toc-h3" href="#flags-layout">Flags, Layout &amp; Save</a>
+  <a class="toc-link toc-h3" href="#animation">Animation &amp; Expressions</a>
+  <a class="toc-link" href="#common-patterns">Common Node Patterns</a>
+  <a class="toc-link toc-h3" href="#pattern-create-geo">Creating a geo container</a>
+  <a class="toc-link toc-h3" href="#pattern-resolve-sop">Object vs SOP resolution</a>
+  <a class="toc-link toc-h3" href="#pattern-vex-wrangle">VEX attribwrangle</a>
+  <a class="toc-link toc-h3" href="#pattern-execute-skeleton">execute() pattern</a>
+  <a class="toc-link" href="#node-library">Node Library</a>
+  <a class="toc-link" href="#production-use-cases">Production Use Cases</a>
+  <a class="toc-link" href="#troubleshooting">Troubleshooting</a>
+  <a class="toc-link toc-h3" href="#startup-diagnostics">Startup diagnostics</a>
+  <a class="toc-link toc-h3" href="#common-issues">Common issues</a>
+  <a class="toc-link toc-h3" href="#mistakes-to-avoid">Mistakes to avoid</a>
+  <a class="toc-link" href="#technical-notes">Technical Notes</a>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/highlight.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lunr@2.3.9/lunr.min.js"></script>
+<script>
+let _idx = null, _docs = [];
+async function initSearch() {
+  try {
+    const base = document.getElementById('portal-base').dataset.base;
+    const resp = await fetch(base + 'search.json');
+    _docs = await resp.json();
+    _idx = lunr(function() {
+      this.ref('id'); this.field('title', { boost: 10 }); this.field('body');
+      _docs.forEach((d, i) => { this.add({ id: i, title: d.title, body: d.body }); });
+    });
+  } catch(e) { console.warn('Search index not available', e); }
+}
+function doSearch(q) {
+  const box = document.getElementById('search-results');
+  if (!q || q.length < 2) { box.classList.remove('visible'); return; }
+  if (!_idx) { box.innerHTML = '<div class="search-no-results">Search index loading…</div>'; box.classList.add('visible'); return; }
+  const results = _idx.search(q + '~1');
+  if (!results.length) { box.innerHTML = '<div class="search-no-results">No results for "' + q + '"</div>'; box.classList.add('visible'); return; }
+  box.innerHTML = results.slice(0, 8).map(r => {
+    const d = _docs[r.ref];
+    const excerpt = d.body.substring(0, 140).replace(/[#*`]/g, '').trim() + '…';
+    return `<a class="search-result-item" href="${d.url}"><div class="search-result-title">${d.title}</div><div class="search-result-excerpt">${excerpt}</div></a>`;
+  }).join('');
+  box.classList.add('visible');
+}
+document.addEventListener('DOMContentLoaded', () => {
+  initSearch();
+  const inp = document.getElementById('search-input');
+  if (inp) {
+    inp.addEventListener('input', e => doSearch(e.target.value));
+    inp.addEventListener('keydown', e => { if (e.key === 'Escape') { e.target.value=''; document.getElementById('search-results').classList.remove('visible'); }});
+  }
+  document.addEventListener('click', e => { if (!e.target.closest('.search-wrap')) document.getElementById('search-results')?.classList.remove('visible'); });
+  document.addEventListener('keydown', e => { if (e.key === '/' && !['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) { e.preventDefault(); document.getElementById('search-input')?.focus(); } });
+  const tocLinks = document.querySelectorAll('.toc-link');
+  const headings = document.querySelectorAll('h2[id],h3[id],h4[id]');
+  if (tocLinks.length && headings.length) {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(entry => { if (entry.isIntersecting) { tocLinks.forEach(l => l.classList.remove('active')); const link = document.querySelector(`.toc-link[href="#${entry.target.id}"]`); if (link) link.classList.add('active'); } });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    headings.forEach(h => obs.observe(h));
+  }
+  document.querySelectorAll('pre').forEach(pre => {
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn'; btn.textContent = 'Copy';
+    btn.addEventListener('click', () => {
+      const code = pre.querySelector('code');
+      navigator.clipboard.writeText(code ? code.innerText : pre.innerText).then(() => { btn.textContent = 'Copied!'; btn.classList.add('copied'); setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000); });
+    });
+    pre.style.position = 'relative'; pre.appendChild(btn);
+  });
+  const cur = window.location.pathname.split('/').pop();
+  document.querySelectorAll('.sidebar-link').forEach(l => { if (l.getAttribute('href') === cur || l.getAttribute('href').endsWith(cur)) l.classList.add('active'); });
+  if (window.hljs) { hljs.configure({ ignoreUnescapedHTML: true }); hljs.highlightAll(); }
+});
+</script>
+</body>
+</html>

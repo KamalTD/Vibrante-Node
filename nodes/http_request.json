@@ -1,0 +1,76 @@
+{
+    "node_id": "http_request",
+    "name": "Http Request",
+    "description": "Async HTTP GET or POST request with optional JSON body and headers.",
+    "category": "Network",
+    "icon_path": "icons/http.png",
+    "use_exec": true,
+    "inputs": [
+        {
+            "name": "url",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "method",
+            "type": "string",
+            "widget_type": "text",
+            "options": null,
+            "default": "GET"
+        },
+        {
+            "name": "headers",
+            "type": "any",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "body",
+            "type": "any",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "timeout",
+            "type": "int",
+            "widget_type": "int",
+            "options": null,
+            "default": "30"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "response_data",
+            "type": "any",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "status_code",
+            "type": "int",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "response_text",
+            "type": "string",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        },
+        {
+            "name": "success",
+            "type": "bool",
+            "widget_type": null,
+            "options": null,
+            "default": null
+        }
+    ],
+    "python_code": "import json\nimport asyncio\nfrom src.nodes.base import BaseNode\n\ntry:\n    import aiohttp\n    _AIOHTTP_AVAILABLE = True\nexcept ImportError:\n    _AIOHTTP_AVAILABLE = False\n\n\nclass Http_Request(BaseNode):\n    name = \"http_request\"\n\n    def __init__(self):\n        super().__init__()\n        # [AUTO-GENERATED-PORTS-START]\n        self.add_input(\"url\",     \"string\", widget_type=\"text\", default=\"\")\n        self.add_input(\"method\",  \"string\", widget_type=\"text\", default=\"GET\")\n        self.add_input(\"headers\", \"any\",    default=None)\n        self.add_input(\"body\",    \"any\",    default=None)\n        self.add_input(\"timeout\", \"int\",    widget_type=\"int\",  default=30)\n        self.add_output(\"response_data\",  \"any\")\n        self.add_output(\"status_code\",    \"int\")\n        self.add_output(\"response_text\",  \"string\")\n        self.add_output(\"success\",        \"bool\")\n        # [AUTO-GENERATED-PORTS-END]\n\n    async def execute(self, inputs: dict) -> dict:\n        url     = inputs.get(\"url\", \"\")\n        method  = (inputs.get(\"method\") or \"GET\").upper()\n        headers = inputs.get(\"headers\") or {}\n        body    = inputs.get(\"body\")\n        timeout = int(inputs.get(\"timeout\") or 30)\n\n        if not url:\n            self.log_error(\"No URL provided.\")\n            return {\"response_data\": None, \"status_code\": 0,\n                    \"response_text\": \"\", \"success\": False, \"exec_out\": True}\n\n        if not _AIOHTTP_AVAILABLE:\n            return await self._urllib_request(url, method, headers, body, timeout)\n\n        try:\n            timeout_obj = aiohttp.ClientTimeout(total=timeout)\n            async with aiohttp.ClientSession(headers=headers, timeout=timeout_obj) as session:\n                kwargs = {}\n                if body is not None:\n                    if isinstance(body, (dict, list)):\n                        kwargs[\"json\"] = body\n                    else:\n                        kwargs[\"data\"] = str(body)\n\n                async with session.request(method, url, **kwargs) as response:\n                    text   = await response.text()\n                    status = response.status\n                    try:\n                        data = json.loads(text)\n                    except (json.JSONDecodeError, ValueError):\n                        data = text\n                    return {\n                        \"response_data\":  data,\n                        \"status_code\":    status,\n                        \"response_text\":  text,\n                        \"success\":        200 <= status < 300,\n                        \"exec_out\":       True,\n                    }\n        except Exception as e:\n            self.log_error(f\"HTTP request failed: {e}\")\n            return {\"response_data\": None, \"status_code\": 0,\n                    \"response_text\": str(e), \"success\": False, \"exec_out\": True}\n\n    async def _urllib_request(self, url, method, headers, body, timeout):\n        import urllib.request\n        import urllib.error\n\n        body_bytes = None\n        if body is not None:\n            body_str   = json.dumps(body) if isinstance(body, (dict, list)) else str(body)\n            body_bytes = body_str.encode(\"utf-8\")\n            headers.setdefault(\"Content-Type\", \"application/json\")\n\n        req = urllib.request.Request(url, data=body_bytes, headers=headers, method=method)\n        try:\n            def _do_request():\n                with urllib.request.urlopen(req, timeout=timeout) as resp:\n                    return resp.status, resp.read().decode(\"utf-8\")\n\n            status, text = await asyncio.to_thread(_do_request)\n            try:\n                data = json.loads(text)\n            except (json.JSONDecodeError, ValueError):\n                data = text\n            return {\"response_data\": data, \"status_code\": status,\n                    \"response_text\": text, \"success\": 200 <= status < 300, \"exec_out\": True}\n        except urllib.error.HTTPError as e:\n            return {\"response_data\": None, \"status_code\": e.code,\n                    \"response_text\": str(e), \"success\": False, \"exec_out\": True}\n        except Exception as e:\n            self.log_error(f\"HTTP request failed: {e}\")\n            return {\"response_data\": None, \"status_code\": 0,\n                    \"response_text\": str(e), \"success\": False, \"exec_out\": True}\n\n\ndef register_node():\n    return Http_Request\n"
+}
