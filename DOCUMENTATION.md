@@ -1,327 +1,623 @@
-# Vibrante-Node - Technical API & Architecture Documentation
+# Vibrante-Node — Technical Reference
 
-This document provides an exhaustive reference for the Vibrante-Node platform, covering core architecture, the custom node Scripting API, and the Workflow Automation system.
+**Version:** v2.2.1 | [User Guide](USER_GUIDE.md) | [Node Builder API](NODE_BUILDER_API.md) | [Automation API](AUTOMATION_API.md) | [Developer Guide](DEVELOPER.md)
 
----
-
-## 🚀 1. Core Application Architecture
-
-### 🔹 Professional Python Code Editor
-The Node Builder features a fully-integrated, professional-grade source code editor:
-- **Intelligent Syntax Highlighting**: Dracula-inspired theme for keywords, builtins, and multi-line strings.
-- **Auto-Indentation & Linting**: Automatic 4-space indent after colons (`:`) and instant syntax error detection with gutter highlighting.
-- **IntelliSense**: Rich completion suggestions for Python keywords and common node methods.
-- **Bracket Matching & Auto-Closing**: Instant feedback for `()`, `[]`, and `{}`.
-
-### 🔹 High-Performance Execution Engine
-- **Asynchronous Execution**: Uses a background `asyncio` loop to keep the UI responsive.
-- **Topological Sorting**: Automatically determines execution order for data-only graphs.
-- **Hybrid Flow + Data Model (v1.0.5)**:
-    - **Flow-Based Routing**: Execution follows `exec` pins sequentially.
-    - **Recursive Data Pulling**: Before any node executes, it recursively triggers upstream data-only nodes to ensure all inputs are current.
-    - **Re-entrant Execution**: Fixed deadlocks in `NetworkExecutor` to allow nested flow calls (essential for Loops).
-- **Prism Bootstrap Phase (v1.6.0)**: Before main execution, the engine detects `prism_core_init` nodes and bootstraps PrismCore on the Qt main thread.
-- **Recursive Data Propagation**: A live system that pushes parameter changes through the entire node chain instantly as the user interacts with the UI.
-
-### 🔹 Advanced Connection System
-- **Bidirectional Dragging**: Start wires from either input or output ports.
-- **Single-Input Enforcement**: Automatically replaces old wires when a new one is connected to an input port.
-- **Redrag-to-Disconnect**: Seamlessly move existing wires by dragging them away from ports.
+This is the complete technical reference for Vibrante-Node. Use it as a quick-lookup companion to the other guides. For narrative explanations and examples, refer to the guide documents linked above.
 
 ---
 
-## 🏗️ 2. Part 1: Node Scripting API (`BaseNode`)
+## Contents
 
-All custom nodes must inherit from the `BaseNode` class.
-
-### 🔹 Class Attributes
-| Attribute | Type | Description |
-| :--- | :--- | :--- |
-| `name` | `str` | The display name of the node in the library and canvas. |
-| `category` | `str` | Logical grouping (e.g., "Math", "IO", "Logic", "Prism"). |
-| `description` | `str` | Tooltip/help text for the user. |
-| `icon_path` | `str` | Path to an SVG/PNG icon. |
-
-### 🔹 Configuration Methods
-- **`self.add_input(name, data_type, widget_type, options)`**: Adds an input port.
-  - Supported widgets: `"text"`, `"text_area"`, `"int"`, `"float"`, `"bool"`, `"dropdown"`, `"slider"`, `"file"`, `"file_save"`.
-- **`self.add_output(name, data_type)`**: Adds an output port.
-- **`self.add_parameter(name, type, default)`**: Defines internal data not linked to a port.
-
-### 🔹 Data Access & Logging
-- **`self.get_parameter(name)`** or **`self[name]`**: Safely retrieve current port/widget values.
-- **`self.set_parameter(name, value)`**: Programmatically update a widget and trigger downstream sync.
-- **`self.log_info(msg)`** / **`log_success`** / **`log_error`**: Thread-safe logging to the Event Log panel.
-
-### 🔄 Lifecycle Hooks
-- **`on_plug_sync(port_name, is_input, other_node, other_port_name)`**: (Sync) Called instantly on the GUI thread. Best for immediate data copying or UI updates.
-- **`on_unplug_sync(port_name, is_input)`**: (Sync) Cleanup logic when a wire is removed.
-- **`on_parameter_changed(name, value)`**: Triggered live as the user interacts with node widgets.
-- **`async on_plug(...)` / `on_unplug(...)`**: (Async) Background triggers for heavy IO or network tasks.
-- **`async def execute(self, inputs)`**: The main logic executed during a workflow run.
-
-### 📖 Node Scripting Scenarios
-
-#### Scenario A: Reactive Multi-Port Sync
-```python
-def on_plug_sync(self, port_name, is_input, other_node, other_port_name):
-    if is_input:
-        data = other_node.get_parameter(other_port_name)
-        self.set_parameter(port_name, data)
-        self.log_info(f"Connected to {other_node.name}")
-```
-
-#### Scenario B: Async Background Worker
-```python
-async def execute(self, inputs):
-    self.log_info("Starting heavy calculation...")
-    await asyncio.sleep(2.0)
-    return {"result": inputs.get("val") * 10}
-```
+1. [Node Library — Full Index](#1-node-library)
+2. [BaseNode API Reference](#2-basenode-api-reference)
+3. [Port Schema Reference](#3-port-schema-reference)
+4. [Serialization Schema Reference](#4-serialization-schema-reference)
+5. [Environment Variables Reference](#5-environment-variables-reference)
+6. [Scripting Console API Reference](#6-scripting-console-api-reference)
+7. [HouBridge API Reference](#7-houbridge-api-reference)
+8. [Engine Signals Reference](#8-engine-signals-reference)
+9. [Keyboard Shortcuts — Complete Table](#9-keyboard-shortcuts)
+10. [Log Levels and Node States Reference](#10-log-and-state-reference)
+11. [Error Codes and Troubleshooting Index](#11-error-index)
 
 ---
 
-## 🤖 3. Part 2: Workflow Automation API
+## 1. Node Library — Full Index
 
-The built-in **Scripting Console** allows for full application automation using Python.
+### General / IO
 
-### 🔹 Available Globals
-| Global | Type | Description |
-| :--- | :--- | :--- |
-| `app` | `MainWindow` | The main application instance. |
-| `scene` | `NodeScene` | The active canvas/tab for node manipulation. |
-| `registry` | `NodeRegistry` | Global registry of all available node types. |
-| `git` | `GitWrapper` | Integrated source control management. |
+| Node ID | Category | Description |
+|---------|----------|-------------|
+| `console_print` | General | Print any value to the Log Panel |
+| `message_node` | General | Hold and pass a string value |
+| `delay_timer` | General | Async delay (await asyncio.sleep) |
+| `file_reader` | IO | Read a file to a string |
+| `append_file` | IO | Append text to a file |
+| `create_folder` | IO | Create a directory (exist_ok) |
+| `http_request` | IO | HTTP GET/POST via aiohttp |
+| `json_parser` | IO | Parse JSON string to dict/list |
+| `list_images_recursive` | IO | Recursively list images in a folder |
 
-### 🔹 Automation Methods
-- **`scene.add_node_by_name(node_id, (x, y))`**: Spawn a node programmatically.
-- **`scene.connect_nodes(node_a, port_a, node_b, port_b)`**: Create wires between ports.
-- **`scene.clear()`**: Wipe the current workspace.
-- **`app.add_new_workflow(name)`**: Create a new tab.
-- **`app.execute_pipeline()`**: Trigger the workflow execution engine.
+### Control Flow
 
-### 📖 Automation Scenarios
+| Node ID | Category | Description |
+|---------|----------|-------------|
+| `if_condition` | Logic | Route exec to true or false branch |
+| `branch` | Logic | Named multi-branch exec routing |
+| `for_loop` | Control Flow | Generate index list; exec_out fires once |
+| `loop_body` | Control Flow | Iterate over list; exec_out fires per item |
+| `loop_break` | Control Flow | Stop loop iteration on condition |
+| `while_loop` | Control Flow | Repeat while condition is True |
+| `python_script` | Scripting | Inline Python code node |
 
-#### Scenario C: Pipeline Grid Generation
-```python
-prev = None
-for i in range(3):
-    for j in range(3):
-        curr = scene.add_node_by_name("message_node", (j*300, i*200))
-        curr.set_parameter("msg", f"Auto-Node {i}-{j}")
-        if prev: scene.connect_nodes(prev, "out", curr, "msg")
-        prev = curr
-```
+### Math
 
-#### Scenario D: Automated Batch Execution
-```python
-node = scene.find_node_by_name("Message Node")
-if node:
-    for val in ["Test A", "Test B", "Test C"]:
-        node.set_parameter("msg", val)
-        app.execute_pipeline()
-```
+| Node ID | Category | Description |
+|---------|----------|-------------|
+| `add` | Math | Add two numbers |
+| `math_add` | Math | Add with float inputs |
+| `add_integers` | Math | Add two integers |
+| `math_abs` | Math | Absolute value |
+| `compare` | Math | Compare two values; returns bool |
 
----
+### Logic
 
-## 🎨 4. UI Architecture & Features
+| Node ID | Category | Description |
+|---------|----------|-------------|
+| `logic_and` | Logic | AND two booleans |
+| `logic_compare` | Logic | Comparison operator (==, !=, <, >, <=, >=) |
 
-- **Dynamic Node Scaling**: Nodes automatically resize their bounding box based on port count and child widget dimensions.
-- **Vertical Parameter Centering**: Parameter widgets (Label + Input) are distributed and centered within the node body.
-- **Clip-Path Header Rendering**: Clean, solid title bars that perfectly respect the node's rounded corners without overlapping lines.
-- **Global Theme System**: Integrated Dracula-based **Dark Mode** and standard **Light Mode** available via the Themes menu.
-- **SVG Vector Support**: Native rendering for all icons in the library, toolbar, and node headers.
+### String
 
----
+| Node ID | Category | Description |
+|---------|----------|-------------|
+| `concat` | String | Concatenate two strings |
+| `split` | String | Split string by delimiter |
+| `replace` | String | String replacement |
+| `lowercase` | String | Convert to lowercase |
+| `uppercase` | String | Convert to uppercase |
+| `string_length` | String | Character count |
 
-## 🛠️ 5. Technical Safety & Reliability
+### Data Structures
 
-- **Thread-Safe UI Updates**: Signal-based communication ensures that background threads can safely update the Event Log and widgets.
-- **Crash Protection**: A global exception hook captures unhandled errors and generates a `crash.log` file for instant debugging.
-- **Robust Persistence**: Full workflow states (positions, parameters, and connections) are serialized as clean, portable JSON.
-- **Name Sanitization**: Automated slug generation for custom nodes to ensure filesystem and class compatibility.
+| Node ID | Category | Description |
+|---------|----------|-------------|
+| `create_list` | Data | Create a Python list from items |
+| `get_list_item` | Data | Get item at index |
+| `list_length` | Data | List item count |
+| `list_append` | Data | Append item to list |
+| `create_dictionary` | Data | Create a dict from key/value inputs |
+| `get_dict_value` | Data | Get dict value by key |
+| `set_dict_value` | Data | Set dict value by key |
 
----
+### Houdini
 
-## 🆕 6. v1.6.0 — Prism Integration, Python Script, While Loop, Utilities
+| Node ID | Category | Description |
+|---------|----------|-------------|
+| `hou_create_geo` | Houdini | Create Object-level geo container |
+| `hou_set_parm` | Houdini | Set a single Houdini parameter |
+| `hou_get_parm` | Houdini | Get a Houdini parameter value |
+| `hou_cook` | Houdini | Cook a node |
+| `hou_connect` | Houdini | Wire two Houdini nodes |
+| `hou_run_code` | Houdini | Execute Python inside Houdini |
+| `hou_scene_info` | Houdini | Get HIP file, FPS, frame range |
+| `hou_save_hip` | Houdini | Save the Houdini scene |
+| `hou_sop_chain` | Houdini | Build and cook a SOP chain |
 
-### Prism Pipeline Integration
+### Maya (25 nodes — headless action pattern)
 
-40+ new nodes in the `Prism` category enable full Prism Pipeline studio-management workflows:
+| Node ID | Description |
+|---------|-------------|
+| `maya_action_open_scene` | Open a Maya scene file |
+| `maya_action_save_scene` | Save the current scene |
+| `maya_action_render` | Render with specified camera and frame range |
+| `maya_action_import_alembic` | Import Alembic cache |
+| `maya_action_export_alembic` | Export selection as Alembic |
+| `maya_action_import_fbx` | Import FBX file |
+| `maya_action_export_fbx` | Export selection as FBX |
+| `maya_action_set_frame_range` | Set timeline start/end |
+| `maya_action_run_python` | Execute Python inside Maya |
+| `maya_action_run_mel` | Execute MEL script |
+| `maya_action_scene_info` | Get scene path, FPS, frame range |
+| `maya_action_create_node` | Create a Maya DG/DAG node |
+| `maya_action_custom` | Custom MEL/Python action |
+| `maya_headless` | Execute action list in batch Maya |
+| `blender_get_action_result` | Read result from headless run |
 
-| Node Group | Nodes |
-|---|---|
+### Blender (21 nodes — headless action pattern)
+
+| Node ID | Description |
+|---------|-------------|
+| `blender_action_open_blend` | Open a .blend file |
+| `blender_action_save_blend` | Save the current .blend |
+| `blender_action_render` | Render to output path |
+| `blender_action_export_alembic` | Export Alembic |
+| `blender_action_import_alembic` | Import Alembic |
+| `blender_action_export_fbx` | Export FBX |
+| `blender_action_import_fbx` | Import FBX |
+| `blender_action_export_gltf` | Export glTF |
+| `blender_action_import_gltf` | Import glTF |
+| `blender_action_export_obj` | Export OBJ |
+| `blender_action_import_obj` | Import OBJ |
+| `blender_action_export_usd` | Export USD |
+| `blender_action_new_blend` | Create a new .blend |
+| `blender_action_set_frame_range` | Set render frame range |
+| `blender_action_set_render_settings` | Configure render output |
+| `blender_action_bake_animation` | Bake animation |
+| `blender_action_scene_info` | Get scene metadata |
+| `blender_action_custom` | Custom Python action |
+| `blender_headless` | Execute action list in background Blender |
+
+### Prism Pipeline (62 nodes)
+
+| Group | Node IDs |
+|-------|----------|
 | Core | `prism_core_init`, `prism_core_info` |
-| Entities | `prism_get_assets`, `prism_get_shots`, `prism_build_entity`, `prism_create_entity` |
+| Entities | `prism_get_assets`, `prism_get_shots`, `prism_build_entity`, `prism_create_entity`, `prism_get_asset_types_by_project`, `prism_get_assets_by_type`, `prism_get_asset_type_by_name` |
 | Products | `prism_get_products`, `prism_get_product_versions`, `prism_create_product_version`, `prism_get_latest_product_path`, `prism_import_product` |
 | Media | `prism_get_media`, `prism_get_media_versions`, `prism_create_playblast` |
-| Scenes | `prism_get_current_scene`, `prism_get_scene_files`, `prism_get_preset_scenes`, `prism_open_scene`, `prism_save_scene_version`, `prism_create_scene_from_preset` |
+| Scenes | `prism_get_current_scene`, `prism_get_scene_files`, `prism_get_preset_scenes`, `prism_open_scene`, `prism_save_scene_version`, `prism_create_scene_from_preset`, `prism_get_scene_path`, `prism_get_export_path` |
 | Config | `prism_get_config`, `prism_set_config`, `prism_get_project_config_path` |
 | Projects | `prism_list_projects`, `prism_create_project`, `prism_change_project` |
-| Departments/Tasks | `prism_get_departments`, `prism_get_tasks`, `prism_create_category` |
+| Departments | `prism_get_departments`, `prism_get_tasks`, `prism_create_category`, `prism_get_shot_by_sequence` |
 | Plugins | `prism_list_plugins`, `prism_get_plugin`, `prism_add_integration` |
 | USD | `prism_usd_entity_path`, `prism_usd_department_layer_path`, `prism_usd_sublayer_path`, `prism_usd_update_department_layer`, `prism_usd_update_sublayer` |
 | Advanced | `prism_eval`, `prism_monkey_patch`, `prism_register_callback`, `prism_trigger_callback`, `prism_popup`, `prism_send_cmd`, `prism_login_token`, `prism_studio_assign_project` |
 
-Key behaviours:
-- **Auto-bootstrap**: `prism_core_init` is detected before execution and PrismCore is initialized on the Qt main thread.
-- **Zero-wiring**: All `prism_*` nodes resolve the shared `PrismCore` via `resolve_prism_core()` — no `core` wire needed.
-- **Qt compat**: `qt_compat.py` auto-stubs `shiboken` and backfills `QColor.fromString` so Prism loads without binary-wheel conflicts.
+---
 
-### Python Script Node
+## 2. BaseNode API Reference
 
-- `python_script` node ships with an **Edit Script** button that opens a full code editor dialog.
-- Scripts are persisted in the workflow JSON under the `python_code` parameter.
-- The engine injects `python_code` into node instances before execution, so saved scripts always run correctly.
-- User scripts should assign their primary output to a variable named `result`, which is published to the `result` output port.
+**Module:** `src.nodes.base`
 
-### While Loop Node
+### Class Attributes
 
-- `while_loop` builtin: iterates while a boolean `condition` input is `True`.
-- Safe re-entrant execution — the engine's lock-free design prevents deadlocks in nested loop scenarios.
+| Attribute | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `name` | `str` | `"BaseNode"` | Registry key. Must match `node_id`. |
+| `node_id` | `str` | injected by registry | Same as `name` for JSON nodes. |
+| `display_name` | `str` | `""` | Canvas header label. Falls back to `name`. |
+| `description` | `str` | `""` | Library tooltip. |
+| `category` | `str` | `"General"` | Library grouping. |
+| `icon_path` | `str \| None` | `None` | Relative path to icon. |
+| `init_priority` | `int` | `0` | `> 0` = created before other nodes on load. |
+| `memory` | `dict` | `{}` | Class-level shared state, cleared each run. |
 
-### Utility Nodes
+### Instance Attributes
 
-| Category | Nodes |
-|---|---|
-| List | `create_list`, `get_list_item`, `list_length` |
-| Dictionary | `create_dictionary`, `get_dict_value`, `set_dict_value` |
-| String | `concat`, `split`, `replace`, `lowercase`, `uppercase`, `string_length` |
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| `inputs` | `dict[str, Port]` | Input ports keyed by name. |
+| `outputs` | `dict[str, Port]` | Output ports keyed by name. |
+| `parameters` | `dict[str, Any]` | Widget values, output cache, internal state. |
+| `bypassed` | `bool` | True when node is user-bypassed. |
 
-### `file_save` Widget Type
+### Methods — Complete Table
 
-A new `"file_save"` widget type is available for output file path inputs. It opens a save-file dialog rather than an open-file dialog, making it suitable for export nodes.
-
-### Engine Runtime Fix
-
-Workflow-saved parameters (including `python_code`) are now applied to node instances at startup so authored scripts embedded in saved workflows execute as intended.
-
-### Gemini Support in Node Builder
-
-The Node Builder includes integration hooks for Gemini-based assistance to scaffold example scripts, generate prompt templates, and provide sample code snippets. See `src/ui/gemini_chat.py` for configuration and usage notes.
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `__init__(use_exec=True)` | — | Adds exec_in/exec_out when use_exec=True |
+| `add_input(name, type="any", widget_type=None, options=None, default=None)` | None | Add input port and initialize parameter |
+| `add_output(name, type="any", default=None)` | None | Add output port and initialize parameter |
+| `add_exec_input(name="exec_in")` | None | Add exec-type input (called by __init__) |
+| `add_exec_output(name="exec_out")` | None | Add exec-type output (called by __init__) |
+| `add_parameter(name, param_type, default=None)` | None | Add internal non-port parameter |
+| `set_parameter(name, value)` | None | Set widget value; dropdown list update supported |
+| `get_parameter(name, default=None)` | `Any` | Safe read; returns default if key absent |
+| `rebuild_ports()` | None | Signal canvas to refresh port layout |
+| `is_port_connected(name, is_input)` | `bool` | True if port has a wire |
+| `is_stopped()` | `bool` | True if user pressed Stop |
+| `async set_output(name, value)` | None | Reactive push before exec_out fires |
+| `clear_outputs()` | None | Reset outputs to defaults |
+| `log_info(msg)` | None | Info log; white in Log Panel |
+| `log_success(msg)` | None | Success log; green |
+| `log_error(msg)` | None | Error log; red; sets node error state |
+| `restore_from_parameters(params)` | None | Override to rebuild dynamic ports on load |
+| `async on_parameter_changed(name, value)` | None | Override for reactive parameter response |
+| `on_plug_sync(port, is_input, node, port)` | None | Override for sync connection event |
+| `on_unplug_sync(port, is_input)` | None | Override for sync disconnect event |
+| `async on_plug(port, is_input, node, port)` | None | Override for async connection event |
+| `async on_unplug(port, is_input)` | None | Override for async disconnect event |
+| `async execute(inputs)` | `dict` | **Abstract** — implement in every node |
 
 ---
 
-## 🆕 7. v1.7.0 — Prism Pipeline Overhaul
+## 3. Port Schema Reference
 
-### New Prism Getter Nodes
+### Port Type — Complete Table
 
-| Node | Description |
-|---|---|
-| `prism_get_scene_path` | Resolves the on-disk scene file path for an entity/department/task |
-| `prism_get_export_path` | Returns the actual export file path (not directory); handles `output_type` `'3d'`/`'2d'` |
-| `prism_get_shot_by_sequence` | Looks up a specific shot within a sequence by name |
-| `prism_get_asset_type_by_name` | Returns a single asset-type dict matching the given name |
-| `prism_get_asset_types_by_project` | Lists all asset types defined in the active project |
-| `prism_get_assets_by_type` | Returns all assets belonging to a specific asset type |
+| type | Meaning | Python runtime type |
+|------|---------|---------------------|
+| `"string"` | Text | `str` |
+| `"int"` | Integer | `int` |
+| `"float"` | Float | `float` |
+| `"bool"` | Boolean | `bool` |
+| `"list"` | Python list | `list` |
+| `"dict"` | Python dict | `dict` |
+| `"any"` | Generic / exec flow | any |
 
-### Prism Entity Enrichment
+### Widget Type — Complete Table
 
-Entity dicts produced by Prism getter nodes now include `path`, `location`, and `paths` fields, enabling downstream nodes to resolve scene file locations without additional bridge calls.
+| widget_type | Renders as | Applicable port types |
+|-------------|-----------|----------------------|
+| `"text"` | Single-line text input | `string`, `any` |
+| `"text_area"` | Multi-line text area | `string`, `any` |
+| `"int"` | Integer spinbox | `int` |
+| `"float"` | Float spinbox | `float` |
+| `"bool"` | Checkbox | `bool` |
+| `"checkbox"` | Checkbox (alias) | `bool` |
+| `"dropdown"` | Drop-down list | `string` |
+| `"slider"` | Horizontal slider | `float`, `int` |
+| `"file"` | Text + open-file dialog | `string` |
+| `"file_save"` | Text + save-file dialog | `string` |
+| `null` | No widget | any |
 
-### Dynamic Config Reader
+### Port Object (src.nodes.base.Port)
 
-Department abbreviations and other studio-specific config values are read at runtime from the project config (`core.getConfig()`). No more hardcoded values in node logic.
-
-### `get_tasks` Multi-Method Fallback
-
-`prism_get_tasks` tries `getTasks`, `getTasksForEntity`, and `task_mgr.getTasks` in sequence to stay compatible with multiple Prism versions.
-
-### Atomic Workflow Save + Safe Load
-
-The scene strips non-serializable runtime values before writing workflow JSON. An empty or corrupt JSON file on load triggers a graceful error prompt instead of an application crash.
-
-### Prism v2.1.0 Compatibility
-
-- `getShots()` now handles both the flat-list shape (v2.1.0) and the dict shape (older versions).
-- `createProduct` API signature updated for v2.1.0.
-- Version directory is created on disk before writing a new scene version file.
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| `name` | `str` | Port identifier |
+| `data_type` | `str` | One of the port types above |
+| `widget_type` | `str \| None` | One of the widget types above |
+| `options` | `list[str] \| None` | Dropdown options |
+| `default` | `Any` | Default value |
 
 ---
 
-## 🆕 8. v1.8.x — Stability, Node Reload, Init-First, and UX Polish
+## 4. Serialization Schema Reference
 
-### 8.1 Execution Engine
+### WorkflowModel
 
-| Change | Details |
-|---|---|
-| **Bypass flag** | Bypassed nodes are skipped; their primary input is forwarded as output and `exec_out` fires normally |
-| **`for_loop` behavior** | Fires `exec_out` once after building the complete index list; per-item iteration is handled by `loop_body` |
-| **`on_parameter_changed` timing** | Not called during pre-execute sync; called reactively during execution when upstream output is propagated to a downstream input (v1.8.1–v1.8.3) |
-| **Hotkey guard** | Canvas hotkeys are suppressed when a text input widget has keyboard focus |
+```json
+{
+  "nodes": [NodeInstanceModel, ...],
+  "connections": [ConnectionModel, ...],
+  "sticky_notes": [StickyNoteModel, ...],
+  "backdrops": [BackdropModel, ...]
+}
+```
 
-### 8.2 Node Reload Workflow
+All arrays default to `[]` if absent.
 
-Nodes can be edited and refreshed without restarting the application:
+### NodeInstanceModel
 
-1. Edit the node's JSON definition (via Node Builder or directly on disk).
-2. Press `Ctrl+R` (or right-click > "Reload Node") to reload.
-3. `NodeRegistry.reload_node_definition(node_id)` re-reads the JSON and recompiles the class.
-4. `NodeWidget.reload_definition(new_definition)` rebuilds ports in place, preserves compatible parameter values, and removes wires to deleted ports.
-5. `NodeScene.reload_node_type(node_id)` applies the reload to all live instances of that type.
+```json
+{
+  "node_id": "string — registry key",
+  "instance_id": "string — UUID",
+  "display_name": "string — canvas label",
+  "position": {"x": 0.0, "y": 0.0},
+  "parameters": {"port_name": value, ...}
+}
+```
 
-Registry source tracking: `NodeRegistry._source_paths` maps every loaded `node_id` to its absolute JSON file path. Use `get_source_path(node_id)` and `reload_node_definition(node_id)` programmatically.
+### ConnectionModel
 
-### 8.3 Init-First Scene Ordering
+```json
+{
+  "from_node": "source instance_id",
+  "from_port": "output port name",
+  "to_node":   "destination instance_id",
+  "to_port":   "input port name"
+}
+```
 
-`NodeScene.load_workflow_model()` performs two passes when loading a workflow:
-- **Pass 1**: Nodes with `init_priority > 0` are created and connected first.
-- **Pass 2**: All remaining nodes are created and connected.
+### StickyNoteModel
 
-This ensures authentication and server-connect nodes are wired before downstream consumers are instantiated.
+```json
+{
+  "text": "annotation text",
+  "position": {"x": 0.0, "y": 0.0},
+  "width": 200.0,
+  "height": 100.0,
+  "color": "#f5a623"
+}
+```
 
-Mark/unmark nodes via right-click > "Init First" / "Remove Init First".
+### BackdropModel
 
-### 8.4 Toolbar & Context Menu
+```json
+{
+  "title": "label text",
+  "position": {"x": 0.0, "y": 0.0},
+  "width": 400.0,
+  "height": 300.0,
+  "color": "#2e2e2e"
+}
+```
 
-New toolbar buttons: Add Node, Add Sticky Note, Add Network Box, Edit Selected Node, Reload Selected Node.
+### Node Definition JSON Schema
 
-Context menu additions (right-click on a node):
-- "Edit Node ('node_id')" — opens Node Builder for that definition.
-- "Reload Node ('node_id')" — reloads from disk and refreshes widget in place.
-- "Init First" / "Remove Init First" — toggles init priority.
+```json
+{
+  "node_id":      "string (required)",
+  "name":         "string (required)",
+  "display_name": "string (optional)",
+  "description":  "string (optional)",
+  "category":     "string (required)",
+  "icon_path":    "string | null",
+  "use_exec":     "bool (required)",
+  "init_priority":"int (default 0)",
+  "inputs": [
+    {
+      "name":        "string (required)",
+      "type":        "string (required)",
+      "widget_type": "string | null",
+      "options":     "list[string] | null",
+      "default":     "any | null"
+    }
+  ],
+  "outputs": [ ... ],
+  "python_code":  "string (required)"
+}
+```
 
-### 8.5 Keyboard Shortcuts
+---
 
-| Shortcut | Action |
-|---|---|
-| `Tab` | Add Node (search popup at canvas centre) |
-| `Ctrl+E` | Edit Selected Node (opens Node Builder) |
-| `Ctrl+R` | Reload Selected Node from disk |
-| `Ctrl+Shift+R` | Reload All Nodes from disk |
-| `F5` | Run workflow |
-| `F` | Focus view |
-| `Ctrl+C` / `Ctrl+V` | Copy / Paste nodes |
-| `Delete` | Delete selected items |
+## 5. Environment Variables Reference
 
-### 8.6 Wire Type Coloring
+### Built-in Variables
 
-Wires are rendered in the color associated with the **output port's data type** (matching port dot colors). The light theme overrides all wire colors to black for legibility.
+| Variable | Set by | Consumed by | Description |
+|----------|--------|-------------|-------------|
+| `VIBRANTE_NODE_APP` | `vibrante_node.json` | `vibrante_node_houdini.py` | Absolute path to the app root |
+| `VIBRANTE_PYTHON_EXE` | `vibrante_node.json` | `vibrante_node_houdini.py` | System Python path for subprocess |
+| `VIBRANTE_HOUDINI_MODE` | `setup_env()` | `qt_compat.py` | `"subprocess"` forces PyQt5 selection |
+| `VIBRANTE_HOU_PORT` | `setup_env()` | `hou_bridge.py` | TCP port for Houdini bridge (default 18811) |
+| `VIBRANTE_HIP_FILE` | `setup_env()` | node code via `os.environ` | Path to the current Houdini HIP file |
+| `v_nodes_dir` | `setup_env()` / EnvManager | `NodeRegistry.load_all_with_extras()` | Extra node definition directories (colon-separated) |
+| `v_scripts_path` | `setup_env()` / EnvManager | `MainWindow._populate_scripts_menu()` | Extra script directories (colon-separated) |
 
-### 8.7 User Settings Persistence
+### User-Configurable Variables (EnvManager)
 
-Theme selection, window geometry, and dock layout are saved to `QSettings` (key group `VibrateNode/session`) on close and restored on the next launch.
+| Config key | `os.environ` key | Description |
+|------------|-----------------|-------------|
+| `env.vibrante_pythonpath` | (injected to `sys.path`) | Extra Python import paths |
+| `env.v_nodes_dir` | `v_nodes_dir` | Merged with any existing value |
+| `env.v_scripts_path` | `v_scripts_path` | Merged with any existing value |
+| `env.custom_variables` | each key directly | Studio-specific variables (STUDIO_ROOT, PROJECT, etc.) |
 
-### 8.8 Node Builder Improvements
+### Accessing Variables in Nodes
 
-- **Display Name** field: sets the text shown in the canvas header independently of the node ID.
-- `icon_path` is now correctly reflected on the canvas widget after save.
-- Exec checkbox no longer resets the execute method body.
-- Template includes an `on_parameter_changed` placeholder with a docstring example.
+```python
+import os, sys
 
-### 8.9 Bugfixes (v1.8.0–v1.8.3)
+# Custom env var set in Preferences
+studio_root = os.environ.get("STUDIO_ROOT", "")
 
-| Version | Fix |
-|---|---|
-| v1.8.0 | `for_loop` now iterates all items correctly (was stopping after first) |
-| v1.8.0 | Houdini headless executor validates hython path before subprocess launch |
-| v1.8.0 | `import_alembic` SOP context defaults to `/obj` |
-| v1.8.0 | Blender alembic frame args renamed; `makedirs` added |
-| v1.8.0 | `deadline_job_status` crash fixed; engine hardened against `None` returns |
-| v1.8.0 | 6 professional VFX pipeline workflow examples added to `workflows/` |
-| v1.8.1 | `on_parameter_changed` stale-value bug fixed — value reflects latest widget state |
-| v1.8.1 | Node Builder execute method no longer resets when switching tabs |
-| v1.8.2 | Dropdown returns selected item correctly during `execute` |
-| v1.8.2 | `set_parameter` no longer resets dropdown selection on options update |
-| v1.8.3 | `on_parameter_changed` removed from pre-execute input sync phase |
-| v1.8.3 | `on_parameter_changed` removed from reactive output propagation path |
+# VIBRANTE_PYTHONPATH packages (already in sys.path after initialize())
+import my_studio_lib
+
+# HIP file path when launched from Houdini
+hip_path = os.environ.get("VIBRANTE_HIP_FILE", "")
+```
+
+---
+
+## 6. Scripting Console API Reference
+
+### Global Objects
+
+| Object | Type | Description |
+|--------|------|-------------|
+| `app` | `MainWindow` | Application window |
+| `scene` | `NodeScene` | Active canvas |
+| `registry` | `NodeRegistry` | Node type database |
+| `git` | `GitWrapper` | Source control |
+
+### NodeScene Methods
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `add_node_by_name(node_id, pos=(x,y))` | `NodeWidget` | Add node to canvas |
+| `find_node_by_name(name)` | `NodeWidget \| None` | Find first node by display name |
+| `connect_nodes(a, port_a, b, port_b)` | None | Wire two nodes |
+| `clear()` | None | Remove all canvas items |
+| `.nodes` | `list[NodeWidget]` | All nodes on canvas |
+
+### MainWindow Methods
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `add_new_workflow(name)` | None | Open new tab |
+| `save_workflow()` | None | Save current tab |
+| `execute_pipeline()` | None | Run current workflow |
+| `get_current_workflow_path()` | `str \| None` | Path to current file |
+
+### NodeWidget Methods
+
+| Method / Property | Type | Description |
+|-------------------|------|-------------|
+| `set_parameter(name, value)` | None | Set widget value |
+| `get_parameter(name, default=None)` | `Any` | Read parameter |
+| `.node_definition` | `BaseNode` | Underlying logic instance |
+| `.instance_id` | `UUID \| str` | Unique canvas instance ID |
+| `setPos(x, y)` | None | Move node on canvas |
+| `scenePos()` | `QPointF` | Current canvas position |
+
+### NodeRegistry Methods
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `get_definition(node_id)` | `NodeDefinitionJSON \| None` | Get port/metadata schema |
+| `get_source_path(node_id)` | `str \| None` | On-disk JSON path |
+| `reload_node_definition(node_id)` | `bool` | Recompile class from disk |
+
+### GitWrapper Methods
+
+| Method | Description |
+|--------|-------------|
+| `status()` | Print working tree status |
+| `commit(msg)` | Stage all and commit |
+| `push()` | Push to remote |
+| `pull()` | Pull from remote |
+| `log(n=10)` | Print last N commits |
+
+---
+
+## 7. HouBridge API Reference
+
+**Module:** `src.utils.hou_bridge`  
+**Access:** `from src.utils.hou_bridge import get_bridge; bridge = get_bridge()`
+
+| Method | Parameters | Returns | Notes |
+|--------|-----------|---------|-------|
+| `ping()` | — | `{"status": "ok", "version": str}` | |
+| `create_node(parent, type, name="")` | str, str, str | `{"path", "name", "type"}` | |
+| `delete_node(path)` | str | `{"deleted": path}` | |
+| `set_parm(node, parm, value)` | str, str, any | `{"set": True}` | |
+| `get_parm(node, parm)` | str, str | `{"value": any}` | |
+| `set_parms(node, parms)` | str, dict | `{"set": True, "count": int}` | |
+| `get_parms(node)` | str | `dict[str, any]` | All parameters |
+| `connect_nodes(from, to, output=0, input_idx=0)` | str, str, int, int | `{"connected": True}` | |
+| `cook_node(path, force=False)` | str, bool | `{"cooked": True}` | |
+| `run_code(code)` | str | `{"result": any}` | `result` var in code → return value |
+| `node_info(path)` | str | info dict | path, name, type, category, children |
+| `node_exists(path)` | str | `{"exists": bool}` | |
+| `children(path="/obj")` | str | `list[{"name", "type", "path"}]` | |
+| `set_display_flag(path, on=True)` | str, bool | `{"set": True}` | |
+| `set_render_flag(path, on=True)` | str, bool | `{"set": True}` | |
+| `layout_children(path)` | str | `{"done": True}` | |
+| `save_hip(path="")` | str | `{"saved": str}` | |
+| `set_expression(node, parm, expr, language="hscript")` | str, str, str, str | `{"set": True}` | language: "hscript" or "python" |
+| `set_keyframe(node, parm, frame, value)` | str, str, int, any | `{"set": True}` | |
+| `set_frame(frame)` | int | `{"frame": int}` | |
+| `set_playback_range(start, end)` | int, int | `{"start", "end"}` | |
+| `scene_info()` | — | `{"hip_file", "houdini_version", "fps", "frame", "frame_range"}` | |
+
+**Behavior notes:**
+- Each call acquires a `threading.Lock` — thread-safe.
+- `TCP_NODELAY` set on connect — no Nagle buffering.
+- 30-second `socket.timeout` — raises `ConnectionError` if Houdini hangs.
+- Auto-reconnect on `BrokenPipeError` / `ConnectionResetError`.
+
+---
+
+## 8. Engine Signals Reference
+
+**Class:** `NetworkExecutor` (inherits `QObject`)
+
+| Signal | Signature | Emitted when |
+|--------|-----------|-------------|
+| `execution_started` | `()` | `run()` begins |
+| `execution_finished` | `()` | All entry tasks complete |
+| `node_started` | `(instance_id: str)` | Before `execute()` is called |
+| `node_finished` | `(instance_id: str, results: dict)` | After `execute()` returns successfully |
+| `node_error` | `(instance_id: str, error: str)` | Unhandled exception in `execute()` |
+| `node_output` | `(instance_id: str, results: dict)` | Same as `node_finished`; consumed by UI |
+
+**Connected in MainWindow:**
+
+| Signal | MainWindow handler | Effect |
+|--------|--------------------|--------|
+| `node_started` | `_on_node_started` | Records start time for timing |
+| `node_finished` | `_on_node_finished` | Logs timing; calls `scene.update_edge_value()` |
+| `node_error` | `_on_node_error` | Logs error; sets node to error visual state |
+| `execution_finished` | `_on_execution_finished` | Re-enables toolbar buttons |
+
+---
+
+## 9. Keyboard Shortcuts — Complete Table
+
+| Shortcut | Context | Action |
+|----------|---------|--------|
+| `F5` | Global | Execute current workflow |
+| `Shift+F5` | Global | Stop execution |
+| `Tab` | Canvas | Open "Add Node" popup at cursor |
+| `Delete` | Canvas | Delete selected nodes or wires |
+| `F` | Canvas | Focus view on selection or canvas center |
+| `Ctrl+A` | Canvas | Select all nodes |
+| `Ctrl+C` | Canvas | Copy selected nodes |
+| `Ctrl+V` | Canvas | Paste at cursor |
+| `Ctrl+Z` | Canvas | Undo |
+| `Ctrl+Y` | Canvas | Redo |
+| `Ctrl+G` | Canvas | Wrap selection in Backdrop |
+| `Ctrl+Shift+G` | Canvas | Collapse selection into Group Node |
+| `Ctrl+E` | Canvas | Edit selected node in Node Builder |
+| `Ctrl+R` | Canvas | Reload selected node from disk |
+| `Ctrl+Shift+R` | Canvas | Reload all node types from disk |
+| `Ctrl+F` | Canvas | Open canvas search bar |
+| `Ctrl+M` | Canvas | Toggle mini-map |
+| `Ctrl+S` | Global | Save workflow |
+| `Ctrl+Shift+S` | Global | Save workflow as |
+| `Ctrl+O` | Global | Open workflow |
+| `Ctrl+N` | Global | New workflow tab |
+| `Ctrl+W` | Global | Close current tab |
+| `Ctrl+,` | Global | Open Preferences (Settings) |
+| `Ctrl+Wheel` | Code editor | Zoom in/out |
+| Middle-mouse drag | Canvas | Pan |
+| Mouse wheel | Canvas | Zoom |
+
+> All canvas shortcuts are suppressed when a text input widget has keyboard focus.
+
+---
+
+## 10. Log and State Reference
+
+### Log Levels
+
+| Level | Method | Color | Behavior |
+|-------|--------|-------|----------|
+| Info | `self.log_info(msg)` | White | Appears in Log Panel |
+| Success | `self.log_success(msg)` | Green | Appears in Log Panel |
+| Error | `self.log_error(msg)` | Red | Appears in Log Panel; sets node border red |
+| Warning | (engine / connection system) | Yellow | Type-mismatch warnings; connection events |
+
+### Node Execution States
+
+| State | How set | Visual |
+|-------|---------|--------|
+| Idle | Default | Normal border |
+| Running | `node_started` signal | Highlighted border (theme-dependent) |
+| Success | `node_finished` signal | Brief green flash |
+| Error | `node_error` signal | Persistent red border |
+| Bypassed | User right-click → Bypass | Faded appearance |
+
+### Execution Timing
+
+`MainWindow._on_node_started` records `time.perf_counter()` per `instance_id`. `_on_node_finished` pops the start time and logs: `Node 'X' finished in {elapsed:.2f}s`. The `dict.pop(key, None)` guard handles any race where finish fires without a matching start.
+
+---
+
+## 11. Error Index
+
+| Error message / symptom | Cause | Resolution |
+|-------------------------|-------|-----------|
+| Node red border | Unhandled exception in `execute()` | Check Log Panel for traceback |
+| `"PrismCore not initialized"` | Missing `prism_core_init` node | Add `prism_core_init`; set valid `prism_root` |
+| `"No display SOP found inside: /obj/..."` | Houdini geo has no display node | Ensure geo SOP chain has `set_display_flag(True)` |
+| `ConnectionError: Houdini did not respond in 30s` | Houdini is cooking / blocked | Wait for Houdini to finish; check Houdini console |
+| `"Wrong File Type"` on node load | Workflow JSON selected as node | Use Nodes → Load Node From JSON for node files |
+| `"Wrong File Type"` on workflow load | Node JSON selected as workflow | Use Nodes → Load Node From JSON for node files |
+| `"[Errno 2] No such file or directory: '...nodes/...' "` | Nodes directory absent | Fixed in v2.2.x; `os.makedirs(exist_ok=True)` now called automatically |
+| `AttributeError: 'QTextEdit' has no 'setOpenExternalLinks'` | Pre-v2.2.1 exe | Update to v2.2.1+ |
+| Stale ports after editing a node | JSON definition changed on disk | Select node → `Ctrl+R` |
+| "Unknown publisher" on exe launch | Unsigned binary | Dev builds are unsigned; see `tools/sign_release.ps1` |
+| App shows session restore dialog | Crash or forced kill previously | Choose Restore or Discard |
+| Loop appears to hang | `while_loop` condition never False | Check condition logic; Stop button (`Shift+F5`) still works |
+| Widget grayed out | Port is connected | Normal — widget is a live value monitor |
+| Type mismatch warning | Connected ports of different types | Informational only; connection still works |
+| `crash.log` in project root | Unhandled top-level exception | Read the traceback; report as issue if unexpected |
+
+---
+
+**Documentation map:**
+
+| Document | Audience | Focus |
+|----------|----------|-------|
+| [User Guide](USER_GUIDE.md) | All users | Interface, execution, shortcuts, integrations |
+| [Node Builder API](NODE_BUILDER_API.md) | Node authors | BaseNode, ports, lifecycle, distribution |
+| [Automation API](AUTOMATION_API.md) | Pipeline TDs | Scripting console, graph API, automation examples |
+| [Developer Guide](DEVELOPER.md) | Contributors | Engine internals, architecture, thread model |
+| [Portal Docs](docs/portal/) | All audiences | Full navigable HTML documentation |
+| [CHANGELOG](CHANGELOG.md) | All | Version history |
+
+**Deep reference (docs_src/):**
+
+| File | Contents |
+|------|----------|
+| `docs_src/06_backend_architecture.md` | Execution engine in full detail |
+| `docs_src/07_frontend_architecture.md` | Qt canvas architecture |
+| `docs_src/08_api_reference.md` | Full class / method reference (1,500 lines) |
+| `docs_src/05_node_development.md` | Node development guide (1,000 lines) |
+| `docs_src/09_advanced_topics.md` | GroupNode, autosave, wire inspector internals |

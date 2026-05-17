@@ -1,130 +1,558 @@
-# Vibrante-Node: Automation API Reference
+# Vibrante-Node — Automation & Scripting API
 
-The **Scripting Console** (Window -> Show/Hide Scripting Console) allows you to control the entire application using Python. This guide covers all available objects, methods, and practical automation scenarios.
+**Version:** v2.2.1 | [User Guide](USER_GUIDE.md) | [Node Builder API](NODE_BUILDER_API.md) | [Developer Guide](DEVELOPER.md) | [Technical Reference](DOCUMENTATION.md)
 
----
-
-## 🌍 Global Objects
-
-When writing scripts in the console, the following objects are pre-loaded into your namespace:
-
-| Object | Type | Description |
-| :--- | :--- | :--- |
-| `app` | `MainWindow` | Control high-level app features (Tabs, Execution, Themes). |
-| `scene` | `NodeScene` | Manipulate the active canvas (Nodes, Wires, Clearing). |
-| `registry` | `NodeRegistry` | Access the database of all available node types. |
-| `git` | `GitWrapper` | Manage project source control from the script. |
-| `print()` | `Function` | Redirects output to both the Console and the Event Log. |
+The Scripting Console and Python automation API give programmatic access to every part of the application — graph construction, execution control, parameter updates, node registry management, and environment configuration.
 
 ---
 
-## 🛠️ Methods Reference
+## Contents
 
-### 🔹 Scene Manipulation (`scene`)
-- **`scene.add_node_by_name(node_id, pos)`**: 
-  - `node_id`: String (e.g., `"math_add"`).
-  - `pos`: Tuple `(x, y)`.
-  - *Returns*: `NodeWidget` object.
-- **`scene.connect_nodes(node_a, port_a, node_b, port_b)`**: 
-  - `node_a`/`node_b`: Can be `NodeWidget` objects OR their names as strings.
-- **`scene.find_node_by_name(name)`**: Returns the first node matching the display name.
-- **`scene.clear()`**: Deletes everything from the current tab.
-
-### 🔹 Node Control (`node`)
-- **`node.set_parameter(name, value)`**: 
-  - Updates a widget value programmatically.
-  - Automatically triggers downstream data propagation.
-  - For dropdown ports, passing a list updates the options and selects the first item (v1.4.0).
-- **`node.node_definition`**: Access the underlying Python logic instance.
-- **`node.node_definition.bypassed`**: `True` if the node is in bypass mode (v1.2.0).
-
-### 🔹 Application Control (`app`)
-- **`app.add_new_workflow(name)`**: Opens a new empty tab.
-- **`app.execute_pipeline()`**: Starts the execution engine for the current tab. 
-    - **v1.0.5+**: Now supports hybrid **Flow + Data** execution with automatic recursive data pulling and re-entrant loop support.
-- **`app.save_workflow()`**: Triggers the save dialog or smart-saves if a path exists.
+1. [Scripting Console](#1-scripting-console)
+2. [Global Objects Reference](#2-global-objects-reference)
+3. [Scene API — NodeScene](#3-scene-api)
+4. [Application API — MainWindow](#4-application-api)
+5. [Node API — NodeWidget](#5-node-api)
+6. [Registry API — NodeRegistry](#6-registry-api)
+7. [Git API — GitWrapper](#7-git-api)
+8. [Python Runtime and Environment](#8-python-runtime-and-environment)
+9. [Headless and Subprocess Execution](#9-headless-and-subprocess-execution)
+10. [Automation Script Examples](#10-automation-script-examples)
 
 ---
 
-## ⚙️ Advanced Automation Concepts (v1.0.5+)
+## 1. Scripting Console
 
-### 🔹 Working with Flow & Data
-With the v1.0.5 engine, you can automate workflows that combine traditional execution paths with reactive data-only nodes:
+### Opening the Console
 
-- **Reactive Pulling**: When you call `app.execute_pipeline()`, the engine will automatically find and refresh all connected "Data-Only" nodes (nodes with `use_exec: false`) before executing flow-based nodes.
-- **Loop Support**: You can now safely automate workflows containing `For Loop` and `Loop Body` nodes. The engine will handle the recursive execution of the loop body without deadlocking.
+**Window → Show/Hide Scripting Console** — a dockable panel with three sub-panels:
 
-### 🔹 Creating Data-Only Nodes via Scripting
-You can check if a node type is data-only by inspecting its registry definition:
+| Sub-panel | Contents |
+|-----------|----------|
+| **Code Editor** | Python input area with syntax highlighting and autocomplete |
+| **Debug Output** | stdout/stderr from executed code; also receives `print()` output |
+| **Git Status** | Current repository status (branch, modified files, last commit) |
+
+The console is connected to the **live application state**: running code here directly manipulates the active canvas, triggers execution, and updates the UI in real time.
+
+### Execution
+
+- **Run button** or `Ctrl+Enter` — execute the script.
+- `print()` inside scripts is redirected to both the Debug Output panel and the Event Log panel.
+- Unhandled exceptions in scripts print a traceback to Debug Output.
+
+### Context
+
+Scripts run with the following globals pre-injected:
 
 ```python
-defn = registry.get_definition("math_add")
-if not defn.use_exec:
-    print("This is a pure data node!")
+app      # MainWindow — high-level application control
+scene    # NodeScene  — active canvas manipulation
+registry # NodeRegistry — node type database
+git      # GitWrapper — source control
 ```
 
 ---
 
-## 📖 Practical Automation Scenarios
+## 2. Global Objects Reference
 
-### 1. The Multiplier Grid (Stress Test)
-Generate a 5x5 grid of nodes and chain them all together.
+| Object | Type | Module | Description |
+|--------|------|--------|-------------|
+| `app` | `MainWindow` | `src.ui.window` | Main application window; tab management, execution, themes |
+| `scene` | `NodeScene` | `src.ui.canvas.scene` | Active canvas; node creation, wiring, querying |
+| `registry` | `NodeRegistry` | `src.core.registry` | Node type registry; definitions, reload, source paths |
+| `git` | `GitWrapper` | `src.utils.git_wrapper` | Git operations on the project repository |
+| `print()` | built-in | — | Redirected to Debug Output + Event Log |
+
+---
+
+## 3. Scene API — NodeScene
+
+All scene methods operate on the **currently active tab**. Switch tabs first if you need to target a different workflow.
+
+### Node Creation and Discovery
+
+```python
+node = scene.add_node_by_name(node_id, pos=(x, y))
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `node_id` | `str` | Registry ID of the node type (e.g. `"math_add"`, `"console_print"`) |
+| `pos` | `tuple(int, int)` | Canvas position in scene coordinates |
+| **Returns** | `NodeWidget` | The newly created node widget |
+
+```python
+node = scene.find_node_by_name(display_name)
+```
+
+Returns the first `NodeWidget` whose display name matches. Returns `None` if not found.
+
+```python
+nodes = scene.nodes
+```
+
+List of all `NodeWidget` objects currently on the canvas.
+
+### Wiring
+
+```python
+scene.connect_nodes(node_a, port_a, node_b, port_b)
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `node_a` | `NodeWidget` or `str` | Source node (or its display name) |
+| `port_a` | `str` | Output port name on node_a |
+| `node_b` | `NodeWidget` or `str` | Destination node (or its display name) |
+| `port_b` | `str` | Input port name on node_b |
+
+Connecting to an already-occupied input automatically disconnects the previous wire.
+
+### Canvas Control
 
 ```python
 scene.clear()
-prev = None
-for i in range(5):
-    for j in range(5):
-        curr = scene.add_node_by_name("message_node", (j*300, i*200))
-        curr.set_parameter("msg", f"Link {i}-{j}")
-        if prev:
-            scene.connect_nodes(prev, "out", curr, "msg")
-        prev = curr
-print("Chained 25 nodes successfully.")
 ```
 
-### 2. Batch Data Processing
-Update a node's input multiple times and run the workflow for each value.
+Removes all nodes, wires, sticky notes, and backdrops from the current canvas. Equivalent to File → New Workflow (but stays in the same tab).
+
+---
+
+## 4. Application API — MainWindow
+
+### Tab Management
 
 ```python
-loader = scene.find_node_by_name("Message Node")
-if loader:
-    data_list = ["Record_01", "Record_02", "Record_03"]
-    for item in data_list:
-        loader.set_parameter("msg", item)
-        app.execute_pipeline()
-        # Execution is async; the log will show results sequentially
+app.add_new_workflow(name="Untitled")
 ```
 
-### 3. Workflow Cleanup & Reset
-Find all nodes of a certain type and reset their values.
+Opens a new empty workflow tab with the given name. Returns nothing; the new tab becomes active.
 
 ```python
-for node in scene.nodes:
-    if node.node_definition.name == "Math Adder":
-        node.set_parameter("val_a", 0)
-        node.set_parameter("val_b", 0)
-print("All math nodes reset to zero.")
+app.save_workflow()
 ```
 
-### 4. Git Integration Workflow
-Automate your backup after a successful build.
+Triggers a save. If the current workflow has never been saved, opens a Save As dialog. Otherwise writes to the existing path.
+
+### Execution
 
 ```python
-git.status()
-git.commit("Automated workflow backup")
+app.execute_pipeline()
+```
+
+Starts the execution engine for the active tab. Equivalent to pressing **F5**. The call is non-blocking — execution runs asynchronously. Monitor the Log Panel or use signals for completion notification.
+
+> **Note**: The engine is asyncio-based on the Qt main thread. Calling `execute_pipeline()` from the Scripting Console while execution is already running will queue a second run after the first completes.
+
+### Theme
+
+```python
+app.set_theme("dark")    # Dracula dark theme
+app.set_theme("light")   # One-Light theme
+```
+
+### Workflow Path
+
+```python
+path = app.get_current_workflow_path()   # Returns str or None
+```
+
+---
+
+## 5. Node API — NodeWidget
+
+Nodes returned by `scene.add_node_by_name()` or `scene.find_node_by_name()` are `NodeWidget` instances.
+
+### Parameters
+
+```python
+node.set_parameter(name, value)
+```
+
+Sets a widget value programmatically. Triggers downstream reactive propagation. For dropdown ports, passing a `list` updates the dropdown options.
+
+```python
+value = node.get_parameter(name, default=None)
+```
+
+Safely reads the current widget or parameter value.
+
+### Node Definition
+
+```python
+defn = node.node_definition    # BaseNode subclass instance
+```
+
+Access the underlying Python logic object. From `defn` you can:
+
+```python
+defn.name          # str — node ID
+defn.bypassed      # bool — True if bypassed
+defn.log_info(msg) # send a message to the Log Panel
+defn.parameters    # dict — full parameter state
+```
+
+### Bypass State
+
+```python
+node.node_definition.bypassed = True    # bypass
+node.node_definition.bypassed = False   # restore
+```
+
+### Position
+
+```python
+node.setPos(x, y)         # QGraphicsItem.setPos
+pos = node.scenePos()     # QPointF scene coordinates
+```
+
+### Instance ID
+
+```python
+node.instance_id    # UUID — unique per canvas instance
+```
+
+---
+
+## 6. Registry API — NodeRegistry
+
+### Querying Definitions
+
+```python
+defn = registry.get_definition(node_id)
+```
+
+Returns a `NodeDefinitionJSON` (Pydantic model) or `None`. Fields include `node_id`, `name`, `category`, `inputs`, `outputs`, `use_exec`, `python_code`.
+
+```python
+all_ids = list(registry._classes.keys())    # all registered node IDs
+```
+
+### Source Paths
+
+```python
+path = registry.get_source_path(node_id)
+```
+
+Returns the absolute on-disk path to the `.json` definition file, or `None` for built-in nodes.
+
+### Hot Reload
+
+```python
+success = registry.reload_node_definition(node_id)
+```
+
+Re-reads the JSON from disk, recompiles the Python class, and replaces the registry entry. Returns `True` on success. Call `scene.reload_node_type(node_id)` afterward to update live canvas instances:
+
+```python
+registry.reload_node_definition("my_custom_node")
+scene.reload_node_type("my_custom_node")
+```
+
+Or reload all types at once (equivalent to `Ctrl+Shift+R`):
+
+```python
+for node_id in list(registry._classes.keys()):
+    registry.reload_node_definition(node_id)
+```
+
+### Inspect a Node Type
+
+```python
+defn = registry.get_definition("math_add")
+print(defn.category)      # "Math"
+print(defn.use_exec)      # True
+for port in defn.inputs:
+    print(port.name, port.type, port.widget_type)
+```
+
+---
+
+## 7. Git API — GitWrapper
+
+`git` provides source control operations on the project directory.
+
+```python
+git.status()                    # Print working tree status
+git.commit("message")           # Stage all changes and commit
+git.push()                      # Push to remote
+git.pull()                      # Pull from remote
+git.log(n=10)                   # Print last N commits
+```
+
+Example — automated backup after workflow save:
+
+```python
+app.save_workflow()
+git.commit(f"Automated backup: {app.get_current_workflow_path()}")
 git.push()
-print("Workflow pushed to GitHub successfully.")
+print("Workflow pushed to repository.")
 ```
 
-### 5. Inspect and Toggle Bypass State (v1.2.0)
-Find all bypassed nodes and re-enable them programmatically.
+---
+
+## 8. Python Runtime and Environment
+
+### VIBRANTE_PYTHONPATH
+
+Extra `sys.path` entries configured in **Edit → Preferences → Python Runtime**. These are injected at startup, making any Python packages in those directories importable from node code.
 
 ```python
-for node in scene.nodes:
-    defn = node.node_definition
-    if getattr(defn, 'bypassed', False):
-        defn.bypassed = False
-        print(f"Re-enabled: {defn.name}")
-print("All bypassed nodes restored.")
+# In a node's execute():
+import my_studio_lib     # resolvable because its parent dir is in VIBRANTE_PYTHONPATH
 ```
+
+Access from the Scripting Console:
+
+```python
+import sys
+print(sys.path)    # verify your paths are present
+```
+
+### Custom Environment Variables
+
+Configured in **Edit → Preferences → Environment Variables**. Available as standard `os.environ` entries:
+
+```python
+import os
+root = os.environ.get("STUDIO_ROOT", "")
+```
+
+### v_nodes_dir and v_scripts_path
+
+| Variable | Purpose |
+|----------|---------|
+| `v_nodes_dir` | Extra directories scanned for `.json` node definitions |
+| `v_scripts_path` | Extra directories scanned for Scripts menu `.py` files |
+
+Both support multiple paths (colon-separated on the stored value). Configured in **Edit → Preferences → Application Paths**. Changes apply on OK without restarting.
+
+### Runtime Introspection
+
+```python
+import os, sys
+
+# Which node directories are loaded?
+print(os.environ.get("v_nodes_dir", "(none)"))
+
+# What Python packages are available?
+import importlib
+for pkg in ["pydantic", "PyQt5", "aiohttp", "toposort"]:
+    try:
+        importlib.import_module(pkg)
+        print(f"{pkg}: OK")
+    except ImportError:
+        print(f"{pkg}: not installed")
+```
+
+---
+
+## 9. Headless and Subprocess Execution
+
+### Maya — Headless Action Pattern
+
+Maya nodes build an action list; `maya_headless` executes it in a batch Maya session. From a script you can construct and run a Maya pipeline programmatically:
+
+```python
+# Build a Maya headless workflow programmatically
+scene.clear()
+
+open_node = scene.add_node_by_name("maya_action_open_scene", (0, 0))
+open_node.set_parameter("scene_path", "C:/projects/myproject/scenes/shot_010.ma")
+
+render_node = scene.add_node_by_name("maya_action_render", (300, 0))
+render_node.set_parameter("camera", "renderCam")
+render_node.set_parameter("start_frame", 1001)
+render_node.set_parameter("end_frame", 1100)
+
+exec_node = scene.add_node_by_name("maya_headless", (600, 0))
+
+scene.connect_nodes(open_node, "actions_out", render_node, "actions_in")
+scene.connect_nodes(render_node, "actions_out", exec_node, "actions_in")
+scene.connect_nodes(open_node, "exec_out", render_node, "exec_in")
+scene.connect_nodes(render_node, "exec_out", exec_node, "exec_in")
+
+app.execute_pipeline()
+```
+
+### Blender — Same Pattern
+
+Replace `maya_action_*` with `blender_action_*` and `maya_headless` with `blender_headless`.
+
+### Houdini — Live Bridge
+
+For Houdini, Vibrante-Node must be launched from within Houdini. From a script you can trigger Houdini operations the same way as from a node:
+
+```python
+from src.utils.hou_bridge import get_bridge
+bridge = get_bridge()
+
+result = bridge.run_code(
+    "nodes = [n.name() for n in hou.node('/obj').children()]; result = nodes"
+)
+print(result["result"])
+```
+
+---
+
+## 10. Automation Script Examples
+
+The `examples/automation/` directory contains 11 scripts demonstrating real automation patterns. Below are representative examples.
+
+### 01 — Linear Chain
+
+Source: `examples/automation/01_linear_chain.py`
+
+Builds a simple sequential chain of nodes programmatically.
+
+```python
+# Build: [Message Node] -> [Console Print]
+scene.clear()
+
+msg = scene.add_node_by_name("message_node", (0, 0))
+msg.set_parameter("msg", "Hello from automation")
+
+printer = scene.add_node_by_name("console_print", (300, 0))
+
+scene.connect_nodes(msg, "exec_out", printer, "exec_in")
+scene.connect_nodes(msg, "out", printer, "data")
+
+app.execute_pipeline()
+print("Executed: linear chain")
+```
+
+### 02 — Batch Prefix Update
+
+Source: `examples/automation/02_batch_update_prefix.py`
+
+Finds all Message Node instances and updates their values in a batch.
+
+```python
+target_prefix = "v2_"
+
+for node in scene.nodes:
+    if node.node_definition.name == "message_node":
+        current = node.get_parameter("msg") or ""
+        if not current.startswith(target_prefix):
+            node.set_parameter("msg", target_prefix + current)
+
+print("Batch prefix update complete.")
+```
+
+### 03 — Scene Reset
+
+Source: `examples/automation/03_reset_scene.py`
+
+Resets all numeric parameters across the canvas.
+
+```python
+reset_nodes = ["math_add", "math_multiply"]
+
+for node in scene.nodes:
+    if node.node_definition.name in reset_nodes:
+        node.set_parameter("a", 0)
+        node.set_parameter("b", 0)
+
+print(f"Reset {len(scene.nodes)} nodes.")
+```
+
+### 04 — Batch Execution
+
+Source: `examples/automation/04_batch_execution.py`
+
+Runs the same workflow for a list of input values, capturing each result.
+
+```python
+input_node = scene.find_node_by_name("Message Node")
+values = ["Asset_A", "Asset_B", "Asset_C"]
+
+for v in values:
+    input_node.set_parameter("msg", v)
+    app.execute_pipeline()
+    # Execution is async — results appear in the Log Panel sequentially
+    print(f"Queued execution for: {v}")
+```
+
+### 05 — Git Backup
+
+Source: `examples/automation/05_git_backup.py`
+
+Save the current workflow and commit it to version control.
+
+```python
+app.save_workflow()
+git.status()
+git.commit("Automated workflow checkpoint")
+git.push()
+print("Workflow saved and pushed to remote.")
+```
+
+### 07 — Stress Test Grid
+
+Source: `examples/automation/07_stress_test_grid.py`
+
+Generates a grid of nodes to test canvas performance.
+
+```python
+scene.clear()
+cols, rows = 10, 8
+for row in range(rows):
+    for col in range(cols):
+        n = scene.add_node_by_name("message_node", (col * 280, row * 180))
+        n.set_parameter("msg", f"Node [{row},{col}]")
+
+print(f"Created {cols * rows} nodes.")
+```
+
+### 08 — Scene Summary
+
+Source: `examples/automation/08_scene_summary.py`
+
+Reports statistics about the current canvas.
+
+```python
+from collections import Counter
+
+counts = Counter(n.node_definition.name for n in scene.nodes)
+
+print("=== Canvas Summary ===")
+print(f"Total nodes: {len(scene.nodes)}")
+for name, count in counts.most_common():
+    print(f"  {name}: {count}")
+```
+
+### 10 — Session Report
+
+Source: `examples/automation/10_session_report.py`
+
+Generates a human-readable report of the full canvas state.
+
+```python
+import json
+
+report = {
+    "node_count": len(scene.nodes),
+    "nodes": [
+        {
+            "id":       str(n.instance_id),
+            "type":     n.node_definition.name,
+            "bypassed": getattr(n.node_definition, "bypassed", False),
+        }
+        for n in scene.nodes
+    ]
+}
+
+print(json.dumps(report, indent=2))
+```
+
+---
+
+**See also:**
+
+- [User Guide](USER_GUIDE.md) — Scripting Console location and basic usage
+- [Node Builder API](NODE_BUILDER_API.md) — building nodes that expose scriptable parameters
+- [Developer Guide](DEVELOPER.md) — engine internals, signal architecture, NodeRegistry internals
+- [Technical Reference](DOCUMENTATION.md) — complete method signatures, type annotations
+- `examples/automation/` — full collection of automation scripts
+- `examples/nodes/` — custom node Python source examples

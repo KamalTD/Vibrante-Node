@@ -500,74 +500,169 @@ class MainWindow(QMainWindow):
         # Help Menu
         help_menu = menubar.addMenu('&Help')
 
-        help_home_act = QAction('Help Home', self)
-        help_home_act.triggered.connect(self._open_help_home)
-        help_menu.addAction(help_home_act)
+        about_act = QAction('About Vibrante-Node', self)
+        about_act.triggered.connect(self._show_about)
+        help_menu.addAction(about_act)
 
         help_menu.addSeparator()
+
+        # Documentation submenu
+        doc_menu = help_menu.addMenu('Documentation')
+
+        getting_started_act = QAction('Getting Started', self)
+        getting_started_act.triggered.connect(lambda: self._open_portal_page("02_getting_started.html"))
+        doc_menu.addAction(getting_started_act)
 
         user_guide_act = QAction('User Guide', self)
-        user_guide_act.triggered.connect(lambda: self._open_doc("USER_GUIDE.md"))
-        help_menu.addAction(user_guide_act)
+        user_guide_act.triggered.connect(lambda: self._open_portal_page("03_user_guide.html"))
+        doc_menu.addAction(user_guide_act)
+
+        portal_act = QAction('Documentation Portal', self)
+        portal_act.triggered.connect(lambda: self._open_portal_page("index.html"))
+        doc_menu.addAction(portal_act)
+
+        tech_ref_act = QAction('Technical Reference', self)
+        tech_ref_act.triggered.connect(lambda: self._open_portal_page("08_api_reference.html"))
+        doc_menu.addAction(tech_ref_act)
+
+        dev_guide_act = QAction('Developer Guide', self)
+        dev_guide_act.triggered.connect(lambda: self._open_portal_page("06_backend_architecture.html"))
+        doc_menu.addAction(dev_guide_act)
+
+        troubleshoot_act = QAction('Troubleshooting', self)
+        troubleshoot_act.triggered.connect(lambda: self._open_portal_page("11_troubleshooting.html"))
+        doc_menu.addAction(troubleshoot_act)
+
+        # Examples & Workflows submenu
+        examples_menu = help_menu.addMenu('Examples && Workflows')
+
+        workflow_tut_act = QAction('Workflow Tutorials', self)
+        workflow_tut_act.triggered.connect(lambda: self._open_portal_page("04_workflow_tutorials.html"))
+        examples_menu.addAction(workflow_tut_act)
+
+        examples_lib_act = QAction('Examples Library', self)
+        examples_lib_act.triggered.connect(lambda: self._open_portal_page("12_examples_library.html"))
+        examples_menu.addAction(examples_lib_act)
+
+        gpa_act = QAction('General Purpose Automation', self)
+        gpa_act.triggered.connect(lambda: self._open_portal_page("13_general_purpose_automation.html"))
+        examples_menu.addAction(gpa_act)
+
+        examples_menu.addSeparator()
+
+        auto_scripts_act = QAction('Python Automation Scripts', self)
+        auto_scripts_act.triggered.connect(lambda: self._open_folder("examples/automation"))
+        examples_menu.addAction(auto_scripts_act)
+
+        node_ex_act = QAction('Node Examples', self)
+        node_ex_act.triggered.connect(lambda: self._open_folder("node_examples"))
+        examples_menu.addAction(node_ex_act)
+
+        workflows_act = QAction('General Workflows', self)
+        workflows_act.triggered.connect(lambda: self._open_folder("workflows"))
+        examples_menu.addAction(workflows_act)
+
+        vfx_act = QAction('VFX Workflows', self)
+        vfx_act.triggered.connect(lambda: self._open_folder("vfx_workflows"))
+        examples_menu.addAction(vfx_act)
+
+        website_ex_act = QAction('Website Showcase Examples', self)
+        website_ex_act.triggered.connect(lambda: self._open_folder("website_examples"))
+        examples_menu.addAction(website_ex_act)
+
+        # Integrations submenu
+        integ_menu = help_menu.addMenu('Integrations')
+
+        hou_act = QAction('Houdini Bridge', self)
+        hou_act.triggered.connect(lambda: self._open_portal_page("integrations_houdini.html"))
+        integ_menu.addAction(hou_act)
+
+        maya_act = QAction('Maya Headless', self)
+        maya_act.triggered.connect(lambda: self._open_portal_page("integrations_maya.html"))
+        integ_menu.addAction(maya_act)
+
+        blender_act = QAction('Blender Headless', self)
+        blender_act.triggered.connect(lambda: self._open_portal_page("integrations_blender.html"))
+        integ_menu.addAction(blender_act)
+
+        prism_act = QAction('Prism Pipeline', self)
+        prism_act.triggered.connect(lambda: self._open_portal_page("integrations_prism.html"))
+        integ_menu.addAction(prism_act)
+
+        deadline_act = QAction('Deadline Render Farm', self)
+        deadline_act.triggered.connect(lambda: self._open_portal_page("integrations_deadline.html"))
+        integ_menu.addAction(deadline_act)
+
+        # Developer Resources submenu
+        dev_menu = help_menu.addMenu('Developer Resources')
 
         node_builder_act = QAction('Node Builder API', self)
-        node_builder_act.triggered.connect(lambda: self._open_doc("NODE_BUILDER_API.md"))
-        help_menu.addAction(node_builder_act)
+        node_builder_act.triggered.connect(lambda: self._open_portal_page("14_custom_nodes_api.html"))
+        dev_menu.addAction(node_builder_act)
 
-        automation_act = QAction('Automation API', self)
-        automation_act.triggered.connect(lambda: self._open_doc("AUTOMATION_API.md"))
-        help_menu.addAction(automation_act)
+        node_dev_act = QAction('Node Development Guide', self)
+        node_dev_act.triggered.connect(lambda: self._open_portal_page("05_node_development.html"))
+        dev_menu.addAction(node_dev_act)
 
-        dev_doc_act = QAction('Developer Documentation', self)
-        dev_doc_act.triggered.connect(lambda: self._open_doc("DEVELOPER.md"))
-        help_menu.addAction(dev_doc_act)
+        automation_act = QAction('Automation && Scripting API', self)
+        automation_act.triggered.connect(lambda: self._open_portal_page("08_api_reference.html"))
+        dev_menu.addAction(automation_act)
 
-        feature_list_act = QAction('Technical Feature List', self)
-        feature_list_act.triggered.connect(lambda: self._open_doc("DOCUMENTATION.md"))
-        help_menu.addAction(feature_list_act)
+        runtime_act = QAction('Runtime Architecture', self)
+        runtime_act.triggered.connect(lambda: self._open_portal_page("06_backend_architecture.html"))
+        dev_menu.addAction(runtime_act)
 
-        help_menu.addSeparator()
+        plugin_act = QAction('Plugin System', self)
+        plugin_act.triggered.connect(lambda: self._open_portal_page("09_advanced_topics.html"))
+        dev_menu.addAction(plugin_act)
 
-        release_menu = help_menu.addMenu('Release Notes')
+        env_vars_act = QAction('Environment Variables', self)
+        env_vars_act.triggered.connect(lambda: self._open_portal_page("08_api_reference.html"))
+        dev_menu.addAction(env_vars_act)
+
+        # Community & Updates submenu
+        community_menu = help_menu.addMenu('Community && Updates')
+
+        release_menu = community_menu.addMenu('Release Notes')
         for ver in [
-            ("v2.2.1", "RELEASE_v2.2.1.md"),
+            ("v2.2.1  (Current)", "RELEASE_v2.2.1.md"),
             ("v2.2.0", "RELEASE_v2.2.0.md"),
             ("v2.1.1", "RELEASE_v2.1.1.md"),
             ("v2.1.0", "RELEASE_v2.1.0.md"),
             ("v2.0.0", "RELEASE_v2.0.0.md"),
-            ("v1.8.5", "RELEASE_v1.8.5.md"),
-            ("v1.8.4", "RELEASE_v1.8.4.md"),
-            ("v1.8.3", "RELEASE_v1.8.3.md"),
-            ("v1.8.2", "RELEASE_v1.8.2.md"),
-            ("v1.8.1", "RELEASE_v1.8.1.md"),
-            ("v1.8.0", "RELEASE_v1.8.0.md"),
-            ("v1.7.0", "RELEASE_v1.7.0.md"),
-            ("v1.6.1", "RELEASE_v1.6.1.md"),
-            ("v1.6.0", "RELEASE_v1.6.0.md"),
-            ("v1.5.0", "RELEASE_v1.5.0.md"),
-            ("v1.4.0", "RELEASE_v1.4.0.md"),
-            ("v1.3.0", "RELEASE_v1.3.0.md"),
-            ("v1.2.0", "RELEASE_v1.2.0.md"),
-            ("v1.1.5", "RELEASE_v1.1.5.md"),
-            ("v1.1.0", "RELEASE_v1.1.0.md"),
-            ("v1.0.5", "RELEASE_v1.0.5.md"),
         ]:
             label, fname = ver
             act = QAction(label, self)
             act.triggered.connect(lambda checked, f=fname: self._open_doc(f))
             release_menu.addAction(act)
+        release_menu.addSeparator()
+        older_act = QAction('Older Releases...', self)
+        older_act.triggered.connect(lambda: self._open_folder("releases"))
+        release_menu.addAction(older_act)
+
+        community_menu.addSeparator()
+
+        github_act = QAction('GitHub Repository', self)
+        github_act.triggered.connect(lambda: self._open_url("https://github.com/KamalTD/Vibrante-Node"))
+        community_menu.addAction(github_act)
+
+        website_act = QAction('Website', self)
+        website_act.triggered.connect(lambda: self._open_url("https://vibrante-node.com"))
+        community_menu.addAction(website_act)
+
+        issues_act = QAction('Report an Issue', self)
+        issues_act.triggered.connect(lambda: self._open_url("https://github.com/KamalTD/Vibrante-Node/issues"))
+        community_menu.addAction(issues_act)
+
+        discuss_act = QAction('Discussions', self)
+        discuss_act.triggered.connect(lambda: self._open_url("https://github.com/KamalTD/Vibrante-Node/discussions"))
+        community_menu.addAction(discuss_act)
 
         help_menu.addSeparator()
 
         gemini_act = QAction('Link to Gemini', self)
         gemini_act.triggered.connect(self._link_to_gemini)
         help_menu.addAction(gemini_act)
-        
-        help_menu.addSeparator()
-        
-        about_act = QAction('About Vibrante-Node', self)
-        about_act.triggered.connect(self._show_about)
-        help_menu.addAction(about_act)
 
     def _open_doc(self, filename):
         import webbrowser
@@ -582,13 +677,38 @@ class MainWindow(QMainWindow):
         else:
             QMessageBox.critical(self, "Error", f"Documentation file not found: {filename}")
 
-    def _open_help_home(self):
+    def _open_portal_page(self, html_name: str):
         import webbrowser
-        index_path = resource_path("docs", "index.html")
+        portal_path = resource_path("docs", "portal", html_name)
+        if os.path.exists(portal_path):
+            webbrowser.open("file:///" + portal_path.replace("\\", "/"))
+            return
+        index_path = resource_path("docs", "portal", "index.html")
         if os.path.exists(index_path):
             webbrowser.open("file:///" + index_path.replace("\\", "/"))
         else:
-            QMessageBox.critical(self, "Error", "Help index not found.")
+            webbrowser.open("https://vibrante-node.com/docs")
+
+    def _open_url(self, url: str):
+        import webbrowser
+        webbrowser.open(url)
+
+    def _open_folder(self, rel_path: str):
+        folder = resource_path(rel_path)
+        if os.path.isdir(folder):
+            try:
+                os.startfile(folder)
+            except AttributeError:
+                import subprocess, sys as _sys
+                if _sys.platform == "darwin":
+                    subprocess.Popen(["open", folder])
+                else:
+                    subprocess.Popen(["xdg-open", folder])
+        else:
+            QMessageBox.information(
+                self, "Not Found",
+                f"The directory was not found:\n{folder}"
+            )
 
     def _show_about(self):
         from PyQt5.QtWidgets import QDialog, QTextEdit, QTextBrowser, QPushButton, QHBoxLayout, QFrame
