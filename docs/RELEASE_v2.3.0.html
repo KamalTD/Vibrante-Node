@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Release Notes v2.3.0 — Vibrante-Node v2.3.0</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+       background: #1e1e2e; color: #cdd6f4; line-height: 1.7; }
+.sidebar { position: fixed; top: 0; left: 0; width: 220px; height: 100vh;
+           background: #181825; overflow-y: auto; padding: 20px 0; z-index: 100; }
+.sidebar h2 { font-size: 13px; color: #6c7086; text-transform: uppercase;
+              letter-spacing: .08em; padding: 0 18px 10px; }
+.sidebar a  { display: block; padding: 6px 18px; color: #a6adc8; text-decoration: none;
+              font-size: 13px; border-left: 3px solid transparent; transition: all .15s; }
+.sidebar a:hover, .sidebar a.active { color: #cba6f7; border-left-color: #cba6f7;
+                                       background: #1e1e2e; }
+.sidebar .nav-release { font-size: 12px; padding: 4px 18px; }
+.content { margin-left: 220px; max-width: 920px; padding: 40px 48px; }
+h1 { font-size: 2em; color: #cba6f7; border-bottom: 2px solid #313244; padding-bottom: 10px; margin: 28px 0 16px; }
+h2 { font-size: 1.45em; color: #89b4fa; margin: 32px 0 12px; }
+h3 { font-size: 1.15em; color: #94e2d5; margin: 22px 0 8px; }
+h4 { font-size: 1em; color: #f5c2e7; margin: 16px 0 6px; }
+p  { margin-bottom: 14px; color: #cdd6f4; }
+a  { color: #89b4fa; }
+ul, ol { margin: 10px 0 14px 22px; }
+li { margin-bottom: 5px; }
+code { background: #313244; color: #f38ba8; padding: 2px 6px; border-radius: 4px; font-size: .88em; font-family: 'Consolas','Courier New',monospace; }
+pre  { background: #181825; border: 1px solid #313244; border-radius: 8px;
+       padding: 18px 20px; overflow-x: auto; margin: 14px 0 20px; }
+pre code { background: none; color: #a6e3a1; padding: 0; font-size: .9em; }
+table { border-collapse: collapse; width: 100%; margin: 14px 0 20px; font-size: .92em; }
+th { background: #313244; color: #cba6f7; padding: 9px 14px; text-align: left; }
+td { border-top: 1px solid #313244; padding: 8px 14px; }
+tr:nth-child(even) td { background: #1e1e2e; }
+hr { border: none; border-top: 1px solid #313244; margin: 28px 0; }
+blockquote { border-left: 4px solid #6c7086; padding-left: 16px; color: #a6adc8; margin: 14px 0; }
+@media (max-width: 700px) { .sidebar { display: none; } .content { margin-left: 0; padding: 24px 18px; } }
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <h2>Vibrante-Node</h2>
+  <a href="USER_GUIDE.html">User Guide</a>
+<a href="NODE_BUILDER_API.html">Node Builder API</a>
+<a href="AUTOMATION_API.html">Automation API</a>
+<a href="DEVELOPER.html">Developer Documentation</a>
+<a href="DOCUMENTATION.html">Technical Feature List</a>
+  <hr style="border-color:#313244;margin:10px 18px">
+  <h2 style="margin-top:8px">Release Notes</h2>
+  <a class="nav-release" href="RELEASE_v2.3.0.html">Release Notes v2.3.0</a>
+<a class="nav-release" href="RELEASE_v2.3.0.html">Release Notes v2.3.0</a>
+<a class="nav-release" href="RELEASE_v2.2.0.html">Release Notes v2.2.0</a>
+<a class="nav-release" href="RELEASE_v2.1.1.html">Release Notes v2.1.1</a>
+<a class="nav-release" href="RELEASE_v2.1.0.html">Release Notes v2.1.0</a>
+<a class="nav-release" href="RELEASE_v2.0.0.html">Release Notes v2.0.0</a>
+<a class="nav-release" href="RELEASE_v1.8.5.html">Release Notes v1.8.5</a>
+<a class="nav-release" href="RELEASE_v1.8.4.html">Release Notes v1.8.4</a>
+<a class="nav-release" href="RELEASE_v1.8.3.html">Release Notes v1.8.3</a>
+<a class="nav-release" href="RELEASE_v1.8.2.html">Release Notes v1.8.2</a>
+<a class="nav-release" href="RELEASE_v1.8.1.html">Release Notes v1.8.1</a>
+<a class="nav-release" href="RELEASE_v1.8.0.html">Release Notes v1.8.0</a>
+<a class="nav-release" href="RELEASE_v1.7.0.html">Release Notes v1.7.0</a>
+<a class="nav-release" href="RELEASE_v1.6.1.html">Release Notes v1.6.1</a>
+<a class="nav-release" href="RELEASE_v1.6.0.html">Release Notes v1.6.0</a>
+<a class="nav-release" href="RELEASE_v1.5.0.html">Release Notes v1.5.0</a>
+<a class="nav-release" href="RELEASE_v1.4.0.html">Release Notes v1.4.0</a>
+<a class="nav-release" href="RELEASE_v1.3.0.html">Release Notes v1.3.0</a>
+<a class="nav-release" href="RELEASE_v1.2.0.html">Release Notes v1.2.0</a>
+<a class="nav-release" href="RELEASE_v1.1.5.html">Release Notes v1.1.5</a>
+<a class="nav-release" href="RELEASE_v1.1.0.html">Release Notes v1.1.0</a>
+<a class="nav-release" href="RELEASE_v1.0.5.html">Release Notes v1.0.5</a>
+  <hr style="border-color:#313244;margin:10px 18px">
+  <h2 style="margin-top:8px">On this page</h2>
+  <a href="#release-notes-vibrante-node-v230" style="padding-left:18px">Release Notes — Vibrante-Node v2.3.0</a>
+<a href="#whats-new" style="padding-left:18px">What's New</a>
+<a href="#http-request-node-network-category" style="padding-left:32px">HTTP Request Node (Network category)</a>
+<a href="#authenticode-signing-scripts" style="padding-left:32px">Authenticode Signing Scripts</a>
+<a href="#bug-fixes" style="padding-left:18px">Bug Fixes</a>
+<a href="#canvas-drag-trail-artifact-claudemd-1032" style="padding-left:32px">Canvas Drag Trail Artifact (CLAUDE.md 10.32)</a>
+<a href="#http-request-ui-freeze-claudemd-1031" style="padding-left:32px">HTTP Request UI Freeze (CLAUDE.md 10.31)</a>
+<a href="#node-builder-exec-port-type-corruption-claudemd-1028" style="padding-left:32px">Node Builder — Exec Port Type Corruption (CLAUDE.md 10.28)</a>
+<a href="#node-builder-default-value-loss-claudemd-1029" style="padding-left:32px">Node Builder — Default Value Loss (CLAUDE.md 10.29)</a>
+<a href="#node-builder-icon-path-field-side-effects-claudemd-1030" style="padding-left:32px">Node Builder — Icon Path Field Side Effects (CLAUDE.md 10.30)</a>
+<a href="#load-node-from-json-wrong-initial-directory-no-content-check-claudemd-1026" style="padding-left:32px">Load Node From JSON — Wrong Initial Directory / No Content Check (CLAUDE.md 10.26)</a>
+<a href="#load-workflow-silently-accepted-node-json-claudemd-1027" style="padding-left:32px">Load Workflow — Silently Accepted Node JSON (CLAUDE.md 10.27)</a>
+<a href="#documentation" style="padding-left:18px">Documentation</a>
+<a href="#upgrade-notes" style="padding-left:18px">Upgrade Notes</a>
+</nav>
+<main class="content">
+<h1 id="release-notes-vibrante-node-v230">Release Notes — Vibrante-Node v2.3.0</h1>
+<p><strong>Released:</strong> 2026-05-18<br />
+<strong>Type:</strong> Minor — new nodes, developer tooling, and bug fixes</p>
+<hr />
+<h2 id="whats-new">What's New</h2>
+<h3 id="http-request-node-network-category">HTTP Request Node (Network category)</h3>
+<p>A new bundled <code>http_request</code> node is now available in the <strong>Network</strong> category. It performs async GET or POST requests without blocking the UI:</p>
+<ul>
+<li>Inputs: <code>url</code>, <code>method</code> (default <code>"GET"</code>), <code>headers</code> (any), <code>body</code> (any), <code>timeout</code> (int, default 30 s)</li>
+<li>Outputs: <code>response_data</code> (parsed JSON or raw text), <code>status_code</code>, <code>response_text</code>, <code>success</code> (bool)</li>
+<li>Fully non-blocking — the entire HTTP stack (DNS, TCP, TLS, body) runs in a thread pool via <code>loop.run_in_executor</code>, keeping the Qt main thread free</li>
+<li>Uses stdlib <code>urllib.request</code> — no extra dependencies</li>
+<li>Icon: <code>icons/http.png</code></li>
+</ul>
+<h3 id="authenticode-signing-scripts">Authenticode Signing Scripts</h3>
+<p>Two new PowerShell scripts in <code>tools/</code> simplify code-signing the Windows exe:</p>
+<ul>
+<li><code>tools/create_dev_cert.ps1</code> — creates a self-signed code-signing certificate and trusts it locally; changes "Unknown publisher" → "Vibrante-Node Dev" on the local machine for testing</li>
+<li><code>tools/sign_release.ps1</code> — signs the built exe with the best available certificate in the current-user cert store; pass <code>-Thumbprint</code> to target a specific cert</li>
+</ul>
+<p>See section 10.17 of CLAUDE.md for OV/EV cert guidance.</p>
+<hr />
+<h2 id="bug-fixes">Bug Fixes</h2>
+<h3 id="canvas-drag-trail-artifact-claudemd-1032">Canvas Drag Trail Artifact (CLAUDE.md 10.32)</h3>
+<p>Dragging a node left a persistent "trail" of port-connector ellipses on the canvas background.</p>
+<p><strong>Root cause:</strong> <code>NodeWidget.boundingRect()</code> returned only the body rect <code>(0, 0, width, height)</code>. Port connectors extend ±6 px beyond the node edges. Qt computes the dirty region from the declared <code>boundingRect()</code> — pixels outside this rect were never cleared on repaint, causing the trail.</p>
+<p><strong>Fix (three-part):</strong><br />
+- <code>boundingRect()</code> expanded by 8 px on each side to cover port connectors<br />
+- <code>shape()</code> overridden to return the body-only rounded-rect path — preserves correct rubber-band selection and click hit-testing<br />
+- <code>paint()</code> uses a local <code>_r = QRectF(0, 0, width, height)</code> instead of <code>self.boundingRect()</code> — body is drawn at the correct size regardless of the expanded bounding rect</p>
+<p><strong>File:</strong> <code>src/ui/node_widget.py</code></p>
+<h3 id="http-request-ui-freeze-claudemd-1031">HTTP Request UI Freeze (CLAUDE.md 10.31)</h3>
+<p>Running the <code>http_request</code> node froze the Qt UI for the duration of the network call.</p>
+<p><strong>Root cause:</strong> The project uses an <code>_EventLoopRunner</code> that drives asyncio on the Qt main thread via a zero-interval <code>QTimer</code>. Any synchronous OS call inside a coroutine (DNS, TCP connect, TLS handshake) blocked the timer and therefore the entire UI.</p>
+<p><strong>Fix:</strong> The complete HTTP transaction is offloaded to the OS thread pool via <code>await loop.run_in_executor(None, _sync_do)</code>. This is fully decoupled from the stepped event loop — Qt continues processing events normally while the network call runs in a background thread.</p>
+<p><strong>Files:</strong> <code>nodes/http_request.json</code>, <code>website_examples/http_request.json</code></p>
+<h3 id="node-builder-exec-port-type-corruption-claudemd-1028">Node Builder — Exec Port Type Corruption (CLAUDE.md 10.28)</h3>
+<p>Opening any hand-written node for editing via Node Builder then saving changed the type of <code>exec_in</code> / <code>exec_out</code> or added a duplicate port call.</p>
+<p><strong>Fix:</strong> <code>_load_existing_node()</code>, <code>_sync_code_to_ui()</code>, and <code>save_node()</code> now filter <code>exec_in</code> and <code>exec_out</code> from table rows. Exec ports are exclusively managed by the exec checkboxes.</p>
+<p><strong>File:</strong> <code>src/ui/node_builder.py</code></p>
+<h3 id="node-builder-default-value-loss-claudemd-1029">Node Builder — Default Value Loss (CLAUDE.md 10.29)</h3>
+<p>Editing any node via Node Builder reset every port's <code>default</code> to <code>null</code>.</p>
+<p><strong>Fix:</strong> Port tables expanded to 5 columns (added <code>Default</code>). <code>_update_table()</code> reads <code>p.default</code>; <code>save_node()</code> writes it back to <code>PortModel</code>.</p>
+<p><strong>File:</strong> <code>src/ui/node_builder.py</code></p>
+<h3 id="node-builder-icon-path-field-side-effects-claudemd-1030">Node Builder — Icon Path Field Side Effects (CLAUDE.md 10.30)</h3>
+<p>Typing in the icon path field triggered a full code regeneration, corrupting <code>init_first</code>, <code>use_exec</code>, and exec port settings.</p>
+<p><strong>Fix:</strong> <code>icon_edit.textChanged</code> now connects to a dedicated <code>_sync_icon_to_code()</code> method that performs only a single <code>re.sub</code> on the <code>self.icon_path = …</code> assignment line.</p>
+<p><strong>File:</strong> <code>src/ui/node_builder.py</code></p>
+<h3 id="load-node-from-json-wrong-initial-directory-no-content-check-claudemd-1026">Load Node From JSON — Wrong Initial Directory / No Content Check (CLAUDE.md 10.26)</h3>
+<p>Selecting a workflow <code>.json</code> through Nodes → Load Node From JSON showed no error and the node didn't load.</p>
+<p><strong>Fix:</strong> Dialog now starts in <code>self.nodes_dir</code> (not the last-visited shell directory). A content pre-check detects workflow files and shows a specific error: "This is a workflow file, not a node definition."</p>
+<p><strong>File:</strong> <code>src/ui/window.py</code></p>
+<h3 id="load-workflow-silently-accepted-node-json-claudemd-1027">Load Workflow — Silently Accepted Node JSON (CLAUDE.md 10.27)</h3>
+<p>Selecting a node definition <code>.json</code> through File → Load Workflow created an empty workflow tab with no error.</p>
+<p><strong>Fix:</strong> <code>_looks_like_node_json()</code> helper; both <code>load_workflow()</code> and <code>_load_workflow_from_path()</code> reject node JSONs with a clear message before calling <code>model_validate_json</code>.</p>
+<p><strong>File:</strong> <code>src/ui/window.py</code></p>
+<hr />
+<h2 id="documentation">Documentation</h2>
+<ul>
+<li>Full HTML documentation portal regenerated to v2.3.0</li>
+<li><code>docs_src/</code> markdown sources updated (titles, headers, footers, version history table)</li>
+<li>CLAUDE.md: sections 10.31 (http_request freeze) and 10.32 (canvas drag trail) added</li>
+<li>README: node library count updated (167+), Latest Release section updated</li>
+</ul>
+<hr />
+<h2 id="upgrade-notes">Upgrade Notes</h2>
+<p>No breaking changes. All v2.2.x workflows load without modification.</p>
+<p>The <code>http_request</code> node is now in <code>nodes/http_request.json</code>. If you previously loaded it via Nodes → Load Node From JSON from a local copy, uninstall the local copy to avoid duplicates in the Library.</p>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var links = document.querySelectorAll('.sidebar a');
+    var headings = document.querySelectorAll('h1,h2,h3');
+    window.addEventListener('scroll', function() {
+        var cur = '';
+        headings.forEach(function(h) { if (h.offsetTop <= window.scrollY + 80) cur = h.id; });
+        links.forEach(function(a) {
+            a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+        });
+    });
+});
+</script>
+</body>
+</html>

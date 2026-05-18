@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Developer Documentation — Vibrante-Node v2.2.1</title>
+<title>Developer Documentation — Vibrante-Node v2.3.0</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -49,7 +49,8 @@ blockquote { border-left: 4px solid #6c7086; padding-left: 16px; color: #a6adc8;
 <a href="DOCUMENTATION.html">Technical Feature List</a>
   <hr style="border-color:#313244;margin:10px 18px">
   <h2 style="margin-top:8px">Release Notes</h2>
-  <a class="nav-release" href="RELEASE_v2.2.1.html">Release Notes v2.2.1</a>
+  <a class="nav-release" href="RELEASE_v2.3.0.html">Release Notes v2.3.0</a>
+<a class="nav-release" href="RELEASE_v2.3.0.html">Release Notes v2.3.0</a>
 <a class="nav-release" href="RELEASE_v2.2.0.html">Release Notes v2.2.0</a>
 <a class="nav-release" href="RELEASE_v2.1.1.html">Release Notes v2.1.1</a>
 <a class="nav-release" href="RELEASE_v2.1.0.html">Release Notes v2.1.0</a>
@@ -72,205 +73,612 @@ blockquote { border-left: 4px solid #6c7086; padding-left: 16px; color: #a6adc8;
 <a class="nav-release" href="RELEASE_v1.0.5.html">Release Notes v1.0.5</a>
   <hr style="border-color:#313244;margin:10px 18px">
   <h2 style="margin-top:8px">On this page</h2>
-  <a href="#vibrante-node-developer-documentation" style="padding-left:18px">Vibrante-Node Developer Documentation</a>
-<a href="#architecture-overview" style="padding-left:18px">🏗️ Architecture Overview</a>
-<a href="#data-flow" style="padding-left:18px">📊 Data Flow</a>
-<a href="#how-to-add-a-built-in-node" style="padding-left:18px">🛠️ How to Add a Built-in Node</a>
-<a href="#custom-node-schema-json" style="padding-left:18px">📝 Custom Node Schema (JSON)</a>
-<a href="#theming-system" style="padding-left:18px">🎨 Theming System</a>
-<a href="#developer-notes-dynamic-nodes-engine-fix-gemini" style="padding-left:18px">🆕 Developer Notes — Dynamic Nodes, Engine Fix, Gemini</a>
-<a href="#developer-notes-v170-prism-overhaul-atomic-save" style="padding-left:18px">🆕 Developer Notes — v1.7.0 (Prism Overhaul, Atomic Save)</a>
-<a href="#new-prism-getter-nodes" style="padding-left:32px">New Prism Getter Nodes</a>
-<a href="#prism-entity-dict-enrichment" style="padding-left:32px">Prism Entity Dict Enrichment</a>
-<a href="#dynamic-config-reader" style="padding-left:32px">Dynamic Config Reader</a>
-<a href="#get_tasks-multi-method-fallback" style="padding-left:32px">get_tasks Multi-Method Fallback</a>
-<a href="#atomic-workflow-save-safe-load" style="padding-left:32px">Atomic Workflow Save + Safe Load</a>
-<a href="#prism-v210-api-fixes" style="padding-left:32px">Prism v2.1.0 API Fixes</a>
-<a href="#developer-notes-v180-stability-bugfix" style="padding-left:18px">🆕 Developer Notes — v1.8.0 (Stability &amp; Bugfix)</a>
-<a href="#engine-bypass-flag" style="padding-left:32px">Engine: Bypass Flag</a>
-<a href="#for_loop-fix" style="padding-left:32px">for_loop Fix</a>
-<a href="#hotkey-guard-on-text-fields" style="padding-left:32px">Hotkey Guard on Text Fields</a>
-<a href="#houdini-headless-fixes" style="padding-left:32px">Houdini Headless Fixes</a>
-<a href="#blender-runner-fix" style="padding-left:32px">Blender Runner Fix</a>
-<a href="#deadline_job_status-crash-fix" style="padding-left:32px">deadline_job_status Crash Fix</a>
-<a href="#prism-set_output-ordering" style="padding-left:32px">Prism set_output Ordering</a>
-<a href="#developer-notes-v18x-node-reload-init-first-wire-color-settings" style="padding-left:18px">🆕 Developer Notes — v1.8.x (Node Reload, Init-First, Wire Color, Settings)</a>
-<a href="#on_parameter_changed-timing-v181v183" style="padding-left:32px">on_parameter_changed Timing (v1.8.1–v1.8.3)</a>
-<a href="#registry-source-paths" style="padding-left:32px">Registry Source Paths</a>
-<a href="#nodewidgetreload_definitionnew_definition" style="padding-left:32px">NodeWidget.reload_definition(new_definition)</a>
-<a href="#nodescenereload_node_typenode_id" style="padding-left:32px">NodeScene.reload_node_type(node_id)</a>
-<a href="#init-first-scene-ordering" style="padding-left:32px">Init-First Scene Ordering</a>
-<a href="#wire-coloring-by-port-type" style="padding-left:32px">Wire Coloring by Port Type</a>
-<a href="#user-settings-persistence" style="padding-left:32px">User Settings Persistence</a>
-<a href="#developer-notes-v160-prism-python-script-while-loop" style="padding-left:18px">🆕 Developer Notes — v1.6.0 (Prism, Python Script, While Loop)</a>
-<a href="#prism-pipeline-integration" style="padding-left:32px">Prism Pipeline Integration</a>
-<a href="#python-script-node" style="padding-left:32px">Python Script Node</a>
-<a href="#while-loop-node" style="padding-left:32px">While Loop Node</a>
-<a href="#utility-nodes" style="padding-left:32px">Utility Nodes</a>
+  <a href="#vibrante-node-developer-guide" style="padding-left:18px">Vibrante-Node — Developer Guide</a>
+<a href="#contents" style="padding-left:18px">Contents</a>
+<a href="#1-architecture-layers" style="padding-left:18px">1. Architecture Layers</a>
+<a href="#key-files" style="padding-left:32px">Key Files</a>
+<a href="#2-execution-engine-networkexecutor" style="padding-left:18px">2. Execution Engine — NetworkExecutor</a>
+<a href="#startup-sequence" style="padding-left:32px">Startup Sequence</a>
+<a href="#node-instantiation" style="padding-left:32px">Node Instantiation</a>
+<a href="#signals-emitted-by-the-engine" style="padding-left:32px">Signals Emitted by the Engine</a>
+<a href="#3-event-loop-integration" style="padding-left:18px">3. Event Loop Integration</a>
+<a href="#4-data-flow-and-propagation" style="padding-left:18px">4. Data Flow and Propagation</a>
+<a href="#wire-model" style="padding-left:32px">Wire Model</a>
+<a href="#output-propagation" style="padding-left:32px">Output Propagation</a>
+<a href="#reactive-propagation-outside-execution" style="padding-left:32px">Reactive Propagation (Outside Execution)</a>
+<a href="#5-execution-ordering" style="padding-left:18px">5. Execution Ordering</a>
+<a href="#entry-node-detection" style="padding-left:32px">Entry Node Detection</a>
+<a href="#data-pull-recursion" style="padding-left:32px">Data-Pull Recursion</a>
+<a href="#topological-sort-data-flow-only" style="padding-left:32px">Topological Sort (Data-Flow Only)</a>
+<a href="#6-loop-execution" style="padding-left:18px">6. Loop Execution</a>
+<a href="#for-loop" style="padding-left:32px">For Loop</a>
+<a href="#while-loop" style="padding-left:32px">While Loop</a>
+<a href="#break" style="padding-left:32px">Break</a>
+<a href="#7-groupnode-sub-executor" style="padding-left:18px">7. GroupNode Sub-Executor</a>
+<a href="#subgraph-tab-editing" style="padding-left:32px">Subgraph Tab Editing</a>
+<a href="#8-bypass-and-init-first-handling" style="padding-left:18px">8. Bypass and Init-First Handling</a>
+<a href="#bypass" style="padding-left:32px">Bypass</a>
+<a href="#init-first-init_priority" style="padding-left:32px">Init-First (init_priority)</a>
+<a href="#9-error-propagation-and-cancellation" style="padding-left:18px">9. Error Propagation and Cancellation</a>
+<a href="#unhandled-exceptions" style="padding-left:32px">Unhandled Exceptions</a>
+<a href="#cancellation" style="padding-left:32px">Cancellation</a>
+<a href="#10-node-registry-system" style="padding-left:18px">10. Node Registry System</a>
+<a href="#loading" style="padding-left:32px">Loading</a>
+<a href="#compilation" style="padding-left:32px">Compilation</a>
+<a href="#hot-reload" style="padding-left:32px">Hot Reload</a>
+<a href="#11-serialization-system" style="padding-left:18px">11. Serialization System</a>
+<a href="#workflowmodel" style="padding-left:32px">WorkflowModel</a>
+<a href="#nodeinstancemodel" style="padding-left:32px">NodeInstanceModel</a>
+<a href="#connectionmodel" style="padding-left:32px">ConnectionModel</a>
+<a href="#save-and-load" style="padding-left:32px">Save and Load</a>
+<a href="#12-qt-frontend-architecture" style="padding-left:18px">12. Qt Frontend Architecture</a>
+<a href="#qgraphicsscene-nodescene" style="padding-left:32px">QGraphicsScene — NodeScene</a>
+<a href="#nodeview-qgraphicsview" style="padding-left:32px">NodeView — QGraphicsView</a>
+<a href="#history-and-undoredo" style="padding-left:32px">History and Undo/Redo</a>
+<a href="#13-thread-safety-mainthreaddispatcher" style="padding-left:18px">13. Thread Safety — MainThreadDispatcher</a>
+<a href="#14-environment-system-envmanager" style="padding-left:18px">14. Environment System — EnvManager</a>
+<a href="#configuration-keys-persisted-in-vibrante_node_configjson" style="padding-left:32px">Configuration Keys (persisted in ~/.vibrante_node_config.json)</a>
+<a href="#merge-semantics" style="padding-left:32px">Merge Semantics</a>
+<a href="#thread-safety" style="padding-left:32px">Thread Safety</a>
+<a href="#subprocess-helper" style="padding-left:32px">Subprocess Helper</a>
+<a href="#reinitialize" style="padding-left:32px">Reinitialize</a>
+<a href="#import-export" style="padding-left:32px">Import / Export</a>
+<a href="#15-plugin-architecture-houdini" style="padding-left:18px">15. Plugin Architecture — Houdini</a>
+<a href="#plugin-layout" style="padding-left:32px">Plugin Layout</a>
+<a href="#launch-sequence" style="padding-left:32px">Launch Sequence</a>
+<a href="#json-rpc-server-vibrante_hou_serverpy" style="padding-left:32px">JSON-RPC Server (vibrante_hou_server.py)</a>
+<a href="#houbridge-client-srcutilshou_bridgepy" style="padding-left:32px">HouBridge Client (src/utils/hou_bridge.py)</a>
+<a href="#16-performance-considerations" style="padding-left:18px">16. Performance Considerations</a>
+<a href="#cpu-bound-work" style="padding-left:32px">CPU-Bound Work</a>
+<a href="#io-bound-work" style="padding-left:32px">I/O-Bound Work</a>
+<a href="#large-graphs" style="padding-left:32px">Large Graphs</a>
+<a href="#wire-value-inspector" style="padding-left:32px">Wire Value Inspector</a>
+<a href="#reactive-propagation-frequency" style="padding-left:32px">Reactive Propagation Frequency</a>
 </nav>
 <main class="content">
-<h1 id="vibrante-node-developer-documentation">Vibrante-Node Developer Documentation</h1>
-<p>This guide is intended for developers who wish to understand the internal architecture of Vibrante-Node or extend its functionality.</p>
-<h2 id="architecture-overview">🏗️ Architecture Overview</h2>
-<p>Vibrante-Node follows a modular architecture separated into three main layers:</p>
+<h1 id="vibrante-node-developer-guide">Vibrante-Node — Developer Guide</h1>
+<p><strong>Version:</strong> v2.2.1 | <a href="USER_GUIDE.md">User Guide</a> | <a href="NODE_BUILDER_API.md">Node Builder API</a> | <a href="AUTOMATION_API.md">Automation API</a> | <a href="DOCUMENTATION.md">Technical Reference</a></p>
+<p>This guide describes the internal architecture of Vibrante-Node: the execution engine, node registry, serialization system, Qt threading model, environment management, and plugin architecture. It is written for contributors, pipeline TDs, and developers who need to understand what happens between the user pressing Run and the last node completing.</p>
+<hr />
+<h2 id="contents">Contents</h2>
 <ol>
-<li>
-<p><strong>Core Layer (<code>src/core/</code>)</strong>: Handles the "brain" of the application.</p>
-<ul>
-<li><code>engine.py</code>: Manages the asynchronous execution of the node network.</li>
-<li><code>graph.py</code>: Logic for topological sorting and dependency resolution.</li>
-<li><code>registry.py</code>: The central hub where all node types (built-in and dynamic) are registered.</li>
-<li><code>models.py</code>: Pydantic data models for serialization and validation.</li>
-</ul>
-</li>
-<li>
-<p><strong>UI Layer (<code>src/ui/</code>)</strong>: Handles the visual representation.</p>
-<ul>
-<li><code>canvas/</code>: Custom <code>QGraphicsScene</code> and <code>QGraphicsView</code> for the node workspace.</li>
-<li><code>node_widget.py</code>: The visual representation of a node on the canvas.</li>
-<li><code>code_editor.py</code>: The professional source code editor used in the Node Builder.</li>
-</ul>
-</li>
-<li>
-<p><strong>Nodes Layer (<code>src/nodes/</code>)</strong>: Defines the node logic.</p>
-<ul>
-<li><code>base.py</code>: The abstract base class <code>BaseNode</code> that all nodes must inherit from.</li>
-<li><code>builtins/</code>: Python-native nodes bundled with the app.</li>
-</ul>
-</li>
+<li><a href="#1-architecture-layers">Architecture Layers</a></li>
+<li><a href="#2-execution-engine">Execution Engine — NetworkExecutor</a></li>
+<li><a href="#3-event-loop-integration">Event Loop Integration</a></li>
+<li><a href="#4-data-flow-and-propagation">Data Flow and Propagation</a></li>
+<li><a href="#5-execution-ordering">Execution Ordering</a></li>
+<li><a href="#6-loop-execution">Loop Execution</a></li>
+<li><a href="#7-groupnode-sub-executor">GroupNode Sub-Executor</a></li>
+<li><a href="#8-bypass-and-init-first-handling">Bypass and Init-First Handling</a></li>
+<li><a href="#9-error-propagation-and-cancellation">Error Propagation and Cancellation</a></li>
+<li><a href="#10-node-registry-system">Node Registry System</a></li>
+<li><a href="#11-serialization-system">Serialization System</a></li>
+<li><a href="#12-qt-frontend-architecture">Qt Frontend Architecture</a></li>
+<li><a href="#13-thread-safety">Thread Safety — MainThreadDispatcher</a></li>
+<li><a href="#14-environment-system">Environment System — EnvManager</a></li>
+<li><a href="#15-plugin-architecture">Plugin Architecture — Houdini</a></li>
+<li><a href="#16-performance-considerations">Performance Considerations</a></li>
 </ol>
-<h2 id="data-flow">📊 Data Flow</h2>
+<hr />
+<h2 id="1-architecture-layers">1. Architecture Layers</h2>
+<p>Vibrante-Node is organized into four layers. Dependencies flow top-to-bottom; no lower layer imports from a higher one.</p>
+<pre><code>┌─────────────────────────────────────────────────────┐
+│  UI Layer  (src/ui/)                                 │
+│  Qt canvas, panels, dialogs, node widgets, toolbars  │
+├─────────────────────────────────────────────────────┤
+│  Core Layer  (src/core/)                             │
+│  Execution engine, graph manager, node registry      │
+├─────────────────────────────────────────────────────┤
+│  Nodes Layer  (src/nodes/)                           │
+│  BaseNode, builtins, JSON-compiled dynamic nodes     │
+├─────────────────────────────────────────────────────┤
+│  Utils Layer  (src/utils/)                           │
+│  HouBridge, EnvManager, PrismCore, qt_compat,        │
+│  async runtime, config manager                       │
+└─────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="key-files">Key Files</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>src/core/engine.py</code></td>
+<td><code>NetworkExecutor</code> — the async execution engine</td>
+</tr>
+<tr>
+<td><code>src/core/graph.py</code></td>
+<td><code>GraphManager</code> — topological sort, entry-node detection</td>
+</tr>
+<tr>
+<td><code>src/core/registry.py</code></td>
+<td><code>NodeRegistry</code> — node type registration, hot-reload</td>
+</tr>
+<tr>
+<td><code>src/core/models.py</code></td>
+<td>Pydantic data models — workflow serialization</td>
+</tr>
+<tr>
+<td><code>src/ui/window.py</code></td>
+<td><code>MainWindow</code> — menus, tabs, toolbar, dock layout</td>
+</tr>
+<tr>
+<td><code>src/ui/canvas/scene.py</code></td>
+<td><code>NodeScene</code> — QGraphicsScene, wiring, group/ungroup</td>
+</tr>
+<tr>
+<td><code>src/ui/canvas/view.py</code></td>
+<td><code>NodeView</code> — QGraphicsView, zoom, pan, minimap host</td>
+</tr>
+<tr>
+<td><code>src/ui/node_widget.py</code></td>
+<td><code>NodeWidget</code> — per-node Qt rendering, reactive propagation</td>
+</tr>
+<tr>
+<td><code>src/ui/node_builder.py</code></td>
+<td><code>NodeBuilderDialog</code> — GUI node authoring tool</td>
+</tr>
+<tr>
+<td><code>src/nodes/base.py</code></td>
+<td><code>BaseNode</code>, <code>Port</code> — base class for all nodes</td>
+</tr>
+<tr>
+<td><code>src/utils/hou_bridge.py</code></td>
+<td><code>HouBridge</code> — TCP JSON-RPC client for Houdini</td>
+</tr>
+<tr>
+<td><code>src/utils/prism_core.py</code></td>
+<td><code>PrismCore</code> resolution, bootstrap, shared memory</td>
+</tr>
+<tr>
+<td><code>src/utils/env_manager.py</code></td>
+<td><code>EnvManager</code> — environment variables, path management</td>
+</tr>
+<tr>
+<td><code>src/utils/qt_compat.py</code></td>
+<td>Qt5/Qt6 compatibility layer</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-execution-engine-networkexecutor">2. Execution Engine — NetworkExecutor</h2>
+<p><code>NetworkExecutor</code> (<code>src/core/engine.py</code>) is the central execution engine. It is a <code>QObject</code> (not a <code>QThread</code>) and runs entirely on the Qt main thread.</p>
+<h3 id="startup-sequence">Startup Sequence</h3>
+<p>When the user presses F5 (or calls <code>app.execute_pipeline()</code>):</p>
+<pre><code>MainWindow._on_execute_clicked()
+    │
+    ├── scene.get_workflow_model() → WorkflowModel
+    │
+    ├── GraphManager(workflow_model) → graph
+    │
+    ├── NetworkExecutor(graph, signals)
+    │
+    ├── [Prism bootstrap if prism_core_init detected]
+    │
+    └── executor.run()
+              │
+              ├── Instantiate all nodes (restore_from_parameters + clear_outputs)
+              ├── Detect entry nodes
+              ├── Start each entry node as an asyncio.Task
+              └── Drive asyncio loop via _EventLoopRunner
+</code></pre>
+<h3 id="node-instantiation">Node Instantiation</h3>
+<p>For each <code>NodeInstanceModel</code> in the workflow:</p>
 <ol>
-<li><strong>Serialization</strong>: The canvas is serialized into a <code>WorkflowModel</code> (JSON).</li>
-<li><strong>Hybrid Execution Model (v1.0.5)</strong>:<ul>
-<li><strong>Flow Mode</strong>: If execution pins (<code>exec</code>) are connected, the engine follows them sequentially.</li>
-<li><strong>Data Mode</strong>: If no <code>exec</code> pins are present, <code>GraphManager</code> determines a topological sort.</li>
-</ul>
-</li>
-<li><strong>Recursive Data Pulling</strong>: Before any node executes, <code>NetworkExecutor</code> recursively calls <code>_run_single_node_impl</code> on upstream data-only nodes to ensure all inputs are fresh.</li>
-<li><strong>Re-entrant execution</strong>: The <code>_exec_lock</code> was removed to allow nodes to trigger downstream flows (like loops) without deadlocking.</li>
-<li><strong>Propagation</strong>: Output dictionaries from one node are mapped to the input dictionaries of the next based on wire connections.</li>
+<li>Look up the class in <code>NodeRegistry._classes[node_id]</code>.</li>
+<li>Instantiate: <code>node = NodeClass()</code>.</li>
+<li>Call <code>node.restore_from_parameters(saved_params)</code> — rebuilds dynamic ports.</li>
+<li>Apply all saved parameters to the instance: <code>node.set_parameter(name, value)</code> for each saved key-value pair. This step ensures embedded scripts (<code>python_code</code>), dynamic state, and widget values from the saved workflow are available when <code>execute()</code> runs.</li>
+<li>Call <code>node.clear_outputs()</code> — reset all output port values.</li>
 </ol>
-<h2 id="how-to-add-a-built-in-node">🛠️ How to Add a Built-in Node</h2>
-<p>To add a new node directly in the source code:<br />
-1.  Create a class in <code>src/nodes/builtins/nodes.py</code> inheriting from <code>BaseNode</code>.<br />
-2.  Define <code>name</code>, <code>category</code>, and <code>icon_path</code>.<br />
-3.  In <code>__init__</code>, use <code>self.add_input()</code> and <code>self.add_output()</code>.<br />
-4.  Implement the <code>async def execute(self, inputs)</code> method.<br />
-5.  Register it in the <code>register_builtins()</code> function at the bottom of the file.</p>
-<h2 id="custom-node-schema-json">📝 Custom Node Schema (JSON)</h2>
-<p>Dynamic nodes created via the Node Builder are saved as JSON files in the <code>nodes/</code> directory. They contain:<br />
--   Metadata (id, name, category, icon)<br />
--   Port definitions (including widget types and options)<br />
--   The full Python logic as a string inside <code>python_code</code>.</p>
-<h2 id="theming-system">🎨 Theming System</h2>
-<p>Themes are applied globally using <code>QApplication.instance().setStyleSheet()</code>. Custom widgets (like <code>NodeWidget</code>) manually check the palette brightness to adjust internal colors (like labels and lines) to remain readable.</p>
+<h3 id="signals-emitted-by-the-engine">Signals Emitted by the Engine</h3>
+<table>
+<thead>
+<tr>
+<th>Signal</th>
+<th>Payload</th>
+<th>When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>node_started</code></td>
+<td><code>node_instance_id: str</code></td>
+<td>Before <code>execute()</code> is called</td>
+</tr>
+<tr>
+<td><code>node_finished</code></td>
+<td><code>node_instance_id: str, results: dict</code></td>
+<td>After <code>execute()</code> returns</td>
+</tr>
+<tr>
+<td><code>node_error</code></td>
+<td><code>node_instance_id: str, error: str</code></td>
+<td>Unhandled exception in <code>execute()</code></td>
+</tr>
+<tr>
+<td><code>node_output</code></td>
+<td><code>node_instance_id: str, results: dict</code></td>
+<td>Alias for <code>node_finished</code>; used by UI</td>
+</tr>
+<tr>
+<td><code>execution_started</code></td>
+<td>—</td>
+<td>When the run begins</td>
+</tr>
+<tr>
+<td><code>execution_finished</code></td>
+<td>—</td>
+<td>When all entry tasks complete</td>
+</tr>
+</tbody>
+</table>
+<p><code>MainWindow</code> connects to these signals to update the Log Panel, update node border colors, and invoke <code>scene.update_edge_value()</code> for the Live Wire Inspector.</p>
 <hr />
-<h2 id="developer-notes-dynamic-nodes-engine-fix-gemini">🆕 Developer Notes — Dynamic Nodes, Engine Fix, Gemini</h2>
+<h2 id="3-event-loop-integration">3. Event Loop Integration</h2>
+<p>Qt and asyncio each require ownership of the thread's event loop. Vibrante-Node bridges them with <code>_EventLoopRunner</code>, a zero-delay <code>QTimer</code> that drives the asyncio loop from inside Qt's event loop.</p>
+<pre><code>QTimer(interval=0) ──► _EventLoopRunner._step()
+                              │
+                              ├─ loop.call_soon(loop.stop)   ← queue stop at end of ready callbacks
+                              └─ loop.run_forever()           ← drains ready callbacks, then stops
+</code></pre>
+<p>Each call to <code>_step()</code>:<br />
+1. Queues <code>loop.stop</code> at the back of the asyncio ready queue.<br />
+2. Calls <code>loop.run_forever()</code>. Since <code>loop.stop</code> was queued last, <code>run_forever</code> returns after processing all currently-ready callbacks (typically in microseconds).<br />
+3. Returns control to Qt's event loop, keeping the UI responsive.</p>
+<p>This scheme interleaves Qt events and asyncio tasks with zero blocking. The practical consequence: every <code>await</code> in a node's <code>execute()</code> yields control to both Qt and other asyncio tasks.</p>
+<hr />
+<h2 id="4-data-flow-and-propagation">4. Data Flow and Propagation</h2>
+<h3 id="wire-model">Wire Model</h3>
+<p>Each connection in the workflow maps an output port on one node to an input port on another. The engine maintains a <code>node_results</code> dict (<code>dict[instance_id, dict[port_name, value]]</code>) that accumulates outputs as each node completes.</p>
+<h3 id="output-propagation">Output Propagation</h3>
+<p>After a node's <code>execute()</code> returns:</p>
+<ol>
+<li>The engine stores the result dict in <code>node_results[instance_id]</code>.</li>
+<li>For each output port in the result dict, the engine walks all outgoing wires.</li>
+<li>For each wire's destination node, the corresponding input parameter is updated: <code>dest_node.set_parameter(port_name, value)</code>.</li>
+<li>If the destination node has <code>on_parameter_changed</code> defined, it is called.</li>
+<li>If the source port was <code>exec_out</code>, the destination node's execution is scheduled as the next asyncio task.</li>
+</ol>
+<h3 id="reactive-propagation-outside-execution">Reactive Propagation (Outside Execution)</h3>
+<p>During parameter changes (user typing in a widget), <code>NodeWidget._update_param()</code> calls <code>_propagate_all_outputs()</code>. This scans all outgoing wires on every output port and pushes the current values downstream — updating widget displays in real time without a full execution run.</p>
+<p><strong>Critical:</strong> <code>_propagate_all_outputs()</code> must run on the Qt main thread because it calls <code>widget.setText()</code> and similar methods. It is dispatched via <code>_MainThreadDispatcher</code> (see <a href="#13-thread-safety">Section 13</a>).</p>
+<hr />
+<h2 id="5-execution-ordering">5. Execution Ordering</h2>
+<h3 id="entry-node-detection">Entry Node Detection</h3>
+<p>Entry nodes are nodes with no incoming <code>exec_in</code> wire. The engine starts execution from all entry nodes as concurrent asyncio tasks. For a simple single-chain workflow, this is one node; for a forked workflow, it may be several.</p>
+<p>Data-only nodes (no exec pins) are never entry nodes in exec-flow mode. They are reached only by the data-pull mechanism.</p>
+<h3 id="data-pull-recursion">Data-Pull Recursion</h3>
+<p>Before any exec-flow node's <code>execute()</code> is called, the engine recursively "pulls" data from all upstream data-only nodes:</p>
+<pre><code>_run_single_node(exec_node)
+    │
+    └── for each input port of exec_node:
+            find connected upstream node
+            if upstream is data-only (use_exec=False):
+                _run_single_node(upstream)   ← recursive pull
+            copy upstream output → exec_node input
+</code></pre>
+<p>This guarantees that data-only nodes (math, string, config) always provide fresh values to exec-flow nodes, even without explicit exec wiring.</p>
+<h3 id="topological-sort-data-flow-only">Topological Sort (Data-Flow Only)</h3>
+<p>When a workflow contains only data-only nodes (no exec pins anywhere), <code>GraphManager.topological_sort()</code> determines execution order using <code>toposort</code>. The engine executes nodes in dependency order, layer by layer.</p>
+<hr />
+<h2 id="6-loop-execution">6. Loop Execution</h2>
+<h3 id="for-loop">For Loop</h3>
+<p><code>for_loop</code> builds the complete index list <code>[0, 1, ..., N-1]</code> inside a single <code>execute()</code> call, returns it via the <code>indices</code> output port, and fires <code>exec_out</code> once. <code>loop_body</code> then drives per-item iteration.</p>
+<p>The <code>loop_body</code> node iterates the list in its own <code>execute()</code>, calling <code>_run_from_node()</code> on its downstream chain once per item. The removal of <code>_exec_lock</code> (done in v1.0.5) makes this re-entrant execution safe — the engine can enter <code>_run_from_node()</code> recursively from within an active <code>execute()</code> coroutine.</p>
+<h3 id="while-loop">While Loop</h3>
+<p><code>while_loop</code> checks its <code>condition</code> input, and if <code>True</code>, fires <code>exec_out</code> and then re-evaluates. Because re-entrant execution is lock-free, the while loop's recursive <code>_run_from_node()</code> calls do not deadlock. The downstream chain is responsible for eventually setting the condition to <code>False</code> (or the user presses Stop).</p>
+<h3 id="break">Break</h3>
+<p>The <code>loop_break</code> node checks a boolean condition and, if <code>True</code>, sets an internal flag that causes <code>loop_body</code> to stop iteration after the current item.</p>
+<hr />
+<h2 id="7-groupnode-sub-executor">7. GroupNode Sub-Executor</h2>
+<p><code>GroupNode</code> (defined in <code>src/nodes/builtins/group_node.py</code>) stores a full <code>WorkflowModel</code> in its <code>parameters["__workflow__"]</code>. When the engine executes a GroupNode:</p>
+<ol>
+<li>A nested <code>NetworkExecutor</code> is created for the inner <code>WorkflowModel</code>.</li>
+<li>Boundary input values from the outer graph are injected into <code>GroupInNode</code> instances via <code>parameters["_injected_value"]</code>.</li>
+<li>The inner graph executes fully.</li>
+<li><code>GroupOutNode</code> values are read from <code>node_results</code> of the inner executor.</li>
+<li>These values are written to the GroupNode's output ports and returned.</li>
+<li>If the inner graph completes without exception: <code>exec_out</code> fires.</li>
+<li>If any inner node raises an unhandled exception: <code>exec_fail</code> fires.</li>
+</ol>
+<p>Inner-graph log messages are forwarded to the outer <code>MainWindow</code> log panel.</p>
+<h3 id="subgraph-tab-editing">Subgraph Tab Editing</h3>
+<p><code>MainWindow._open_subgraph_tab()</code> creates a new tab for the inner workflow. A <code>_sync_callback</code> closure is attached to the inner <code>NodeScene</code> via <code>scene._sync_callback</code>. This closure is called by <code>push_history()</code>, <code>undo()</code>, and <code>redo()</code> on the inner scene — it serializes the inner scene state and writes it back to <code>group_widget.node_definition.parameters["__workflow__"]</code>, and pushes a history entry on the parent scene.</p>
+<hr />
+<h2 id="8-bypass-and-init-first-handling">8. Bypass and Init-First Handling</h2>
+<h3 id="bypass">Bypass</h3>
+<p><code>NetworkExecutor._run_single_node_impl()</code> checks <code>node.bypassed</code> before calling <code>execute()</code>:</p>
 <ul>
-<li>
-<p><strong>Dynamic Node Loading</strong>: JSON node definitions stored in <code>nodes/</code> contain a <code>python_code</code> field. During startup <code>NodeRegistry.load_all()</code> compiles these definitions and generates dynamic <code>BaseNode</code> subclasses so custom nodes can be registered at runtime.</p>
-</li>
-<li>
-<p><strong>Engine Parameter Application</strong>: The <code>NetworkExecutor</code> now copies workflow-saved parameters into instantiated node objects before execution. This ensures node-specific runtime-only parameters (for example <code>python_code</code> on a <code>python_script</code> node) are available when the engine runs.</p>
-</li>
-<li>
-<p><strong>Gemini Integration Hook</strong>: The Node Builder exposes hooks to Gemini for code assistance and snippet generation. See <code>src/ui/gemini_chat.py</code> for how the UI interacts with Gemini and how to configure API keys or local endpoints. Treat generated code as untrusted until reviewed — Gemini is intended to accelerate authoring rather than replace code review.</p>
-</li>
+<li>If <code>True</code>: copy the primary input value to the primary output, fire <code>exec_out</code>, skip <code>execute()</code>.</li>
+<li>The downstream chain is unbroken.</li>
+<li>Bypassed nodes appear faded on the canvas (set by <code>NodeWidget</code>).</li>
+</ul>
+<h3 id="init-first-init_priority">Init-First (init_priority)</h3>
+<p><code>NodeScene.from_workflow_model()</code> performs a two-pass load:</p>
+<p><strong>Pass 1:</strong> Create and connect all nodes with <code>init_priority &gt; 0</code>. Their <code>on_plug_sync</code> callbacks fire as wires are connected, so they can read connected values immediately.</p>
+<p><strong>Pass 2:</strong> Create and connect all remaining nodes.</p>
+<p>This guarantees that authentication nodes and server-connect nodes are fully instantiated and wired before any downstream node that depends on them via <code>on_plug_sync</code> is created.</p>
+<hr />
+<h2 id="9-error-propagation-and-cancellation">9. Error Propagation and Cancellation</h2>
+<h3 id="unhandled-exceptions">Unhandled Exceptions</h3>
+<p>If <code>execute()</code> raises any unhandled exception:</p>
+<ol>
+<li>The engine catches it.</li>
+<li><code>node_error</code> signal is emitted with the exception string.</li>
+<li>The node's visual state is set to error (red border).</li>
+<li>The error is logged to the Log Panel.</li>
+<li>The downstream exec chain from that node does <strong>not</strong> continue.</li>
+<li>Other independent branches continue executing.</li>
+</ol>
+<p>For GroupNode inner exceptions, <code>exec_fail</code> fires on the GroupNode instead.</p>
+<h3 id="cancellation">Cancellation</h3>
+<p>The user pressing Stop (<code>Shift+F5</code>) sets a cancellation flag accessible via <code>node.is_stopped()</code>. Long-running nodes should check this in loops:</p>
+<pre><code class="language-python">for item in large_list:
+    if self.is_stopped():
+        return {&quot;exec_out&quot;: True}
+    # ... process item ...
+</code></pre>
+<p>The <code>asyncio.Task.cancel()</code> API is also used for immediate cancellation of nodes that are <code>await</code>-ing I/O.</p>
+<hr />
+<h2 id="10-node-registry-system">10. Node Registry System</h2>
+<h3 id="loading">Loading</h3>
+<p><code>NodeRegistry.load_all_with_extras(bundled_nodes_dir)</code> is the primary load path. It:</p>
+<ol>
+<li>Loads built-in Python nodes from <code>src/nodes/builtins/</code>.</li>
+<li>Loads JSON nodes from <code>bundled_nodes_dir</code> (the <code>nodes/</code> directory).</li>
+<li>Loads JSON nodes from all paths in <code>os.environ.get("v_nodes_dir", "")</code> (colon-separated).</li>
+</ol>
+<p><code>_load_directory(path)</code> scans a directory for <code>.json</code> files and calls <code>load_node(path)</code> for each.</p>
+<h3 id="compilation">Compilation</h3>
+<p><code>load_node(json_path)</code> reads the JSON, validates it as <code>NodeDefinitionJSON</code>, then calls <code>_compile_node_class(definition)</code>:</p>
+<ol>
+<li>Prepend standard imports to <code>python_code</code>.</li>
+<li>For <code>prism_*</code> nodes: inject <code>resolve_prism_core</code> import and rewrite the core access line.</li>
+<li><code>exec(python_code, module_globals)</code> in an isolated namespace.</li>
+<li>Retrieve the class returned by <code>register_node()</code>.</li>
+<li>Inject <code>node_id</code> and <code>display_name</code> as class attributes.</li>
+<li>Store in <code>_classes[node_id]</code> and <code>_definitions[node_id]</code>.</li>
+<li>Store the source path in <code>_source_paths[node_id]</code>.</li>
+</ol>
+<h3 id="hot-reload">Hot Reload</h3>
+<p><code>reload_node_definition(node_id)</code>:</p>
+<ol>
+<li>Reads the file at <code>_source_paths[node_id]</code>.</li>
+<li>Recompiles the class (same steps as above).</li>
+<li>Replaces <code>_classes[node_id]</code> and <code>_definitions[node_id]</code>.</li>
+<li>Returns <code>True</code> on success.</li>
+</ol>
+<p><code>NodeScene.reload_node_type(node_id)</code> calls <code>reload_node_definition()</code> then iterates all <code>NodeWidget</code> instances in the scene, calling <code>widget.reload_definition(new_definition)</code> on matching ones.</p>
+<p><code>NodeWidget.reload_definition(new_definition)</code>:<br />
+1. Replaces internal definition reference.<br />
+2. Removes existing port items from the QGraphicsScene.<br />
+3. Calls <code>_build_ports(new_definition)</code>.<br />
+4. Re-applies parameters where the port still exists and type is compatible.<br />
+5. Removes wires to deleted ports.</p>
+<hr />
+<h2 id="11-serialization-system">11. Serialization System</h2>
+<h3 id="workflowmodel">WorkflowModel</h3>
+<pre><code class="language-python">class WorkflowModel(BaseModel):
+    nodes:        list[NodeInstanceModel]   = []
+    connections:  list[ConnectionModel]     = []
+    sticky_notes: list[StickyNoteModel]     = []
+    backdrops:    list[BackdropModel]       = []
+</code></pre>
+<p>All fields are optional/defaulted. Any valid JSON that parses to this shape is a valid workflow (missing fields default). This is why the <code>_looks_like_node_json()</code> guard is needed in <code>load_workflow()</code>.</p>
+<h3 id="nodeinstancemodel">NodeInstanceModel</h3>
+<pre><code class="language-python">class NodeInstanceModel(BaseModel):
+    node_id:      str
+    instance_id:  str        # UUID as string
+    display_name: str        # canvas label
+    position:     dict       # {&quot;x&quot;: float, &quot;y&quot;: float}
+    parameters:   dict       # all widget values, output cache, embedded scripts
+</code></pre>
+<h3 id="connectionmodel">ConnectionModel</h3>
+<pre><code class="language-python">class ConnectionModel(BaseModel):
+    from_node:  str    # source instance_id
+    from_port:  str    # output port name
+    to_node:    str    # destination instance_id
+    to_port:    str    # input port name
+</code></pre>
+<h3 id="save-and-load">Save and Load</h3>
+<p><strong>Save:</strong> <code>NodeScene.save_workflow_model()</code>:<br />
+1. Iterates all <code>NodeWidget</code> instances → <code>NodeInstanceModel</code>.<br />
+2. Iterates all <code>Edge</code> items → <code>ConnectionModel</code>.<br />
+3. Iterates sticky notes and backdrops.<br />
+4. Strips non-serializable runtime values (Qt objects, live references) from <code>parameters</code>.<br />
+5. Returns <code>WorkflowModel</code>, serialized to JSON with <code>model.model_dump_json(indent=2)</code>.</p>
+<p><strong>Load:</strong> <code>NodeScene.from_workflow_model(workflow_model)</code>:<br />
+1. Sets <code>_undoing = True</code> to suppress <code>push_history()</code> calls during load.<br />
+2. Creates all Init First nodes (Pass 1).<br />
+3. Creates all remaining nodes (Pass 2).<br />
+4. Creates all connections.<br />
+5. Places sticky notes and backdrops.<br />
+6. Restores <code>_undoing</code> to original value.<br />
+7. If a <code>_sync_callback</code> is attached (subgraph tab), calls it.</p>
+<hr />
+<h2 id="12-qt-frontend-architecture">12. Qt Frontend Architecture</h2>
+<h3 id="qgraphicsscene-nodescene">QGraphicsScene — NodeScene</h3>
+<p><code>NodeScene</code> manages all canvas items:</p>
+<ul>
+<li><strong><code>NodeWidget</code></strong> (<code>QGraphicsItem</code>) — the visual box, port items, widgets.</li>
+<li><strong><code>Edge</code></strong> (<code>QGraphicsPathItem</code>) — a wire between two ports.</li>
+<li><strong><code>PortItem</code></strong> (<code>QGraphicsEllipseItem</code>) — a single port connection point.</li>
+<li><strong><code>StickyNote</code></strong> (<code>QGraphicsRectItem</code>) — an annotation box.</li>
+<li><strong><code>Backdrop</code></strong> (<code>QGraphicsRectItem</code>) — a grouping region.</li>
+<li><strong><code>MiniMap</code></strong> (<code>QGraphicsView</code>) — a second view sharing the same scene; child widget of <code>NodeView</code>.</li>
+</ul>
+<h3 id="nodeview-qgraphicsview">NodeView — QGraphicsView</h3>
+<p><code>NodeView</code> hosts the canvas. Key responsibilities:</p>
+<ul>
+<li>Mouse wheel → <code>scale()</code> for zoom.</li>
+<li>Middle-mouse drag → <code>translate()</code> for pan.</li>
+<li><code>resizeEvent</code> → repositions <code>CanvasSearchBar</code> and <code>MiniMap</code>.</li>
+<li>Delegates <code>keyPressEvent</code> to <code>NodeScene</code> after checking <code>QApplication.focusWidget()</code> (prevents hotkeys firing inside text inputs).</li>
+</ul>
+<h3 id="history-and-undoredo">History and Undo/Redo</h3>
+<p><code>NodeScene</code> maintains a <code>_history</code> list of serialized <code>WorkflowModel</code> snapshots. <code>push_history()</code> appends a snapshot (unless <code>_undoing</code> is True). <code>undo()</code> / <code>redo()</code> index into <code>_history</code>, call <code>from_workflow_model()</code> with <code>_undoing = True</code> to suppress recursive history pushes.</p>
+<p>Dirty state: <code>push_history()</code> sets <code>_dirty = True</code> and emits <code>dirty_changed(True)</code> on the first change after a save (clean → dirty transition). <code>mark_clean()</code> resets to clean.</p>
+<hr />
+<h2 id="13-thread-safety-mainthreaddispatcher">13. Thread Safety — MainThreadDispatcher</h2>
+<p>The asyncio execution engine and Qt UI both run on the same OS thread (the Qt main thread). However, <code>asyncio</code> coroutines can be interleaved with each other and with Qt slots. This creates one specific hazard:</p>
+<p><strong><code>_propagate_all_outputs()</code> in <code>NodeWidget</code></strong> accesses <code>scene().edges</code> and calls widget methods (<code>w.setText()</code>, <code>w.setValue()</code>). If called from inside the asyncio execution path (e.g., from <code>on_parameter_changed</code> triggered by engine output propagation), it runs "inside" an asyncio coroutine on the main thread. Qt widget method calls are safe on the main thread, but they must not preempt other Qt operations mid-frame.</p>
+<p><strong>Solution:</strong> <code>_MainThreadDispatcher</code> is a module-level <code>QObject</code> with a <code>pyqtSignal(object)</code> connected with <code>Qt.QueuedConnection</code>. Emitting this signal from any context queues a deferred call to the slot, which runs at the next Qt event loop iteration — after the current asyncio step completes.</p>
+<pre><code class="language-python"># _MainThreadDispatcher usage (src/ui/node_widget.py)
+_main_dispatcher.dispatch_signal.connect(
+    _main_dispatcher._on_dispatch, Qt.QueuedConnection
+)
+
+# From inside a coroutine or background context:
+_main_dispatcher.post(self._propagate_all_outputs)
+# This queues the call for the next Qt event loop iteration
+</code></pre>
+<hr />
+<h2 id="14-environment-system-envmanager">14. Environment System — EnvManager</h2>
+<p><code>EnvManager</code> (<code>src/utils/env_manager.py</code>) is a singleton that manages all environment configuration. It is initialized once at startup via <code>env_manager.initialize()</code> in <code>src/main.py</code>.</p>
+<h3 id="configuration-keys-persisted-in-vibrante_node_configjson">Configuration Keys (persisted in <code>~/.vibrante_node_config.json</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Type</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>env.vibrante_pythonpath</code></td>
+<td><code>list[str]</code></td>
+<td>Injected into <code>sys.path</code> at startup</td>
+</tr>
+<tr>
+<td><code>env.v_nodes_dir</code></td>
+<td><code>list[str]</code></td>
+<td>Merged into <code>os.environ["v_nodes_dir"]</code></td>
+</tr>
+<tr>
+<td><code>env.v_scripts_path</code></td>
+<td><code>list[str]</code></td>
+<td>Merged into <code>os.environ["v_scripts_path"]</code></td>
+</tr>
+<tr>
+<td><code>env.custom_variables</code></td>
+<td><code>dict[str, str]</code></td>
+<td>Injected into <code>os.environ</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="merge-semantics">Merge Semantics</h3>
+<p><code>v_nodes_dir</code> and <code>v_scripts_path</code> are <strong>merged</strong> — paths already in <code>os.environ</code> (e.g. set by Houdini's <code>setup_env()</code>) are preserved; config paths are appended. No paths are dropped.</p>
+<p><code>VIBRANTE_PYTHONPATH</code> injects into <code>sys.path</code> only — it does not overwrite the <code>PYTHONPATH</code> env var.</p>
+<p>Custom variables are injected directly into <code>os.environ</code> (process-scoped; not permanent).</p>
+<h3 id="thread-safety">Thread Safety</h3>
+<p>All reads and writes go through a <code>threading.Lock</code>. Safe to call from any thread.</p>
+<h3 id="subprocess-helper">Subprocess Helper</h3>
+<pre><code class="language-python">env = env_manager.apply_to_subprocess_env(base_env=None)
+</code></pre>
+<p>Returns a new <code>dict</code> (copy of <code>os.environ</code> with all managed variables applied) for use as <code>subprocess.Popen(env=...)</code>. Never mutates <code>os.environ</code> directly.</p>
+<h3 id="reinitialize">Reinitialize</h3>
+<p>After saving settings changes (Settings dialog OK), <code>env_manager.reinitialize()</code> re-reads all config values and re-applies them. This is safe to call at runtime.</p>
+<h3 id="import-export">Import / Export</h3>
+<pre><code class="language-python">data = env_manager.export_settings()
+# Returns: {&quot;vibrante_pythonpath&quot;: [...], &quot;v_nodes_dir&quot;: [...], &quot;v_scripts_path&quot;: [...], &quot;custom_variables&quot;: {...}}
+
+env_manager.import_settings(data)
+# Persists all four groups. Unknown keys are silently ignored.
+</code></pre>
+<hr />
+<h2 id="15-plugin-architecture-houdini">15. Plugin Architecture — Houdini</h2>
+<p>The Houdini integration consists of two sides: code running inside Houdini and the Vibrante-Node subprocess.</p>
+<h3 id="plugin-layout">Plugin Layout</h3>
+<pre><code>plugins/houdini/
+├── vibrante_node.json          ← Houdini package file (user installs this)
+├── v_nodes_houdini/            ← Houdini-specific node JSON definitions
+│   ├── hou_create_geo.json
+│   └── ...
+├── v_scripts_houdini/          ← Houdini-specific .py scripts (Scripts menu)
+│   └── hou_create_box_demo.py
+└── houdini/                    ← Added to HOUDINI_PATH by package JSON
+    ├── MainMenuCommon.xml      ← Adds &quot;Vibrante-Node&quot; menu to Houdini
+    ├── toolbar/vibrante_node.shelf
+    └── scripts/python/
+        ├── pythonrc.py         ← Startup diagnostics (printed to Python console)
+        ├── vibrante_node_houdini.py   ← launch(), setup_env()
+        └── vibrante_hou_server.py     ← JSON-RPC server
+</code></pre>
+<h3 id="launch-sequence">Launch Sequence</h3>
+<p>When the user clicks <strong>Vibrante-Node → Launch</strong> in Houdini:</p>
+<ol>
+<li><code>vibrante_node_houdini.launch()</code> calls <code>setup_env()</code> once.</li>
+<li><code>setup_env()</code> starts <code>vibrante_hou_server.start()</code> (binds TCP port 18811).</li>
+<li>Sets <code>VIBRANTE_HOU_PORT</code>, <code>VIBRANTE_HOUDINI_MODE=subprocess</code>, <code>VIBRANTE_HIP_FILE</code>, <code>v_nodes_dir</code> (pointing to <code>v_nodes_houdini/</code>), <code>v_scripts_path</code>.</li>
+<li>Spawns <code>python src/main.py</code> as a subprocess with this environment.</li>
+</ol>
+<h3 id="json-rpc-server-vibrante_hou_serverpy">JSON-RPC Server (<code>vibrante_hou_server.py</code>)</h3>
+<ul>
+<li>Listens on <code>localhost:18811</code> (configurable via <code>VIBRANTE_HOU_PORT</code>).</li>
+<li>Accepts JSON-encoded RPC calls: <code>{"method": "create_node", "params": {...}}</code>.</li>
+<li>Returns JSON-encoded results.</li>
+<li>Thread-safe: <code>threading.Lock</code> around start/stop; each request is handled in the accept loop (single-threaded).</li>
+<li>Gracefully handles headless Houdini: <code>hou.playbar.frameRange()</code> is wrapped in <code>try/except AttributeError</code> with fallback <code>[1, 240]</code>.</li>
+<li>Guards <code>setDisplayFlag</code>/<code>setRenderFlag</code> with capability checks and <code>try/except hou.OperationFailed</code>.</li>
+</ul>
+<h3 id="houbridge-client-srcutilshou_bridgepy">HouBridge Client (<code>src/utils/hou_bridge.py</code>)</h3>
+<ul>
+<li>Singleton per process, accessed via <code>get_bridge()</code>.</li>
+<li><code>socket.TCP_NODELAY</code> set on connect (eliminates ~40 ms Nagle delay on Windows).</li>
+<li><code>socket.timeout(30)</code> — raises <code>ConnectionError</code> if the server doesn't respond.</li>
+<li><code>threading.Lock</code> per instance — <code>_send()</code> is thread-safe.</li>
+<li>Auto-reconnect on <code>BrokenPipeError</code> / <code>ConnectionResetError</code>.</li>
 </ul>
 <hr />
-<h2 id="developer-notes-v170-prism-overhaul-atomic-save">🆕 Developer Notes — v1.7.0 (Prism Overhaul, Atomic Save)</h2>
-<h3 id="new-prism-getter-nodes">New Prism Getter Nodes</h3>
-<p>Six new nodes were added to the Prism category: <code>prism_get_scene_path</code>, <code>prism_get_export_path</code>, <code>prism_get_shot_by_sequence</code>, <code>prism_get_asset_type_by_name</code>, <code>prism_get_asset_types_by_project</code>, <code>prism_get_assets_by_type</code>. All follow the standardised Prism getter pattern (guard <code>if core is None</code>, safe defaults).</p>
-<p><code>prism_get_export_path</code> returns the actual file path, not its containing directory. It handles <code>output_type</code> values <code>'3d'</code> and <code>'2d'</code> and accepts an optional <code>version</code> argument.</p>
-<h3 id="prism-entity-dict-enrichment">Prism Entity Dict Enrichment</h3>
-<p>The entity dict produced by <code>prism_build_entity</code> and related nodes is now enriched with <code>path</code>, <code>location</code>, and <code>paths</code> keys so downstream nodes can resolve scene file locations without an extra bridge call.</p>
-<h3 id="dynamic-config-reader">Dynamic Config Reader</h3>
-<p>The Prism config reader no longer hardcodes department abbreviations. Abbreviations are now read at runtime from the active project's config via <code>core.getConfig()</code>, making the nodes compatible with any studio that customises department names.</p>
-<h3 id="get_tasks-multi-method-fallback"><code>get_tasks</code> Multi-Method Fallback</h3>
-<p><code>prism_get_tasks</code> now tries multiple Prism API methods in sequence (<code>getTasks</code>, <code>getTasksForEntity</code>, <code>task_mgr.getTasks</code>) to stay compatible across Prism versions.</p>
-<h3 id="atomic-workflow-save-safe-load">Atomic Workflow Save + Safe Load</h3>
-<p><code>NodeScene.save_workflow_model()</code> strips non-serializable runtime values (widget objects, Qt handles, live Python references) before writing JSON so saves never corrupt on object-rich graphs. <code>load_workflow_model()</code> uses a safe loader that catches <code>json.JSONDecodeError</code> on empty or corrupt files and prompts the user to start fresh rather than crashing.</p>
-<h3 id="prism-v210-api-fixes">Prism v2.1.0 API Fixes</h3>
+<h2 id="16-performance-considerations">16. Performance Considerations</h2>
+<h3 id="cpu-bound-work">CPU-Bound Work</h3>
+<p>The asyncio engine runs on the main thread. CPU-bound operations in <code>execute()</code> will block the event loop and freeze the UI. Offload them to a thread pool:</p>
+<pre><code class="language-python">import asyncio
+
+async def execute(self, inputs):
+    data = inputs.get(&quot;data&quot;)
+    result = await asyncio.to_thread(heavy_cpu_computation, data)
+    return {&quot;result&quot;: result, &quot;exec_out&quot;: True}
+</code></pre>
+<h3 id="io-bound-work">I/O-Bound Work</h3>
+<p>Use async I/O libraries where possible:</p>
+<pre><code class="language-python">import aiohttp, aiofiles
+
+async def execute(self, inputs):
+    async with aiohttp.ClientSession() as session:
+        async with session.get(inputs[&quot;url&quot;]) as resp:
+            data = await resp.text()
+    return {&quot;result&quot;: data, &quot;exec_out&quot;: True}
+</code></pre>
+<p>If only synchronous I/O is available, use <code>asyncio.to_thread()</code>.</p>
+<h3 id="large-graphs">Large Graphs</h3>
 <ul>
-<li><code>getShots()</code> in Prism v2.1.0 returns a flat list instead of a dict; <code>prism_get_shots</code> now handles both shapes.</li>
-<li><code>createProduct</code> signature corrected for v2.1.0.</li>
-<li>Version directory is created on disk before <code>prism_save_scene_version</code> writes the file; improved error diagnostics.</li>
+<li><code>NodeRegistry.load_all_with_extras()</code> compiles all node classes on startup. 166 nodes adds ~200–400 ms to launch time; this is acceptable.</li>
+<li><code>WorkflowModel</code> serialization is O(N nodes + M wires). Large graphs (&gt;500 nodes) may have noticeable save/load times.</li>
+<li>The <code>_history</code> list stores serialized snapshots per undo step. Limit undo history depth if memory is a concern (configurable in <code>NodeScene</code>).</li>
 </ul>
+<h3 id="wire-value-inspector">Wire Value Inspector</h3>
+<p><code>Edge.shape()</code> overrides the default 2 px path with a 12 px stroked hit-area to make hover detection reliable. On very dense graphs with hundreds of edges, this has negligible rendering cost but do not further inflate the hit area.</p>
+<h3 id="reactive-propagation-frequency">Reactive Propagation Frequency</h3>
+<p>Every keystroke in a widget triggers <code>_propagate_all_outputs()</code>. For deeply connected graphs this can traverse many nodes. Keep <code>on_parameter_changed</code> implementations fast and avoid I/O there.</p>
 <hr />
-<h2 id="developer-notes-v180-stability-bugfix">🆕 Developer Notes — v1.8.0 (Stability &amp; Bugfix)</h2>
-<h3 id="engine-bypass-flag">Engine: Bypass Flag</h3>
-<p><code>NetworkExecutor._run_single_node_impl()</code> now checks <code>node.bypassed</code> before executing. Bypassed nodes propagate their primary input straight to their primary output (passthrough semantics) and fire <code>exec_out</code> normally so the downstream chain is not broken.</p>
-<h3 id="for_loop-fix"><code>for_loop</code> Fix</h3>
-<p>The <code>for_loop</code> builtin was stopping iteration after the first shot because it re-entered <code>_run_from_node()</code> before the loop variable advanced. The fix iterates the full list inside a single <code>execute</code> call, building the complete index list and returning it; <code>exec_out</code> fires once. The <code>loop_body</code> node then drives per-item iteration.</p>
-<h3 id="hotkey-guard-on-text-fields">Hotkey Guard on Text Fields</h3>
-<p>The <code>KeyPressEvent</code> handler in <code>NodeCanvas</code> now checks <code>QApplication.focusWidget()</code> — if a <code>QLineEdit</code> or <code>QTextEdit</code> has focus, all hotkeys are suppressed. This prevents <code>Delete</code> and <code>F5</code> from triggering while the user is typing in a node widget.</p>
-<h3 id="houdini-headless-fixes">Houdini Headless Fixes</h3>
+<p><strong>See also:</strong></p>
 <ul>
-<li><code>houdini_headless_executor</code> validates that the hython path exists before spawning a subprocess; raises <code>FileNotFoundError</code> with a clear message if not.</li>
-<li><code>import_alembic</code> defaults its SOP context to <code>/obj</code> rather than <code>/stage</code>.</li>
+<li><a href="NODE_BUILDER_API.md">Node Builder API</a> — <code>BaseNode</code> contract, port system, lifecycle hooks</li>
+<li><a href="AUTOMATION_API.md">Automation API</a> — <code>NodeRegistry</code> hot-reload, scene manipulation from scripts</li>
+<li><a href="DOCUMENTATION.md">Technical Reference</a> — complete signal catalogue, model schemas, API signatures</li>
+<li><code>src/core/engine.py</code> — <code>NetworkExecutor</code> source</li>
+<li><code>src/core/registry.py</code> — <code>NodeRegistry</code> source</li>
+<li><code>src/core/models.py</code> — Pydantic models source</li>
+<li><code>docs_src/06_backend_architecture.md</code> — deeper execution flow detail with ASCII diagrams</li>
+<li><code>docs_src/07_frontend_architecture.md</code> — Qt canvas architecture in full depth</li>
 </ul>
-<h3 id="blender-runner-fix">Blender Runner Fix</h3>
-<p>Alembic frame arguments renamed to match Blender's current CLI (<code>--frame-start</code> / <code>--frame-end</code>). <code>makedirs(exist_ok=True)</code> added before writing output files.</p>
-<h3 id="deadline_job_status-crash-fix"><code>deadline_job_status</code> Crash Fix</h3>
-<p>The node now guards against a <code>None</code> return from the Deadline REST endpoint and logs a clear error instead of raising an <code>AttributeError</code>.</p>
-<h3 id="prism-set_output-ordering">Prism <code>set_output</code> Ordering</h3>
-<p>In nodes that expose data ports alongside <code>exec_out</code>, <code>set_output</code> is now called on data ports before <code>exec_out</code> fires, ensuring downstream nodes receive data before their own <code>execute</code> is triggered.</p>
-<hr />
-<h2 id="developer-notes-v18x-node-reload-init-first-wire-color-settings">🆕 Developer Notes — v1.8.x (Node Reload, Init-First, Wire Color, Settings)</h2>
-<h3 id="on_parameter_changed-timing-v181v183"><code>on_parameter_changed</code> Timing (v1.8.1–v1.8.3)</h3>
-<p><code>on_parameter_changed</code> is called <strong>reactively during execution</strong> when the output handler propagates a result to a connected input port (i.e., after an upstream node finishes, the downstream node's parameter is updated and <code>on_parameter_changed</code> fires). This enables reactive nodes (e.g., <code>TwoWaySwitchNode</code>) to update their own outputs mid-run.</p>
-<p>It is <strong>not</strong> called during:<br />
-- Pre-execute input sync (the sweep that copies wire values into node parameters before <code>execute</code> begins) — removed in v1.8.3.<br />
-- Reactive output propagation outside the execution path — removed in v1.8.3 to prevent double-propagation.</p>
-<h3 id="registry-source-paths">Registry Source Paths</h3>
-<p><code>NodeRegistry</code> maintains a <code>_source_paths: dict[str, str]</code> mapping <code>node_id → absolute JSON file path</code>. Two new public methods:<br />
-- <code>get_source_path(node_id) -&gt; str | None</code> — returns the file path or <code>None</code> if the node is built-in / not found.<br />
-- <code>reload_node_definition(node_id) -&gt; bool</code> — re-reads the JSON from <code>_source_paths[node_id]</code>, re-compiles the Python class, and replaces the registry entry. Returns <code>True</code> on success.</p>
-<h3 id="nodewidgetreload_definitionnew_definition"><code>NodeWidget.reload_definition(new_definition)</code></h3>
-<p>Accepts a new node definition dict and performs an in-place widget update:<br />
-1. Replaces the internal <code>definition</code>.<br />
-2. Removes existing port items from the scene.<br />
-3. Calls <code>_build_ports()</code> with the new definition.<br />
-4. Re-applies parameter values that are still valid (port still exists, type compatible).<br />
-5. Removes wire connections to ports that no longer exist.</p>
-<h3 id="nodescenereload_node_typenode_id"><code>NodeScene.reload_node_type(node_id)</code></h3>
-<p>Calls <code>registry.reload_node_definition(node_id)</code> then iterates all <code>NodeWidget</code> instances in the scene whose <code>node_id</code> matches, calling <code>widget.reload_definition(new_definition)</code> on each. This is the entry point for <code>Ctrl+R</code>.</p>
-<h3 id="init-first-scene-ordering">Init-First Scene Ordering</h3>
-<p><code>NodeScene.load_workflow_model()</code> now performs two passes:<br />
-1. <strong>Pass 1</strong>: Create and connect all nodes with <code>init_priority &gt; 0</code> (Init First nodes).<br />
-2. <strong>Pass 2</strong>: Create and connect all remaining nodes.</p>
-<p>This guarantees that authentication and server-connect nodes are fully instantiated and wired before any downstream node is built, which matters when <code>on_plug_sync</code> reads a value from an already-connected init node.</p>
-<p>The <code>init_priority</code> is stored in the node's JSON definition and on <code>BaseNode</code> as an integer attribute (default <code>0</code>).</p>
-<h3 id="wire-coloring-by-port-type">Wire Coloring by Port Type</h3>
-<p><code>WireItem.paint()</code> now resolves the color from the <strong>output port's data type</strong> by calling <code>PortItem.get_type_color(data_type)</code> rather than using a fixed color. In the light theme, all wires render in black regardless of type for legibility.</p>
-<h3 id="user-settings-persistence">User Settings Persistence</h3>
-<p><code>MainWindow</code> now saves theme, window geometry (<code>saveGeometry()</code>) and dock layout (<code>saveState()</code>) to <code>QSettings</code> on close, and restores them on startup. The settings key group is <code>VibrateNode/session</code>.</p>
-<hr />
-<h2 id="developer-notes-v160-prism-python-script-while-loop">🆕 Developer Notes — v1.6.0 (Prism, Python Script, While Loop)</h2>
-<h3 id="prism-pipeline-integration">Prism Pipeline Integration</h3>
-<p><strong><code>src/utils/prism_core.py</code></strong> — Three public functions form the Prism support layer:<br />
-- <code>store_prism_core(core)</code> — persists a <code>PrismCore</code> instance to a module-level global and optionally to shared memory.<br />
-- <code>resolve_prism_core(inputs)</code> — checks (in order): <code>inputs["core"]</code>, the global cache, shared memory, and the active DCC session. Returns <code>None</code> if none found.<br />
-- <code>bootstrap_prism_core(prism_root, dcc_path, args)</code> — synchronously initializes <code>PrismCore</code> on the calling thread. Must be called on the Qt main thread.</p>
-<p><strong><code>src/core/registry.py</code> — <code>_prepare_definition()</code></strong> — Before a JSON node definition is compiled into a Python class, the registry calls this method. For <code>prism_*</code> nodes it:<br />
-1. Injects <code>from src.utils.prism_core import resolve_prism_core</code> into <code>python_code</code>.<br />
-2. Replaces <code>core = inputs.get('core')</code> with <code>core = resolve_prism_core(inputs)</code>.</p>
-<p>This means Prism nodes do not need to be written differently — the registry handles it transparently.</p>
-<p><strong><code>src/core/engine.py</code> — Prism bootstrap phase</strong> — At the start of each execution run, the engine scans the graph for <code>prism_core_init</code> nodes. If found and PrismCore is not yet cached:<br />
-1. A <code>_bootstrap_prism_on_main_thread()</code> call is dispatched to the Qt event loop.<br />
-2. The engine waits (with a short timeout) for bootstrap to complete.<br />
-3. Regular execution then proceeds with PrismCore available to all nodes.</p>
-<p><strong><code>src/ui/window.py</code> — <code>_bootstrap_prism_on_main_thread()</code></strong> — Called by the engine via Qt signal. Extracts parameters from the <code>prism_core_init</code> node instance and calls <code>bootstrap_prism_core()</code>. Logs success or failure to the Event Log panel.</p>
-<p><strong><code>src/utils/qt_compat.py</code></strong> — Two new auto-called helpers:<br />
-- <code>ensure_qcolor_from_string()</code> — adds <code>QColor.fromString</code> as a classmethod if missing (Qt5 compatibility).<br />
-- <code>ensure_shiboken_stub()</code> — creates stub <code>shiboken2</code>/<code>shiboken6</code> modules to prevent Prism from loading incompatible binary wheels.</p>
-<h3 id="python-script-node">Python Script Node</h3>
-<p>The <code>python_script</code> builtin node stores user code in a <code>python_code</code> parameter. The engine's parameter-application step (added in v1.0.5) injects this value before execution, so saved workflows always run the authored script. An <strong>Edit Script</strong> button on the node widget opens a full code editor dialog.</p>
-<h3 id="while-loop-node">While Loop Node</h3>
-<p>The <code>while_loop</code> builtin re-enters the engine's <code>_run_from_node()</code> path on each iteration. The removal of <code>_exec_lock</code> (done in v1.0.5 to fix <code>ForLoop</code> deadlocks) also makes while-loop re-entry safe.</p>
-<h3 id="utility-nodes">Utility Nodes</h3>
-<p>List, dictionary, and string utility nodes live in <code>src/nodes/builtins/nodes.py</code> and are registered by the <code>register_builtins()</code> call at module load time. They use <code>use_exec=False</code> so they behave as pure data nodes and participate in reactive propagation without explicit exec wires.</p>
 </main>
 <script>
 document.addEventListener('DOMContentLoaded', function() {

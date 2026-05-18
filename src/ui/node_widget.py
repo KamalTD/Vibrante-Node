@@ -789,7 +789,13 @@ class NodeWidget(QGraphicsItem):
         return False
 
     def boundingRect(self):
-        return QRectF(0, 0, self.width, self.height)
+        margin = 8  # port connectors extend 6px past node edges; +2 for pen and safety
+        return QRectF(-margin, 0, self.width + margin * 2, self.height)
+
+    def shape(self):
+        path = QPainterPath()
+        path.addRoundedRect(QRectF(0, 0, self.width, self.height), 10, 10)
+        return path
 
     def itemChange(self, change, value):
         if change == QGraphicsItem.ItemPositionHasChanged:
@@ -830,17 +836,18 @@ class NodeWidget(QGraphicsItem):
         elif self.status == "failed": base_color = QColor(100, 0, 0)
 
         # 1. DRAW BODY
+        _r = QRectF(0, 0, self.width, self.height)
         painter.setPen(QPen(Qt.black, 1))
         painter.setBrush(QBrush(base_color))
-        painter.drawRoundedRect(self.boundingRect(), 10, 10)
-        
+        painter.drawRoundedRect(_r, 10, 10)
+
         # 2. DRAW HEADER
         # Use Category Color from ColorManager
         header_color = ColorManager.get_category_color(self.node_definition.category)
         
         painter.setBrush(QBrush(header_color))
         path = QPainterPath()
-        path.addRoundedRect(self.boundingRect(), 10, 10)
+        path.addRoundedRect(_r, 10, 10)
         painter.save()
         painter.setClipPath(path)
         painter.setPen(Qt.NoPen)
@@ -898,7 +905,7 @@ class NodeWidget(QGraphicsItem):
         if self.isSelected():
             painter.setPen(QPen(QColor(255, 165, 0), 2))
             painter.setBrush(Qt.NoBrush)
-            painter.drawRoundedRect(self.boundingRect(), 10, 10)
+            painter.drawRoundedRect(_r, 10, 10)
 
     def _get_custom_tooltip(self):
         """Lazy-create a shared frameless QLabel acting as a custom tooltip.

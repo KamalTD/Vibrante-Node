@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="Vibrante-Node v2.2.1 — Introduction">
+<meta name="description" content="Vibrante-Node v2.3.0 — Introduction">
 <title>Introduction — Vibrante-Node Docs</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/atom-one-dark.min.css">
 <style>
@@ -391,7 +391,7 @@ td code { font-size: .85em; }
 <!-- ── Header ─────────────────────────────────────────────────────────── -->
 <header class="header">
   <a class="header-logo" href="index.html">Vibrante-Node</a>
-  <span class="header-version">v2.2.1</span>
+  <span class="header-version">v2.3.0</span>
   <div class="header-spacer"></div>
   <div class="search-wrap">
     <span class="search-icon">&#128269;</span>
@@ -429,14 +429,6 @@ td code { font-size: .85em; }
 <a class="sidebar-link" href="10_contribution_guide.html"><span class="sidebar-num">10</span>Contribution Guide</a>
 </div>
 <div class="sidebar-group">
-<div class="sidebar-group-title">Integrations</div>
-<a class="sidebar-link" href="integrations_houdini.html">Houdini Bridge</a>
-<a class="sidebar-link" href="integrations_maya.html">Maya Headless</a>
-<a class="sidebar-link" href="integrations_blender.html">Blender Headless</a>
-<a class="sidebar-link" href="integrations_prism.html">Prism Pipeline</a>
-<a class="sidebar-link" href="integrations_deadline.html">Deadline Render Farm</a>
-</div>
-<div class="sidebar-group">
 <div class="sidebar-group-title">Reference</div>
 <a class="sidebar-link" href="11_troubleshooting.html"><span class="sidebar-num">11</span>Troubleshooting</a>
 <a class="sidebar-link" href="12_examples_library.html"><span class="sidebar-num">12</span>Examples Library</a>
@@ -450,7 +442,7 @@ td code { font-size: .85em; }
   <div class="content-inner">
     <nav class="breadcrumb"><a href="index.html">Docs</a><span class="breadcrumb-sep">›</span><span>Introduction</span></nav>
     <div class="val-badge val-badge-ok" title="Verified against source code">&#10003; Verified</div>
-<h1 id="vibrante-node-v221-introduction">Vibrante-Node v2.2.1 — Introduction</h1>
+<h1 id="vibrante-node-v230-introduction">Vibrante-Node v2.3.0 — Introduction</h1>
 <p><strong>Vibrante-Node</strong> is a Python-based visual node graph automation platform that lets you build, run, and maintain complex multi-step workflows by wiring together reusable node blocks on an interactive canvas. It ships with a PyQt5 graphical interface, an asyncio-based execution engine, and a growing library of nodes covering general-purpose automation, filesystem operations, DCC application control (Maya, Houdini, Blender), studio pipeline management (Prism Pipeline), and render farm submission (Deadline). Every node is a self-contained unit of logic defined in a single JSON file paired with Python code, making the platform trivially extensible by any Python developer without requiring modifications to the core application.</p>
 <hr />
 <h2 id="table-of-contents">Table of Contents</h2>
@@ -812,10 +804,53 @@ td code { font-size: .85em; }
 <td>2026-05-15</td>
 <td>Patch: About dialog crash fix (<code>QTextEdit</code> → <code>QTextBrowser</code>). LICENSE file now bundled in exe (<code>_internal/</code>).</td>
 </tr>
+<tr>
+<td><strong>v2.3.0</strong></td>
+<td>2026-05-18</td>
+<td>HTTP Request node (bundled). Authenticode signing tools. Node Builder exec-port corruption fix. Node Builder default-value round-trip fix. Icon-path field isolation fix. Load-node/load-workflow cross-detection. Canvas drag trail fix. http_request UI freeze fix (run_in_executor).</td>
+</tr>
 </tbody>
 </table>
 <hr />
 <h2 id="documentation-map">Documentation Map</h2>
+<h3 id="primary-guides-root-level-docs">Primary Guides (root-level docs)</h3>
+<table>
+<thead>
+<tr>
+<th>Document</th>
+<th>Audience</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../USER_GUIDE.md">USER_GUIDE.md</a></td>
+<td>All users</td>
+<td>Interface, canvas, execution model, all features, keyboard shortcuts, troubleshooting</td>
+</tr>
+<tr>
+<td><a href="../NODE_BUILDER_API.md">NODE_BUILDER_API.md</a></td>
+<td>Node authors</td>
+<td>BaseNode class reference, port system, lifecycle hooks, JSON schema, distribution, DCC integration patterns</td>
+</tr>
+<tr>
+<td><a href="../AUTOMATION_API.md">AUTOMATION_API.md</a></td>
+<td>Pipeline TDs</td>
+<td>Scripting console, scene/app/registry API, automation script examples, headless execution</td>
+</tr>
+<tr>
+<td><a href="../DEVELOPER.md">DEVELOPER.md</a></td>
+<td>Contributors</td>
+<td>Execution engine internals, event loop, data flow, node registry, serialization, Qt threading, EnvManager, plugin architecture</td>
+</tr>
+<tr>
+<td><a href="../DOCUMENTATION.md">DOCUMENTATION.md</a></td>
+<td>Reference lookup</td>
+<td>Complete node index, BaseNode API table, port/serialization schemas, env vars, signals, shortcuts, error index</td>
+</tr>
+</tbody>
+</table>
+<h3 id="portal-documentation-this-site">Portal Documentation (this site)</h3>
 <table>
 <thead>
 <tr>
@@ -826,56 +861,111 @@ td code { font-size: .85em; }
 <tbody>
 <tr>
 <td><strong>01_introduction.md</strong> (this file)</td>
-<td>What Vibrante-Node is, philosophy, audiences, architecture</td>
+<td>What Vibrante-Node is, philosophy, audiences, architecture, version history</td>
 </tr>
 <tr>
 <td><strong>02_getting_started.md</strong></td>
-<td>Installation, first launch, your first workflow tutorial</td>
+<td>Installation, first launch, first workflow walkthrough</td>
 </tr>
 <tr>
 <td><strong>03_user_guide.md</strong></td>
-<td>Canvas navigation, node anatomy, execution flow, all features</td>
+<td>Canvas navigation, execution flow, all UI features</td>
 </tr>
 <tr>
-<td><code>DEVELOPER.md</code></td>
-<td>Node authoring deep-dive, Python code rules, bridge API</td>
+<td><strong>04_workflow_tutorials.md</strong></td>
+<td>Step-by-step workflow build tutorials</td>
 </tr>
 <tr>
-<td><code>CLAUDE.md</code></td>
-<td>Node file format specification for AI-assisted node authoring</td>
+<td><strong>05_node_development.md</strong></td>
+<td>Complete node development guide (1,000+ lines)</td>
 </tr>
 <tr>
-<td><code>AUTOMATION_API.md</code></td>
-<td>Programmatic control of Vibrante-Node from external scripts</td>
+<td><strong>06_backend_architecture.md</strong></td>
+<td>Execution engine deep dive with flow diagrams</td>
 </tr>
 <tr>
-<td><code>NODE_BUILDER_API.md</code></td>
-<td>Node Builder GUI reference</td>
+<td><strong>07_frontend_architecture.md</strong></td>
+<td>Qt canvas architecture — NodeScene, NodeWidget, Edge</td>
 </tr>
 <tr>
-<td><code>RELEASE_v2.2.1.md</code></td>
-<td>Detailed changelog for v2.2.1 (current)</td>
+<td><strong>08_api_reference.md</strong></td>
+<td>Full class/method API reference (1,500+ lines)</td>
 </tr>
 <tr>
-<td><code>RELEASE_v2.2.0.md</code></td>
-<td>Detailed changelog for v2.2.0</td>
+<td><strong>09_advanced_topics.md</strong></td>
+<td>GroupNode, autosave, wire inspector, canvas search internals</td>
 </tr>
 <tr>
-<td><code>RELEASE_v2.1.1.md</code></td>
-<td>Detailed changelog for v2.1.1</td>
+<td><strong>10_contribution_guide.md</strong></td>
+<td>Contributing, testing, code style</td>
 </tr>
 <tr>
-<td><code>RELEASE_v2.1.0.md</code></td>
-<td>Detailed changelog for v2.1.0</td>
+<td><strong>11_troubleshooting.md</strong></td>
+<td>Diagnostic checklist, known issues, log interpretation</td>
 </tr>
 <tr>
-<td><code>RELEASE_v2.0.0.md</code></td>
-<td>Detailed changelog for v2.0.0</td>
+<td><strong>12_examples_library.md</strong></td>
+<td>Curated examples from <code>node_examples/</code>, <code>website_examples/</code></td>
+</tr>
+<tr>
+<td><strong>13_general_purpose_automation.md</strong></td>
+<td>Automation patterns from <code>examples/automation/</code></td>
+</tr>
+<tr>
+<td><strong>14_custom_nodes_api.md</strong></td>
+<td>Custom node SDK — extended reference</td>
+</tr>
+</tbody>
+</table>
+<h3 id="release-notes">Release Notes</h3>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Type</th>
+<th>File</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v2.3.0</td>
+<td>Minor</td>
+<td><a href="../RELEASE_v2.3.0.md">RELEASE_v2.3.0.md</a></td>
+</tr>
+<tr>
+<td>v2.2.1</td>
+<td>Patch</td>
+<td><a href="../RELEASE_v2.2.1.md">RELEASE_v2.2.1.md</a></td>
+</tr>
+<tr>
+<td>v2.2.0</td>
+<td>Minor</td>
+<td><a href="../RELEASE_v2.2.0.md">RELEASE_v2.2.0.md</a></td>
+</tr>
+<tr>
+<td>v2.1.1</td>
+<td>Patch</td>
+<td><a href="../RELEASE_v2.1.1.md">RELEASE_v2.1.1.md</a></td>
+</tr>
+<tr>
+<td>v2.1.0</td>
+<td>Minor</td>
+<td><a href="../RELEASE_v2.1.0.md">RELEASE_v2.1.0.md</a></td>
+</tr>
+<tr>
+<td>v2.0.0</td>
+<td>Major</td>
+<td><a href="../RELEASE_v2.0.0.md">RELEASE_v2.0.0.md</a></td>
+</tr>
+<tr>
+<td>Earlier</td>
+<td>—</td>
+<td><a href="../releases/">releases/</a></td>
 </tr>
 </tbody>
 </table>
 <hr />
-<p><em>Vibrante-Node v2.2.1 — Released 2026-05-15</em></p>
+<p><em>Vibrante-Node v2.3.0 — Released 2026-05-18</em></p>
     <nav class="page-nav">
       
       <a class="page-nav-link next" href="02_getting_started.html"><span class="page-nav-label">Next</span><span class="page-nav-title">Getting Started</span></a>
@@ -909,6 +999,9 @@ td code { font-size: .85em; }
 <a class="toc-link toc-h2" href="#architecture-overview">Architecture Overview</a>
 <a class="toc-link toc-h2" href="#version-history">Version History</a>
 <a class="toc-link toc-h2" href="#documentation-map">Documentation Map</a>
+<a class="toc-link toc-h3" href="#primary-guides-root-level-docs">Primary Guides (root-level docs)</a>
+<a class="toc-link toc-h3" href="#portal-documentation-this-site">Portal Documentation (this site)</a>
+<a class="toc-link toc-h3" href="#release-notes">Release Notes</a>
 </aside>
 
 <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/highlight.min.js"></script>

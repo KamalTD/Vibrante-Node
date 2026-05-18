@@ -1,4 +1,4 @@
-# Vibrante-Node v2.2.1 — Introduction
+# Vibrante-Node v2.3.0 — Introduction
 
 **Vibrante-Node** is a Python-based visual node graph automation platform that lets you build, run, and maintain complex multi-step workflows by wiring together reusable node blocks on an interactive canvas. It ships with a PyQt5 graphical interface, an asyncio-based execution engine, and a growing library of nodes covering general-purpose automation, filesystem operations, DCC application control (Maya, Houdini, Blender), studio pipeline management (Prism Pipeline), and render farm submission (Deadline). Every node is a self-contained unit of logic defined in a single JSON file paired with Python code, making the platform trivially extensible by any Python developer without requiring modifications to the core application.
 
@@ -255,6 +255,7 @@ The following diagram shows how the major components relate to one another at ru
 | **v2.1.1** | 2026-05-14 | Scripting Console theme fix (all panels). Houdini plugin standalone LICENSE. Windows VERSIONINFO in exe (fixes "Unknown publisher" on Windows 11). Contact email and website cleanup. |
 | **v2.2.0** | 2026-05-15 | Settings dialog (Edit → Preferences, Ctrl+,). EnvManager persists Python paths, node dirs, script dirs, and custom env vars. Import/Export settings to JSON file. Qt thread-violation crash fix when typing in wired nodes. 10 website example nodes. 142 tests. |
 | **v2.2.1** | 2026-05-15 | Patch: About dialog crash fix (`QTextEdit` → `QTextBrowser`). LICENSE file now bundled in exe (`_internal/`). |
+| **v2.3.0** | 2026-05-18 | HTTP Request node (bundled). Authenticode signing tools. Node Builder exec-port corruption fix. Node Builder default-value round-trip fix. Icon-path field isolation fix. Load-node/load-workflow cross-detection. Canvas drag trail fix. http_request UI freeze fix (run_in_executor). |
 
 ---
 
@@ -293,6 +294,7 @@ The following diagram shows how the major components relate to one another at ru
 
 | Version | Type | File |
 |---|---|---|
+| v2.3.0 | Minor | [RELEASE_v2.3.0.md](../RELEASE_v2.3.0.md) |
 | v2.2.1 | Patch | [RELEASE_v2.2.1.md](../RELEASE_v2.2.1.md) |
 | v2.2.0 | Minor | [RELEASE_v2.2.0.md](../RELEASE_v2.2.0.md) |
 | v2.1.1 | Patch | [RELEASE_v2.1.1.md](../RELEASE_v2.1.1.md) |
@@ -302,4 +304,4 @@ The following diagram shows how the major components relate to one another at ru
 
 ---
 
-*Vibrante-Node v2.2.1 — Released 2026-05-15*
+*Vibrante-Node v2.3.0 — Released 2026-05-18*

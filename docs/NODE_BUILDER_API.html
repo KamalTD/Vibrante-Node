@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Node Builder API — Vibrante-Node v2.2.1</title>
+<title>Node Builder API — Vibrante-Node v2.3.0</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -49,7 +49,8 @@ blockquote { border-left: 4px solid #6c7086; padding-left: 16px; color: #a6adc8;
 <a href="DOCUMENTATION.html">Technical Feature List</a>
   <hr style="border-color:#313244;margin:10px 18px">
   <h2 style="margin-top:8px">Release Notes</h2>
-  <a class="nav-release" href="RELEASE_v2.2.1.html">Release Notes v2.2.1</a>
+  <a class="nav-release" href="RELEASE_v2.3.0.html">Release Notes v2.3.0</a>
+<a class="nav-release" href="RELEASE_v2.3.0.html">Release Notes v2.3.0</a>
 <a class="nav-release" href="RELEASE_v2.2.0.html">Release Notes v2.2.0</a>
 <a class="nav-release" href="RELEASE_v2.1.1.html">Release Notes v2.1.1</a>
 <a class="nav-release" href="RELEASE_v2.1.0.html">Release Notes v2.1.0</a>
@@ -72,182 +73,1058 @@ blockquote { border-left: 4px solid #6c7086; padding-left: 16px; color: #a6adc8;
 <a class="nav-release" href="RELEASE_v1.0.5.html">Release Notes v1.0.5</a>
   <hr style="border-color:#313244;margin:10px 18px">
   <h2 style="margin-top:8px">On this page</h2>
-  <a href="#vibrante-node-node-builder-scripting-api" style="padding-left:18px">Vibrante-Node: Node Builder Scripting API</a>
-<a href="#the-basenode-class" style="padding-left:18px">🏗️ The BaseNode Class</a>
-<a href="#core-attributes" style="padding-left:32px">🔹 Core Attributes</a>
-<a href="#configuration-methods" style="padding-left:18px">🛠️ Configuration Methods</a>
-<a href="#selfadd_inputname-data_typeany-widget_typenone-optionsnone" style="padding-left:32px">self.add_input(name, data_type="any", widget_type=None, options=None)</a>
-<a href="#selfadd_outputname-data_typeany" style="padding-left:32px">self.add_output(name, data_type="any")</a>
-<a href="#selfadd_parametername-type-defaultnone" style="padding-left:32px">self.add_parameter(name, type, default=None)</a>
-<a href="#selfset_parametername-value-v140" style="padding-left:32px">self.set_parameter(name, value) (v1.4.0)</a>
-<a href="#lifecycle-hooks-events" style="padding-left:18px">🔄 Lifecycle Hooks (Events)</a>
-<a href="#on_plug_syncself-port_name-is_input-other_node-other_port_name" style="padding-left:32px">on_plug_sync(self, port_name, is_input, other_node, other_port_name)</a>
-<a href="#on_unplug_syncself-port_name-is_input" style="padding-left:32px">on_unplug_sync(self, port_name, is_input)</a>
-<a href="#on_parameter_changedself-name-value" style="padding-left:32px">on_parameter_changed(self, name, value)</a>
-<a href="#async-def-executeself-inputs" style="padding-left:32px">async def execute(self, inputs)</a>
-<a href="#practical-node-scenarios" style="padding-left:18px">📖 Practical Node Scenarios</a>
-<a href="#1-the-real-time-mirror-pass-through" style="padding-left:32px">1. The Real-Time Mirror (Pass-through)</a>
-<a href="#2-reactive-data-fetcher" style="padding-left:32px">2. Reactive Data Fetcher</a>
-<a href="#3-asynchronous-timer-non-blocking" style="padding-left:32px">3. Asynchronous Timer (Non-blocking)</a>
-<a href="#best-practices-tips" style="padding-left:18px">💡 Best Practices &amp; Tips</a>
-<a href="#node-reload-workflow-v18x" style="padding-left:18px">🔄 Node Reload Workflow (v1.8.x)</a>
-<a href="#scripted-nodes-gemini-assistance" style="padding-left:18px">🆕 Scripted Nodes &amp; Gemini Assistance</a>
+  <a href="#vibrante-node-node-builder-api" style="padding-left:18px">Vibrante-Node — Node Builder API</a>
+<a href="#contents" style="padding-left:18px">Contents</a>
+<a href="#1-node-architecture" style="padding-left:18px">1. Node Architecture</a>
+<a href="#what-a-node-is" style="padding-left:32px">What a Node Is</a>
+<a href="#node-lifecycle-during-execution" style="padding-left:32px">Node Lifecycle During Execution</a>
+<a href="#minimal-node-example" style="padding-left:32px">Minimal Node Example</a>
+<a href="#2-node-json-schema" style="padding-left:18px">2. Node JSON Schema</a>
+<a href="#field-reference" style="padding-left:32px">Field Reference</a>
+<a href="#3-basenode-class-reference" style="padding-left:18px">3. BaseNode Class Reference</a>
+<a href="#class-attributes" style="padding-left:32px">Class Attributes</a>
+<a href="#instance-attributes" style="padding-left:32px">Instance Attributes</a>
+<a href="#constructor" style="padding-left:32px">Constructor</a>
+<a href="#methods" style="padding-left:32px">Methods</a>
+<a href="#execute-abstract" style="padding-left:32px">execute() — Abstract</a>
+<a href="#4-port-system" style="padding-left:18px">4. Port System</a>
+<a href="#port-types" style="padding-left:32px">Port Types</a>
+<a href="#widget-types-input-ports-only" style="padding-left:32px">Widget Types (input ports only)</a>
+<a href="#dropdown-ports" style="padding-left:32px">Dropdown Ports</a>
+<a href="#port-definition-in-code-vs-json" style="padding-left:32px">Port Definition in Code vs JSON</a>
+<a href="#5-lifecycle-hooks" style="padding-left:18px">5. Lifecycle Hooks</a>
+<a href="#executeinputs-primary-hook" style="padding-left:32px">execute(inputs) — Primary Hook</a>
+<a href="#on_parameter_changedname-value" style="padding-left:32px">on_parameter_changed(name, value)</a>
+<a href="#on_plug_syncport_name-is_input-other_node-other_port_name" style="padding-left:32px">on_plug_sync(port_name, is_input, other_node, other_port_name)</a>
+<a href="#on_unplug_syncport_name-is_input" style="padding-left:32px">on_unplug_sync(port_name, is_input)</a>
+<a href="#on_plug-on_unplug-async-variants" style="padding-left:32px">on_plug / on_unplug — Async Variants</a>
+<a href="#6-logging" style="padding-left:18px">6. Logging</a>
+<a href="#7-advanced-patterns" style="padding-left:18px">7. Advanced Patterns</a>
+<a href="#data-only-nodes-use_execfalse" style="padding-left:32px">Data-Only Nodes (use_exec=False)</a>
+<a href="#reactive-output-set_output" style="padding-left:32px">Reactive Output — set_output()</a>
+<a href="#dynamic-ports" style="padding-left:32px">Dynamic Ports</a>
+<a href="#shared-state-basenodememory" style="padding-left:32px">Shared State — BaseNode.memory</a>
+<a href="#stopping-gracefully" style="padding-left:32px">Stopping Gracefully</a>
+<a href="#8-houdini-bridge-nodes" style="padding-left:18px">8. Houdini Bridge Nodes</a>
+<a href="#setup" style="padding-left:32px">Setup</a>
+<a href="#houbridge-method-quick-reference" style="padding-left:32px">HouBridge Method Quick Reference</a>
+<a href="#9-headless-action-nodes-maya-and-blender" style="padding-left:18px">9. Headless Action Nodes — Maya and Blender</a>
+<a href="#action-node-skeleton" style="padding-left:32px">Action Node Skeleton</a>
+<a href="#executor-node" style="padding-left:32px">Executor Node</a>
+<a href="#10-prism-pipeline-nodes" style="padding-left:18px">10. Prism Pipeline Nodes</a>
+<a href="#11-node-builder-gui" style="padding-left:18px">11. Node Builder GUI</a>
+<a href="#workflow" style="padding-left:32px">Workflow</a>
+<a href="#exec-checkbox" style="padding-left:32px">Exec Checkbox</a>
+<a href="#edit-existing-node" style="padding-left:32px">Edit Existing Node</a>
+<a href="#gemini-assistance" style="padding-left:32px">Gemini Assistance</a>
+<a href="#12-distribution-and-installation" style="padding-left:18px">12. Distribution and Installation</a>
+<a href="#single-file-distribution" style="padding-left:32px">Single-File Distribution</a>
+<a href="#directory-distribution" style="padding-left:32px">Directory Distribution</a>
+<a href="#houdini-plugin-distribution" style="padding-left:32px">Houdini Plugin Distribution</a>
+<a href="#built-in-nodes-source" style="padding-left:32px">Built-in Nodes (Source)</a>
+<a href="#13-common-mistakes" style="padding-left:18px">13. Common Mistakes</a>
 </nav>
 <main class="content">
-<h1 id="vibrante-node-node-builder-scripting-api">Vibrante-Node: Node Builder Scripting API</h1>
-<p>This guide provides a full reference for creating custom nodes using the <strong>Node Builder</strong>. It covers the <code>BaseNode</code> class, port configuration, lifecycle events, and common use cases.</p>
+<h1 id="vibrante-node-node-builder-api">Vibrante-Node — Node Builder API</h1>
+<p><strong>Version:</strong> v2.2.1 | <a href="USER_GUIDE.md">User Guide</a> | <a href="AUTOMATION_API.md">Automation API</a> | <a href="DEVELOPER.md">Developer Guide</a> | <a href="DOCUMENTATION.md">Technical Reference</a></p>
+<p>This document is the complete reference for building custom nodes: <code>BaseNode</code>, port configuration, lifecycle hooks, the JSON node schema, distribution patterns, and integration with Houdini, Maya, Blender, and Prism Pipeline.</p>
 <hr />
-<h2 id="the-basenode-class">🏗️ The <code>BaseNode</code> Class</h2>
-<p>Every custom node must be a class inheriting from <code>BaseNode</code>.</p>
-<h3 id="core-attributes">🔹 Core Attributes</h3>
+<h2 id="contents">Contents</h2>
+<ol>
+<li><a href="#1-node-architecture">Node Architecture</a></li>
+<li><a href="#2-node-json-schema">Node JSON Schema</a></li>
+<li><a href="#3-basenode-class-reference">BaseNode Class Reference</a></li>
+<li><a href="#4-port-system">Port System</a></li>
+<li><a href="#5-lifecycle-hooks">Lifecycle Hooks</a></li>
+<li><a href="#6-logging">Logging</a></li>
+<li><a href="#7-advanced-patterns">Advanced Patterns</a></li>
+<li><a href="#8-houdini-bridge-nodes">Houdini Bridge Nodes</a></li>
+<li><a href="#9-headless-action-nodes">Headless Action Nodes — Maya and Blender</a></li>
+<li><a href="#10-prism-pipeline-nodes">Prism Pipeline Nodes</a></li>
+<li><a href="#11-node-builder-gui">Node Builder GUI</a></li>
+<li><a href="#12-distribution-and-installation">Distribution and Installation</a></li>
+<li><a href="#13-common-mistakes">Common Mistakes</a></li>
+</ol>
+<hr />
+<h2 id="1-node-architecture">1. Node Architecture</h2>
+<h3 id="what-a-node-is">What a Node Is</h3>
+<p>A node is a <strong>Python class</strong> (<code>BaseNode</code> subclass) paired with a <strong>JSON definition file</strong>. The class implements the logic; the JSON describes the ports, metadata, and embeds the Python source as a string.</p>
+<p>At runtime the <code>NodeRegistry</code> reads the JSON, compiles the <code>python_code</code> field into a live Python class, and registers it. Users place the node on the canvas, wire its ports, and the execution engine calls <code>execute()</code>.</p>
+<h3 id="node-lifecycle-during-execution">Node Lifecycle During Execution</h3>
+<pre><code>Engine starts a run
+    │
+    ▼
+restore_from_parameters(saved_params)
+    │ Rebuilds dynamic ports from the saved workflow state.
+    ▼
+clear_outputs()
+    │ Resets all output port values to their defaults.
+    ▼
+sync inputs from upstream node results
+    │ Wire values are copied into the node's parameter dict.
+    ▼
+execute(inputs)  ◄── your implementation runs here
+    │
+    ├──► await self.set_output(name, value)    (optional mid-execution push)
+    │
+    └──► return {&quot;port_name&quot;: value, &quot;exec_out&quot;: True}
+              │
+              └── engine propagates outputs, triggers downstream exec chain
+</code></pre>
+<h3 id="minimal-node-example">Minimal Node Example</h3>
+<pre><code class="language-python">from src.nodes.base import BaseNode
+
+class Repeat_String(BaseNode):
+    name = &quot;repeat_string&quot;     # must match node_id in the JSON
+
+    def __init__(self):
+        super().__init__()     # adds exec_in and exec_out automatically
+        # [AUTO-GENERATED-PORTS-START]
+        self.add_input(&quot;text&quot;,   &quot;string&quot;, widget_type=&quot;text&quot;,  default=&quot;hello&quot;)
+        self.add_input(&quot;count&quot;,  &quot;int&quot;,    widget_type=&quot;int&quot;,   default=3)
+        self.add_output(&quot;result&quot;, &quot;string&quot;)
+        # [AUTO-GENERATED-PORTS-END]
+
+    async def execute(self, inputs):
+        text  = inputs.get(&quot;text&quot;, &quot;&quot;)
+        count = int(inputs.get(&quot;count&quot;, 1))
+        return {
+            &quot;result&quot;:   (text + &quot; &quot;) * count,
+            &quot;exec_out&quot;: True,
+        }
+
+def register_node():
+    return Repeat_String
+</code></pre>
+<hr />
+<h2 id="2-node-json-schema">2. Node JSON Schema</h2>
+<p>Every node is distributed as a single <code>.json</code> file. All fields:</p>
+<pre><code class="language-json">{
+    &quot;node_id&quot;:     &quot;repeat_string&quot;,
+    &quot;name&quot;:        &quot;repeat_string&quot;,
+    &quot;display_name&quot;: &quot;Repeat String&quot;,
+    &quot;description&quot;: &quot;Repeats a string N times.&quot;,
+    &quot;category&quot;:    &quot;String&quot;,
+    &quot;icon_path&quot;:   &quot;icons/string.svg&quot;,
+    &quot;use_exec&quot;:    true,
+    &quot;init_priority&quot;: 0,
+    &quot;inputs&quot;: [
+        {
+            &quot;name&quot;:        &quot;text&quot;,
+            &quot;type&quot;:        &quot;string&quot;,
+            &quot;widget_type&quot;: &quot;text&quot;,
+            &quot;options&quot;:     null,
+            &quot;default&quot;:     &quot;hello&quot;
+        },
+        {
+            &quot;name&quot;:        &quot;count&quot;,
+            &quot;type&quot;:        &quot;int&quot;,
+            &quot;widget_type&quot;: &quot;int&quot;,
+            &quot;options&quot;:     null,
+            &quot;default&quot;:     3
+        },
+        {
+            &quot;name&quot;:        &quot;exec_in&quot;,
+            &quot;type&quot;:        &quot;any&quot;,
+            &quot;widget_type&quot;: null,
+            &quot;options&quot;:     null,
+            &quot;default&quot;:     null
+        }
+    ],
+    &quot;outputs&quot;: [
+        {
+            &quot;name&quot;:        &quot;result&quot;,
+            &quot;type&quot;:        &quot;string&quot;,
+            &quot;widget_type&quot;: null,
+            &quot;options&quot;:     null,
+            &quot;default&quot;:     null
+        },
+        {
+            &quot;name&quot;:        &quot;exec_out&quot;,
+            &quot;type&quot;:        &quot;any&quot;,
+            &quot;widget_type&quot;: null,
+            &quot;options&quot;:     null,
+            &quot;default&quot;:     null
+        }
+    ],
+    &quot;python_code&quot;: &quot;...&quot;
+}
+</code></pre>
+<h3 id="field-reference">Field Reference</h3>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;">Attribute</th>
-<th style="text-align: left;">Type</th>
-<th style="text-align: left;">Description</th>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><code>name</code></td>
-<td style="text-align: left;"><code>str</code></td>
-<td style="text-align: left;">Internal node ID and class identifier.</td>
+<td><code>node_id</code></td>
+<td><code>string</code></td>
+<td>Yes</td>
+<td>Registry key. Must match <code>BaseNode.name</code>. Unique across all loaded nodes.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>display_name</code></td>
-<td style="text-align: left;"><code>str</code></td>
-<td style="text-align: left;">Optional. Text shown in the canvas header. Defaults to <code>name</code> when not set. (v1.8.x)</td>
+<td><code>name</code></td>
+<td><code>string</code></td>
+<td>Yes</td>
+<td>Same as <code>node_id</code> for JSON-defined nodes.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>category</code></td>
-<td style="text-align: left;"><code>str</code></td>
-<td style="text-align: left;">Library folder name.</td>
+<td><code>display_name</code></td>
+<td><code>string</code></td>
+<td>No</td>
+<td>Text shown in the canvas header. Defaults to <code>name</code>.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>description</code></td>
-<td style="text-align: left;"><code>str</code></td>
-<td style="text-align: left;">Hover tooltip text.</td>
+<td><code>description</code></td>
+<td><code>string</code></td>
+<td>No</td>
+<td>Tooltip shown in the Library panel.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>icon_path</code></td>
-<td style="text-align: left;"><code>str</code></td>
-<td style="text-align: left;">Local path to SVG/PNG icon.</td>
+<td><code>category</code></td>
+<td><code>string</code></td>
+<td>Yes</td>
+<td>Library grouping folder name.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>init_priority</code></td>
-<td style="text-align: left;"><code>int</code></td>
-<td style="text-align: left;">Default <code>0</code>. Nodes with <code>init_priority &gt; 0</code> are created and connected before all other nodes during workflow load (Init First). (v1.8.x)</td>
+<td><code>icon_path</code></td>
+<td><code>string</code></td>
+<td>No</td>
+<td>Relative path to SVG or PNG icon, or <code>null</code>.</td>
+</tr>
+<tr>
+<td><code>use_exec</code></td>
+<td><code>bool</code></td>
+<td>Yes</td>
+<td><code>true</code> adds <code>exec_in</code>/<code>exec_out</code> ports. <code>false</code> for data-only reactive nodes.</td>
+</tr>
+<tr>
+<td><code>init_priority</code></td>
+<td><code>int</code></td>
+<td>No</td>
+<td><code>&gt; 0</code> marks the node as Init First — created before all other nodes during workflow load. Default <code>0</code>.</td>
+</tr>
+<tr>
+<td><code>inputs</code></td>
+<td><code>array</code></td>
+<td>Yes</td>
+<td>List of input port definitions (see <a href="#4-port-system">Port System</a>).</td>
+</tr>
+<tr>
+<td><code>outputs</code></td>
+<td><code>array</code></td>
+<td>Yes</td>
+<td>List of output port definitions.</td>
+</tr>
+<tr>
+<td><code>python_code</code></td>
+<td><code>string</code></td>
+<td>Yes</td>
+<td>Full Python source as a JSON string (<code>\n</code> for newlines, <code>\"</code> for quotes).</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>When <code>use_exec: true</code>, the <code>exec_in</code> and <code>exec_out</code> ports <strong>must</strong> appear in the <code>inputs</code> and <code>outputs</code> arrays. However, the <code>BaseNode.__init__</code> call adds these automatically — do not also add them via <code>add_input()</code>/<code>add_output()</code> in your Python code or they will be duplicated.</p>
+</blockquote>
+<hr />
+<h2 id="3-basenode-class-reference">3. BaseNode Class Reference</h2>
+<p><strong>Module:</strong> <code>src.nodes.base</code></p>
+<h3 id="class-attributes">Class Attributes</h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td><code>str</code></td>
+<td><code>"BaseNode"</code></td>
+<td>Registry key. Must match <code>node_id</code>.</td>
+</tr>
+<tr>
+<td><code>node_id</code></td>
+<td><code>str</code></td>
+<td>(injected)</td>
+<td>Assigned by the registry on load.</td>
+</tr>
+<tr>
+<td><code>display_name</code></td>
+<td><code>str</code></td>
+<td><code>""</code></td>
+<td>Canvas header text. Falls back to <code>name</code> if empty.</td>
+</tr>
+<tr>
+<td><code>description</code></td>
+<td><code>str</code></td>
+<td><code>""</code></td>
+<td>Tooltip in the Library panel.</td>
+</tr>
+<tr>
+<td><code>category</code></td>
+<td><code>str</code></td>
+<td><code>"General"</code></td>
+<td>Library grouping.</td>
+</tr>
+<tr>
+<td><code>icon_path</code></td>
+<td><code>str\|None</code></td>
+<td><code>None</code></td>
+<td>Relative path to icon file.</td>
+</tr>
+<tr>
+<td><code>init_priority</code></td>
+<td><code>int</code></td>
+<td><code>0</code></td>
+<td>Values <code>&gt; 0</code> = Init First ordering.</td>
+</tr>
+<tr>
+<td><code>memory</code></td>
+<td><code>dict</code></td>
+<td><code>{}</code></td>
+<td>Class-level shared dict, cleared at the start of each run.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="instance-attributes">Instance Attributes</h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>inputs</code></td>
+<td><code>dict[str, Port]</code></td>
+<td>Input ports keyed by name.</td>
+</tr>
+<tr>
+<td><code>outputs</code></td>
+<td><code>dict[str, Port]</code></td>
+<td>Output ports keyed by name.</td>
+</tr>
+<tr>
+<td><code>parameters</code></td>
+<td><code>dict[str, Any]</code></td>
+<td>Widget values, output cache, and internal state.</td>
+</tr>
+<tr>
+<td><code>bypassed</code></td>
+<td><code>bool</code></td>
+<td><code>True</code> when the node is bypassed by the user.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="constructor">Constructor</h3>
+<pre><code class="language-python">def __init__(self, use_exec: bool = True)
+</code></pre>
+<p><code>super().__init__()</code> (with default <code>use_exec=True</code>) automatically adds:<br />
+- <code>exec_in</code> as an input of type <code>any</code><br />
+- <code>exec_out</code> as an output of type <code>any</code></p>
+<p>Do <strong>not</strong> add these manually in your port setup block.</p>
+<h3 id="methods">Methods</h3>
+<table>
+<thead>
+<tr>
+<th>Signature</th>
+<th>Returns</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>add_input(name, type="any", widget_type=None, options=None, default=None)</code></td>
+<td><code>None</code></td>
+<td>Add an input port and initialize its parameter slot.</td>
+</tr>
+<tr>
+<td><code>add_output(name, type="any", default=None)</code></td>
+<td><code>None</code></td>
+<td>Add an output port and initialize its parameter slot.</td>
+</tr>
+<tr>
+<td><code>add_exec_input(name="exec_in")</code></td>
+<td><code>None</code></td>
+<td>Add an exec-type input (type <code>"any"</code>, no widget). Called by <code>__init__</code> automatically.</td>
+</tr>
+<tr>
+<td><code>add_exec_output(name="exec_out")</code></td>
+<td><code>None</code></td>
+<td>Add an exec-type output. Called by <code>__init__</code> automatically.</td>
+</tr>
+<tr>
+<td><code>add_parameter(name, param_type, default=None)</code></td>
+<td><code>None</code></td>
+<td>Define an internal non-port parameter (not shown as a port).</td>
+</tr>
+<tr>
+<td><code>set_parameter(name, value)</code></td>
+<td><code>None</code></td>
+<td>Update a widget value. For dropdown ports, passing a <code>list</code> updates the options. Triggers downstream reactive sync.</td>
+</tr>
+<tr>
+<td><code>get_parameter(name, default=None)</code></td>
+<td><code>Any</code></td>
+<td>Safe parameter read. Returns <code>default</code> if the key is absent.</td>
+</tr>
+<tr>
+<td><code>rebuild_ports()</code></td>
+<td><code>None</code></td>
+<td>Signal the canvas to refresh port layout after dynamic port changes.</td>
+</tr>
+<tr>
+<td><code>is_port_connected(name, is_input)</code></td>
+<td><code>bool</code></td>
+<td>Returns <code>True</code> if the named port has a wire connected.</td>
+</tr>
+<tr>
+<td><code>is_stopped()</code></td>
+<td><code>bool</code></td>
+<td>Returns <code>True</code> if the user pressed Stop. Check this in long loops.</td>
+</tr>
+<tr>
+<td><code>async set_output(name, value)</code></td>
+<td><code>None</code></td>
+<td>Push a value to downstream nodes reactively <strong>before</strong> <code>exec_out</code> fires.</td>
+</tr>
+<tr>
+<td><code>clear_outputs()</code></td>
+<td><code>None</code></td>
+<td>Reset all output values to defaults. Called by the engine before execution.</td>
+</tr>
+<tr>
+<td><code>log_info(msg)</code></td>
+<td><code>None</code></td>
+<td>Send an info-level message to the Log Panel. Thread-safe.</td>
+</tr>
+<tr>
+<td><code>log_success(msg)</code></td>
+<td><code>None</code></td>
+<td>Send a success-level message.</td>
+</tr>
+<tr>
+<td><code>log_error(msg)</code></td>
+<td><code>None</code></td>
+<td>Send an error-level message.</td>
+</tr>
+<tr>
+<td><code>restore_from_parameters(params)</code></td>
+<td><code>None</code></td>
+<td>Override to recreate dynamic ports from saved state on workflow load.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="execute-abstract">execute() — Abstract</h3>
+<pre><code class="language-python">async def execute(self, inputs: dict) -&gt; dict:
+    ...
+</code></pre>
+<ul>
+<li><strong>Must</strong> be <code>async def</code>.</li>
+<li><code>inputs</code> is a <code>dict</code> mapping port name → current value.</li>
+<li>Must return a <code>dict</code> whose keys match your output port names.</li>
+<li>Must include <code>"exec_out": True</code> for exec-flow nodes.</li>
+<li>Any unhandled exception is caught by the engine; the node gets a red border and the error is logged.</li>
+</ul>
+<hr />
+<h2 id="4-port-system">4. Port System</h2>
+<h3 id="port-types">Port Types</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Usage</th>
+<th>Python type at runtime</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>string</code></td>
+<td>Text values</td>
+<td><code>str</code></td>
+</tr>
+<tr>
+<td><code>int</code></td>
+<td>Integer values</td>
+<td><code>int</code></td>
+</tr>
+<tr>
+<td><code>float</code></td>
+<td>Float values</td>
+<td><code>float</code></td>
+</tr>
+<tr>
+<td><code>bool</code></td>
+<td>Boolean values</td>
+<td><code>bool</code></td>
+</tr>
+<tr>
+<td><code>list</code></td>
+<td>Python lists</td>
+<td><code>list</code></td>
+</tr>
+<tr>
+<td><code>dict</code></td>
+<td>Python dicts</td>
+<td><code>dict</code></td>
+</tr>
+<tr>
+<td><code>any</code></td>
+<td>Generic / exec flow</td>
+<td>any</td>
+</tr>
+</tbody>
+</table>
+<h3 id="widget-types-input-ports-only">Widget Types (input ports only)</h3>
+<table>
+<thead>
+<tr>
+<th>Widget</th>
+<th>Renders as</th>
+<th>When to use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>"text"</code></td>
+<td>Single-line text box</td>
+<td>Short strings, file paths, names</td>
+</tr>
+<tr>
+<td><code>"text_area"</code></td>
+<td>Multi-line text area</td>
+<td>Code, long content, JSON</td>
+</tr>
+<tr>
+<td><code>"int"</code></td>
+<td>Integer spinbox</td>
+<td>Count, index, frame number</td>
+</tr>
+<tr>
+<td><code>"float"</code></td>
+<td>Float spinbox</td>
+<td>Numeric values, scale factors</td>
+</tr>
+<tr>
+<td><code>"bool"</code> / <code>"checkbox"</code></td>
+<td>Checkbox</td>
+<td>On/off flags</td>
+</tr>
+<tr>
+<td><code>"dropdown"</code></td>
+<td>Drop-down selector</td>
+<td>Fixed option sets</td>
+</tr>
+<tr>
+<td><code>"slider"</code></td>
+<td>Horizontal slider</td>
+<td>Constrained numeric range</td>
+</tr>
+<tr>
+<td><code>"file"</code></td>
+<td>Text + browse button (open)</td>
+<td>Input file paths</td>
+</tr>
+<tr>
+<td><code>"file_save"</code></td>
+<td>Text + browse button (save)</td>
+<td>Output file paths</td>
+</tr>
+<tr>
+<td><code>null</code></td>
+<td>No widget (display only)</td>
+<td>Ports that only receive wired data</td>
+</tr>
+</tbody>
+</table>
+<h3 id="dropdown-ports">Dropdown Ports</h3>
+<p>Pass a list of strings as <code>options</code> to populate the dropdown:</p>
+<pre><code class="language-python">self.add_input(&quot;format&quot;, &quot;string&quot;, widget_type=&quot;dropdown&quot;,
+               options=[&quot;alembic&quot;, &quot;fbx&quot;, &quot;obj&quot;, &quot;usd&quot;])
+</code></pre>
+<p>To update options programmatically without resetting the selection:</p>
+<pre><code class="language-python">self.set_parameter(&quot;format&quot;, [&quot;alembic&quot;, &quot;fbx&quot;, &quot;obj&quot;, &quot;usd&quot;, &quot;gltf&quot;])
+</code></pre>
+<h3 id="port-definition-in-code-vs-json">Port Definition in Code vs JSON</h3>
+<p>Ports defined in <code>__init__</code> via <code>add_input()</code> / <code>add_output()</code> must <strong>exactly match</strong> the ports listed in the <code>inputs</code> / <code>outputs</code> JSON arrays. The Node Builder keeps these in sync automatically. If you edit a JSON file by hand, ensure both are consistent.</p>
+<hr />
+<h2 id="5-lifecycle-hooks">5. Lifecycle Hooks</h2>
+<h3 id="executeinputs-primary-hook">execute(inputs) — Primary Hook</h3>
+<p>Called by the engine during a workflow run. See <a href="#execute--abstract">BaseNode.execute()</a> above.</p>
+<h3 id="on_parameter_changedname-value">on_parameter_changed(name, value)</h3>
+<pre><code class="language-python">async def on_parameter_changed(self, name: str, value: Any) -&gt; None:
+    ...
+</code></pre>
+<p>Triggered when:<br />
+- A user interacts with a node widget (types, selects, toggles).<br />
+- Reactively during execution when an upstream node's output is propagated to this node's input port.</p>
+<p><strong>Not</strong> triggered during:<br />
+- The pre-execute input sync sweep (the step that copies wire values into parameters before <code>execute()</code> begins).</p>
+<p><strong>Use for:</strong> real-time output mirroring (pass-through nodes), reactive calculations, updating internal state as the user types.</p>
+<p><strong>Keep it fast.</strong> Avoid heavy I/O in this hook; it fires on every keystroke.</p>
+<pre><code class="language-python"># Pass-through: mirror input to output as the user types
+async def on_parameter_changed(self, name, value):
+    if name == &quot;input_text&quot;:
+        self.parameters[&quot;output_text&quot;] = value
+</code></pre>
+<h3 id="on_plug_syncport_name-is_input-other_node-other_port_name">on_plug_sync(port_name, is_input, other_node, other_port_name)</h3>
+<pre><code class="language-python">def on_plug_sync(self, port_name: str, is_input: bool,
+                  other_node: BaseNode, other_port_name: str) -&gt; None:
+    ...
+</code></pre>
+<p>Called <strong>synchronously</strong> on the Qt main thread the moment a wire is connected. Use for immediate UI updates or initial data copying.</p>
+<pre><code class="language-python">def on_plug_sync(self, port_name, is_input, other_node, other_port_name):
+    if is_input and port_name == &quot;config&quot;:
+        value = other_node.get_parameter(other_port_name)
+        self.set_parameter(&quot;config_preview&quot;, str(value))
+</code></pre>
+<h3 id="on_unplug_syncport_name-is_input">on_unplug_sync(port_name, is_input)</h3>
+<pre><code class="language-python">def on_unplug_sync(self, port_name: str, is_input: bool) -&gt; None:
+    ...
+</code></pre>
+<p>Called synchronously when a wire is disconnected. Use to reset widgets or clear cached state.</p>
+<h3 id="on_plug-on_unplug-async-variants">on_plug / on_unplug — Async Variants</h3>
+<pre><code class="language-python">async def on_plug(self, port_name, is_input, other_node, other_port_name): ...
+async def on_unplug(self, port_name, is_input): ...
+</code></pre>
+<p>For heavy async work (network calls, file reads) triggered by a connection event. These run on the asyncio event loop.</p>
+<hr />
+<h2 id="6-logging">6. Logging</h2>
+<p>All log methods are <strong>thread-safe</strong> and can be called from inside <code>execute()</code> even though execution runs on the asyncio loop.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Log level</th>
+<th>Log panel color</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>self.log_info(msg)</code></td>
+<td>Info</td>
+<td>White</td>
+</tr>
+<tr>
+<td><code>self.log_success(msg)</code></td>
+<td>Success</td>
+<td>Green</td>
+</tr>
+<tr>
+<td><code>self.log_error(msg)</code></td>
+<td>Error</td>
+<td>Red — also sets node red border</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-python">async def execute(self, inputs):
+    path = inputs.get(&quot;file_path&quot;, &quot;&quot;)
+    if not path:
+        self.log_error(&quot;No file path provided.&quot;)
+        return {&quot;result&quot;: &quot;&quot;, &quot;exec_out&quot;: True}
+
+    self.log_info(f&quot;Processing: {path}&quot;)
+    # ... do work ...
+    self.log_success(&quot;Done.&quot;)
+    return {&quot;result&quot;: output, &quot;exec_out&quot;: True}
+</code></pre>
+<hr />
+<h2 id="7-advanced-patterns">7. Advanced Patterns</h2>
+<h3 id="data-only-nodes-use_execfalse">Data-Only Nodes (use_exec=False)</h3>
+<p>Nodes without exec pins participate exclusively in reactive data flow. They update whenever their inputs change and are "pulled" by exec-flow nodes before execution.</p>
+<pre><code class="language-python">class Math_Multiply(BaseNode):
+    name = &quot;math_multiply&quot;
+
+    def __init__(self):
+        super().__init__(use_exec=False)    # no exec_in / exec_out
+        # [AUTO-GENERATED-PORTS-START]
+        self.add_input(&quot;a&quot;, &quot;float&quot;, widget_type=&quot;float&quot;, default=1.0)
+        self.add_input(&quot;b&quot;, &quot;float&quot;, widget_type=&quot;float&quot;, default=1.0)
+        self.add_output(&quot;result&quot;, &quot;float&quot;)
+        # [AUTO-GENERATED-PORTS-END]
+
+    async def execute(self, inputs):
+        a = float(inputs.get(&quot;a&quot;, 1.0))
+        b = float(inputs.get(&quot;b&quot;, 1.0))
+        return {&quot;result&quot;: a * b}
+</code></pre>
+<p>In JSON: <code>"use_exec": false</code>. Do not include <code>exec_in</code> / <code>exec_out</code> in the port arrays.</p>
+<h3 id="reactive-output-set_output">Reactive Output — set_output()</h3>
+<p>Use <code>await self.set_output(name, value)</code> inside <code>execute()</code> to push a value to downstream nodes <strong>before</strong> <code>exec_out</code> fires. This is useful when downstream nodes need data before their own execution is triggered.</p>
+<pre><code class="language-python">async def execute(self, inputs):
+    items = inputs.get(&quot;items&quot;, [])
+    for item in items:
+        await self.set_output(&quot;current&quot;, item)   # push each item
+        # exec_out fires after the loop completes
+    return {&quot;exec_out&quot;: True}
+</code></pre>
+<h3 id="dynamic-ports">Dynamic Ports</h3>
+<p>Override <code>restore_from_parameters()</code> to recreate ports from saved state on workflow load. This is how <code>GroupNode</code> works internally.</p>
+<pre><code class="language-python">def restore_from_parameters(self, params):
+    # recreate ports based on saved config
+    for port_def in params.get(&quot;__port_defs__&quot;, []):
+        if port_def[&quot;is_input&quot;]:
+            self.add_input(port_def[&quot;name&quot;], port_def[&quot;type&quot;])
+        else:
+            self.add_output(port_def[&quot;name&quot;], port_def[&quot;type&quot;])
+    self.rebuild_ports()
+</code></pre>
+<h3 id="shared-state-basenodememory">Shared State — BaseNode.memory</h3>
+<p><code>BaseNode.memory</code> is a class-level <code>dict</code> shared across all node instances in the same run. It is cleared at the start of each run. Use it to pass data between nodes without wiring — for example, a configuration node writing values that other nodes read.</p>
+<pre><code class="language-python">class Config_Writer(BaseNode):
+    async def execute(self, inputs):
+        BaseNode.memory[&quot;studio_root&quot;] = inputs.get(&quot;path&quot;, &quot;&quot;)
+        return {&quot;exec_out&quot;: True}
+
+class Config_Reader(BaseNode):
+    async def execute(self, inputs):
+        root = BaseNode.memory.get(&quot;studio_root&quot;, &quot;&quot;)
+        return {&quot;path&quot;: root, &quot;exec_out&quot;: True}
+</code></pre>
+<h3 id="stopping-gracefully">Stopping Gracefully</h3>
+<p>For long loops, check <code>self.is_stopped()</code> to respect the Stop button:</p>
+<pre><code class="language-python">async def execute(self, inputs):
+    for i in range(1000):
+        if self.is_stopped():
+            self.log_info(&quot;Stopped by user.&quot;)
+            return {&quot;exec_out&quot;: True}
+        # ... process item i ...
+    return {&quot;exec_out&quot;: True}
+</code></pre>
+<hr />
+<h2 id="8-houdini-bridge-nodes">8. Houdini Bridge Nodes</h2>
+<p>Houdini nodes communicate with a live Houdini session via <code>HouBridge</code> — a TCP JSON-RPC client.</p>
+<h3 id="setup">Setup</h3>
+<pre><code class="language-python">from src.nodes.base import BaseNode
+from src.utils.hou_bridge import get_bridge
+
+class Hou_Create_Box(BaseNode):
+    name = &quot;hou_create_box&quot;
+    category = &quot;Houdini&quot;
+
+    def __init__(self):
+        super().__init__()
+        # [AUTO-GENERATED-PORTS-START]
+        self.add_input(&quot;parent&quot;, &quot;string&quot;, widget_type=&quot;text&quot;, default=&quot;/obj&quot;)
+        self.add_input(&quot;name&quot;,   &quot;string&quot;, widget_type=&quot;text&quot;, default=&quot;my_box&quot;)
+        self.add_output(&quot;geo_path&quot;, &quot;string&quot;)
+        # [AUTO-GENERATED-PORTS-END]
+
+    async def execute(self, inputs):
+        parent = inputs.get(&quot;parent&quot;, &quot;/obj&quot;)
+        name   = inputs.get(&quot;name&quot;, &quot;my_box&quot;)
+        try:
+            bridge = get_bridge()
+            geo = bridge.create_node(parent, &quot;geo&quot;, name)
+            geo_path = geo[&quot;path&quot;]
+
+            # Clear auto-generated default nodes
+            for child in bridge.children(geo_path):
+                bridge.delete_node(child[&quot;path&quot;])
+
+            # Create a box SOP inside
+            box = bridge.create_node(geo_path, &quot;box&quot;, &quot;box1&quot;)
+            bridge.set_display_flag(box[&quot;path&quot;], True)
+            bridge.set_render_flag(box[&quot;path&quot;], True)
+            bridge.layout_children(geo_path)
+
+            return {&quot;geo_path&quot;: geo_path, &quot;exec_out&quot;: True}
+        except Exception as e:
+            self.log_error(f&quot;Houdini error: {e}&quot;)
+            return {&quot;geo_path&quot;: &quot;&quot;, &quot;exec_out&quot;: True}
+</code></pre>
+<h3 id="houbridge-method-quick-reference">HouBridge Method Quick Reference</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Returns</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>bridge.create_node(parent, type, name="")</code></td>
+<td><code>{"path", "name", "type"}</code></td>
+<td>Create a node</td>
+</tr>
+<tr>
+<td><code>bridge.delete_node(path)</code></td>
+<td><code>{"deleted"}</code></td>
+<td>Delete a node</td>
+</tr>
+<tr>
+<td><code>bridge.set_parm(node, parm, value)</code></td>
+<td><code>{"set": True}</code></td>
+<td>Set single parameter</td>
+</tr>
+<tr>
+<td><code>bridge.get_parm(node, parm)</code></td>
+<td><code>{"value": ...}</code></td>
+<td>Get single parameter</td>
+</tr>
+<tr>
+<td><code>bridge.set_parms(node, parms_dict)</code></td>
+<td><code>{"set": True}</code></td>
+<td>Set multiple parameters</td>
+</tr>
+<tr>
+<td><code>bridge.connect_nodes(from, to, output=0, input=0)</code></td>
+<td><code>{"connected": True}</code></td>
+<td>Wire nodes</td>
+</tr>
+<tr>
+<td><code>bridge.cook_node(path)</code></td>
+<td><code>{"cooked": True}</code></td>
+<td>Cook a node</td>
+</tr>
+<tr>
+<td><code>bridge.run_code(code)</code></td>
+<td><code>{"result": ...}</code></td>
+<td>Run Python inside Houdini</td>
+</tr>
+<tr>
+<td><code>bridge.node_info(path)</code></td>
+<td>info dict</td>
+<td>Node type, category, children</td>
+</tr>
+<tr>
+<td><code>bridge.node_exists(path)</code></td>
+<td><code>{"exists": bool}</code></td>
+<td>Check path exists</td>
+</tr>
+<tr>
+<td><code>bridge.children(path)</code></td>
+<td>list of <code>{"name", "type", "path"}</code></td>
+<td>List child nodes</td>
+</tr>
+<tr>
+<td><code>bridge.set_display_flag(path, on=True)</code></td>
+<td><code>{"set": True}</code></td>
+<td>Display flag</td>
+</tr>
+<tr>
+<td><code>bridge.set_render_flag(path, on=True)</code></td>
+<td><code>{"set": True}</code></td>
+<td>Render flag</td>
+</tr>
+<tr>
+<td><code>bridge.layout_children(path)</code></td>
+<td><code>{"done": True}</code></td>
+<td>Auto-layout</td>
+</tr>
+<tr>
+<td><code>bridge.save_hip(path="")</code></td>
+<td><code>{"saved": path}</code></td>
+<td>Save scene</td>
+</tr>
+<tr>
+<td><code>bridge.set_expression(node, parm, expr, language="hscript")</code></td>
+<td><code>{"set": True}</code></td>
+<td>Set expression</td>
+</tr>
+<tr>
+<td><code>bridge.scene_info()</code></td>
+<td>scene metadata dict</td>
+<td>HIP file, FPS, frame range</td>
+</tr>
+<tr>
+<td><code>bridge.ping()</code></td>
+<td><code>{"status": "ok", "version": ...}</code></td>
+<td>Connectivity check</td>
+</tr>
+</tbody>
+</table>
+<p>See <code>CLAUDE.md</code> section 3 for full return value documentation.</p>
+<hr />
+<h2 id="9-headless-action-nodes-maya-and-blender">9. Headless Action Nodes — Maya and Blender</h2>
+<p>Maya and Blender nodes use a <strong>list-builder</strong> pattern. Action nodes append operation dicts to a list; a headless executor node runs them all in a batch DCC session.</p>
+<h3 id="action-node-skeleton">Action Node Skeleton</h3>
+<pre><code class="language-python">class Maya_Action_Render(BaseNode):
+    name = &quot;maya_action_render&quot;
+    category = &quot;Maya&quot;
+
+    def __init__(self):
+        super().__init__()
+        # [AUTO-GENERATED-PORTS-START]
+        self.add_input(&quot;actions_in&quot;, &quot;list&quot;)
+        self.add_input(&quot;camera&quot;,     &quot;string&quot;, widget_type=&quot;text&quot;,     default=&quot;persp&quot;)
+        self.add_input(&quot;start_frame&quot;,&quot;int&quot;,    widget_type=&quot;int&quot;,      default=1)
+        self.add_input(&quot;end_frame&quot;,  &quot;int&quot;,    widget_type=&quot;int&quot;,      default=48)
+        self.add_output(&quot;actions_out&quot;, &quot;list&quot;)
+        # [AUTO-GENERATED-PORTS-END]
+
+    async def execute(self, inputs):
+        actions = list(inputs.get(&quot;actions_in&quot;) or [])
+        actions.append({
+            &quot;type&quot;:        &quot;render&quot;,
+            &quot;camera&quot;:      inputs.get(&quot;camera&quot;, &quot;persp&quot;),
+            &quot;start_frame&quot;: inputs.get(&quot;start_frame&quot;, 1),
+            &quot;end_frame&quot;:   inputs.get(&quot;end_frame&quot;,   48),
+        })
+        return {&quot;actions_out&quot;: actions, &quot;exec_out&quot;: True}
+</code></pre>
+<p><strong>Conventions:</strong></p>
+<ul>
+<li><code>node_id</code> prefix: <code>maya_action_*</code> / <code>blender_action_*</code></li>
+<li><code>category</code>: <code>"Maya"</code> / <code>"Blender"</code></li>
+<li>Always use <code>list(inputs.get("actions_in") or [])</code> — never mutate the original list.</li>
+<li>The <code>"type"</code> field must match a handler in the corresponding runner script.</li>
+</ul>
+<h3 id="executor-node">Executor Node</h3>
+<p>Chain action nodes to <code>maya_headless</code> or <code>blender_headless</code>. The executor spawns the DCC process, sends it the action list, and returns a result dict.</p>
+<hr />
+<h2 id="10-prism-pipeline-nodes">10. Prism Pipeline Nodes</h2>
+<p>All Prism nodes share a common skeleton with automatic <code>PrismCore</code> resolution.</p>
+<pre><code class="language-python">from src.nodes.base import BaseNode
+from src.utils.prism_core import resolve_prism_core
+
+class Prism_Get_Assets(BaseNode):
+    name = &quot;prism_get_assets&quot;
+    category = &quot;Prism&quot;
+
+    def __init__(self):
+        super().__init__()
+        # [AUTO-GENERATED-PORTS-START]
+        self.add_input(&quot;entity&quot;,  &quot;string&quot;, widget_type=&quot;text&quot;)
+        self.add_output(&quot;assets&quot;, &quot;list&quot;)
+        # [AUTO-GENERATED-PORTS-END]
+
+    async def execute(self, inputs):
+        core = resolve_prism_core(inputs)
+        if core is None:
+            self.log_error(&quot;PrismCore not available. Add a prism_core_init node.&quot;)
+            return {&quot;assets&quot;: [], &quot;exec_out&quot;: True}
+        try:
+            assets = core.getAssets(entity=inputs.get(&quot;entity&quot;, &quot;&quot;))
+            return {&quot;assets&quot;: assets, &quot;exec_out&quot;: True}
+        except Exception as e:
+            self.log_error(f&quot;Prism error: {e}&quot;)
+            return {&quot;assets&quot;: [], &quot;exec_out&quot;: True}
+
+def register_node():
+    return Prism_Get_Assets
+</code></pre>
+<p><strong>Prism node conventions:</strong></p>
+<ul>
+<li><code>node_id</code> must start with <code>prism_</code></li>
+<li><code>category</code> must be <code>"Prism"</code></li>
+<li><code>icon_path</code> should be <code>"icons/prism_icon.png"</code></li>
+<li>Never add a <code>core</code> input port — it is resolved automatically by <code>resolve_prism_core()</code></li>
+<li>Always guard with <code>if core is None</code></li>
+<li>Return safe empty defaults (<code>[]</code> / <code>{}</code>) on failure</li>
+</ul>
+<blockquote>
+<p><strong>Registry injection:</strong> When a <code>prism_*</code> node's Python code is compiled, the registry automatically rewrites <code>core = inputs.get('core')</code> → <code>core = resolve_prism_core(inputs)</code> and injects the import. You do not need to add the import manually in JSON-embedded code.</p>
+</blockquote>
+<hr />
+<h2 id="11-node-builder-gui">11. Node Builder GUI</h2>
+<p><strong>Open:</strong> Nodes → Node Builder, or press <code>Ctrl+E</code> with a node selected to edit its definition.</p>
+<h3 id="workflow">Workflow</h3>
+<ol>
+<li><strong>Node Metadata</strong> — set ID, display name, category, description, icon path, and exec/init flags.</li>
+<li><strong>Input / Output Tables</strong> — add rows for each port. Columns: Name, Type, Widget, Options, Default.</li>
+<li><strong>Code Editor</strong> — the Python code is generated and previewed here. The editor is bi-directional: editing the tables updates the code; editing the code updates the tables.</li>
+<li><strong>Save &amp; Register</strong> — writes the JSON file to the <code>nodes/</code> directory and registers the node immediately.</li>
+</ol>
+<h3 id="exec-checkbox">Exec Checkbox</h3>
+<p>Checking "Use Exec" adds <code>exec_in</code> and <code>exec_out</code> to the port tables and to the generated code's <code>super().__init__(use_exec=True)</code> call. Do not add exec ports manually as table rows when this checkbox is enabled — they will be duplicated.</p>
+<h3 id="edit-existing-node">Edit Existing Node</h3>
+<p>Select a node on the canvas → <code>Ctrl+E</code>. The Node Builder opens with that node's current definition pre-loaded. <code>exec_in</code>/<code>exec_out</code> rows are filtered from the tables (they are managed by the exec checkbox, not the table). Change ports, code, or metadata, then Save &amp; Register. Hot-reload the live canvas instances with <code>Ctrl+R</code>.</p>
+<h3 id="gemini-assistance">Gemini Assistance</h3>
+<p>The Node Builder can optionally call Gemini to suggest code snippets and starter templates while you write node logic. Enable it in the Node Builder settings and provide an API key. Always review generated code before executing in production.</p>
+<hr />
+<h2 id="12-distribution-and-installation">12. Distribution and Installation</h2>
+<h3 id="single-file-distribution">Single-File Distribution</h3>
+<p>A node is a single <code>.json</code> file. Distribute it by sharing the file. Recipients install it via:</p>
+<p><strong>Nodes → Load Node From JSON</strong> — validates the file, copies it to the user <code>nodes/</code> directory, and registers it immediately.</p>
+<p>The installer:<br />
+1. Checks for <code>node_id</code> and <code>python_code</code> fields (rejects workflow files with a clear error).<br />
+2. Creates the <code>nodes/</code> directory if absent.<br />
+3. Copies the file.<br />
+4. Updates <code>NodeRegistry._source_paths</code> so hot-reload targets the installed copy.</p>
+<h3 id="directory-distribution">Directory Distribution</h3>
+<p>For larger node libraries, distribute a folder of <code>.json</code> files. Users point <code>v_nodes_dir</code> to that folder via <strong>Edit → Preferences → Application Paths</strong>. The registry loads all <code>.json</code> files from every <code>v_nodes_dir</code> path on startup.</p>
+<h3 id="houdini-plugin-distribution">Houdini Plugin Distribution</h3>
+<p>For Houdini-specific node libraries, place the folder in <code>plugins/houdini/v_nodes_houdini/</code> (or configure <code>v_nodes_dir</code> to point to it). The Houdini <code>setup_env()</code> adds this path to the environment automatically when Vibrante-Node is launched from Houdini.</p>
+<h3 id="built-in-nodes-source">Built-in Nodes (Source)</h3>
+<p>To add a node directly to the application source:</p>
+<ol>
+<li>Create a class in <code>src/nodes/builtins/nodes.py</code> inheriting from <code>BaseNode</code>.</li>
+<li>Implement <code>__init__</code>, <code>execute()</code>, and <code>register_node()</code>.</li>
+<li>Call <code>NodeRegistry.register(MyNode)</code> in the <code>register_builtins()</code> function.</li>
+</ol>
+<hr />
+<h2 id="13-common-mistakes">13. Common Mistakes</h2>
+<table>
+<thead>
+<tr>
+<th>Mistake</th>
+<th>Correct Approach</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>super().__init__()</code> not called</td>
+<td>Always call <code>super().__init__()</code> as the first line of <code>__init__</code>.</td>
+</tr>
+<tr>
+<td>Adding <code>exec_in</code> / <code>exec_out</code> manually in <code>__init__</code></td>
+<td>They are added automatically by <code>super().__init__()</code>. Adding them again creates duplicate ports.</td>
+</tr>
+<tr>
+<td><code>exec_in</code> / <code>exec_out</code> missing from the JSON port arrays</td>
+<td>When <code>use_exec: true</code>, these must appear in the JSON arrays even though the Python code doesn't add them manually.</td>
+</tr>
+<tr>
+<td><code>return {}</code> (empty)</td>
+<td>Always return <code>{"exec_out": True}</code> for exec-flow nodes, even on early exit.</td>
+</tr>
+<tr>
+<td><code>time.sleep(n)</code> in <code>execute()</code></td>
+<td>Use <code>await asyncio.sleep(n)</code> — synchronous sleep blocks the Qt event loop.</td>
+</tr>
+<tr>
+<td>Calling <code>hou_bridge.get_hou()</code></td>
+<td>This function does not exist. Use <code>get_bridge()</code> to get the bridge singleton.</td>
+</tr>
+<tr>
+<td><code>result = bridge.create_node(...); result.path()</code></td>
+<td>The bridge returns dicts, not objects. Use <code>result["path"]</code>.</td>
+</tr>
+<tr>
+<td>Mutating <code>inputs.get("actions_in")</code> directly</td>
+<td>Always wrap: <code>actions = list(inputs.get("actions_in") or [])</code></td>
+</tr>
+<tr>
+<td>Adding ports twice (in AUTO block and below it)</td>
+<td>Each port name must appear exactly once.</td>
+</tr>
+<tr>
+<td>Using <code>import hou</code> directly</td>
+<td>Never import <code>hou</code> in node code — use the bridge. <code>hou</code> is only available inside Houdini's own process.</td>
 </tr>
 </tbody>
 </table>
 <hr />
-<h2 id="configuration-methods">🛠️ Configuration Methods</h2>
-<p>These are typically called in the <code>__init__</code> method of your node.</p>
-<h3 id="selfadd_inputname-data_typeany-widget_typenone-optionsnone"><code>self.add_input(name, data_type="any", widget_type=None, options=None)</code></h3>
+<p><strong>See also:</strong></p>
 <ul>
-<li><strong><code>widget_type</code></strong>: Options are <code>"text"</code>, <code>"text_area"</code>, <code>"int"</code>, <code>"float"</code>, <code>"bool"</code>, <code>"checkbox"</code>, <code>"dropdown"</code>, <code>"slider"</code>, <code>"file"</code>, <code>"file_save"</code> (Save File dialog — v1.5.0).</li>
-<li><strong><code>options</code></strong>: A list of strings used only for the <code>"dropdown"</code> widget.</li>
-</ul>
-<h3 id="selfadd_outputname-data_typeany"><code>self.add_output(name, data_type="any")</code></h3>
-<ul>
-<li>Adds an outgoing port for data flow.</li>
-</ul>
-<h3 id="selfadd_parametername-type-defaultnone"><code>self.add_parameter(name, type, default=None)</code></h3>
-<ul>
-<li>Defines internal state variables not necessarily linked to a port.</li>
-</ul>
-<h3 id="selfset_parametername-value-v140"><code>self.set_parameter(name, value)</code> (v1.4.0)</h3>
-<ul>
-<li>Programmatically sets a port or parameter value. For dropdown ports, passing a list updates the options without resetting the current selection (v1.8.2 fix). Safe to call inside <code>__init__</code>.</li>
-</ul>
-<hr />
-<h2 id="lifecycle-hooks-events">🔄 Lifecycle Hooks (Events)</h2>
-<h3 id="on_plug_syncself-port_name-is_input-other_node-other_port_name"><code>on_plug_sync(self, port_name, is_input, other_node, other_port_name)</code></h3>
-<ul>
-<li><strong>Thread</strong>: Main GUI (Synchronous).</li>
-<li><strong>Use Case</strong>: Immediate UI updates or data copying when a wire is connected.</li>
-<li><strong>Example</strong>: <code>val = other_node.get_parameter(other_port_name)</code></li>
-</ul>
-<h3 id="on_unplug_syncself-port_name-is_input"><code>on_unplug_sync(self, port_name, is_input)</code></h3>
-<ul>
-<li><strong>Thread</strong>: Main GUI (Synchronous).</li>
-<li><strong>Use Case</strong>: Resetting a widget or clearing data when a wire is removed.</li>
-</ul>
-<h3 id="on_parameter_changedself-name-value"><code>on_parameter_changed(self, name, value)</code></h3>
-<ul>
-<li><strong>Trigger</strong>: When a user interacts with a widget (text box, slider, dropdown, etc.), <strong>and</strong> reactively during execution when an upstream node's output is propagated to this node's input port mid-run (v1.8.x).</li>
-<li><strong>Not triggered</strong> during the pre-execute input sync sweep (v1.8.3).</li>
-<li><strong>Use Case</strong>: Real-time mirroring of inputs to outputs, updating internal calculations, or reactive nodes that call <code>set_output</code> to push values mid-execution (e.g., <code>TwoWaySwitchNode</code>).</li>
-<li><strong>Important</strong>: Keep this method fast and side-effect-free for user-interaction triggers. Avoid heavy I/O here.</li>
-</ul>
-<h3 id="async-def-executeself-inputs"><code>async def execute(self, inputs)</code></h3>
-<ul>
-<li><strong>Trigger</strong>: When the user clicks "Run Workflow".</li>
-<li><strong>Inputs</strong>: A dictionary <code>{port_name: value}</code>.</li>
-<li><strong>Returns</strong>: A dictionary <code>{output_port_name: value}</code>.</li>
-</ul>
-<hr />
-<h2 id="practical-node-scenarios">📖 Practical Node Scenarios</h2>
-<h3 id="1-the-real-time-mirror-pass-through">1. The Real-Time Mirror (Pass-through)</h3>
-<p>A node that instantly reflects its input to its output as you type.</p>
-<pre><code class="language-python">def on_parameter_changed(self, name, value):
-    if name == &quot;input_msg&quot;:
-        self.parameters[&quot;out&quot;] = value # Mirror to output instantly
-</code></pre>
-<h3 id="2-reactive-data-fetcher">2. Reactive Data Fetcher</h3>
-<p>A node that queries its connected neighbor for configuration.</p>
-<pre><code class="language-python">def on_plug_sync(self, port_name, is_input, other_node, other_port_name):
-    if is_input:
-        # Get data from the node we just connected to
-        neighbor_data = other_node.get_parameter(other_port_name)
-        # Update our own widget with that data
-        self.set_parameter(&quot;config_text&quot;, neighbor_data)
-</code></pre>
-<h3 id="3-asynchronous-timer-non-blocking">3. Asynchronous Timer (Non-blocking)</h3>
-<p>Wait for a duration without freezing the UI.</p>
-<pre><code class="language-python">async def execute(self, inputs):
-    delay = inputs.get(&quot;seconds&quot;, 1.0)
-    await asyncio.sleep(delay) # Use await, NEVER time.sleep
-    return {&quot;done&quot;: True}
-</code></pre>
-<hr />
-<h2 id="best-practices-tips">💡 Best Practices &amp; Tips</h2>
-<ul>
-<li><strong>Safely Access Data</strong>: Use <code>self.get_parameter(name)</code> or <code>self[name]</code> to avoid KeyErrors.</li>
-<li><strong>Logging</strong>: Use <code>self.log_info("message")</code>, <code>log_success</code>, or <code>log_error</code> to communicate with the user via the Event Log.</li>
-<li><strong>Widget Control</strong>: Use <code>self.set_parameter(name, value)</code> to programmatically update UI widgets from within your code.</li>
-</ul>
-<hr />
-<h2 id="node-reload-workflow-v18x">🔄 Node Reload Workflow (v1.8.x)</h2>
-<p>After editing a node definition, you can refresh live canvas instances without restarting the application:</p>
-<ol>
-<li><strong>Edit</strong>: Open the node's JSON file directly or press <code>Ctrl+E</code> with the node selected to open it in the Node Builder.</li>
-<li><strong>Save</strong>: Write the updated definition to disk (the Node Builder does this on "Save &amp; Register").</li>
-<li><strong>Reload</strong>: Press <code>Ctrl+R</code> with the node selected, or use right-click &gt; "Reload Node". This calls <code>NodeScene.reload_node_type(node_id)</code>, which:<ul>
-<li>Re-reads the JSON via <code>NodeRegistry.reload_node_definition(node_id)</code>.</li>
-<li>Calls <code>NodeWidget.reload_definition(new_definition)</code> on every live instance.</li>
-<li>Rebuilds ports, re-applies saved parameter values where the port still exists, and removes wires to deleted ports.</li>
-</ul>
-</li>
-<li><strong>Reload All</strong>: Press <code>Ctrl+Shift+R</code> to reload every registered node type from disk at once.</li>
-</ol>
-<pre><code class="language-python"># Programmatic reload via the Scripting Console:
-registry.reload_node_definition(&quot;my_node_id&quot;)
-scene.reload_node_type(&quot;my_node_id&quot;)
-</code></pre>
-<hr />
-<h2 id="scripted-nodes-gemini-assistance">🆕 Scripted Nodes &amp; Gemini Assistance</h2>
-<ul>
-<li>
-<p><strong><code>python_code</code> parameter</strong>: Nodes created via the Node Builder may include a <code>python_code</code> parameter which contains the node's execute/on_parameter_changed logic as text. When the workflow is loaded, the engine compiles this <code>python_code</code> into a dynamic node class. Ensure your <code>python_code</code> defines an <code>execute(self, inputs)</code> function or assigns to <code>result</code> when using the <code>python_script</code> node.</p>
-</li>
-<li>
-<p><strong>In-UI Script Editor</strong>: For nodes that expose <code>python_code</code> (e.g., <code>python_script</code>, <code>maya_action_custom</code>, <code>houdini_action_custom</code>), use the <code>Edit Script</code> button to open the code editor. Changes are saved into the node's parameter map so they persist with the workflow. (v1.5.0: custom action nodes also support this button.)</p>
-</li>
-<li>
-<p><strong>Gemini Support</strong>: The Node Builder can optionally use Gemini to suggest code snippets and prompt templates while authoring node logic. Gemini integration is provided as a helper — always review generated code for correctness and safety before executing in production.</p>
-</li>
+<li><a href="USER_GUIDE.md">User Guide</a> — using the Node Builder GUI</li>
+<li><a href="AUTOMATION_API.md">Automation API</a> — programmatic node creation</li>
+<li><a href="DEVELOPER.md">Developer Guide</a> — registry internals and hot-reload</li>
+<li><a href="DOCUMENTATION.md">Technical Reference</a> — complete BaseNode API table, port schema, JSON schema</li>
 </ul>
 </main>
 <script>
