@@ -86,7 +86,7 @@ The project focuses on flexibility, extensibility, and developer productivity, m
 - **Node Execution Timing** — log panel reports elapsed time for each node (e.g. `Node 'Get Asset' finished in 0.34s`)
 - **Init-First Ordering** — `init_priority` ensures authentication or server-connect nodes are fully wired before downstream consumers are instantiated
 
-### Node Library (166+ Bundled Nodes)
+### Node Library (167+ Bundled Nodes)
 
 | Category | Count | Examples |
 |---|---|---|
@@ -94,6 +94,7 @@ The project focuses on flexibility, extensibility, and developer productivity, m
 | Maya | 25 | open/save scene, import/export, render, MEL/Python |
 | Blender | 21 | Alembic, FBX, glTF, OBJ, USD, render |
 | Houdini | 18 | create nodes, set parms, cook, VEX/Python, SOP chains |
+| Network | 1 | `http_request` — async GET/POST with JSON body, headers, timeout |
 | Control Flow | — | `if_condition`, `for_loop`, `while_loop`, `loop_body`, `branch` |
 | Data Structures | — | `create_list`, `create_dictionary`, `get_dict_value`, `set_dict_value` |
 | String Utilities | — | `concat`, `split`, `replace`, `lowercase`, `uppercase` |
@@ -353,6 +354,7 @@ For the complete authoring reference, including Houdini bridge usage, headless a
 
 | Version | Type | Highlights |
 |---|---|---|
+| [v2.3.0](RELEASE_v2.3.0.md) | Minor | HTTP Request node; Authenticode signing tools; Node Builder fixes; canvas drag-trail fix |
 | [v2.2.1](RELEASE_v2.2.1.md) | Patch | About dialog crash fix; LICENSE bundled in exe |
 | [v2.2.0](RELEASE_v2.2.0.md) | Minor | Settings dialog; EnvManager; reactive propagation fix; 10 new website examples |
 | [v2.1.1](RELEASE_v2.1.1.md) | Patch | Scripting Console theme fix; Windows VERSIONINFO in exe |
@@ -362,19 +364,21 @@ For the complete authoring reference, including Houdini bridge usage, headless a
 
 ---
 
-## Latest Release — v2.2.1
+## Latest Release — v2.3.0
 
-**Released:** 2026-05-15 · [Full Release Notes](RELEASE_v2.2.1.md)
+**Released:** 2026-05-18 · [Full Release Notes](RELEASE_v2.3.0.md)
 
-**v2.2.1 — Patch**
-- Fixed About dialog crash (`QTextEdit` → `QTextBrowser`; `setOpenExternalLinks` is only available on `QTextBrowser`)
-- Fixed LICENSE file not shown in exe About dialog — added to PyInstaller `datas` so `resource_path('LICENSE')` resolves correctly in the frozen build
+**v2.3.0 — Minor**
+- New bundled **HTTP Request** node — async GET/POST with headers, body, and timeout; uses `run_in_executor` so the UI stays responsive during network calls
+- Authenticode signing scripts (`tools/create_dev_cert.ps1`, `tools/sign_release.ps1`) — remove "Unknown publisher" warning from Windows security dialogs
+- Fixed canvas drag trail — `NodeWidget.boundingRect()` now covers port connectors; `shape()` overridden for correct hit-testing
+- Fixed http_request UI freeze — moved HTTP execution entirely to thread pool via `loop.run_in_executor`
+- Fixed Node Builder: exec port type corruption, default-value loss, and icon-path field triggering full code regeneration
+- Fixed Load Node From JSON / Load Workflow cross-file-type detection — each dialog now rejects the other's file type with a clear error message
 
-**v2.2.0 — Minor (included in this release)**
-- Full persistent Settings dialog (Edit → Preferences, Ctrl+,) — four pages, live-apply on OK without restarting
-- `EnvManager` singleton — persistent management of Python paths, extra node directories, extra script directories, and custom environment variables
-- Import / Export Settings to portable JSON — move your configuration between machines or share with your team
-- Fixed reactive propagation crash when typing in a node input connected to a downstream node — root cause was Qt thread-affinity violation in `_propagate_all_outputs`
+**v2.2.1 — Patch (included in this release)**
+- Fixed About dialog crash (`QTextEdit` → `QTextBrowser`)
+- Fixed LICENSE file not shown in exe About dialog
 
 ---
 

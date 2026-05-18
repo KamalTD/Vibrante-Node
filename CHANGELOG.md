@@ -8,6 +8,26 @@ Full release notes for each version: see `RELEASE_vX.Y.Z.md` / `releases/` direc
 
 ---
 
+## [v2.3.0] — 2026-05-18
+
+**Type:** Minor — new nodes, developer tooling, and bug fixes
+
+### Added
+- `http_request` node bundled in `nodes/` (Network category) — async GET/POST via `urllib.request` + `run_in_executor`; non-blocking; icon `icons/http.png`.
+- `tools/create_dev_cert.ps1` — create and trust a self-signed Authenticode cert locally for testing.
+- `tools/sign_release.ps1` — sign the built exe with the best available cert in the user's cert store.
+
+### Fixed
+- Canvas drag trail artifact — `NodeWidget.boundingRect()` expanded ±8 px to cover port connectors; `shape()` overridden for hit-test accuracy; `paint()` uses local `_r` for body drawing. (`src/ui/node_widget.py`)
+- http_request UI freeze — HTTP stack moved to thread pool via `loop.run_in_executor`; Qt main thread stays responsive. (`nodes/http_request.json`, `website_examples/http_request.json`)
+- Node Builder: exec port type corruption on edit round-trip — exec ports filtered from table rows in `_load_existing_node`, `_sync_code_to_ui`, `save_node`. (`src/ui/node_builder.py`)
+- Node Builder: default value silently zeroed on edit — port tables expanded to 5 columns; `Default` column read/written through round-trips. (`src/ui/node_builder.py`)
+- Node Builder: icon-path field triggered full code regeneration — dedicated `_sync_icon_to_code()` replaces only the `self.icon_path = …` line. (`src/ui/node_builder.py`)
+- Load Node From JSON: wrong initial directory and no content pre-check — starts in `nodes_dir`; detects and rejects workflow files with a specific error. (`src/ui/window.py`)
+- Load Workflow: silently accepted node JSON files — `_looks_like_node_json()` helper rejects node definitions before `model_validate_json`. (`src/ui/window.py`)
+
+---
+
 ## [v2.2.1] — 2026-05-15
 
 **Type:** Patch — exe build bug fixes

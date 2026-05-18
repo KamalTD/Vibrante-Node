@@ -1269,3 +1269,53 @@ def _sync_icon_to_code(self):
 **Invariant**: `_sync_ui_to_code` still syncs `icon_path` at its end — so any other UI change (table, exec checkbox, metadata) also keeps the icon line correct. `_sync_icon_to_code` is only called from `icon_edit.textChanged`; nothing else routes through it.
 
 **File**: `src/ui/node_builder.py` — `__init__` (signal re-wire), `_sync_icon_to_code()` (new method)
+
+### 10.31 `http_request` node — UI freezes during execution
+
+**Symptom**: Running the `http_request` node caused the application window to become unresponsive for the full duration of the HTTP request (could be 1–30 s).
+
+**Root cause**: The `_EventLoopRunner` drives the asyncio event loop on the **main Qt thread** via a zero-interval QTimer stepping approach. The original node used `aiohttp` as the primary HTTP path. `aiohttp` makes synchronous OS-level calls during connection setup on Windows (SSL certificate store access, IOCP binding) that execute synchronously inside the stepped event loop, blocking the Qt main thread. The `urllib` fallback used `asyncio.to_thread` (Python ≥ 3.9 only), which is the correct direction but still interacts with the async I/O poller.
+
+**Fix**: Replaced both paths with a single approach that always runs the entire HTTP request (DNS → TCP connect → TLS → body read) in a thread pool via `loop.run_in_executor(None, _sync_do)` using stdlib `urllib.request`. The request is completely decoupled from the asyncio/Qt main thread — the event loop idles between steps while the thread works.
+
+```python
+loop = asyncio.get_running_loop()
+status, text = await loop.run_in_executor(None, _sync_do)
+```
+
+**Additional improvement**: `urllib.error.HTTPError` now returns the actual response body (previously returned empty string on 4xx/5xx). The `headers` dict is defensively copied with `dict(...)` before `setdefault` to avoid mutating the caller's data.
+
+**Do NOT revert to `aiohttp`** — it requires the event loop to run continuously, which is incompatible with the QTimer-stepped `_EventLoopRunner` architecture on Windows.
+
+**Files**: `nodes/http_request.json`, `website_examples/http_request.json` — `python_code` field
+
+### 10.32 `node_widget.py` + `view.py` — Drag trail of port connectors on canvas
+
+**Symptom**: Dragging any node across the canvas left a persistent "trail" of port connector shapes (exec arrows, data circles) at every previous position. The trail remained until the canvas was fully redrawn.
+
+**Root cause**: `NodeWidget.boundingRect()` returned `QRectF(0, 0, self.width, self.height)`. `PortWidget` children are positioned at x=0 (input ports) and x=self.width (output ports), and each draws its shape ±`radius` (6 px) from that centre — so exec arrows and data circles **paint 6 px outside the declared bounding rect on both sides**. Qt uses `boundingRect()` to decide which screen pixels to erase before a redraw. Pixels outside that rect are never invalidated → the trail persists across drag moves.
+
+A secondary fix (setting `BoundingRectViewportUpdate`) was applied to `view.py` first but was insufficient on its own because the item's declared rect was still wrong.
+
+**Fix** — three changes in `src/ui/node_widget.py`:
+
+1. **`boundingRect()`**: Expand by ±8 px margin (port radius 6 + pen 1 + 1 safety) so Qt erases the full port overhang area on every drag step:
+```python
+def boundingRect(self):
+    margin = 8  # port connectors extend 6px past node edges; +2 for pen and safety
+    return QRectF(-margin, 0, self.width + margin * 2, self.height)
+```
+
+2. **`shape()` (new override)**: Returns the original body path so rubber-band selection and click hit-testing remain tight to the visible node body, not the expanded dirty rect:
+```python
+def shape(self):
+    path = QPainterPath()
+    path.addRoundedRect(QRectF(0, 0, self.width, self.height), 10, 10)
+    return path
+```
+
+3. **`paint()`**: Replaced all three `self.boundingRect()` calls with a local `_r = QRectF(0, 0, self.width, self.height)` so the drawn rounded rect is still the correct visual size (not the expanded dirty rect).
+
+**Invariant**: `boundingRect()` ≠ the drawn body rect. Always use `_r` (or `QRectF(0, 0, self.width, self.height)`) for any drawing in `paint()`. `boundingRect()` is exclusively for Qt's dirty-region / culling machinery.
+
+**Files**: `src/ui/canvas/view.py` — `NodeView.__init__` (`setViewportUpdateMode`); `src/ui/node_widget.py` — `boundingRect()`, `shape()` (new), `paint()`

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Technical Feature List — Vibrante-Node v2.2.1</title>
+<title>Technical Feature List — Vibrante-Node v2.3.0</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -49,7 +49,8 @@ blockquote { border-left: 4px solid #6c7086; padding-left: 16px; color: #a6adc8;
 <a href="DOCUMENTATION.html">Technical Feature List</a>
   <hr style="border-color:#313244;margin:10px 18px">
   <h2 style="margin-top:8px">Release Notes</h2>
-  <a class="nav-release" href="RELEASE_v2.2.1.html">Release Notes v2.2.1</a>
+  <a class="nav-release" href="RELEASE_v2.3.0.html">Release Notes v2.3.0</a>
+<a class="nav-release" href="RELEASE_v2.3.0.html">Release Notes v2.3.0</a>
 <a class="nav-release" href="RELEASE_v2.2.0.html">Release Notes v2.2.0</a>
 <a class="nav-release" href="RELEASE_v2.1.1.html">Release Notes v2.1.1</a>
 <a class="nav-release" href="RELEASE_v2.1.0.html">Release Notes v2.1.0</a>
@@ -72,235 +73,548 @@ blockquote { border-left: 4px solid #6c7086; padding-left: 16px; color: #a6adc8;
 <a class="nav-release" href="RELEASE_v1.0.5.html">Release Notes v1.0.5</a>
   <hr style="border-color:#313244;margin:10px 18px">
   <h2 style="margin-top:8px">On this page</h2>
-  <a href="#vibrante-node-technical-api-architecture-documentation" style="padding-left:18px">Vibrante-Node - Technical API &amp; Architecture Documentation</a>
-<a href="#1-core-application-architecture" style="padding-left:18px">🚀 1. Core Application Architecture</a>
-<a href="#professional-python-code-editor" style="padding-left:32px">🔹 Professional Python Code Editor</a>
-<a href="#high-performance-execution-engine" style="padding-left:32px">🔹 High-Performance Execution Engine</a>
-<a href="#advanced-connection-system" style="padding-left:32px">🔹 Advanced Connection System</a>
-<a href="#2-part-1-node-scripting-api-basenode" style="padding-left:18px">🏗️ 2. Part 1: Node Scripting API (BaseNode)</a>
-<a href="#class-attributes" style="padding-left:32px">🔹 Class Attributes</a>
-<a href="#configuration-methods" style="padding-left:32px">🔹 Configuration Methods</a>
-<a href="#data-access-logging" style="padding-left:32px">🔹 Data Access &amp; Logging</a>
-<a href="#lifecycle-hooks" style="padding-left:32px">🔄 Lifecycle Hooks</a>
-<a href="#node-scripting-scenarios" style="padding-left:32px">📖 Node Scripting Scenarios</a>
-<a href="#3-part-2-workflow-automation-api" style="padding-left:18px">🤖 3. Part 2: Workflow Automation API</a>
-<a href="#available-globals" style="padding-left:32px">🔹 Available Globals</a>
-<a href="#automation-methods" style="padding-left:32px">🔹 Automation Methods</a>
-<a href="#automation-scenarios" style="padding-left:32px">📖 Automation Scenarios</a>
-<a href="#4-ui-architecture-features" style="padding-left:18px">🎨 4. UI Architecture &amp; Features</a>
-<a href="#5-technical-safety-reliability" style="padding-left:18px">🛠️ 5. Technical Safety &amp; Reliability</a>
-<a href="#6-v160-prism-integration-python-script-while-loop-utilities" style="padding-left:18px">🆕 6. v1.6.0 — Prism Integration, Python Script, While Loop, Utilities</a>
-<a href="#prism-pipeline-integration" style="padding-left:32px">Prism Pipeline Integration</a>
-<a href="#python-script-node" style="padding-left:32px">Python Script Node</a>
-<a href="#while-loop-node" style="padding-left:32px">While Loop Node</a>
-<a href="#utility-nodes" style="padding-left:32px">Utility Nodes</a>
-<a href="#file_save-widget-type" style="padding-left:32px">file_save Widget Type</a>
-<a href="#engine-runtime-fix" style="padding-left:32px">Engine Runtime Fix</a>
-<a href="#gemini-support-in-node-builder" style="padding-left:32px">Gemini Support in Node Builder</a>
-<a href="#7-v170-prism-pipeline-overhaul" style="padding-left:18px">🆕 7. v1.7.0 — Prism Pipeline Overhaul</a>
-<a href="#new-prism-getter-nodes" style="padding-left:32px">New Prism Getter Nodes</a>
-<a href="#prism-entity-enrichment" style="padding-left:32px">Prism Entity Enrichment</a>
-<a href="#dynamic-config-reader" style="padding-left:32px">Dynamic Config Reader</a>
-<a href="#get_tasks-multi-method-fallback" style="padding-left:32px">get_tasks Multi-Method Fallback</a>
-<a href="#atomic-workflow-save-safe-load" style="padding-left:32px">Atomic Workflow Save + Safe Load</a>
-<a href="#prism-v210-compatibility" style="padding-left:32px">Prism v2.1.0 Compatibility</a>
-<a href="#8-v18x-stability-node-reload-init-first-and-ux-polish" style="padding-left:18px">🆕 8. v1.8.x — Stability, Node Reload, Init-First, and UX Polish</a>
-<a href="#81-execution-engine" style="padding-left:32px">8.1 Execution Engine</a>
-<a href="#82-node-reload-workflow" style="padding-left:32px">8.2 Node Reload Workflow</a>
-<a href="#83-init-first-scene-ordering" style="padding-left:32px">8.3 Init-First Scene Ordering</a>
-<a href="#84-toolbar-context-menu" style="padding-left:32px">8.4 Toolbar &amp; Context Menu</a>
-<a href="#85-keyboard-shortcuts" style="padding-left:32px">8.5 Keyboard Shortcuts</a>
-<a href="#86-wire-type-coloring" style="padding-left:32px">8.6 Wire Type Coloring</a>
-<a href="#87-user-settings-persistence" style="padding-left:32px">8.7 User Settings Persistence</a>
-<a href="#88-node-builder-improvements" style="padding-left:32px">8.8 Node Builder Improvements</a>
-<a href="#89-bugfixes-v180v183" style="padding-left:32px">8.9 Bugfixes (v1.8.0–v1.8.3)</a>
+  <a href="#vibrante-node-technical-reference" style="padding-left:18px">Vibrante-Node — Technical Reference</a>
+<a href="#contents" style="padding-left:18px">Contents</a>
+<a href="#1-node-library-full-index" style="padding-left:18px">1. Node Library — Full Index</a>
+<a href="#general-io" style="padding-left:32px">General / IO</a>
+<a href="#control-flow" style="padding-left:32px">Control Flow</a>
+<a href="#math" style="padding-left:32px">Math</a>
+<a href="#logic" style="padding-left:32px">Logic</a>
+<a href="#string" style="padding-left:32px">String</a>
+<a href="#data-structures" style="padding-left:32px">Data Structures</a>
+<a href="#houdini" style="padding-left:32px">Houdini</a>
+<a href="#maya-25-nodes-headless-action-pattern" style="padding-left:32px">Maya (25 nodes — headless action pattern)</a>
+<a href="#blender-21-nodes-headless-action-pattern" style="padding-left:32px">Blender (21 nodes — headless action pattern)</a>
+<a href="#prism-pipeline-62-nodes" style="padding-left:32px">Prism Pipeline (62 nodes)</a>
+<a href="#2-basenode-api-reference" style="padding-left:18px">2. BaseNode API Reference</a>
+<a href="#class-attributes" style="padding-left:32px">Class Attributes</a>
+<a href="#instance-attributes" style="padding-left:32px">Instance Attributes</a>
+<a href="#methods-complete-table" style="padding-left:32px">Methods — Complete Table</a>
+<a href="#3-port-schema-reference" style="padding-left:18px">3. Port Schema Reference</a>
+<a href="#port-type-complete-table" style="padding-left:32px">Port Type — Complete Table</a>
+<a href="#widget-type-complete-table" style="padding-left:32px">Widget Type — Complete Table</a>
+<a href="#port-object-srcnodesbaseport" style="padding-left:32px">Port Object (src.nodes.base.Port)</a>
+<a href="#4-serialization-schema-reference" style="padding-left:18px">4. Serialization Schema Reference</a>
+<a href="#workflowmodel" style="padding-left:32px">WorkflowModel</a>
+<a href="#nodeinstancemodel" style="padding-left:32px">NodeInstanceModel</a>
+<a href="#connectionmodel" style="padding-left:32px">ConnectionModel</a>
+<a href="#stickynotemodel" style="padding-left:32px">StickyNoteModel</a>
+<a href="#backdropmodel" style="padding-left:32px">BackdropModel</a>
+<a href="#node-definition-json-schema" style="padding-left:32px">Node Definition JSON Schema</a>
+<a href="#5-environment-variables-reference" style="padding-left:18px">5. Environment Variables Reference</a>
+<a href="#built-in-variables" style="padding-left:32px">Built-in Variables</a>
+<a href="#user-configurable-variables-envmanager" style="padding-left:32px">User-Configurable Variables (EnvManager)</a>
+<a href="#accessing-variables-in-nodes" style="padding-left:32px">Accessing Variables in Nodes</a>
+<a href="#6-scripting-console-api-reference" style="padding-left:18px">6. Scripting Console API Reference</a>
+<a href="#global-objects" style="padding-left:32px">Global Objects</a>
+<a href="#nodescene-methods" style="padding-left:32px">NodeScene Methods</a>
+<a href="#mainwindow-methods" style="padding-left:32px">MainWindow Methods</a>
+<a href="#nodewidget-methods" style="padding-left:32px">NodeWidget Methods</a>
+<a href="#noderegistry-methods" style="padding-left:32px">NodeRegistry Methods</a>
+<a href="#gitwrapper-methods" style="padding-left:32px">GitWrapper Methods</a>
+<a href="#7-houbridge-api-reference" style="padding-left:18px">7. HouBridge API Reference</a>
+<a href="#8-engine-signals-reference" style="padding-left:18px">8. Engine Signals Reference</a>
+<a href="#9-keyboard-shortcuts-complete-table" style="padding-left:18px">9. Keyboard Shortcuts — Complete Table</a>
+<a href="#10-log-and-state-reference" style="padding-left:18px">10. Log and State Reference</a>
+<a href="#log-levels" style="padding-left:32px">Log Levels</a>
+<a href="#node-execution-states" style="padding-left:32px">Node Execution States</a>
+<a href="#execution-timing" style="padding-left:32px">Execution Timing</a>
+<a href="#11-error-index" style="padding-left:18px">11. Error Index</a>
 </nav>
 <main class="content">
-<h1 id="vibrante-node-technical-api-architecture-documentation">Vibrante-Node - Technical API &amp; Architecture Documentation</h1>
-<p>This document provides an exhaustive reference for the Vibrante-Node platform, covering core architecture, the custom node Scripting API, and the Workflow Automation system.</p>
+<h1 id="vibrante-node-technical-reference">Vibrante-Node — Technical Reference</h1>
+<p><strong>Version:</strong> v2.2.1 | <a href="USER_GUIDE.md">User Guide</a> | <a href="NODE_BUILDER_API.md">Node Builder API</a> | <a href="AUTOMATION_API.md">Automation API</a> | <a href="DEVELOPER.md">Developer Guide</a></p>
+<p>This is the complete technical reference for Vibrante-Node. Use it as a quick-lookup companion to the other guides. For narrative explanations and examples, refer to the guide documents linked above.</p>
 <hr />
-<h2 id="1-core-application-architecture">🚀 1. Core Application Architecture</h2>
-<h3 id="professional-python-code-editor">🔹 Professional Python Code Editor</h3>
-<p>The Node Builder features a fully-integrated, professional-grade source code editor:<br />
-- <strong>Intelligent Syntax Highlighting</strong>: Dracula-inspired theme for keywords, builtins, and multi-line strings.<br />
-- <strong>Auto-Indentation &amp; Linting</strong>: Automatic 4-space indent after colons (<code>:</code>) and instant syntax error detection with gutter highlighting.<br />
-- <strong>IntelliSense</strong>: Rich completion suggestions for Python keywords and common node methods.<br />
-- <strong>Bracket Matching &amp; Auto-Closing</strong>: Instant feedback for <code>()</code>, <code>[]</code>, and <code>{}</code>.</p>
-<h3 id="high-performance-execution-engine">🔹 High-Performance Execution Engine</h3>
-<ul>
-<li><strong>Asynchronous Execution</strong>: Uses a background <code>asyncio</code> loop to keep the UI responsive.</li>
-<li><strong>Topological Sorting</strong>: Automatically determines execution order for data-only graphs.</li>
-<li><strong>Hybrid Flow + Data Model (v1.0.5)</strong>:<ul>
-<li><strong>Flow-Based Routing</strong>: Execution follows <code>exec</code> pins sequentially.</li>
-<li><strong>Recursive Data Pulling</strong>: Before any node executes, it recursively triggers upstream data-only nodes to ensure all inputs are current.</li>
-<li><strong>Re-entrant Execution</strong>: Fixed deadlocks in <code>NetworkExecutor</code> to allow nested flow calls (essential for Loops).</li>
-</ul>
-</li>
-<li><strong>Prism Bootstrap Phase (v1.6.0)</strong>: Before main execution, the engine detects <code>prism_core_init</code> nodes and bootstraps PrismCore on the Qt main thread.</li>
-<li><strong>Recursive Data Propagation</strong>: A live system that pushes parameter changes through the entire node chain instantly as the user interacts with the UI.</li>
-</ul>
-<h3 id="advanced-connection-system">🔹 Advanced Connection System</h3>
-<ul>
-<li><strong>Bidirectional Dragging</strong>: Start wires from either input or output ports.</li>
-<li><strong>Single-Input Enforcement</strong>: Automatically replaces old wires when a new one is connected to an input port.</li>
-<li><strong>Redrag-to-Disconnect</strong>: Seamlessly move existing wires by dragging them away from ports.</li>
-</ul>
+<h2 id="contents">Contents</h2>
+<ol>
+<li><a href="#1-node-library">Node Library — Full Index</a></li>
+<li><a href="#2-basenode-api-reference">BaseNode API Reference</a></li>
+<li><a href="#3-port-schema-reference">Port Schema Reference</a></li>
+<li><a href="#4-serialization-schema-reference">Serialization Schema Reference</a></li>
+<li><a href="#5-environment-variables-reference">Environment Variables Reference</a></li>
+<li><a href="#6-scripting-console-api-reference">Scripting Console API Reference</a></li>
+<li><a href="#7-houbridge-api-reference">HouBridge API Reference</a></li>
+<li><a href="#8-engine-signals-reference">Engine Signals Reference</a></li>
+<li><a href="#9-keyboard-shortcuts">Keyboard Shortcuts — Complete Table</a></li>
+<li><a href="#10-log-and-state-reference">Log Levels and Node States Reference</a></li>
+<li><a href="#11-error-index">Error Codes and Troubleshooting Index</a></li>
+</ol>
 <hr />
-<h2 id="2-part-1-node-scripting-api-basenode">🏗️ 2. Part 1: Node Scripting API (<code>BaseNode</code>)</h2>
-<p>All custom nodes must inherit from the <code>BaseNode</code> class.</p>
-<h3 id="class-attributes">🔹 Class Attributes</h3>
+<h2 id="1-node-library-full-index">1. Node Library — Full Index</h2>
+<h3 id="general-io">General / IO</h3>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;">Attribute</th>
-<th style="text-align: left;">Type</th>
-<th style="text-align: left;">Description</th>
+<th>Node ID</th>
+<th>Category</th>
+<th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><code>name</code></td>
-<td style="text-align: left;"><code>str</code></td>
-<td style="text-align: left;">The display name of the node in the library and canvas.</td>
+<td><code>console_print</code></td>
+<td>General</td>
+<td>Print any value to the Log Panel</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>category</code></td>
-<td style="text-align: left;"><code>str</code></td>
-<td style="text-align: left;">Logical grouping (e.g., "Math", "IO", "Logic", "Prism").</td>
+<td><code>message_node</code></td>
+<td>General</td>
+<td>Hold and pass a string value</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>description</code></td>
-<td style="text-align: left;"><code>str</code></td>
-<td style="text-align: left;">Tooltip/help text for the user.</td>
+<td><code>delay_timer</code></td>
+<td>General</td>
+<td>Async delay (await asyncio.sleep)</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>icon_path</code></td>
-<td style="text-align: left;"><code>str</code></td>
-<td style="text-align: left;">Path to an SVG/PNG icon.</td>
+<td><code>file_reader</code></td>
+<td>IO</td>
+<td>Read a file to a string</td>
+</tr>
+<tr>
+<td><code>append_file</code></td>
+<td>IO</td>
+<td>Append text to a file</td>
+</tr>
+<tr>
+<td><code>create_folder</code></td>
+<td>IO</td>
+<td>Create a directory (exist_ok)</td>
+</tr>
+<tr>
+<td><code>http_request</code></td>
+<td>IO</td>
+<td>HTTP GET/POST via aiohttp</td>
+</tr>
+<tr>
+<td><code>json_parser</code></td>
+<td>IO</td>
+<td>Parse JSON string to dict/list</td>
+</tr>
+<tr>
+<td><code>list_images_recursive</code></td>
+<td>IO</td>
+<td>Recursively list images in a folder</td>
 </tr>
 </tbody>
 </table>
-<h3 id="configuration-methods">🔹 Configuration Methods</h3>
-<ul>
-<li><strong><code>self.add_input(name, data_type, widget_type, options)</code></strong>: Adds an input port.</li>
-<li>Supported widgets: <code>"text"</code>, <code>"text_area"</code>, <code>"int"</code>, <code>"float"</code>, <code>"bool"</code>, <code>"dropdown"</code>, <code>"slider"</code>, <code>"file"</code>, <code>"file_save"</code>.</li>
-<li><strong><code>self.add_output(name, data_type)</code></strong>: Adds an output port.</li>
-<li><strong><code>self.add_parameter(name, type, default)</code></strong>: Defines internal data not linked to a port.</li>
-</ul>
-<h3 id="data-access-logging">🔹 Data Access &amp; Logging</h3>
-<ul>
-<li><strong><code>self.get_parameter(name)</code></strong> or <strong><code>self[name]</code></strong>: Safely retrieve current port/widget values.</li>
-<li><strong><code>self.set_parameter(name, value)</code></strong>: Programmatically update a widget and trigger downstream sync.</li>
-<li><strong><code>self.log_info(msg)</code></strong> / <strong><code>log_success</code></strong> / <strong><code>log_error</code></strong>: Thread-safe logging to the Event Log panel.</li>
-</ul>
-<h3 id="lifecycle-hooks">🔄 Lifecycle Hooks</h3>
-<ul>
-<li><strong><code>on_plug_sync(port_name, is_input, other_node, other_port_name)</code></strong>: (Sync) Called instantly on the GUI thread. Best for immediate data copying or UI updates.</li>
-<li><strong><code>on_unplug_sync(port_name, is_input)</code></strong>: (Sync) Cleanup logic when a wire is removed.</li>
-<li><strong><code>on_parameter_changed(name, value)</code></strong>: Triggered live as the user interacts with node widgets.</li>
-<li><strong><code>async on_plug(...)</code> / <code>on_unplug(...)</code></strong>: (Async) Background triggers for heavy IO or network tasks.</li>
-<li><strong><code>async def execute(self, inputs)</code></strong>: The main logic executed during a workflow run.</li>
-</ul>
-<h3 id="node-scripting-scenarios">📖 Node Scripting Scenarios</h3>
-<h4 id="scenario-a-reactive-multi-port-sync">Scenario A: Reactive Multi-Port Sync</h4>
-<pre><code class="language-python">def on_plug_sync(self, port_name, is_input, other_node, other_port_name):
-    if is_input:
-        data = other_node.get_parameter(other_port_name)
-        self.set_parameter(port_name, data)
-        self.log_info(f&quot;Connected to {other_node.name}&quot;)
-</code></pre>
-<h4 id="scenario-b-async-background-worker">Scenario B: Async Background Worker</h4>
-<pre><code class="language-python">async def execute(self, inputs):
-    self.log_info(&quot;Starting heavy calculation...&quot;)
-    await asyncio.sleep(2.0)
-    return {&quot;result&quot;: inputs.get(&quot;val&quot;) * 10}
-</code></pre>
-<hr />
-<h2 id="3-part-2-workflow-automation-api">🤖 3. Part 2: Workflow Automation API</h2>
-<p>The built-in <strong>Scripting Console</strong> allows for full application automation using Python.</p>
-<h3 id="available-globals">🔹 Available Globals</h3>
+<h3 id="control-flow">Control Flow</h3>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;">Global</th>
-<th style="text-align: left;">Type</th>
-<th style="text-align: left;">Description</th>
+<th>Node ID</th>
+<th>Category</th>
+<th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><code>app</code></td>
-<td style="text-align: left;"><code>MainWindow</code></td>
-<td style="text-align: left;">The main application instance.</td>
+<td><code>if_condition</code></td>
+<td>Logic</td>
+<td>Route exec to true or false branch</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>scene</code></td>
-<td style="text-align: left;"><code>NodeScene</code></td>
-<td style="text-align: left;">The active canvas/tab for node manipulation.</td>
+<td><code>branch</code></td>
+<td>Logic</td>
+<td>Named multi-branch exec routing</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>registry</code></td>
-<td style="text-align: left;"><code>NodeRegistry</code></td>
-<td style="text-align: left;">Global registry of all available node types.</td>
+<td><code>for_loop</code></td>
+<td>Control Flow</td>
+<td>Generate index list; exec_out fires once</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>git</code></td>
-<td style="text-align: left;"><code>GitWrapper</code></td>
-<td style="text-align: left;">Integrated source control management.</td>
+<td><code>loop_body</code></td>
+<td>Control Flow</td>
+<td>Iterate over list; exec_out fires per item</td>
+</tr>
+<tr>
+<td><code>loop_break</code></td>
+<td>Control Flow</td>
+<td>Stop loop iteration on condition</td>
+</tr>
+<tr>
+<td><code>while_loop</code></td>
+<td>Control Flow</td>
+<td>Repeat while condition is True</td>
+</tr>
+<tr>
+<td><code>python_script</code></td>
+<td>Scripting</td>
+<td>Inline Python code node</td>
 </tr>
 </tbody>
 </table>
-<h3 id="automation-methods">🔹 Automation Methods</h3>
-<ul>
-<li><strong><code>scene.add_node_by_name(node_id, (x, y))</code></strong>: Spawn a node programmatically.</li>
-<li><strong><code>scene.connect_nodes(node_a, port_a, node_b, port_b)</code></strong>: Create wires between ports.</li>
-<li><strong><code>scene.clear()</code></strong>: Wipe the current workspace.</li>
-<li><strong><code>app.add_new_workflow(name)</code></strong>: Create a new tab.</li>
-<li><strong><code>app.execute_pipeline()</code></strong>: Trigger the workflow execution engine.</li>
-</ul>
-<h3 id="automation-scenarios">📖 Automation Scenarios</h3>
-<h4 id="scenario-c-pipeline-grid-generation">Scenario C: Pipeline Grid Generation</h4>
-<pre><code class="language-python">prev = None
-for i in range(3):
-    for j in range(3):
-        curr = scene.add_node_by_name(&quot;message_node&quot;, (j*300, i*200))
-        curr.set_parameter(&quot;msg&quot;, f&quot;Auto-Node {i}-{j}&quot;)
-        if prev: scene.connect_nodes(prev, &quot;out&quot;, curr, &quot;msg&quot;)
-        prev = curr
-</code></pre>
-<h4 id="scenario-d-automated-batch-execution">Scenario D: Automated Batch Execution</h4>
-<pre><code class="language-python">node = scene.find_node_by_name(&quot;Message Node&quot;)
-if node:
-    for val in [&quot;Test A&quot;, &quot;Test B&quot;, &quot;Test C&quot;]:
-        node.set_parameter(&quot;msg&quot;, val)
-        app.execute_pipeline()
-</code></pre>
-<hr />
-<h2 id="4-ui-architecture-features">🎨 4. UI Architecture &amp; Features</h2>
-<ul>
-<li><strong>Dynamic Node Scaling</strong>: Nodes automatically resize their bounding box based on port count and child widget dimensions.</li>
-<li><strong>Vertical Parameter Centering</strong>: Parameter widgets (Label + Input) are distributed and centered within the node body.</li>
-<li><strong>Clip-Path Header Rendering</strong>: Clean, solid title bars that perfectly respect the node's rounded corners without overlapping lines.</li>
-<li><strong>Global Theme System</strong>: Integrated Dracula-based <strong>Dark Mode</strong> and standard <strong>Light Mode</strong> available via the Themes menu.</li>
-<li><strong>SVG Vector Support</strong>: Native rendering for all icons in the library, toolbar, and node headers.</li>
-</ul>
-<hr />
-<h2 id="5-technical-safety-reliability">🛠️ 5. Technical Safety &amp; Reliability</h2>
-<ul>
-<li><strong>Thread-Safe UI Updates</strong>: Signal-based communication ensures that background threads can safely update the Event Log and widgets.</li>
-<li><strong>Crash Protection</strong>: A global exception hook captures unhandled errors and generates a <code>crash.log</code> file for instant debugging.</li>
-<li><strong>Robust Persistence</strong>: Full workflow states (positions, parameters, and connections) are serialized as clean, portable JSON.</li>
-<li><strong>Name Sanitization</strong>: Automated slug generation for custom nodes to ensure filesystem and class compatibility.</li>
-</ul>
-<hr />
-<h2 id="6-v160-prism-integration-python-script-while-loop-utilities">🆕 6. v1.6.0 — Prism Integration, Python Script, While Loop, Utilities</h2>
-<h3 id="prism-pipeline-integration">Prism Pipeline Integration</h3>
-<p>40+ new nodes in the <code>Prism</code> category enable full Prism Pipeline studio-management workflows:</p>
+<h3 id="math">Math</h3>
 <table>
 <thead>
 <tr>
-<th>Node Group</th>
-<th>Nodes</th>
+<th>Node ID</th>
+<th>Category</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>add</code></td>
+<td>Math</td>
+<td>Add two numbers</td>
+</tr>
+<tr>
+<td><code>math_add</code></td>
+<td>Math</td>
+<td>Add with float inputs</td>
+</tr>
+<tr>
+<td><code>add_integers</code></td>
+<td>Math</td>
+<td>Add two integers</td>
+</tr>
+<tr>
+<td><code>math_abs</code></td>
+<td>Math</td>
+<td>Absolute value</td>
+</tr>
+<tr>
+<td><code>compare</code></td>
+<td>Math</td>
+<td>Compare two values; returns bool</td>
+</tr>
+</tbody>
+</table>
+<h3 id="logic">Logic</h3>
+<table>
+<thead>
+<tr>
+<th>Node ID</th>
+<th>Category</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>logic_and</code></td>
+<td>Logic</td>
+<td>AND two booleans</td>
+</tr>
+<tr>
+<td><code>logic_compare</code></td>
+<td>Logic</td>
+<td>Comparison operator (==, !=, &lt;, &gt;, &lt;=, &gt;=)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="string">String</h3>
+<table>
+<thead>
+<tr>
+<th>Node ID</th>
+<th>Category</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>concat</code></td>
+<td>String</td>
+<td>Concatenate two strings</td>
+</tr>
+<tr>
+<td><code>split</code></td>
+<td>String</td>
+<td>Split string by delimiter</td>
+</tr>
+<tr>
+<td><code>replace</code></td>
+<td>String</td>
+<td>String replacement</td>
+</tr>
+<tr>
+<td><code>lowercase</code></td>
+<td>String</td>
+<td>Convert to lowercase</td>
+</tr>
+<tr>
+<td><code>uppercase</code></td>
+<td>String</td>
+<td>Convert to uppercase</td>
+</tr>
+<tr>
+<td><code>string_length</code></td>
+<td>String</td>
+<td>Character count</td>
+</tr>
+</tbody>
+</table>
+<h3 id="data-structures">Data Structures</h3>
+<table>
+<thead>
+<tr>
+<th>Node ID</th>
+<th>Category</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>create_list</code></td>
+<td>Data</td>
+<td>Create a Python list from items</td>
+</tr>
+<tr>
+<td><code>get_list_item</code></td>
+<td>Data</td>
+<td>Get item at index</td>
+</tr>
+<tr>
+<td><code>list_length</code></td>
+<td>Data</td>
+<td>List item count</td>
+</tr>
+<tr>
+<td><code>list_append</code></td>
+<td>Data</td>
+<td>Append item to list</td>
+</tr>
+<tr>
+<td><code>create_dictionary</code></td>
+<td>Data</td>
+<td>Create a dict from key/value inputs</td>
+</tr>
+<tr>
+<td><code>get_dict_value</code></td>
+<td>Data</td>
+<td>Get dict value by key</td>
+</tr>
+<tr>
+<td><code>set_dict_value</code></td>
+<td>Data</td>
+<td>Set dict value by key</td>
+</tr>
+</tbody>
+</table>
+<h3 id="houdini">Houdini</h3>
+<table>
+<thead>
+<tr>
+<th>Node ID</th>
+<th>Category</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>hou_create_geo</code></td>
+<td>Houdini</td>
+<td>Create Object-level geo container</td>
+</tr>
+<tr>
+<td><code>hou_set_parm</code></td>
+<td>Houdini</td>
+<td>Set a single Houdini parameter</td>
+</tr>
+<tr>
+<td><code>hou_get_parm</code></td>
+<td>Houdini</td>
+<td>Get a Houdini parameter value</td>
+</tr>
+<tr>
+<td><code>hou_cook</code></td>
+<td>Houdini</td>
+<td>Cook a node</td>
+</tr>
+<tr>
+<td><code>hou_connect</code></td>
+<td>Houdini</td>
+<td>Wire two Houdini nodes</td>
+</tr>
+<tr>
+<td><code>hou_run_code</code></td>
+<td>Houdini</td>
+<td>Execute Python inside Houdini</td>
+</tr>
+<tr>
+<td><code>hou_scene_info</code></td>
+<td>Houdini</td>
+<td>Get HIP file, FPS, frame range</td>
+</tr>
+<tr>
+<td><code>hou_save_hip</code></td>
+<td>Houdini</td>
+<td>Save the Houdini scene</td>
+</tr>
+<tr>
+<td><code>hou_sop_chain</code></td>
+<td>Houdini</td>
+<td>Build and cook a SOP chain</td>
+</tr>
+</tbody>
+</table>
+<h3 id="maya-25-nodes-headless-action-pattern">Maya (25 nodes — headless action pattern)</h3>
+<table>
+<thead>
+<tr>
+<th>Node ID</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>maya_action_open_scene</code></td>
+<td>Open a Maya scene file</td>
+</tr>
+<tr>
+<td><code>maya_action_save_scene</code></td>
+<td>Save the current scene</td>
+</tr>
+<tr>
+<td><code>maya_action_render</code></td>
+<td>Render with specified camera and frame range</td>
+</tr>
+<tr>
+<td><code>maya_action_import_alembic</code></td>
+<td>Import Alembic cache</td>
+</tr>
+<tr>
+<td><code>maya_action_export_alembic</code></td>
+<td>Export selection as Alembic</td>
+</tr>
+<tr>
+<td><code>maya_action_import_fbx</code></td>
+<td>Import FBX file</td>
+</tr>
+<tr>
+<td><code>maya_action_export_fbx</code></td>
+<td>Export selection as FBX</td>
+</tr>
+<tr>
+<td><code>maya_action_set_frame_range</code></td>
+<td>Set timeline start/end</td>
+</tr>
+<tr>
+<td><code>maya_action_run_python</code></td>
+<td>Execute Python inside Maya</td>
+</tr>
+<tr>
+<td><code>maya_action_run_mel</code></td>
+<td>Execute MEL script</td>
+</tr>
+<tr>
+<td><code>maya_action_scene_info</code></td>
+<td>Get scene path, FPS, frame range</td>
+</tr>
+<tr>
+<td><code>maya_action_create_node</code></td>
+<td>Create a Maya DG/DAG node</td>
+</tr>
+<tr>
+<td><code>maya_action_custom</code></td>
+<td>Custom MEL/Python action</td>
+</tr>
+<tr>
+<td><code>maya_headless</code></td>
+<td>Execute action list in batch Maya</td>
+</tr>
+<tr>
+<td><code>blender_get_action_result</code></td>
+<td>Read result from headless run</td>
+</tr>
+</tbody>
+</table>
+<h3 id="blender-21-nodes-headless-action-pattern">Blender (21 nodes — headless action pattern)</h3>
+<table>
+<thead>
+<tr>
+<th>Node ID</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>blender_action_open_blend</code></td>
+<td>Open a .blend file</td>
+</tr>
+<tr>
+<td><code>blender_action_save_blend</code></td>
+<td>Save the current .blend</td>
+</tr>
+<tr>
+<td><code>blender_action_render</code></td>
+<td>Render to output path</td>
+</tr>
+<tr>
+<td><code>blender_action_export_alembic</code></td>
+<td>Export Alembic</td>
+</tr>
+<tr>
+<td><code>blender_action_import_alembic</code></td>
+<td>Import Alembic</td>
+</tr>
+<tr>
+<td><code>blender_action_export_fbx</code></td>
+<td>Export FBX</td>
+</tr>
+<tr>
+<td><code>blender_action_import_fbx</code></td>
+<td>Import FBX</td>
+</tr>
+<tr>
+<td><code>blender_action_export_gltf</code></td>
+<td>Export glTF</td>
+</tr>
+<tr>
+<td><code>blender_action_import_gltf</code></td>
+<td>Import glTF</td>
+</tr>
+<tr>
+<td><code>blender_action_export_obj</code></td>
+<td>Export OBJ</td>
+</tr>
+<tr>
+<td><code>blender_action_import_obj</code></td>
+<td>Import OBJ</td>
+</tr>
+<tr>
+<td><code>blender_action_export_usd</code></td>
+<td>Export USD</td>
+</tr>
+<tr>
+<td><code>blender_action_new_blend</code></td>
+<td>Create a new .blend</td>
+</tr>
+<tr>
+<td><code>blender_action_set_frame_range</code></td>
+<td>Set render frame range</td>
+</tr>
+<tr>
+<td><code>blender_action_set_render_settings</code></td>
+<td>Configure render output</td>
+</tr>
+<tr>
+<td><code>blender_action_bake_animation</code></td>
+<td>Bake animation</td>
+</tr>
+<tr>
+<td><code>blender_action_scene_info</code></td>
+<td>Get scene metadata</td>
+</tr>
+<tr>
+<td><code>blender_action_custom</code></td>
+<td>Custom Python action</td>
+</tr>
+<tr>
+<td><code>blender_headless</code></td>
+<td>Execute action list in background Blender</td>
+</tr>
+</tbody>
+</table>
+<h3 id="prism-pipeline-62-nodes">Prism Pipeline (62 nodes)</h3>
+<table>
+<thead>
+<tr>
+<th>Group</th>
+<th>Node IDs</th>
 </tr>
 </thead>
 <tbody>
@@ -310,7 +624,7 @@ if node:
 </tr>
 <tr>
 <td>Entities</td>
-<td><code>prism_get_assets</code>, <code>prism_get_shots</code>, <code>prism_build_entity</code>, <code>prism_create_entity</code></td>
+<td><code>prism_get_assets</code>, <code>prism_get_shots</code>, <code>prism_build_entity</code>, <code>prism_create_entity</code>, <code>prism_get_asset_types_by_project</code>, <code>prism_get_assets_by_type</code>, <code>prism_get_asset_type_by_name</code></td>
 </tr>
 <tr>
 <td>Products</td>
@@ -322,7 +636,7 @@ if node:
 </tr>
 <tr>
 <td>Scenes</td>
-<td><code>prism_get_current_scene</code>, <code>prism_get_scene_files</code>, <code>prism_get_preset_scenes</code>, <code>prism_open_scene</code>, <code>prism_save_scene_version</code>, <code>prism_create_scene_from_preset</code></td>
+<td><code>prism_get_current_scene</code>, <code>prism_get_scene_files</code>, <code>prism_get_preset_scenes</code>, <code>prism_open_scene</code>, <code>prism_save_scene_version</code>, <code>prism_create_scene_from_preset</code>, <code>prism_get_scene_path</code>, <code>prism_get_export_path</code></td>
 </tr>
 <tr>
 <td>Config</td>
@@ -333,8 +647,8 @@ if node:
 <td><code>prism_list_projects</code>, <code>prism_create_project</code>, <code>prism_change_project</code></td>
 </tr>
 <tr>
-<td>Departments/Tasks</td>
-<td><code>prism_get_departments</code>, <code>prism_get_tasks</code>, <code>prism_create_category</code></td>
+<td>Departments</td>
+<td><code>prism_get_departments</code>, <code>prism_get_tasks</code>, <code>prism_create_category</code>, <code>prism_get_shot_by_sequence</code></td>
 </tr>
 <tr>
 <td>Plugins</td>
@@ -350,263 +664,1367 @@ if node:
 </tr>
 </tbody>
 </table>
-<p>Key behaviours:<br />
-- <strong>Auto-bootstrap</strong>: <code>prism_core_init</code> is detected before execution and PrismCore is initialized on the Qt main thread.<br />
-- <strong>Zero-wiring</strong>: All <code>prism_*</code> nodes resolve the shared <code>PrismCore</code> via <code>resolve_prism_core()</code> — no <code>core</code> wire needed.<br />
-- <strong>Qt compat</strong>: <code>qt_compat.py</code> auto-stubs <code>shiboken</code> and backfills <code>QColor.fromString</code> so Prism loads without binary-wheel conflicts.</p>
-<h3 id="python-script-node">Python Script Node</h3>
-<ul>
-<li><code>python_script</code> node ships with an <strong>Edit Script</strong> button that opens a full code editor dialog.</li>
-<li>Scripts are persisted in the workflow JSON under the <code>python_code</code> parameter.</li>
-<li>The engine injects <code>python_code</code> into node instances before execution, so saved scripts always run correctly.</li>
-<li>User scripts should assign their primary output to a variable named <code>result</code>, which is published to the <code>result</code> output port.</li>
-</ul>
-<h3 id="while-loop-node">While Loop Node</h3>
-<ul>
-<li><code>while_loop</code> builtin: iterates while a boolean <code>condition</code> input is <code>True</code>.</li>
-<li>Safe re-entrant execution — the engine's lock-free design prevents deadlocks in nested loop scenarios.</li>
-</ul>
-<h3 id="utility-nodes">Utility Nodes</h3>
-<table>
-<thead>
-<tr>
-<th>Category</th>
-<th>Nodes</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>List</td>
-<td><code>create_list</code>, <code>get_list_item</code>, <code>list_length</code></td>
-</tr>
-<tr>
-<td>Dictionary</td>
-<td><code>create_dictionary</code>, <code>get_dict_value</code>, <code>set_dict_value</code></td>
-</tr>
-<tr>
-<td>String</td>
-<td><code>concat</code>, <code>split</code>, <code>replace</code>, <code>lowercase</code>, <code>uppercase</code>, <code>string_length</code></td>
-</tr>
-</tbody>
-</table>
-<h3 id="file_save-widget-type"><code>file_save</code> Widget Type</h3>
-<p>A new <code>"file_save"</code> widget type is available for output file path inputs. It opens a save-file dialog rather than an open-file dialog, making it suitable for export nodes.</p>
-<h3 id="engine-runtime-fix">Engine Runtime Fix</h3>
-<p>Workflow-saved parameters (including <code>python_code</code>) are now applied to node instances at startup so authored scripts embedded in saved workflows execute as intended.</p>
-<h3 id="gemini-support-in-node-builder">Gemini Support in Node Builder</h3>
-<p>The Node Builder includes integration hooks for Gemini-based assistance to scaffold example scripts, generate prompt templates, and provide sample code snippets. See <code>src/ui/gemini_chat.py</code> for configuration and usage notes.</p>
 <hr />
-<h2 id="7-v170-prism-pipeline-overhaul">🆕 7. v1.7.0 — Prism Pipeline Overhaul</h2>
-<h3 id="new-prism-getter-nodes">New Prism Getter Nodes</h3>
+<h2 id="2-basenode-api-reference">2. BaseNode API Reference</h2>
+<p><strong>Module:</strong> <code>src.nodes.base</code></p>
+<h3 id="class-attributes">Class Attributes</h3>
 <table>
 <thead>
 <tr>
-<th>Node</th>
+<th>Attribute</th>
+<th>Type</th>
+<th>Default</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>prism_get_scene_path</code></td>
-<td>Resolves the on-disk scene file path for an entity/department/task</td>
+<td><code>name</code></td>
+<td><code>str</code></td>
+<td><code>"BaseNode"</code></td>
+<td>Registry key. Must match <code>node_id</code>.</td>
 </tr>
 <tr>
-<td><code>prism_get_export_path</code></td>
-<td>Returns the actual export file path (not directory); handles <code>output_type</code> <code>'3d'</code>/<code>'2d'</code></td>
+<td><code>node_id</code></td>
+<td><code>str</code></td>
+<td>injected by registry</td>
+<td>Same as <code>name</code> for JSON nodes.</td>
 </tr>
 <tr>
-<td><code>prism_get_shot_by_sequence</code></td>
-<td>Looks up a specific shot within a sequence by name</td>
+<td><code>display_name</code></td>
+<td><code>str</code></td>
+<td><code>""</code></td>
+<td>Canvas header label. Falls back to <code>name</code>.</td>
 </tr>
 <tr>
-<td><code>prism_get_asset_type_by_name</code></td>
-<td>Returns a single asset-type dict matching the given name</td>
+<td><code>description</code></td>
+<td><code>str</code></td>
+<td><code>""</code></td>
+<td>Library tooltip.</td>
 </tr>
 <tr>
-<td><code>prism_get_asset_types_by_project</code></td>
-<td>Lists all asset types defined in the active project</td>
+<td><code>category</code></td>
+<td><code>str</code></td>
+<td><code>"General"</code></td>
+<td>Library grouping.</td>
 </tr>
 <tr>
-<td><code>prism_get_assets_by_type</code></td>
-<td>Returns all assets belonging to a specific asset type</td>
+<td><code>icon_path</code></td>
+<td><code>str \| None</code></td>
+<td><code>None</code></td>
+<td>Relative path to icon.</td>
+</tr>
+<tr>
+<td><code>init_priority</code></td>
+<td><code>int</code></td>
+<td><code>0</code></td>
+<td><code>&gt; 0</code> = created before other nodes on load.</td>
+</tr>
+<tr>
+<td><code>memory</code></td>
+<td><code>dict</code></td>
+<td><code>{}</code></td>
+<td>Class-level shared state, cleared each run.</td>
 </tr>
 </tbody>
 </table>
-<h3 id="prism-entity-enrichment">Prism Entity Enrichment</h3>
-<p>Entity dicts produced by Prism getter nodes now include <code>path</code>, <code>location</code>, and <code>paths</code> fields, enabling downstream nodes to resolve scene file locations without additional bridge calls.</p>
-<h3 id="dynamic-config-reader">Dynamic Config Reader</h3>
-<p>Department abbreviations and other studio-specific config values are read at runtime from the project config (<code>core.getConfig()</code>). No more hardcoded values in node logic.</p>
-<h3 id="get_tasks-multi-method-fallback"><code>get_tasks</code> Multi-Method Fallback</h3>
-<p><code>prism_get_tasks</code> tries <code>getTasks</code>, <code>getTasksForEntity</code>, and <code>task_mgr.getTasks</code> in sequence to stay compatible with multiple Prism versions.</p>
-<h3 id="atomic-workflow-save-safe-load">Atomic Workflow Save + Safe Load</h3>
-<p>The scene strips non-serializable runtime values before writing workflow JSON. An empty or corrupt JSON file on load triggers a graceful error prompt instead of an application crash.</p>
-<h3 id="prism-v210-compatibility">Prism v2.1.0 Compatibility</h3>
-<ul>
-<li><code>getShots()</code> now handles both the flat-list shape (v2.1.0) and the dict shape (older versions).</li>
-<li><code>createProduct</code> API signature updated for v2.1.0.</li>
-<li>Version directory is created on disk before writing a new scene version file.</li>
-</ul>
-<hr />
-<h2 id="8-v18x-stability-node-reload-init-first-and-ux-polish">🆕 8. v1.8.x — Stability, Node Reload, Init-First, and UX Polish</h2>
-<h3 id="81-execution-engine">8.1 Execution Engine</h3>
+<h3 id="instance-attributes">Instance Attributes</h3>
 <table>
 <thead>
 <tr>
-<th>Change</th>
-<th>Details</th>
+<th>Attribute</th>
+<th>Type</th>
+<th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>Bypass flag</strong></td>
-<td>Bypassed nodes are skipped; their primary input is forwarded as output and <code>exec_out</code> fires normally</td>
+<td><code>inputs</code></td>
+<td><code>dict[str, Port]</code></td>
+<td>Input ports keyed by name.</td>
 </tr>
 <tr>
-<td><strong><code>for_loop</code> behavior</strong></td>
-<td>Fires <code>exec_out</code> once after building the complete index list; per-item iteration is handled by <code>loop_body</code></td>
+<td><code>outputs</code></td>
+<td><code>dict[str, Port]</code></td>
+<td>Output ports keyed by name.</td>
 </tr>
 <tr>
-<td><strong><code>on_parameter_changed</code> timing</strong></td>
-<td>Not called during pre-execute sync; called reactively during execution when upstream output is propagated to a downstream input (v1.8.1–v1.8.3)</td>
+<td><code>parameters</code></td>
+<td><code>dict[str, Any]</code></td>
+<td>Widget values, output cache, internal state.</td>
 </tr>
 <tr>
-<td><strong>Hotkey guard</strong></td>
-<td>Canvas hotkeys are suppressed when a text input widget has keyboard focus</td>
+<td><code>bypassed</code></td>
+<td><code>bool</code></td>
+<td>True when node is user-bypassed.</td>
 </tr>
 </tbody>
 </table>
-<h3 id="82-node-reload-workflow">8.2 Node Reload Workflow</h3>
-<p>Nodes can be edited and refreshed without restarting the application:</p>
-<ol>
-<li>Edit the node's JSON definition (via Node Builder or directly on disk).</li>
-<li>Press <code>Ctrl+R</code> (or right-click &gt; "Reload Node") to reload.</li>
-<li><code>NodeRegistry.reload_node_definition(node_id)</code> re-reads the JSON and recompiles the class.</li>
-<li><code>NodeWidget.reload_definition(new_definition)</code> rebuilds ports in place, preserves compatible parameter values, and removes wires to deleted ports.</li>
-<li><code>NodeScene.reload_node_type(node_id)</code> applies the reload to all live instances of that type.</li>
-</ol>
-<p>Registry source tracking: <code>NodeRegistry._source_paths</code> maps every loaded <code>node_id</code> to its absolute JSON file path. Use <code>get_source_path(node_id)</code> and <code>reload_node_definition(node_id)</code> programmatically.</p>
-<h3 id="83-init-first-scene-ordering">8.3 Init-First Scene Ordering</h3>
-<p><code>NodeScene.load_workflow_model()</code> performs two passes when loading a workflow:<br />
-- <strong>Pass 1</strong>: Nodes with <code>init_priority &gt; 0</code> are created and connected first.<br />
-- <strong>Pass 2</strong>: All remaining nodes are created and connected.</p>
-<p>This ensures authentication and server-connect nodes are wired before downstream consumers are instantiated.</p>
-<p>Mark/unmark nodes via right-click &gt; "Init First" / "Remove Init First".</p>
-<h3 id="84-toolbar-context-menu">8.4 Toolbar &amp; Context Menu</h3>
-<p>New toolbar buttons: Add Node, Add Sticky Note, Add Network Box, Edit Selected Node, Reload Selected Node.</p>
-<p>Context menu additions (right-click on a node):<br />
-- "Edit Node ('node_id')" — opens Node Builder for that definition.<br />
-- "Reload Node ('node_id')" — reloads from disk and refreshes widget in place.<br />
-- "Init First" / "Remove Init First" — toggles init priority.</p>
-<h3 id="85-keyboard-shortcuts">8.5 Keyboard Shortcuts</h3>
+<h3 id="methods-complete-table">Methods — Complete Table</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Returns</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>__init__(use_exec=True)</code></td>
+<td>—</td>
+<td>Adds exec_in/exec_out when use_exec=True</td>
+</tr>
+<tr>
+<td><code>add_input(name, type="any", widget_type=None, options=None, default=None)</code></td>
+<td>None</td>
+<td>Add input port and initialize parameter</td>
+</tr>
+<tr>
+<td><code>add_output(name, type="any", default=None)</code></td>
+<td>None</td>
+<td>Add output port and initialize parameter</td>
+</tr>
+<tr>
+<td><code>add_exec_input(name="exec_in")</code></td>
+<td>None</td>
+<td>Add exec-type input (called by <strong>init</strong>)</td>
+</tr>
+<tr>
+<td><code>add_exec_output(name="exec_out")</code></td>
+<td>None</td>
+<td>Add exec-type output (called by <strong>init</strong>)</td>
+</tr>
+<tr>
+<td><code>add_parameter(name, param_type, default=None)</code></td>
+<td>None</td>
+<td>Add internal non-port parameter</td>
+</tr>
+<tr>
+<td><code>set_parameter(name, value)</code></td>
+<td>None</td>
+<td>Set widget value; dropdown list update supported</td>
+</tr>
+<tr>
+<td><code>get_parameter(name, default=None)</code></td>
+<td><code>Any</code></td>
+<td>Safe read; returns default if key absent</td>
+</tr>
+<tr>
+<td><code>rebuild_ports()</code></td>
+<td>None</td>
+<td>Signal canvas to refresh port layout</td>
+</tr>
+<tr>
+<td><code>is_port_connected(name, is_input)</code></td>
+<td><code>bool</code></td>
+<td>True if port has a wire</td>
+</tr>
+<tr>
+<td><code>is_stopped()</code></td>
+<td><code>bool</code></td>
+<td>True if user pressed Stop</td>
+</tr>
+<tr>
+<td><code>async set_output(name, value)</code></td>
+<td>None</td>
+<td>Reactive push before exec_out fires</td>
+</tr>
+<tr>
+<td><code>clear_outputs()</code></td>
+<td>None</td>
+<td>Reset outputs to defaults</td>
+</tr>
+<tr>
+<td><code>log_info(msg)</code></td>
+<td>None</td>
+<td>Info log; white in Log Panel</td>
+</tr>
+<tr>
+<td><code>log_success(msg)</code></td>
+<td>None</td>
+<td>Success log; green</td>
+</tr>
+<tr>
+<td><code>log_error(msg)</code></td>
+<td>None</td>
+<td>Error log; red; sets node error state</td>
+</tr>
+<tr>
+<td><code>restore_from_parameters(params)</code></td>
+<td>None</td>
+<td>Override to rebuild dynamic ports on load</td>
+</tr>
+<tr>
+<td><code>async on_parameter_changed(name, value)</code></td>
+<td>None</td>
+<td>Override for reactive parameter response</td>
+</tr>
+<tr>
+<td><code>on_plug_sync(port, is_input, node, port)</code></td>
+<td>None</td>
+<td>Override for sync connection event</td>
+</tr>
+<tr>
+<td><code>on_unplug_sync(port, is_input)</code></td>
+<td>None</td>
+<td>Override for sync disconnect event</td>
+</tr>
+<tr>
+<td><code>async on_plug(port, is_input, node, port)</code></td>
+<td>None</td>
+<td>Override for async connection event</td>
+</tr>
+<tr>
+<td><code>async on_unplug(port, is_input)</code></td>
+<td>None</td>
+<td>Override for async disconnect event</td>
+</tr>
+<tr>
+<td><code>async execute(inputs)</code></td>
+<td><code>dict</code></td>
+<td><strong>Abstract</strong> — implement in every node</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-port-schema-reference">3. Port Schema Reference</h2>
+<h3 id="port-type-complete-table">Port Type — Complete Table</h3>
+<table>
+<thead>
+<tr>
+<th>type</th>
+<th>Meaning</th>
+<th>Python runtime type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>"string"</code></td>
+<td>Text</td>
+<td><code>str</code></td>
+</tr>
+<tr>
+<td><code>"int"</code></td>
+<td>Integer</td>
+<td><code>int</code></td>
+</tr>
+<tr>
+<td><code>"float"</code></td>
+<td>Float</td>
+<td><code>float</code></td>
+</tr>
+<tr>
+<td><code>"bool"</code></td>
+<td>Boolean</td>
+<td><code>bool</code></td>
+</tr>
+<tr>
+<td><code>"list"</code></td>
+<td>Python list</td>
+<td><code>list</code></td>
+</tr>
+<tr>
+<td><code>"dict"</code></td>
+<td>Python dict</td>
+<td><code>dict</code></td>
+</tr>
+<tr>
+<td><code>"any"</code></td>
+<td>Generic / exec flow</td>
+<td>any</td>
+</tr>
+</tbody>
+</table>
+<h3 id="widget-type-complete-table">Widget Type — Complete Table</h3>
+<table>
+<thead>
+<tr>
+<th>widget_type</th>
+<th>Renders as</th>
+<th>Applicable port types</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>"text"</code></td>
+<td>Single-line text input</td>
+<td><code>string</code>, <code>any</code></td>
+</tr>
+<tr>
+<td><code>"text_area"</code></td>
+<td>Multi-line text area</td>
+<td><code>string</code>, <code>any</code></td>
+</tr>
+<tr>
+<td><code>"int"</code></td>
+<td>Integer spinbox</td>
+<td><code>int</code></td>
+</tr>
+<tr>
+<td><code>"float"</code></td>
+<td>Float spinbox</td>
+<td><code>float</code></td>
+</tr>
+<tr>
+<td><code>"bool"</code></td>
+<td>Checkbox</td>
+<td><code>bool</code></td>
+</tr>
+<tr>
+<td><code>"checkbox"</code></td>
+<td>Checkbox (alias)</td>
+<td><code>bool</code></td>
+</tr>
+<tr>
+<td><code>"dropdown"</code></td>
+<td>Drop-down list</td>
+<td><code>string</code></td>
+</tr>
+<tr>
+<td><code>"slider"</code></td>
+<td>Horizontal slider</td>
+<td><code>float</code>, <code>int</code></td>
+</tr>
+<tr>
+<td><code>"file"</code></td>
+<td>Text + open-file dialog</td>
+<td><code>string</code></td>
+</tr>
+<tr>
+<td><code>"file_save"</code></td>
+<td>Text + save-file dialog</td>
+<td><code>string</code></td>
+</tr>
+<tr>
+<td><code>null</code></td>
+<td>No widget</td>
+<td>any</td>
+</tr>
+</tbody>
+</table>
+<h3 id="port-object-srcnodesbaseport">Port Object (src.nodes.base.Port)</h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td><code>str</code></td>
+<td>Port identifier</td>
+</tr>
+<tr>
+<td><code>data_type</code></td>
+<td><code>str</code></td>
+<td>One of the port types above</td>
+</tr>
+<tr>
+<td><code>widget_type</code></td>
+<td><code>str \| None</code></td>
+<td>One of the widget types above</td>
+</tr>
+<tr>
+<td><code>options</code></td>
+<td><code>list[str] \| None</code></td>
+<td>Dropdown options</td>
+</tr>
+<tr>
+<td><code>default</code></td>
+<td><code>Any</code></td>
+<td>Default value</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-serialization-schema-reference">4. Serialization Schema Reference</h2>
+<h3 id="workflowmodel">WorkflowModel</h3>
+<pre><code class="language-json">{
+  &quot;nodes&quot;: [NodeInstanceModel, ...],
+  &quot;connections&quot;: [ConnectionModel, ...],
+  &quot;sticky_notes&quot;: [StickyNoteModel, ...],
+  &quot;backdrops&quot;: [BackdropModel, ...]
+}
+</code></pre>
+<p>All arrays default to <code>[]</code> if absent.</p>
+<h3 id="nodeinstancemodel">NodeInstanceModel</h3>
+<pre><code class="language-json">{
+  &quot;node_id&quot;: &quot;string — registry key&quot;,
+  &quot;instance_id&quot;: &quot;string — UUID&quot;,
+  &quot;display_name&quot;: &quot;string — canvas label&quot;,
+  &quot;position&quot;: {&quot;x&quot;: 0.0, &quot;y&quot;: 0.0},
+  &quot;parameters&quot;: {&quot;port_name&quot;: value, ...}
+}
+</code></pre>
+<h3 id="connectionmodel">ConnectionModel</h3>
+<pre><code class="language-json">{
+  &quot;from_node&quot;: &quot;source instance_id&quot;,
+  &quot;from_port&quot;: &quot;output port name&quot;,
+  &quot;to_node&quot;:   &quot;destination instance_id&quot;,
+  &quot;to_port&quot;:   &quot;input port name&quot;
+}
+</code></pre>
+<h3 id="stickynotemodel">StickyNoteModel</h3>
+<pre><code class="language-json">{
+  &quot;text&quot;: &quot;annotation text&quot;,
+  &quot;position&quot;: {&quot;x&quot;: 0.0, &quot;y&quot;: 0.0},
+  &quot;width&quot;: 200.0,
+  &quot;height&quot;: 100.0,
+  &quot;color&quot;: &quot;#f5a623&quot;
+}
+</code></pre>
+<h3 id="backdropmodel">BackdropModel</h3>
+<pre><code class="language-json">{
+  &quot;title&quot;: &quot;label text&quot;,
+  &quot;position&quot;: {&quot;x&quot;: 0.0, &quot;y&quot;: 0.0},
+  &quot;width&quot;: 400.0,
+  &quot;height&quot;: 300.0,
+  &quot;color&quot;: &quot;#2e2e2e&quot;
+}
+</code></pre>
+<h3 id="node-definition-json-schema">Node Definition JSON Schema</h3>
+<pre><code class="language-json">{
+  &quot;node_id&quot;:      &quot;string (required)&quot;,
+  &quot;name&quot;:         &quot;string (required)&quot;,
+  &quot;display_name&quot;: &quot;string (optional)&quot;,
+  &quot;description&quot;:  &quot;string (optional)&quot;,
+  &quot;category&quot;:     &quot;string (required)&quot;,
+  &quot;icon_path&quot;:    &quot;string | null&quot;,
+  &quot;use_exec&quot;:     &quot;bool (required)&quot;,
+  &quot;init_priority&quot;:&quot;int (default 0)&quot;,
+  &quot;inputs&quot;: [
+    {
+      &quot;name&quot;:        &quot;string (required)&quot;,
+      &quot;type&quot;:        &quot;string (required)&quot;,
+      &quot;widget_type&quot;: &quot;string | null&quot;,
+      &quot;options&quot;:     &quot;list[string] | null&quot;,
+      &quot;default&quot;:     &quot;any | null&quot;
+    }
+  ],
+  &quot;outputs&quot;: [ ... ],
+  &quot;python_code&quot;:  &quot;string (required)&quot;
+}
+</code></pre>
+<hr />
+<h2 id="5-environment-variables-reference">5. Environment Variables Reference</h2>
+<h3 id="built-in-variables">Built-in Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Set by</th>
+<th>Consumed by</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>VIBRANTE_NODE_APP</code></td>
+<td><code>vibrante_node.json</code></td>
+<td><code>vibrante_node_houdini.py</code></td>
+<td>Absolute path to the app root</td>
+</tr>
+<tr>
+<td><code>VIBRANTE_PYTHON_EXE</code></td>
+<td><code>vibrante_node.json</code></td>
+<td><code>vibrante_node_houdini.py</code></td>
+<td>System Python path for subprocess</td>
+</tr>
+<tr>
+<td><code>VIBRANTE_HOUDINI_MODE</code></td>
+<td><code>setup_env()</code></td>
+<td><code>qt_compat.py</code></td>
+<td><code>"subprocess"</code> forces PyQt5 selection</td>
+</tr>
+<tr>
+<td><code>VIBRANTE_HOU_PORT</code></td>
+<td><code>setup_env()</code></td>
+<td><code>hou_bridge.py</code></td>
+<td>TCP port for Houdini bridge (default 18811)</td>
+</tr>
+<tr>
+<td><code>VIBRANTE_HIP_FILE</code></td>
+<td><code>setup_env()</code></td>
+<td>node code via <code>os.environ</code></td>
+<td>Path to the current Houdini HIP file</td>
+</tr>
+<tr>
+<td><code>v_nodes_dir</code></td>
+<td><code>setup_env()</code> / EnvManager</td>
+<td><code>NodeRegistry.load_all_with_extras()</code></td>
+<td>Extra node definition directories (colon-separated)</td>
+</tr>
+<tr>
+<td><code>v_scripts_path</code></td>
+<td><code>setup_env()</code> / EnvManager</td>
+<td><code>MainWindow._populate_scripts_menu()</code></td>
+<td>Extra script directories (colon-separated)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="user-configurable-variables-envmanager">User-Configurable Variables (EnvManager)</h3>
+<table>
+<thead>
+<tr>
+<th>Config key</th>
+<th><code>os.environ</code> key</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>env.vibrante_pythonpath</code></td>
+<td>(injected to <code>sys.path</code>)</td>
+<td>Extra Python import paths</td>
+</tr>
+<tr>
+<td><code>env.v_nodes_dir</code></td>
+<td><code>v_nodes_dir</code></td>
+<td>Merged with any existing value</td>
+</tr>
+<tr>
+<td><code>env.v_scripts_path</code></td>
+<td><code>v_scripts_path</code></td>
+<td>Merged with any existing value</td>
+</tr>
+<tr>
+<td><code>env.custom_variables</code></td>
+<td>each key directly</td>
+<td>Studio-specific variables (STUDIO_ROOT, PROJECT, etc.)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="accessing-variables-in-nodes">Accessing Variables in Nodes</h3>
+<pre><code class="language-python">import os, sys
+
+# Custom env var set in Preferences
+studio_root = os.environ.get(&quot;STUDIO_ROOT&quot;, &quot;&quot;)
+
+# VIBRANTE_PYTHONPATH packages (already in sys.path after initialize())
+import my_studio_lib
+
+# HIP file path when launched from Houdini
+hip_path = os.environ.get(&quot;VIBRANTE_HIP_FILE&quot;, &quot;&quot;)
+</code></pre>
+<hr />
+<h2 id="6-scripting-console-api-reference">6. Scripting Console API Reference</h2>
+<h3 id="global-objects">Global Objects</h3>
+<table>
+<thead>
+<tr>
+<th>Object</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>app</code></td>
+<td><code>MainWindow</code></td>
+<td>Application window</td>
+</tr>
+<tr>
+<td><code>scene</code></td>
+<td><code>NodeScene</code></td>
+<td>Active canvas</td>
+</tr>
+<tr>
+<td><code>registry</code></td>
+<td><code>NodeRegistry</code></td>
+<td>Node type database</td>
+</tr>
+<tr>
+<td><code>git</code></td>
+<td><code>GitWrapper</code></td>
+<td>Source control</td>
+</tr>
+</tbody>
+</table>
+<h3 id="nodescene-methods">NodeScene Methods</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Returns</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>add_node_by_name(node_id, pos=(x,y))</code></td>
+<td><code>NodeWidget</code></td>
+<td>Add node to canvas</td>
+</tr>
+<tr>
+<td><code>find_node_by_name(name)</code></td>
+<td><code>NodeWidget \| None</code></td>
+<td>Find first node by display name</td>
+</tr>
+<tr>
+<td><code>connect_nodes(a, port_a, b, port_b)</code></td>
+<td>None</td>
+<td>Wire two nodes</td>
+</tr>
+<tr>
+<td><code>clear()</code></td>
+<td>None</td>
+<td>Remove all canvas items</td>
+</tr>
+<tr>
+<td><code>.nodes</code></td>
+<td><code>list[NodeWidget]</code></td>
+<td>All nodes on canvas</td>
+</tr>
+</tbody>
+</table>
+<h3 id="mainwindow-methods">MainWindow Methods</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Returns</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>add_new_workflow(name)</code></td>
+<td>None</td>
+<td>Open new tab</td>
+</tr>
+<tr>
+<td><code>save_workflow()</code></td>
+<td>None</td>
+<td>Save current tab</td>
+</tr>
+<tr>
+<td><code>execute_pipeline()</code></td>
+<td>None</td>
+<td>Run current workflow</td>
+</tr>
+<tr>
+<td><code>get_current_workflow_path()</code></td>
+<td><code>str \| None</code></td>
+<td>Path to current file</td>
+</tr>
+</tbody>
+</table>
+<h3 id="nodewidget-methods">NodeWidget Methods</h3>
+<table>
+<thead>
+<tr>
+<th>Method / Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>set_parameter(name, value)</code></td>
+<td>None</td>
+<td>Set widget value</td>
+</tr>
+<tr>
+<td><code>get_parameter(name, default=None)</code></td>
+<td><code>Any</code></td>
+<td>Read parameter</td>
+</tr>
+<tr>
+<td><code>.node_definition</code></td>
+<td><code>BaseNode</code></td>
+<td>Underlying logic instance</td>
+</tr>
+<tr>
+<td><code>.instance_id</code></td>
+<td><code>UUID \| str</code></td>
+<td>Unique canvas instance ID</td>
+</tr>
+<tr>
+<td><code>setPos(x, y)</code></td>
+<td>None</td>
+<td>Move node on canvas</td>
+</tr>
+<tr>
+<td><code>scenePos()</code></td>
+<td><code>QPointF</code></td>
+<td>Current canvas position</td>
+</tr>
+</tbody>
+</table>
+<h3 id="noderegistry-methods">NodeRegistry Methods</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Returns</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>get_definition(node_id)</code></td>
+<td><code>NodeDefinitionJSON \| None</code></td>
+<td>Get port/metadata schema</td>
+</tr>
+<tr>
+<td><code>get_source_path(node_id)</code></td>
+<td><code>str \| None</code></td>
+<td>On-disk JSON path</td>
+</tr>
+<tr>
+<td><code>reload_node_definition(node_id)</code></td>
+<td><code>bool</code></td>
+<td>Recompile class from disk</td>
+</tr>
+</tbody>
+</table>
+<h3 id="gitwrapper-methods">GitWrapper Methods</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>status()</code></td>
+<td>Print working tree status</td>
+</tr>
+<tr>
+<td><code>commit(msg)</code></td>
+<td>Stage all and commit</td>
+</tr>
+<tr>
+<td><code>push()</code></td>
+<td>Push to remote</td>
+</tr>
+<tr>
+<td><code>pull()</code></td>
+<td>Pull from remote</td>
+</tr>
+<tr>
+<td><code>log(n=10)</code></td>
+<td>Print last N commits</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="7-houbridge-api-reference">7. HouBridge API Reference</h2>
+<p><strong>Module:</strong> <code>src.utils.hou_bridge</code><br />
+<strong>Access:</strong> <code>from src.utils.hou_bridge import get_bridge; bridge = get_bridge()</code></p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Parameters</th>
+<th>Returns</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ping()</code></td>
+<td>—</td>
+<td><code>{"status": "ok", "version": str}</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>create_node(parent, type, name="")</code></td>
+<td>str, str, str</td>
+<td><code>{"path", "name", "type"}</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>delete_node(path)</code></td>
+<td>str</td>
+<td><code>{"deleted": path}</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>set_parm(node, parm, value)</code></td>
+<td>str, str, any</td>
+<td><code>{"set": True}</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>get_parm(node, parm)</code></td>
+<td>str, str</td>
+<td><code>{"value": any}</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>set_parms(node, parms)</code></td>
+<td>str, dict</td>
+<td><code>{"set": True, "count": int}</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>get_parms(node)</code></td>
+<td>str</td>
+<td><code>dict[str, any]</code></td>
+<td>All parameters</td>
+</tr>
+<tr>
+<td><code>connect_nodes(from, to, output=0, input_idx=0)</code></td>
+<td>str, str, int, int</td>
+<td><code>{"connected": True}</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>cook_node(path, force=False)</code></td>
+<td>str, bool</td>
+<td><code>{"cooked": True}</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>run_code(code)</code></td>
+<td>str</td>
+<td><code>{"result": any}</code></td>
+<td><code>result</code> var in code → return value</td>
+</tr>
+<tr>
+<td><code>node_info(path)</code></td>
+<td>str</td>
+<td>info dict</td>
+<td>path, name, type, category, children</td>
+</tr>
+<tr>
+<td><code>node_exists(path)</code></td>
+<td>str</td>
+<td><code>{"exists": bool}</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>children(path="/obj")</code></td>
+<td>str</td>
+<td><code>list[{"name", "type", "path"}]</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>set_display_flag(path, on=True)</code></td>
+<td>str, bool</td>
+<td><code>{"set": True}</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>set_render_flag(path, on=True)</code></td>
+<td>str, bool</td>
+<td><code>{"set": True}</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>layout_children(path)</code></td>
+<td>str</td>
+<td><code>{"done": True}</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>save_hip(path="")</code></td>
+<td>str</td>
+<td><code>{"saved": str}</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>set_expression(node, parm, expr, language="hscript")</code></td>
+<td>str, str, str, str</td>
+<td><code>{"set": True}</code></td>
+<td>language: "hscript" or "python"</td>
+</tr>
+<tr>
+<td><code>set_keyframe(node, parm, frame, value)</code></td>
+<td>str, str, int, any</td>
+<td><code>{"set": True}</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>set_frame(frame)</code></td>
+<td>int</td>
+<td><code>{"frame": int}</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>set_playback_range(start, end)</code></td>
+<td>int, int</td>
+<td><code>{"start", "end"}</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>scene_info()</code></td>
+<td>—</td>
+<td><code>{"hip_file", "houdini_version", "fps", "frame", "frame_range"}</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Behavior notes:</strong><br />
+- Each call acquires a <code>threading.Lock</code> — thread-safe.<br />
+- <code>TCP_NODELAY</code> set on connect — no Nagle buffering.<br />
+- 30-second <code>socket.timeout</code> — raises <code>ConnectionError</code> if Houdini hangs.<br />
+- Auto-reconnect on <code>BrokenPipeError</code> / <code>ConnectionResetError</code>.</p>
+<hr />
+<h2 id="8-engine-signals-reference">8. Engine Signals Reference</h2>
+<p><strong>Class:</strong> <code>NetworkExecutor</code> (inherits <code>QObject</code>)</p>
+<table>
+<thead>
+<tr>
+<th>Signal</th>
+<th>Signature</th>
+<th>Emitted when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>execution_started</code></td>
+<td><code>()</code></td>
+<td><code>run()</code> begins</td>
+</tr>
+<tr>
+<td><code>execution_finished</code></td>
+<td><code>()</code></td>
+<td>All entry tasks complete</td>
+</tr>
+<tr>
+<td><code>node_started</code></td>
+<td><code>(instance_id: str)</code></td>
+<td>Before <code>execute()</code> is called</td>
+</tr>
+<tr>
+<td><code>node_finished</code></td>
+<td><code>(instance_id: str, results: dict)</code></td>
+<td>After <code>execute()</code> returns successfully</td>
+</tr>
+<tr>
+<td><code>node_error</code></td>
+<td><code>(instance_id: str, error: str)</code></td>
+<td>Unhandled exception in <code>execute()</code></td>
+</tr>
+<tr>
+<td><code>node_output</code></td>
+<td><code>(instance_id: str, results: dict)</code></td>
+<td>Same as <code>node_finished</code>; consumed by UI</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Connected in MainWindow:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Signal</th>
+<th>MainWindow handler</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>node_started</code></td>
+<td><code>_on_node_started</code></td>
+<td>Records start time for timing</td>
+</tr>
+<tr>
+<td><code>node_finished</code></td>
+<td><code>_on_node_finished</code></td>
+<td>Logs timing; calls <code>scene.update_edge_value()</code></td>
+</tr>
+<tr>
+<td><code>node_error</code></td>
+<td><code>_on_node_error</code></td>
+<td>Logs error; sets node to error visual state</td>
+</tr>
+<tr>
+<td><code>execution_finished</code></td>
+<td><code>_on_execution_finished</code></td>
+<td>Re-enables toolbar buttons</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="9-keyboard-shortcuts-complete-table">9. Keyboard Shortcuts — Complete Table</h2>
 <table>
 <thead>
 <tr>
 <th>Shortcut</th>
+<th>Context</th>
 <th>Action</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>Tab</code></td>
-<td>Add Node (search popup at canvas centre)</td>
-</tr>
-<tr>
-<td><code>Ctrl+E</code></td>
-<td>Edit Selected Node (opens Node Builder)</td>
-</tr>
-<tr>
-<td><code>Ctrl+R</code></td>
-<td>Reload Selected Node from disk</td>
-</tr>
-<tr>
-<td><code>Ctrl+Shift+R</code></td>
-<td>Reload All Nodes from disk</td>
-</tr>
-<tr>
 <td><code>F5</code></td>
-<td>Run workflow</td>
+<td>Global</td>
+<td>Execute current workflow</td>
 </tr>
 <tr>
-<td><code>F</code></td>
-<td>Focus view</td>
+<td><code>Shift+F5</code></td>
+<td>Global</td>
+<td>Stop execution</td>
 </tr>
 <tr>
-<td><code>Ctrl+C</code> / <code>Ctrl+V</code></td>
-<td>Copy / Paste nodes</td>
+<td><code>Tab</code></td>
+<td>Canvas</td>
+<td>Open "Add Node" popup at cursor</td>
 </tr>
 <tr>
 <td><code>Delete</code></td>
-<td>Delete selected items</td>
+<td>Canvas</td>
+<td>Delete selected nodes or wires</td>
+</tr>
+<tr>
+<td><code>F</code></td>
+<td>Canvas</td>
+<td>Focus view on selection or canvas center</td>
+</tr>
+<tr>
+<td><code>Ctrl+A</code></td>
+<td>Canvas</td>
+<td>Select all nodes</td>
+</tr>
+<tr>
+<td><code>Ctrl+C</code></td>
+<td>Canvas</td>
+<td>Copy selected nodes</td>
+</tr>
+<tr>
+<td><code>Ctrl+V</code></td>
+<td>Canvas</td>
+<td>Paste at cursor</td>
+</tr>
+<tr>
+<td><code>Ctrl+Z</code></td>
+<td>Canvas</td>
+<td>Undo</td>
+</tr>
+<tr>
+<td><code>Ctrl+Y</code></td>
+<td>Canvas</td>
+<td>Redo</td>
+</tr>
+<tr>
+<td><code>Ctrl+G</code></td>
+<td>Canvas</td>
+<td>Wrap selection in Backdrop</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+G</code></td>
+<td>Canvas</td>
+<td>Collapse selection into Group Node</td>
+</tr>
+<tr>
+<td><code>Ctrl+E</code></td>
+<td>Canvas</td>
+<td>Edit selected node in Node Builder</td>
+</tr>
+<tr>
+<td><code>Ctrl+R</code></td>
+<td>Canvas</td>
+<td>Reload selected node from disk</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+R</code></td>
+<td>Canvas</td>
+<td>Reload all node types from disk</td>
+</tr>
+<tr>
+<td><code>Ctrl+F</code></td>
+<td>Canvas</td>
+<td>Open canvas search bar</td>
+</tr>
+<tr>
+<td><code>Ctrl+M</code></td>
+<td>Canvas</td>
+<td>Toggle mini-map</td>
+</tr>
+<tr>
+<td><code>Ctrl+S</code></td>
+<td>Global</td>
+<td>Save workflow</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+S</code></td>
+<td>Global</td>
+<td>Save workflow as</td>
+</tr>
+<tr>
+<td><code>Ctrl+O</code></td>
+<td>Global</td>
+<td>Open workflow</td>
+</tr>
+<tr>
+<td><code>Ctrl+N</code></td>
+<td>Global</td>
+<td>New workflow tab</td>
+</tr>
+<tr>
+<td><code>Ctrl+W</code></td>
+<td>Global</td>
+<td>Close current tab</td>
+</tr>
+<tr>
+<td><code>Ctrl+,</code></td>
+<td>Global</td>
+<td>Open Preferences (Settings)</td>
+</tr>
+<tr>
+<td><code>Ctrl+Wheel</code></td>
+<td>Code editor</td>
+<td>Zoom in/out</td>
+</tr>
+<tr>
+<td>Middle-mouse drag</td>
+<td>Canvas</td>
+<td>Pan</td>
+</tr>
+<tr>
+<td>Mouse wheel</td>
+<td>Canvas</td>
+<td>Zoom</td>
 </tr>
 </tbody>
 </table>
-<h3 id="86-wire-type-coloring">8.6 Wire Type Coloring</h3>
-<p>Wires are rendered in the color associated with the <strong>output port's data type</strong> (matching port dot colors). The light theme overrides all wire colors to black for legibility.</p>
-<h3 id="87-user-settings-persistence">8.7 User Settings Persistence</h3>
-<p>Theme selection, window geometry, and dock layout are saved to <code>QSettings</code> (key group <code>VibrateNode/session</code>) on close and restored on the next launch.</p>
-<h3 id="88-node-builder-improvements">8.8 Node Builder Improvements</h3>
-<ul>
-<li><strong>Display Name</strong> field: sets the text shown in the canvas header independently of the node ID.</li>
-<li><code>icon_path</code> is now correctly reflected on the canvas widget after save.</li>
-<li>Exec checkbox no longer resets the execute method body.</li>
-<li>Template includes an <code>on_parameter_changed</code> placeholder with a docstring example.</li>
-</ul>
-<h3 id="89-bugfixes-v180v183">8.9 Bugfixes (v1.8.0–v1.8.3)</h3>
+<blockquote>
+<p>All canvas shortcuts are suppressed when a text input widget has keyboard focus.</p>
+</blockquote>
+<hr />
+<h2 id="10-log-and-state-reference">10. Log and State Reference</h2>
+<h3 id="log-levels">Log Levels</h3>
 <table>
 <thead>
 <tr>
-<th>Version</th>
-<th>Fix</th>
+<th>Level</th>
+<th>Method</th>
+<th>Color</th>
+<th>Behavior</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>v1.8.0</td>
-<td><code>for_loop</code> now iterates all items correctly (was stopping after first)</td>
+<td>Info</td>
+<td><code>self.log_info(msg)</code></td>
+<td>White</td>
+<td>Appears in Log Panel</td>
 </tr>
 <tr>
-<td>v1.8.0</td>
-<td>Houdini headless executor validates hython path before subprocess launch</td>
+<td>Success</td>
+<td><code>self.log_success(msg)</code></td>
+<td>Green</td>
+<td>Appears in Log Panel</td>
 </tr>
 <tr>
-<td>v1.8.0</td>
-<td><code>import_alembic</code> SOP context defaults to <code>/obj</code></td>
+<td>Error</td>
+<td><code>self.log_error(msg)</code></td>
+<td>Red</td>
+<td>Appears in Log Panel; sets node border red</td>
 </tr>
 <tr>
-<td>v1.8.0</td>
-<td>Blender alembic frame args renamed; <code>makedirs</code> added</td>
+<td>Warning</td>
+<td>(engine / connection system)</td>
+<td>Yellow</td>
+<td>Type-mismatch warnings; connection events</td>
+</tr>
+</tbody>
+</table>
+<h3 id="node-execution-states">Node Execution States</h3>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>How set</th>
+<th>Visual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Idle</td>
+<td>Default</td>
+<td>Normal border</td>
 </tr>
 <tr>
-<td>v1.8.0</td>
-<td><code>deadline_job_status</code> crash fixed; engine hardened against <code>None</code> returns</td>
+<td>Running</td>
+<td><code>node_started</code> signal</td>
+<td>Highlighted border (theme-dependent)</td>
 </tr>
 <tr>
-<td>v1.8.0</td>
-<td>6 professional VFX pipeline workflow examples added to <code>workflows/</code></td>
+<td>Success</td>
+<td><code>node_finished</code> signal</td>
+<td>Brief green flash</td>
 </tr>
 <tr>
-<td>v1.8.1</td>
-<td><code>on_parameter_changed</code> stale-value bug fixed — value reflects latest widget state</td>
+<td>Error</td>
+<td><code>node_error</code> signal</td>
+<td>Persistent red border</td>
 </tr>
 <tr>
-<td>v1.8.1</td>
-<td>Node Builder execute method no longer resets when switching tabs</td>
+<td>Bypassed</td>
+<td>User right-click → Bypass</td>
+<td>Faded appearance</td>
+</tr>
+</tbody>
+</table>
+<h3 id="execution-timing">Execution Timing</h3>
+<p><code>MainWindow._on_node_started</code> records <code>time.perf_counter()</code> per <code>instance_id</code>. <code>_on_node_finished</code> pops the start time and logs: <code>Node 'X' finished in {elapsed:.2f}s</code>. The <code>dict.pop(key, None)</code> guard handles any race where finish fires without a matching start.</p>
+<hr />
+<h2 id="11-error-index">11. Error Index</h2>
+<table>
+<thead>
+<tr>
+<th>Error message / symptom</th>
+<th>Cause</th>
+<th>Resolution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Node red border</td>
+<td>Unhandled exception in <code>execute()</code></td>
+<td>Check Log Panel for traceback</td>
 </tr>
 <tr>
-<td>v1.8.2</td>
-<td>Dropdown returns selected item correctly during <code>execute</code></td>
+<td><code>"PrismCore not initialized"</code></td>
+<td>Missing <code>prism_core_init</code> node</td>
+<td>Add <code>prism_core_init</code>; set valid <code>prism_root</code></td>
 </tr>
 <tr>
-<td>v1.8.2</td>
-<td><code>set_parameter</code> no longer resets dropdown selection on options update</td>
+<td><code>"No display SOP found inside: /obj/..."</code></td>
+<td>Houdini geo has no display node</td>
+<td>Ensure geo SOP chain has <code>set_display_flag(True)</code></td>
 </tr>
 <tr>
-<td>v1.8.3</td>
-<td><code>on_parameter_changed</code> removed from pre-execute input sync phase</td>
+<td><code>ConnectionError: Houdini did not respond in 30s</code></td>
+<td>Houdini is cooking / blocked</td>
+<td>Wait for Houdini to finish; check Houdini console</td>
 </tr>
 <tr>
-<td>v1.8.3</td>
-<td><code>on_parameter_changed</code> removed from reactive output propagation path</td>
+<td><code>"Wrong File Type"</code> on node load</td>
+<td>Workflow JSON selected as node</td>
+<td>Use Nodes → Load Node From JSON for node files</td>
+</tr>
+<tr>
+<td><code>"Wrong File Type"</code> on workflow load</td>
+<td>Node JSON selected as workflow</td>
+<td>Use Nodes → Load Node From JSON for node files</td>
+</tr>
+<tr>
+<td><code>"[Errno 2] No such file or directory: '...nodes/...' "</code></td>
+<td>Nodes directory absent</td>
+<td>Fixed in v2.2.x; <code>os.makedirs(exist_ok=True)</code> now called automatically</td>
+</tr>
+<tr>
+<td><code>AttributeError: 'QTextEdit' has no 'setOpenExternalLinks'</code></td>
+<td>Pre-v2.2.1 exe</td>
+<td>Update to v2.2.1+</td>
+</tr>
+<tr>
+<td>Stale ports after editing a node</td>
+<td>JSON definition changed on disk</td>
+<td>Select node → <code>Ctrl+R</code></td>
+</tr>
+<tr>
+<td>"Unknown publisher" on exe launch</td>
+<td>Unsigned binary</td>
+<td>Dev builds are unsigned; see <code>tools/sign_release.ps1</code></td>
+</tr>
+<tr>
+<td>App shows session restore dialog</td>
+<td>Crash or forced kill previously</td>
+<td>Choose Restore or Discard</td>
+</tr>
+<tr>
+<td>Loop appears to hang</td>
+<td><code>while_loop</code> condition never False</td>
+<td>Check condition logic; Stop button (<code>Shift+F5</code>) still works</td>
+</tr>
+<tr>
+<td>Widget grayed out</td>
+<td>Port is connected</td>
+<td>Normal — widget is a live value monitor</td>
+</tr>
+<tr>
+<td>Type mismatch warning</td>
+<td>Connected ports of different types</td>
+<td>Informational only; connection still works</td>
+</tr>
+<tr>
+<td><code>crash.log</code> in project root</td>
+<td>Unhandled top-level exception</td>
+<td>Read the traceback; report as issue if unexpected</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><strong>Documentation map:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Document</th>
+<th>Audience</th>
+<th>Focus</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="USER_GUIDE.md">User Guide</a></td>
+<td>All users</td>
+<td>Interface, execution, shortcuts, integrations</td>
+</tr>
+<tr>
+<td><a href="NODE_BUILDER_API.md">Node Builder API</a></td>
+<td>Node authors</td>
+<td>BaseNode, ports, lifecycle, distribution</td>
+</tr>
+<tr>
+<td><a href="AUTOMATION_API.md">Automation API</a></td>
+<td>Pipeline TDs</td>
+<td>Scripting console, graph API, automation examples</td>
+</tr>
+<tr>
+<td><a href="DEVELOPER.md">Developer Guide</a></td>
+<td>Contributors</td>
+<td>Engine internals, architecture, thread model</td>
+</tr>
+<tr>
+<td><a href="docs/portal/">Portal Docs</a></td>
+<td>All audiences</td>
+<td>Full navigable HTML documentation</td>
+</tr>
+<tr>
+<td><a href="CHANGELOG.md">CHANGELOG</a></td>
+<td>All</td>
+<td>Version history</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Deep reference (docs_src/):</strong></p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>docs_src/06_backend_architecture.md</code></td>
+<td>Execution engine in full detail</td>
+</tr>
+<tr>
+<td><code>docs_src/07_frontend_architecture.md</code></td>
+<td>Qt canvas architecture</td>
+</tr>
+<tr>
+<td><code>docs_src/08_api_reference.md</code></td>
+<td>Full class / method reference (1,500 lines)</td>
+</tr>
+<tr>
+<td><code>docs_src/05_node_development.md</code></td>
+<td>Node development guide (1,000 lines)</td>
+</tr>
+<tr>
+<td><code>docs_src/09_advanced_topics.md</code></td>
+<td>GroupNode, autosave, wire inspector internals</td>
 </tr>
 </tbody>
 </table>
