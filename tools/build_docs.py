@@ -15,7 +15,7 @@ MAIN_DOCS = [
 
 RELEASE_DOCS = [
     ("RELEASE_v2.3.0.md", "Release Notes v2.3.0"),
-    ("RELEASE_v2.3.0.md", "Release Notes v2.3.0"),
+    ("RELEASE_v2.2.1.md", "Release Notes v2.2.1"),
     ("RELEASE_v2.2.0.md", "Release Notes v2.2.0"),
     ("RELEASE_v2.1.1.md", "Release Notes v2.1.1"),
     ("RELEASE_v2.1.0.md", "Release Notes v2.1.0"),
